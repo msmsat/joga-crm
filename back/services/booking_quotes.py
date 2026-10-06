@@ -8,7 +8,7 @@ from sqlalchemy import select
 from models import BookingQuote, Client, Lesson, Studio, StudioBranch, StudioMember
 from services import booking, resource_availability, service_pricing, studio_time
 from services.booking_access import trial_applies
-from services.booking_rules import load_rules
+from services.booking_rules import load_rules, trial_service_allowed
 from services.resource_slots import generate
 
 
@@ -116,7 +116,7 @@ def _snapshot(lesson, terms, studio, rules, payment_method, *, starts_at=None, s
     }
 
 
-async def _first_lesson(db, actor, rules, *, requested, covered_by_subscription):
+async def _first_lesson(db, actor, rules, *, requested, covered_by_subscription, service_id=None):
     """Скидка первого занятия в снимке условий.
 
     «Положена» не зависит от выключателя: окно рисует его и выключенным, и
@@ -124,7 +124,8 @@ async def _first_lesson(db, actor, rules, *, requested, covered_by_subscription)
     перекрывает первое занятие (booking_access.resolve_coverage) — тогда её
     не предлагаем вовсе.
     """
-    offered = not covered_by_subscription and await trial_applies(db, actor.client_id, rules)
+    offered = (not covered_by_subscription and trial_service_allowed(rules, service_id)
+               and await trial_applies(db, actor.client_id, rules))
     discount = rules.first_lesson if offered else None
     return {"requested": requested, "offered": offered,
             "percent": discount.percent if discount is not None else None,
@@ -166,7 +167,8 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
                 pass  # Legacy events retain their existing uncertain-time behavior.
         first = await _first_lesson(
             db, actor, rules, requested=allow_trial,
-            covered_by_subscription=quoted.terms.funding.kind is booking.FundingKind.SUBSCRIPTION)
+            covered_by_subscription=quoted.terms.funding.kind is booking.FundingKind.SUBSCRIPTION,
+            service_id=lesson.service_id)
         return _snapshot(lesson, quoted.terms, studio, rules, request.payment_method,
                          starts_at=exact, spot_number=request.spot_number, first_lesson=first)
     if request.starts_at.tzinfo is None:
@@ -207,7 +209,8 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
             allow_trial=allow_trial)
         if funding is not None:
             first = await _first_lesson(db, actor, rules, requested=allow_trial,
-                                        covered_by_subscription=subscription is not None)
+                                        covered_by_subscription=subscription is not None,
+                                        service_id=data.service.id)
     if funding is None:
         reject("NO_FUNDING", 402)
     member = (await db.execute(select(StudioMember).where(StudioMember.studio_id == actor.studio_id,

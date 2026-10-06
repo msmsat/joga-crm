@@ -2,7 +2,7 @@
 import hashlib
 import json
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from fastapi import HTTPException
@@ -78,6 +78,43 @@ async def _response(db, session, row, body, public_key):
     )
 
 
+async def _create_stripe_session(row, customer_id, body, tax, profile_hash, return_url, cancel_url):
+    """Retry one committed order using its immutable Stripe request facts."""
+    details = row.billing_details_snapshot or {}
+    frozen = billing_pricing.invoice_price_fields(row)
+    saved = details.get('checkout') or {}
+    if row.order_id.startswith('prepaid:'):
+        try:
+            started = datetime.fromisoformat(saved['request_started_at'].replace('Z', '+00:00'))
+            if started.tzinfo is None:
+                raise ValueError('Unknown request timezone')
+            age = datetime.now(timezone.utc) - started
+            recent = timedelta(0) <= age < timedelta(hours=23)
+        except (KeyError, TypeError, ValueError, AttributeError):
+            recent = False
+        if not recent:
+            # Stripe can prune idempotency keys after 24h. An unknown request
+            # outside the conservative retry window requires reconciliation.
+            raise HTTPException(status_code=409, detail={
+                'code': 'billing.payment_processing',
+                'message': 'Предыдущая попытка оплаты требует сверки. Обратитесь в поддержку.',
+            })
+    metadata = {
+        'billing_kind': 'prepaid', 'invoice_id': str(row.id),
+        'studio_id': str(row.studio_id), 'user_id': str(row.user_id),
+        'plan': row.plan_name, 'period_months': str(row.period_months),
+        'billing_mode': details['item']['billing_mode'], 'profile_hash': profile_hash,
+        **{key: str(value) if value is not None else '' for key, value in frozen.items()},
+    }
+    return await stripe_billing.create_period_checkout(
+        saved.get('customer_id', customer_id), frozen['net_amount'],
+        f'Velora {PLANS[row.plan_name]["name"]} · {row.period_months} мес.',
+        metadata, saved.get('return_url', _invoice_return_url(return_url, row.id)),
+        saved.get('cancel_url', cancel_url), tax=tax,
+        ui_mode=saved.get('ui_mode', body.ui_mode), idempotency_key=f'prepaid:{row.id}',
+    )
+
+
 async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
                          public_key, return_url, cancel_url):
     """Commit the local order before Stripe can send an event; retry by its id."""
@@ -107,10 +144,12 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
         if candidate.order_id.startswith('cs_'):
             session = await stripe_billing.fetch_checkout_session(candidate.order_id)
             meta = _meta(session)
-            same = (meta.get('profile_hash') == fingerprint
-                    and candidate.plan_name == body.plan
+            frozen = billing_pricing.invoice_price_fields(candidate)
+            same = (candidate.plan_name == body.plan
                     and candidate.period_months == body.period_months
-                    and meta.get('billing_mode') == ('combo' if combo else 'subscription'))
+                    and meta.get('billing_mode') == ('combo' if combo else 'subscription')
+                    and meta.get('profile_hash') == _fingerprint(
+                        profile, tax, body, combo, frozen['net_amount']))
             if getattr(session, 'payment_status', None) == 'paid':
                 response = await _response(db, session, candidate, body, public_key)
                 if same:
@@ -121,7 +160,7 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
                 return await create_payment(db, ctx, plan, customer_id, body, tax,
                                             profile, public_key, return_url, cancel_url)
             elif getattr(session, 'status', None) == 'open':
-                if same:
+                if same and frozen['net_amount'] == net:
                     await db.commit()
                     return await _response(db, session, candidate, body, public_key)
                 await stripe_billing.expire_checkout_session(session.id)
@@ -138,6 +177,18 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
               and candidate.plan_name == body.plan and candidate.period_months == body.period_months):
             row = candidate
             break
+        elif (candidate.plan_name == body.plan and candidate.period_months == body.period_months
+              and candidate.order_id.split(':')[1] == _fingerprint(profile, tax, body, combo,
+                  billing_pricing.invoice_price_fields(candidate)['net_amount'])):
+            # Repricing changed the current fingerprint. Recover the earlier
+            # request by its original amount and idempotency key before making
+            # another order; a paid/processing request must never charge twice.
+            recovered = await _create_stripe_session(candidate, customer_id, body, tax,
+                candidate.order_id.split(':')[1], return_url, cancel_url)
+            candidate.order_id = recovered.id
+            await db.commit()
+            return await create_payment(db, ctx, plan, customer_id, body, tax,
+                                        profile, public_key, return_url, cancel_url)
         else:
             # A timed-out Stripe request may have created a Session already.
             # Its known local id lets a retry recover it without another purchase.
@@ -155,6 +206,9 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
                                     net, stripe_billing.CURRENCY, starts, until)
         details["promo"] = price.fields()
         details["item"]["billing_mode"] = "combo" if combo else "subscription"
+        base_net = PLANS[body.plan]['price'] * body.period_months // (2 if combo else 1)
+        details["item"]["base_net_minor"] = base_net
+        details["item"]["period_discount_amount"] = max(0, base_net - price.amount_before_promo)
         row = BillingInvoice(
             studio_id=ctx.studio_id, user_id=ctx.user.id, kind='subscription',
             status='pending', plan_name=body.plan, period_months=body.period_months,
@@ -164,6 +218,11 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
         )
         db.add(row)
         await db.flush()
+        row.billing_details_snapshot = {**details, 'checkout': {
+            'customer_id': customer_id, 'return_url': _invoice_return_url(return_url, row.id),
+            'cancel_url': cancel_url, 'ui_mode': body.ui_mode,
+            'request_started_at': datetime.now(timezone.utc).isoformat(),
+        }}
     await db.commit()
     # Serialize creation/retry of this order across two tabs. Commit above makes
     # invoice_id resolvable even if the paid webhook arrives before this response.
@@ -175,20 +234,8 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
         session = await stripe_billing.fetch_checkout_session(row.order_id)
         await db.commit()
         return await _response(db, session, row, body, public_key)
-    frozen = billing_pricing.invoice_price_fields(row)
-    net = frozen['net_amount']
-    metadata = {
-        'billing_kind': 'prepaid', 'invoice_id': str(row.id),
-        'studio_id': str(ctx.studio_id), 'user_id': str(ctx.user.id),
-        'plan': body.plan, 'period_months': str(body.period_months),
-        'billing_mode': 'combo' if combo else 'subscription', 'profile_hash': fingerprint,
-        **{key: str(value) if value is not None else '' for key, value in frozen.items()},
-    }
-    session = await stripe_billing.create_period_checkout(
-        customer_id, net, f'Velora {PLANS[body.plan]["name"]} · {body.period_months} мес.',
-        metadata, _invoice_return_url(return_url, row.id), cancel_url, tax=tax, ui_mode=body.ui_mode,
-        idempotency_key=f'prepaid:{row.id}',
-    )
+    session = await _create_stripe_session(row, customer_id, body, tax,
+                                         fingerprint, return_url, cancel_url)
     row.order_id = session.id
     await db.commit()
     return await _response(db, session, row, body, public_key)

@@ -585,12 +585,12 @@
     "later": "Später"
   },
   "groupWizard": {
-    "hint": "Wählen Sie Tag und Uhrzeit — Kurs und Trainer lassen sich eingrenzen",
+    "hint": "Wählen Sie Tag und Kurs — Kursart und Trainer lassen sich eingrenzen",
     "titles": {
       "service": "Welcher Kurs?",
       "master": "Mit wem möchten Sie trainieren?"
     },
-    "lessonsAt": "Kurse: {{count}}",
+    "left": "{{left}} von {{total}} Plätzen frei",
     "full": "Ausgebucht",
     "closed": "Buchung geschlossen",
     "noLessons": "An diesem Tag gibt es keine freien Kurse",
@@ -659,5 +659,10 @@
       "manual": "Rabatt"
     },
     "prepayOnly": "Das Studio bittet um Vorauszahlung"
+  },
+  "pass": {
+    "kicker": "Abo",
+    "from": "ab {{price}}",
+    "buy": "Kaufen"
   }
 }

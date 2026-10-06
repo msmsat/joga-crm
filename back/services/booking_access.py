@@ -260,11 +260,12 @@ async def trial_applies(
 
 
 async def trial_eligible(
-    db: AsyncSession, client_ids: list[int], rules: BookingRules
+    db: AsyncSession, client_ids: list[int], rules: BookingRules, *, service_id=None
 ) -> set[int]:
     """`trial_applies` для многих клиентов сразу — одним запросом: те из
     `client_ids`, кому положено первое занятие. Условие то же самое."""
-    if not rules.trial_lesson_free or not client_ids:
+    from services.booking_rules import trial_service_allowed
+    if not rules.trial_lesson_free or not client_ids or not trial_service_allowed(rules, service_id):
         return set()
     booked = set((await db.execute(
         select(Reservation.client_id).where(
@@ -331,4 +332,6 @@ async def resolve_coverage(
     sub = await find_eligible_subscription(db, client_id, lesson)
     if sub is not None:
         return sub, False
-    return None, allow_trial and await trial_applies(db, client_id, rules)
+    from services.booking_rules import trial_service_allowed
+    return None, (allow_trial and trial_service_allowed(rules, lesson.service_id)
+                  and await trial_applies(db, client_id, rules))

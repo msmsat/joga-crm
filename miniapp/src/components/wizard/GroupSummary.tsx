@@ -41,7 +41,12 @@ export default function GroupSummary({ flow, catalog }: { flow: GroupWizardFlow;
         value={flow.service ? name(flow.service.name) : lesson?.name ? name(lesson.name) : null}
         onChange={() => flow.goTo('service')}
       />
-      <SummaryRow step="master" label={terms.staff?.singular ?? t('wizard.tabs.master')} value={teacher} onChange={() => flow.goTo('master')} />
+      <SummaryRow
+        step="master"
+        label={terms.staff?.singular ?? t('wizard.tabs.master')}
+        value={teacher}
+        onChange={flow.steps.includes('master') ? () => flow.goTo('master') : undefined}
+      />
 
       {several.length > 0 && pick.time !== null && (
         <div className="pt-3">

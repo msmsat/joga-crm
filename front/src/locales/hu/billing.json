@@ -27,7 +27,7 @@
   "seats": {
     "title": "Hány munkatárs dolgozik a stúdióban",
     "hint": "{{amount}}/hótól",
-    "stepNote": "Minden további hely {{amount}}-val növeli a havi díjat",
+    "stepNote": "{{from}}–{{to}}. hely: +{{amount}} további helyenként/hó.",
     "unlimitedNote": "Nincs létszámkorlát",
     "perSeat": "Munkatársanként"
   },

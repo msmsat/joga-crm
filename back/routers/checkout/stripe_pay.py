@@ -18,6 +18,7 @@ import json
 import logging
 import time
 from datetime import date, datetime, timedelta, timezone
+from services.subscription_renewal import renewal_payload, checkout_renewal_options
 from uuid import uuid4
 
 import stripe
@@ -231,7 +232,7 @@ async def create_session(
         studio_id=ctx.studio_id,
         user_id=current_user.id,
         account_id=account_id,
-        payload=body.model_dump(mode="json"),
+        payload={**body.model_dump(mode="json"), **renewal_payload(quote)},
         amount=quote.total_price,
         application_fee=fee_minor,
     )
@@ -438,6 +439,7 @@ async def _apply_client_subscription_purchase(db: AsyncSession, checkout: Stripe
         db, checkout.studio_id, client_id, package, "subscription",
         checkout.payload.get("promo_code"), checkout.payload.get("use_bonuses", False),
         checkout.payload.get("use_deposit", False), checkout.payload.get("certificate_code"),
+        **checkout_renewal_options(checkout),
     )
     # Сумма обязана сойтись со списанной. Разошлась — клиент потратил баллы или
     # погасил сертификат в другом окне между созданием сессии и оплатой: провести
@@ -617,6 +619,7 @@ async def apply_paid(
                 # осядет не то, что забрали у клиента. Не сошлось — 409 из
                 # perform_pay, дальше общая ветка «списано, но не проведено».
                 expected_total=checkout.amount,
+                **checkout_renewal_options(checkout),
             )
             # Отдельным commit'ом: perform_pay закрывает транзакцию сам и отдаёт
             # id уже после неё. Продажа к этому моменту проведена, и упади запись

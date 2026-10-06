@@ -27,7 +27,7 @@
   "seats": {
     "title": "Hvor mange ansatte har studioet?",
     "hint": "fra {{amount}} per måned",
-    "stepNote": "Hver ekstra plass koster {{amount}} per måned",
+    "stepNote": "Plass {{from}}–{{to}}: +{{amount}} per ekstra plass/måned.",
     "unlimitedNote": "Ubegrenset antall ansatte",
     "perSeat": "Per ansatt"
   },

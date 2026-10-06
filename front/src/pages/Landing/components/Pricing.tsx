@@ -6,6 +6,7 @@ import { Check, Gift } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/ui/index';
 import { getActiveToken } from '../../../utils/auth';
+import { planPriceSteps } from '../../../lib/plan';
 import { useEntry } from './entry';
 import { ChapterHead } from './ChapterHead';
 import { Reveal } from './primitives';
@@ -37,7 +38,8 @@ export function Pricing() {
   const continueToPlan = () => getActiveToken() ? navigate('/dashboard/billing') : toRegister();
   const seats = plan?.limits.staff;
   const line = catalog?.plans.filter(p => p.limits.staff !== null) ?? [];
-  const step = line.length > 2 ? line[line.length - 1].price - line[line.length - 2].price : 0;
+  const priceSteps = planPriceSteps(line.map(p => ({ seats: p.limits.staff, price: p.price })))
+    .map(step => t('pricing.stepNote', { from: step.from, to: step.to, amount: money(step.amount) })).join(' · ');
 
   return <section id="pricing" className="scroll-mt-24 bg-[#FDFCFB] py-24 lg:py-32">
     <div className="mx-auto max-w-[1200px] px-6 lg:px-12">
@@ -65,7 +67,7 @@ export function Pricing() {
                   aria-label={t('pricing.sliderAria')} aria-valuetext={seats === null ? t('pricing.unlimited') : t('pricing.seats', { count: seats })}
                   className="lp-range lp-price-range" style={{ '--fill': `${fill}%` } as CSSProperties} />
                 <div className="lp-price-scale"><span>{t('pricing.seats', { count: catalog.plans[0].limits.staff ?? 1 })}</span><span>∞ {t('pricing.unlimited')}</span></div>
-                <p className="lp-price-hint">{t('pricing.catalogHint', { solo: money(line[0]?.price ?? 0), two: money(line[1]?.price ?? 0), step: money(step) })}</p>
+                <p className="lp-price-hint">{t('pricing.catalogHint', { solo: money(line[0]?.price ?? 0), steps: priceSteps })}</p>
                 <div className="lp-price-periods-heading"><span className="lp-price-caption">{t('pricing.period')}</span></div>
                 <div className="lp-price-periods">{periods.map(months => <button type="button" key={months} onClick={() => setSelectedPeriod(months)} aria-pressed={period === months}>
                   <span>{t('pricing.months', { count: months })}</span><small>{catalog.period_discounts[months] ? `−${rate(catalog.period_discounts[months] * 100)}%` : '—'}</small>

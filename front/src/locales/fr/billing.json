@@ -27,7 +27,7 @@
   "seats": {
     "title": "Combien de collaborateurs dans le studio",
     "hint": "à partir de {{amount}} par mois",
-    "stepNote": "Chaque place supplémentaire ajoute {{amount}} par mois",
+    "stepNote": "Places {{from}}–{{to}} : +{{amount}} par place supplémentaire/mois.",
     "unlimitedNote": "Nombre de collaborateurs illimité",
     "perSeat": "Par collaborateur"
   },

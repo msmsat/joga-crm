@@ -27,7 +27,7 @@
   "seats": {
     "title": "Quanti membri dello staff ci sono nello studio",
     "hint": "da {{amount}} al mese",
-    "stepNote": "Ogni posto aggiuntivo aggiunge {{amount}} al mese",
+    "stepNote": "Posti {{from}}–{{to}}: +{{amount}} per posto aggiuntivo/mese.",
     "unlimitedNote": "Staff senza limiti",
     "perSeat": "Per membro dello staff"
   },

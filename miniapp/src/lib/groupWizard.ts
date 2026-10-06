@@ -26,10 +26,17 @@ export interface GroupPick {
   serviceId: number | null;
   /** `users.id` тренера, названного человеком. Выведенный из занятия сюда не пишется. */
   teacherId: number | null;
+  /**
+   * Занятие, выбранное карточкой во «Времени». Час, направление и тренер его
+   * называют не всегда: два одинаковых занятия в один час в разных филиалах
+   * отличаются только им. Сам выбор не сужает — лишь говорит, какое из
+   * подходящих имелось в виду.
+   */
+  lessonId: number | null;
 }
 
 export const emptyGroupPick = (day: IsoDay): GroupPick => ({
-  day, time: null, serviceId: null, teacherId: null,
+  day, time: null, serviceId: null, teacherId: null, lessonId: null,
 });
 
 export const spotsLeft = (lesson: LessonResponse): number =>
@@ -61,25 +68,47 @@ export function groupTimes(lessons: LessonResponse[], pick: GroupPick): number[]
   return [...new Set(lessonsFor(lessons, pick, 'time').map(startOf))].sort((a, b) => a - b);
 }
 
+// ─── Карточки дня ─────────────────────────────────────────────────────────────
+
+const PARTS: DayPart[] = ['morning', 'afternoon', 'evening'];
+
 /**
- * Часы, в которые занятия есть, но записаться нельзя: мест нет или студия
- * закрыла запись. Лента их не прячет — кнопки погашены: «занятия нет» и
- * «занятие есть, но мест нет» — разные ответы, и человек вправе знать второй.
+ * Что с занятием для этого человека: своя бронь, можно записаться, мест нет
+ * или студия закрыла запись. Полное и закрытое не прячутся — карточка
+ * погашена с причиной: «занятия нет» и «занятие есть, но мест нет» — разные
+ * ответы, и человек вправе знать второй. Закрытое и полное разом — «закрыто»:
+ * освободись место, записаться всё равно нельзя.
  */
-export function closedTimes(lessons: LessonResponse[], pick: GroupPick): number[] {
-  const open = new Set(groupTimes(lessons, pick));
-  return [...new Set(matching(lessons, pick, 'time').map(startOf))]
-    .filter((minute) => !open.has(minute))
-    .sort((a, b) => a - b);
+export type SlotState = 'mine' | 'open' | 'full' | 'closed';
+
+export const slotState = (lesson: LessonResponse): SlotState =>
+  lesson.is_booked_by_user ? 'mine'
+    : !lesson.bookable ? 'closed'
+    : spotsLeft(lesson) <= 0 ? 'full'
+    : 'open';
+
+export interface DaySlot {
+  lesson: LessonResponse;
+  state: SlotState;
+  /** Свободных мест, не меньше нуля. */
+  left: number;
 }
 
-/** Почему час погашен: открытое, но полное занятие — «мест нет», иначе — запись закрыта. */
-export const closedReason = (lessons: LessonResponse[], pick: GroupPick, minute: number): 'full' | 'closed' =>
-  matching(lessons, { ...pick, time: minute }).some((row) => row.bookable && spotsLeft(row) <= 0) ? 'full' : 'closed';
+/**
+ * Занятия дня карточками — все, и открытые, и нет, под выбранные направление и
+ * тренера (час не сужает: его выбирают здесь же). По началу; одновременные —
+ * по номеру, чтобы свежий ответ сервера не переставлял их местами.
+ */
+export const daySlots = (lessons: LessonResponse[], pick: GroupPick): DaySlot[] =>
+  matching(lessons, pick, 'time')
+    .map((lesson) => ({ lesson, state: slotState(lesson), left: Math.max(0, spotsLeft(lesson)) }))
+    .sort((a, b) => startOf(a.lesson) - startOf(b.lesson) || a.lesson.id - b.lesson.id);
 
-/** Занятия, начинающиеся в этот час, — подпись под кнопкой времени. */
-export const lessonsAt = (lessons: LessonResponse[], pick: GroupPick, minute: number): LessonResponse[] =>
-  lessonsFor(lessons, { ...pick, time: minute });
+/** Карточки по частям дня — утро, день, вечер; пустые части не идут. */
+export const slotsByPart = (slots: DaySlot[]): { part: DayPart; slots: DaySlot[] }[] =>
+  PARTS
+    .map((part) => ({ part, slots: slots.filter((slot) => partOf(startOf(slot.lesson)) === part) }))
+    .filter((group) => group.slots.length > 0);
 
 /** Направления, на которые в дне есть занятие под остальной выбор. */
 export const serviceIdsOf = (lessons: LessonResponse[], pick: GroupPick): Set<number> =>
@@ -98,13 +127,16 @@ export const candidates = (lessons: LessonResponse[], pick: GroupPick): LessonRe
   pick.time === null ? [] : lessonsFor(lessons, pick);
 
 /**
- * Занятие, на которое ведёт выбор: единственный кандидат. Несколько, но
- * человеку их не различить (то же направление у того же тренера) — первый:
- * уточнять дальше нечем, а тупик хуже любого из двух одинаковых.
+ * Занятие, на которое ведёт выбор: выбранное карточкой, пока оно подходит,
+ * иначе единственный кандидат. Несколько, но человеку их не различить (то же
+ * направление у того же тренера) — первый: уточнять дальше нечем, а тупик
+ * хуже любого из двух одинаковых.
  */
 export function lessonOf(lessons: LessonResponse[], pick: GroupPick): LessonResponse | null {
   const found = candidates(lessons, pick);
   if (found.length === 0) return null;
+  const chosen = found.find((row) => row.id === pick.lessonId);
+  if (chosen) return chosen;
   const alike = found.every((row) => row.service_id === found[0].service_id && row.teacher_id === found[0].teacher_id);
   return alike ? found[0] : null;
 }
@@ -142,14 +174,14 @@ export function withChoice(
 ): GroupPick {
   const next = { ...pick, ...change };
   return next.time !== null && lessons !== null && lessonsFor(lessons, next).length === 0
-    ? { ...next, time: null }
+    ? { ...next, time: null, lessonId: null }
     : next;
 }
 
 /** День пришёл — час, которого в нём под этот выбор нет, снимается. */
 export function reconcileGroupTime(pick: GroupPick, lessons: LessonResponse[]): GroupPick {
   if (pick.time === null) return pick;
-  return groupTimes(lessons, pick).includes(pick.time) ? pick : { ...pick, time: null };
+  return groupTimes(lessons, pick).includes(pick.time) ? pick : { ...pick, time: null, lessonId: null };
 }
 
 // ─── Отметки ленты дней ───────────────────────────────────────────────────────
@@ -163,8 +195,6 @@ export type DayMarks = Record<IsoDay, number[]>;
 
 export const marksOf = (days: LessonDay[]): DayMarks =>
   Object.fromEntries(days.map((row) => [row.day, row.times.map(minutesOf)]));
-
-const PARTS: DayPart[] = ['morning', 'afternoon', 'evening'];
 
 /** Ритм дня — есть ли занятия утром, днём и вечером. Всегда три, по порядку. */
 export const rhythmOf = (times: number[]): { part: DayPart; lit: boolean }[] =>
@@ -189,14 +219,27 @@ export function openingDay(pick: GroupPick, today: IsoDay, days: IsoDay[], marks
  * Занятие из QR-кода студии в пришедшем дне. Найдено и на него можно
  * записаться — выбор складывается в него, лист идёт на итог. Не найдено
  * (отменили, прошло) или мест нет — `null`: человек остаётся на «Времени» этого
- * дня, где занятие стоит погашенной кнопкой, а не упирается в ошибку.
+ * дня, где занятие стоит погашенной карточкой, а не упирается в ошибку.
  */
 export function focusLesson(lessons: LessonResponse[], lessonId: number): LessonResponse | null {
   const found = lessons.find((row) => row.id === lessonId);
   return found && isOffered(found) ? found : null;
 }
 
-/** Занятие из списка «несколько в один час»: выбор становится однозначным. */
+/**
+ * Занятие карточкой во «Времени» или из списка «несколько в один час»: выбор
+ * становится однозначным. Направление и тренер не пишутся — они выводятся из
+ * занятия (`lessonOf`), а названные сузили бы «Время» до этого одного занятия:
+ * вернувшись выбрать другое, человек увидел бы только уже выбранное.
+ */
 export const choose = (pick: GroupPick, lesson: LessonResponse): GroupPick => ({
-  ...pick, time: startOf(lesson), serviceId: lesson.service_id, teacherId: lesson.teacher_id,
+  ...pick, time: startOf(lesson), lessonId: lesson.id,
 });
+
+/**
+ * Другой день — другое занятие: выбранное карточкой уходит вместе с часом.
+ * Иначе в новом дне «сложилось» бы занятие в тот же час, которого человек не
+ * выбирал. Направление и тренер, названные во вкладках, остаются.
+ */
+export const withDay = (pick: GroupPick, day: IsoDay): GroupPick =>
+  day === pick.day ? pick : { ...pick, day, time: null, lessonId: null };

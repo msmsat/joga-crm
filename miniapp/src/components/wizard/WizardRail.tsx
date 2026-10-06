@@ -76,7 +76,9 @@ export default function WizardRail({ flow, catalog, preview }: Props) {
   const label = (step: Choice) =>
     step === 'master' ? terms.staff?.singular ?? t('wizard.tabs.master') : t(`wizard.tabs.${step}`);
 
-  const missing = CHOICES.filter((step) => !isChosen(flow.pick, step)).length;
+  // Мастер один — его шага нет: он подставлен сам и виден на билете итога.
+  const choices = CHOICES.filter((step) => flow.steps.includes(step));
+  const missing = choices.filter((step) => !isChosen(flow.pick, step)).length;
   const status = flow.booking ? t('wizard.doneTitle')
     : flow.complete ? t('wizard.ready')
     : missing > 0 ? t('wizard.remaining', { count: missing })
@@ -104,7 +106,7 @@ export default function WizardRail({ flow, catalog, preview }: Props) {
       </div>
 
       <nav className="mt-7 flex flex-col gap-1" aria-label={t('wizard.title')}>
-        {CHOICES.map((step) => {
+        {choices.map((step) => {
           const real = valueOf(flow.pick, step);
           const shown = valueOf(view, step);
           const ghost = preview !== null && shown !== real;

@@ -27,7 +27,7 @@
   "seats": {
     "title": "¿Cuántos miembros tiene el equipo del estudio?",
     "hint": "desde {{amount}} al mes",
-    "stepNote": "Cada plaza adicional cuesta {{amount}} al mes",
+    "stepNote": "Plazas {{from}}–{{to}}: +{{amount}} por plaza adicional/mes.",
     "unlimitedNote": "Equipo ilimitado",
     "perSeat": "Por miembro del equipo"
   },

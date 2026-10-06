@@ -585,12 +585,12 @@
     "later": "Později"
   },
   "groupWizard": {
-    "hint": "Vyberte den a čas — lekci a trenéra můžete upřesnit",
+    "hint": "Vyberte den a lekci — druh lekce a trenéra můžete upřesnit",
     "titles": {
       "service": "Jaká lekce?",
       "master": "S kým chcete cvičit?"
     },
-    "lessonsAt": "Lekcí: {{count}}",
+    "left": "Volno {{left}} z {{total}}",
     "full": "Obsazeno",
     "closed": "Rezervace uzavřena",
     "noLessons": "V tento den nejsou volné lekce",
@@ -659,5 +659,10 @@
       "manual": "Sleva"
     },
     "prepayOnly": "Studio žádá platbu předem"
+  },
+  "pass": {
+    "kicker": "Předplatné",
+    "from": "od {{price}}",
+    "buy": "Koupit"
   }
 }

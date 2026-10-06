@@ -383,7 +383,7 @@ async def get_eligible_clients(
     ids = [client.id for client in clients]
     subscriptions = await eligible_subscriptions(db, ids, lesson)
     rules = await load_rules(db, ctx.studio_id)
-    trial = await trial_eligible(db, ids, rules)
+    trial = await trial_eligible(db, ids, rules, service_id=lesson.service_id)
 
     eligible = []
     for client in clients:

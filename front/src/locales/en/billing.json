@@ -27,7 +27,7 @@
   "seats": {
     "title": "How many staff in the studio",
     "hint": "from {{amount}} a month",
-    "stepNote": "Every extra seat adds {{amount}} a month",
+    "stepNote": "Seats {{from}}–{{to}}: +{{amount}} per extra seat/month.",
     "unlimitedNote": "No limit on staff",
     "perSeat": "Per staff member"
   },

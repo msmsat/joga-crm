@@ -9,6 +9,7 @@ from datetime import date, datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import or_, and_
 
 from database import get_db
 from dependencies import require_role, StudioContext
@@ -42,7 +43,8 @@ async def _has_live_subscription(db: AsyncSession, client_id: int) -> bool:
         select(ClientSubscription.id).where(
             ClientSubscription.client_id == client_id,
             ClientSubscription.status == "active",
-            ClientSubscription.expires_at >= date.today(),
+            or_(ClientSubscription.expires_at >= date.today(),
+                and_(ClientSubscription.is_frozen.is_(True), ClientSubscription.freeze_until.is_not(None))),
             ClientSubscription.used_classes < ClientSubscription.total_classes,
         ).limit(1)
     )).scalar_one_or_none()
@@ -149,6 +151,8 @@ def _to_read(sub: ClientSubscription) -> ClientSubscriptionRead:
         expires_at=sub.expires_at.isoformat(),
         status=sub.status,
         is_frozen=sub.is_frozen,
+        freeze_until=sub.freeze_until.isoformat()+"Z" if sub.freeze_until else None,
+        freeze_used_days=sub.freeze_used_days or 0,
         is_pending=sub.status == "pending",
         starts_at=sub.starts_at.isoformat() if sub.starts_at else None,
     )
@@ -184,7 +188,8 @@ async def get_wallet(
         has_classes = sub.used_classes < sub.total_classes
         is_active = has_classes and (
             sub.status == "pending"
-            or (sub.status == "active" and sub.expires_at >= today)
+            or (sub.status == "active" and (sub.expires_at >= today
+                or sub.is_frozen and sub.freeze_until is not None))
         )
         (active if is_active else archived).append(_to_read(sub))
 
@@ -229,13 +234,16 @@ async def sell_subscription(
     promo = None
     if body.promo_code:
         promo = await find_valid_promo(ctx.studio_id, body.promo_code, db, client_id)
-    resolved = await resolve_price(db, ctx.studio_id, client_id, package.price, promo)
+    resolved = await resolve_price(db, ctx.studio_id, client_id, package.price, promo,
+        renewal_package_id=package.id)
 
     sub = await attach_subscription(
         db, ctx.studio_id, client_id, package, account,
         mark_paid=True, price=resolved.final_price, payment_method=body.payment_method,
     )
     # Помечаем использованными в той же транзакции — гонка на «применили дважды» исключена.
+    from services.subscription_renewal import consume_renewal
+    await consume_renewal(db, resolved.renewal)
     resolved.mark_used()
 
     await db.commit()

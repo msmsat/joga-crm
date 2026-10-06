@@ -27,7 +27,7 @@ import stripe
 
 from services import billing_tax, stripe_billing, stripe_catalog, tax_policy
 from services.tax_rates import TaxRateMissing, TaxReviewRequired
-from .plans import PLANS, PERIOD_DISCOUNTS, COMBO_FIXED, COMBO_PERCENT_RATE, canon
+from .plans import PLANS, PERIOD_DISCOUNTS, COMBO_PERCENT_RATE, canon
 
 logger = logging.getLogger(__name__)
 
@@ -1587,14 +1587,20 @@ def _apply_paid_mode(plan: StudioBillingPlan, subscription, invoice_kind: str) -
     parsed = stripe_catalog.parse_lookup_key(stripe_billing.price_key_of(subscription))
     if parsed is None:
         return
-    plan_id, months, combo = parsed
+    _plan_id, months, combo = parsed
     plan.billing_mode = "combo" if combo else "subscription"
-    # Та же формула, что в router.activate_model: половина подписки со скидкой
-    # периода. Ставка и сумма обязаны совпадать с тем, по чему выставляют счета.
     plan.percent_rate = COMBO_PERCENT_RATE if combo else None
-    plan.fixed_base_amount = (
-        round(COMBO_FIXED[plan_id] * (1 - PERIOD_DISCOUNTS[months])) if combo else None
-    )
+    if not combo:
+        plan.fixed_base_amount = None
+        return
+    # Paid legacy subscriptions keep their purchased Price after catalog changes.
+    # Missing price facts retain the known base instead of inventing a new one.
+    items = getattr(subscription, "items", None)
+    data = getattr(items, "data", None) if items is not None else None
+    price = getattr(data[0], "price", None) if data else None
+    amount = getattr(price, "unit_amount", None)
+    if type(amount) is int and amount >= 0:
+        plan.fixed_base_amount = round(amount / months)
 
 
 async def _save_card(db: AsyncSession, plan: StudioBillingPlan, method_id: str, card) -> None:

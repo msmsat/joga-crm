@@ -18,6 +18,8 @@ class ClientSubscriptionRead(BaseSchema):
     expires_at: str
     status: str
     is_frozen: bool
+    freeze_until: str | None = None
+    freeze_used_days: int = 0
     # Куплен поверх незаконченного: срок стартует с первого визита, до тех пор
     # expires_at условный (services/subscription_charge.activate_pending_after_visit).
     is_pending: bool = False

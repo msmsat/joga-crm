@@ -57,6 +57,7 @@ class BookingRules:
     trial_discount_type: str = "percent"
     trial_discount_percent: int = 100
     trial_discount_amount: int | None = None
+    trial_service_ids: tuple[int, ...] | None = None
     # «Кофе после занятия» (см. models/settings.py). Читают мини-приложение и
     # рассыльщик — поэтому живут здесь, рядом с остальными правилами записи.
     coffee_enabled: bool = True
@@ -107,7 +108,14 @@ async def load_rules(db: AsyncSession, studio_id: int) -> BookingRules:
     # Наружу отдаём пустой кортеж — вызывающий код всегда итерируется, а не
     # проверяет каждый раз на None.
     values["coffee_spots"] = tuple(values["coffee_spots"] or ())
+    if values['trial_service_ids'] is not None:
+        values['trial_service_ids'] = tuple(values['trial_service_ids'])
     return BookingRules(**values)
+
+
+def trial_service_allowed(rules: BookingRules, service_id: int | None) -> bool:
+    """None preserves the old studio-wide policy; [] explicitly disables it."""
+    return rules.trial_service_ids is None or service_id in rules.trial_service_ids
 
 
 async def save_settings(db: AsyncSession, studio_id: int, changes: dict) -> StudioBookingSettings:

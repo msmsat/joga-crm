@@ -49,6 +49,8 @@ class Client(Base):
     notifs_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     reminders_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    freeze_restore_status: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    freeze_restore_active: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     source: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     # Реферальный код (V5-6, 1.4) — генерируется лениво при первом GET /invite-code.
     invite_code: Mapped[Optional[str]] = mapped_column(String(12), unique=True, index=True, nullable=True)
@@ -90,6 +92,8 @@ class ClientSubscription(Base):
     is_frozen: Mapped[bool] = mapped_column(Boolean, default=False)
     frozen_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     freeze_until: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    freeze_used_days: Mapped[int] = mapped_column(Integer, default=0, server_default='0')
+    renewal_discount_used: Mapped[bool] = mapped_column(Boolean, default=False, server_default='false')
     # V5-4 задача 7: без пакета и даты покупки продления честно не посчитать.
     # Старые строки — null (аналитика считает с момента миграции). Продажа
     # (clients/subscriptions.py) начинает их заполнять.

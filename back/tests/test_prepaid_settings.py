@@ -54,14 +54,20 @@ def test_prepaid_and_canceled_renewal_have_no_scheduled_charge(subscription_id, 
     assert stats.next_charge_at is None
 
 
-def test_legacy_recurring_stats_do_not_overwrite_months_with_us():
+def test_legacy_recurring_stats_do_not_overwrite_months_with_us(monkeypatch):
+    async def subscription(subscription_id):
+        assert subscription_id == 'sub_1'
+        return SimpleNamespace(status='active', cancel_at_period_end=False,
+            items=SimpleNamespace(data=[SimpleNamespace(quantity=1,
+                price=SimpleNamespace(unit_amount=37800, currency='eur'))]))
+    monkeypatch.setattr('services.stripe_billing.fetch_subscription', subscription)
     plan = _Plan(subscription_id="sub_1", auto_renewal=True)
     plan.plan_name = "s5"
     plan.expires_at = datetime.utcnow() + timedelta(days=365)
     invoice = SimpleNamespace(kind="subscription", amount=37800, plan_name="s5", period_months=12,
                               paid_at=datetime.utcnow() - timedelta(days=1))
     stats = asyncio.run(get_billing_stats(_ctx(), StatsDB([invoice], plan)))
-    assert stats.next_charge > 0
+    assert stats.next_charge == 37800
     assert stats.next_charge_at == plan.expires_at.isoformat()
     assert stats.months_with_us == 0
 

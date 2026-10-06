@@ -213,6 +213,8 @@ class StudioSubscriptionProgramConfig(Base):
     allow_freeze: Mapped[bool] = mapped_column(Boolean, default=True)
     allow_transfer: Mapped[bool] = mapped_column(Boolean, default=False)
     auto_renewal: Mapped[bool] = mapped_column(Boolean, default=False)
+    max_freeze_days: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    renewal_discount_percent: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="subscription_program_config")
     packages: Mapped[List["SubscriptionPackage"]] = relationship(back_populates="config", cascade="all, delete-orphan")

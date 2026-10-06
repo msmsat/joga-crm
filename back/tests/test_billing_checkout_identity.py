@@ -47,8 +47,9 @@ def test_access_dates_have_explicit_utc_for_local_midnight_display(monkeypatch):
     from services.billing_tax import TaxPreview
     from test_billing_prepaid import _DB, _invoice, _plan
     start=datetime(2026,10,2,23,30)
-    async def tax(*args,**kwargs):
-        return TaxPreview('taxable',21,4500,945,5445,'EUR','domestic_standard_rate',None)
+    async def tax(db,studio_id,kind,net,currency,**kwargs):
+        vat=round(net*.21)
+        return TaxPreview('taxable',21,net,vat,net+vat,currency,'domestic_standard_rate',None)
     monkeypatch.setattr(checkout.billing_tax,'preview',tax)
     monkeypatch.setattr(prepaid,'period_window',lambda *args: ('new',start,datetime(2026,11,2,23,30)))
     fn=getattr(checkout.preview_checkout,'__wrapped__',checkout.preview_checkout)

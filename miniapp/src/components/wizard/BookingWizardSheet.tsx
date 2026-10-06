@@ -5,7 +5,7 @@ import type { StudioCatalog } from '../../api/studio';
 import type { BookingWizardFlow } from '../../hooks/useBookingWizard';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
 import { formatDay, relativeDay } from '../../lib/slots';
-import { hhmm, isChosen, STEPS, type WizardPick, type WizardStep } from '../../lib/wizard';
+import { hhmm, isChosen, type WizardPick, type WizardStep } from '../../lib/wizard';
 import { Sheet, SheetAction } from '../ui/Sheet';
 import PhoneSheet from '../modals/PhoneSheet';
 import SubscriptionSheet from '../modals/SubscriptionSheet';
@@ -63,8 +63,8 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
   const swipe = (event: PointerEvent, info: PanInfo) => {
     if ((event.target as HTMLElement | null)?.closest(NO_SWIPE)) return;
     if (Math.abs(info.offset.x) < 70 || Math.abs(info.offset.x) < Math.abs(info.offset.y) * 1.4) return;
-    const index = STEPS.indexOf(step) + (info.offset.x < 0 ? 1 : -1);
-    if (index >= 0 && index < STEPS.length) flow.goTo(STEPS[index]);
+    const index = flow.steps.indexOf(step) + (info.offset.x < 0 ? 1 : -1);
+    if (index >= 0 && index < flow.steps.length) flow.goTo(flow.steps[index]);
   };
 
   const relative = relativeDay(pick.day, flow.today);
@@ -85,7 +85,8 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
 
   // Не выбрано — кнопка ведёт в первый невыбранный раздел, а не перечисляет,
   // чего не хватает. Филиал — исключение: его чипы стоят тут же, на итоге.
-  const missing = (['time', 'service', 'master'] as const).find((s) => !isChosen(pick, s));
+  // Скрытый раздел (мастер один) сюда не попадает: его выбор подставлен сам.
+  const missing = (['time', 'service', 'master'] as const).find((s) => flow.steps.includes(s) && !isChosen(pick, s));
 
   const footer = booking ? (
     <SheetAction onClick={() => { close(); onMyLessons(); }}>{t('wizard.toMyLessons')}</SheetAction>
@@ -123,7 +124,7 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
         backLabel={t('resource.back')}
         footer={footer}
         toolbar={!isDesktop && !booking ? (
-          <WizardTabs current={step} done={(s) => (s === 'summary' ? flow.complete : isChosen(pick, s))} onPick={flow.goTo} disabled={flow.saving} />
+          <WizardTabs current={step} steps={flow.steps} done={(s) => (s === 'summary' ? flow.complete : isChosen(pick, s))} onPick={flow.goTo} disabled={flow.saving} />
         ) : undefined}
         aside={<WizardRail flow={flow} catalog={catalog} preview={preview} />}
       >

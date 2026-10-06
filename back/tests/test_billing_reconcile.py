@@ -289,32 +289,32 @@ def test_switch_back_to_subscription_restores_the_full_price():
 
 # --------------------------------- 3a. комбо включает ОПЛАТА, а не кнопка
 
-def _sub(lookup_key):
+def _sub(lookup_key, unit_amount=None):
     """Подписка Stripe в минимальном виде: только Price её единственной позиции."""
     return SimpleNamespace(items=SimpleNamespace(data=[
-        SimpleNamespace(price=SimpleNamespace(lookup_key=lookup_key)),
+        SimpleNamespace(price=SimpleNamespace(lookup_key=lookup_key, unit_amount=unit_amount)),
     ]))
 
 
-def _paid(lookup_key, **kw):
+def _paid(lookup_key, *, unit_amount=None, **kw):
     plan = _row(**{
         "billing_mode": "subscription", "percent_rate": None, "fixed_base_amount": None, **kw
     })
     # kind="subscription": модель переставляет только оплата подписки — счета за
     # комиссию проверяются отдельно (test_percent_billing).
-    WH._apply_paid_mode(plan, _sub(lookup_key), "subscription")
+    WH._apply_paid_mode(plan, _sub(lookup_key, unit_amount), "subscription")
     return plan
 
 
 def test_paid_combo_price_turns_the_combo_mode_on():
     """Комбо включается оплатой, и режим читается из Price, за который заплатили:
     у комбо он свой (velora_combo_*), второй копии хранить незачем."""
-    plan = _paid("velora_combo_s15_12m")
+    plan = _paid("velora_combo_s15_12m", unit_amount=39900)
     assert plan.billing_mode == "combo"
     assert plan.percent_rate == 1.5
-    # Половина ступени «15 мест» (4750) со скидкой 30% за год — та же формула,
-    # что в activate_model.
-    assert plan.fixed_base_amount == round(4750 * 0.7)
+    # Оплаченный прежний Stripe Price: 399.00 EUR за год, 33.25 EUR/мес.
+    # Изменение каталога не пересчитывает цену действующей подписки.
+    assert plan.fixed_base_amount == 3325
 
 
 def test_paid_plain_price_turns_the_combo_mode_off():

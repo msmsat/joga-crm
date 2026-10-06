@@ -27,7 +27,7 @@
   "seats": {
     "title": "Koliko je zaposlenika u studiju",
     "hint": "od {{amount}} mjesečno",
-    "stepNote": "Svako dodatno mjesto dodaje {{amount}} mjesečno",
+    "stepNote": "Mjesta {{from}}–{{to}}: +{{amount}} po dodatnom mjestu/mjesec.",
     "unlimitedNote": "Bez ograničenja broja zaposlenika",
     "perSeat": "Po zaposleniku"
   },

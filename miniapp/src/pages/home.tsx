@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import HomeHero, { type BookingStart } from '../components/home/HomeHero';
 import PickSheet, { type PickItem } from '../components/home/PickSheet';
+import PassCard from '../components/home/PassCard';
 import {
   BookingWizardHost, GroupWizardHost, type BookingWizardHandle, type GroupWizardHandle,
 } from '../components/wizard/WizardHosts';
 import { STEP_ICONS } from '../components/wizard/stepIcons';
+import { useMySubscription } from '../hooks/useMySubscription';
 import { type UserResponse } from '../api/auth';
 import type { StudioCatalog } from '../api/studio';
 import type { WizardFocus } from '../lib/entry';
@@ -25,7 +27,8 @@ interface HomeProps {
 }
 
 /**
- * Главная: название студии и три входа в запись — время, мастер, услуга.
+ * Главная: название студии, карта абонемента и входы в запись — время, мастер
+ * (когда их в студии несколько), услуга.
  *
  * Вход открывает мастер записи прямо здесь, листом поверх главной, — с
  * вкладками «Время · Услуга · Мастер · Итог» в любом порядке. Каким, решает
@@ -48,6 +51,13 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
   const groupWizard = useRef<GroupWizardHandle>(null);
   // Гибридная студия: вход выбран, ждём ответа «индивидуально или в группе».
   const [asking, setAsking] = useState<BookingStart | null>(null);
+  // Каталог перечитывается после покупки абонемента — и карта спрашивает заново.
+  const subscription = useMySubscription(Boolean(user), catalog);
+  // Карта — когда есть что на ней сказать: абонемент человека или пакеты
+  // студии. Ответ об абонементе не пришёл с ошибкой — иначе «Купить» обещало
+  // бы то, что у человека, возможно, уже есть.
+  const showPass = Boolean(catalog) && !subscription.failed
+    && (subscription.loading || subscription.active !== null || (catalog?.packages.length ?? 0) > 0);
 
   // QR-код студии — запись с тем, что он назвал, со «Времени»: остальное код
   // назвал. Занятие групповой мастер сам уведёт на итог, когда придёт его день.
@@ -86,6 +96,15 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
         branch={branch}
         onBranch={setBranchPick}
         onStart={start}
+        pass={showPass ? (
+          <PassCard
+            active={subscription.active}
+            loading={subscription.loading}
+            packages={catalog?.packages ?? []}
+            onOpen={() => onNavigate('prof')}
+            onBuy={onBuySubscription}
+          />
+        ) : null}
       />
 
       <PickSheet

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
+import * as planModule from '../src/lib/plan.ts';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -36,7 +37,7 @@ async function harness(file, overrides = {}) {
     'react/jsx-runtime': { jsx, jsxs: jsx, Fragment: 'fragment' },
     'react-i18next': { useTranslation: () => ({ t, i18n: { language: 'en' } }) },
     money: { formatMoney: (amount, currency) => `${currency} ${amount}` },
-    plan: { planSeats: id => id === 'unlimited' ? null : Number(id.slice(1)), planLabel: id => id },
+    plan: planModule,
     usePhone: { usePhone: () => true },
     index: { Button: 'Button', ConfirmModal: 'ConfirmModal', useToast: () => ({ info: noop, error: noop }) },
     BillingIcons: Object.fromEntries(['CheckIcon', 'StarIcon', 'ZapIcon', 'ShieldIcon', 'CreditCardIcon', 'PercentIcon'].map(name => [name, name])),
@@ -45,6 +46,7 @@ async function harness(file, overrides = {}) {
     CheckoutDetails: { default: 'CheckoutDetails' },
     TeamLineup: { default: 'TeamLineup' },
     CheckoutArtwork: { default: 'CheckoutArtwork' },
+    FirstPaymentPromo: { default: 'FirstPaymentPromo' },
     'lucide-react': { ChevronDown: 'ChevronDown', ShieldCheck: 'ShieldCheck' },
     legal: { LEGAL_LINK_PROPS: {}, PRIVACY_URL: '/privacy', TERMS_URL: '/terms' },
     ...overrides,
@@ -55,7 +57,7 @@ async function harness(file, overrides = {}) {
     }).outputText;
     const mod = new vm.SourceTextModule(code, { context, identifier: url.href });
     await mod.link((name, parent) => {
-      if (name === './checkoutAmounts') return load(new URL(`${name}.ts`, parent.identifier));
+      if (name.endsWith('/checkoutAmounts')) return load(new URL(`${name}.ts`, parent.identifier));
       const leaf = name.split('/').at(-1).replace(/\.module\.css$/, '');
       const exports = name.endsWith('.css') ? { default: new Proxy({}, { get: (_, key) => String(key) }) } : deps[name] ?? deps[leaf];
       if (!exports) throw new Error(`Missing dependency: ${name}`);
@@ -155,9 +157,20 @@ test('actual Stripe confirmation remains blocked for unresolved tax', async () =
   const button = nodes(app.render({
     plan: { id: 's1' }, period: 1, preview: quote('requires_review'), currency: 'EUR',
     preparing: false, canPrepare: true, error: '', onPrepare: noop, onBack: noop,
-    payment: { ready: true, busy: false, net: 2000, total: 2000, tax: 0, taxRate: null, submit: noop },
+    payment: { ready: true, busy: false, net: 2000, total: 2000, tax: null, taxRate: null, submit: noop },
   }), 'PayButton')[0];
   assert.equal(button.disabled, true, 'navigation fix must not bypass final tax validation');
+});
+
+
+test('a prepared payment with confirmed tax can replace the older tax-review quote', async () => {
+  const app = await harness('components/checkout/CheckoutSummary.tsx');
+  const button = nodes(app.render({
+    plan: { id: 's1' }, period: 1, preview: quote('requires_review'), currency: 'EUR',
+    preparing: false, canPrepare: true, error: '', onPrepare: noop, onBack: noop,
+    payment: { ready: true, busy: false, net: 2000, total: 2420, tax: 420, taxRate: 21, submit: noop },
+  }), 'PayButton')[0];
+  assert.equal(button.disabled, false, 'confirmed payment facts supersede a stale preview');
 });
 
 async function checkoutHook({ combo = false, api = {} } = {}) {
@@ -169,6 +182,7 @@ async function checkoutHook({ combo = false, api = {} } = {}) {
   const profile = { data: {}, dataUpdatedAt: 1, refetch: async () => ({ data: {} }) };
   const queryClient = {
     cancelQueries: async () => {},
+    invalidateQueries: async () => {},
     setQueryData: (_key, value) => { profile.data = value; profile.dataUpdatedAt++; },
   };
   const mockApi = {

@@ -18,6 +18,8 @@ class ClientProductOut(ActiveSubscriptionOut):
     """
     id: int
     is_frozen: bool = False
+    freeze_until: Optional[str] = None
+    freeze_used_days: int = 0
     # Куплен поверх незаконченного и ждёт своей очереди: срок начнётся, когда
     # клиент отходит по нему первое занятие, поэтому expires_at пока условный.
     is_pending: bool = False

@@ -27,7 +27,7 @@
   "seats": {
     "title": "Hur många medarbetare har studion?",
     "hint": "från {{amount}} per månad",
-    "stepNote": "Varje extra plats kostar {{amount}} per månad",
+    "stepNote": "Plats {{from}}–{{to}}: +{{amount}} per extra plats/månad.",
     "unlimitedNote": "Obegränsat antal medarbetare",
     "perSeat": "Per medarbetare"
   },

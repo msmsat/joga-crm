@@ -14,7 +14,7 @@ from fastapi import HTTPException
 
 from routers.billing import checkout, prepaid
 from schemas.settings.billing import CheckoutRequest, CheckoutResponse
-from services import billing_tax, billing_document_snapshot, tax_policy, tax_rates
+from services import billing_pricing, billing_tax, billing_document_snapshot, tax_policy, tax_rates
 from test_billing_fiscal_profile import _user
 
 
@@ -37,10 +37,10 @@ def confirmed_seller(monkeypatch):
 
 def _checkout_setup(monkeypatch, first_owner, payer):
     observed = {}
-    plan = NS(stripe_subscription_id=None, billing_mode="subscription", status="none",
+    plan = NS(studio_id=7, stripe_subscription_id=None, billing_mode="subscription", status="none",
               plan_name="none", expires_at=None)
     async def execute(_query):
-        return NS(scalars=lambda: NS(first=lambda: first_owner))
+        return NS(scalar_one_or_none=lambda: None, scalars=lambda: NS(first=lambda: first_owner))
     db = NS(execute=execute)
     async def get_plan(*_args):
         return plan
@@ -51,8 +51,9 @@ def _checkout_setup(monkeypatch, first_owner, payer):
         pass
     async def create_payment(_db, _ctx, _plan, _customer, _body, tax, profile, *_args):
         observed["tax"] = tax
+        price = billing_pricing.period_price("s5", 1, False, True)
         observed["snapshot"] = billing_document_snapshot.purchase_snapshot(
-            profile, tax, "s5", 1, 4500, "eur", datetime(2026, 10, 2), datetime(2026, 11, 2))
+            profile, tax, "s5", 1, price.net_amount, "eur", datetime(2026, 10, 2), datetime(2026, 11, 2))
         return CheckoutResponse(amount_due=observed["snapshot"]["tax"]["total_minor"], currency="EUR")
     monkeypatch.setattr(checkout.stripe_billing, "configured", lambda: True)
     monkeypatch.setattr(checkout, "_get_or_create_plan", get_plan)
@@ -80,7 +81,7 @@ def test_foreign_b2c_payer_cannot_inherit_first_owners_domestic_tax(confirmed_se
 
 @pytest.mark.parametrize("first,payer,outcome,tax_minor", [
     (_user(id=1, billing_country="DE", billing_vat_id="DE123456789"),
-     _user(id=2, billing_country="CZ", billing_vat_id=None, billing_vat_verified=False), "taxable", 945),
+     _user(id=2, billing_country="CZ", billing_vat_id=None, billing_vat_verified=False), "taxable", 588),
     (_user(id=1, billing_country="CZ"),
      _user(id=2, billing_country="DE", billing_vat_id="DE123456789"), "reverse_charge", 0),
 ])
@@ -95,12 +96,13 @@ def test_checkout_tax_and_fiscal_buyer_match_current_payer(confirmed_seller, mon
 
 @pytest.mark.parametrize("first,payer,outcome,tax_minor", [
     (_user(id=1, billing_country="CZ"), _user(id=2, billing_country="DE", billing_vat_id=None, billing_vat_verified=False), "requires_review", 0),
-    (_user(id=1, billing_country="DE", billing_vat_id="DE123456789"), _user(id=2, billing_country="CZ"), "taxable", 945),
+    (_user(id=1, billing_country="DE", billing_vat_id="DE123456789"), _user(id=2, billing_country="CZ"), "taxable", 588),
 ])
 def test_preview_uses_same_current_payer_as_payment(confirmed_seller, monkeypatch, first, payer, outcome, tax_minor):
     db, ctx, _ = _checkout_setup(monkeypatch, first, payer)
     fn = getattr(checkout.preview_checkout, "__wrapped__", checkout.preview_checkout)
     quote = asyncio.run(fn(None, "s5", 1, False, ctx, db))
+    assert quote.net_amount == 2800 and quote.promo_code == "WELCOME30"
     assert quote.tax_outcome == outcome and quote.tax_amount == tax_minor
 
 

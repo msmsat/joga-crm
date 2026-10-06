@@ -8,17 +8,22 @@ import { branchChoices, type WizardStep } from '../../lib/wizard';
 import { cn } from '../../lib/utils';
 import { STEP_ICONS } from './stepIcons';
 
-/** Строка итога: что выбрано в разделе и переход в него. Общая с групповым итогом. */
+/**
+ * Строка итога: что выбрано в разделе и переход в него. Общая с групповым
+ * итогом. Без `onChange` — просто сведение: раздела нет (мастер один), и
+ * «Изменить» вело бы в никуда.
+ */
 export function SummaryRow({ step, label, value, onChange }: {
-  step: WizardStep; label: string; value: string | null; onChange: () => void;
+  step: WizardStep; label: string; value: string | null; onChange?: () => void;
 }) {
   const { t } = useTranslation();
   return (
     <motion.button
       type="button"
       onClick={onChange}
-      whileTap={{ scale: 0.985 }}
-      className="flex w-full items-center gap-3.5 rounded-[20px] bg-background px-4 py-3.5 text-left"
+      disabled={!onChange}
+      whileTap={onChange ? { scale: 0.985 } : undefined}
+      className="flex w-full items-center gap-3.5 rounded-[20px] bg-background px-4 py-3.5 text-left disabled:cursor-default"
     >
       <span className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-2.5',
         value ? 'bg-card text-brand shadow-soft' : 'bg-muted text-muted-foreground')}>
@@ -31,9 +36,11 @@ export function SummaryRow({ step, label, value, onChange }: {
           {value ?? t('wizard.notChosen')}
         </span>
       </span>
-      <span className="shrink-0 text-[12.5px] font-extrabold text-brand">
-        {value ? t('wizard.change') : t('wizard.choose')}
-      </span>
+      {onChange && (
+        <span className="shrink-0 text-[12.5px] font-extrabold text-brand">
+          {value ? t('wizard.change') : t('wizard.choose')}
+        </span>
+      )}
     </motion.button>
   );
 }
@@ -101,7 +108,12 @@ export default function WizardSummary({ flow, catalog }: { flow: BookingWizardFl
 
       <SummaryRow step="time" label={t('wizard.tabs.time')} value={words.when(pick)} onChange={() => flow.goTo('time')} />
       <SummaryRow step="service" label={t('wizard.tabs.service')} value={words.service(pick)} onChange={() => flow.goTo('service')} />
-      <SummaryRow step="master" label={terms.staff?.singular ?? t('wizard.tabs.master')} value={words.master(pick)} onChange={() => flow.goTo('master')} />
+      <SummaryRow
+        step="master"
+        label={terms.staff?.singular ?? t('wizard.tabs.master')}
+        value={words.master(pick)}
+        onChange={flow.steps.includes('master') ? () => flow.goTo('master') : undefined}
+      />
 
       <div className="pt-2 empty:hidden">
         <WizardBranches flow={flow} catalog={catalog} />

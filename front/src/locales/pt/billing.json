@@ -27,7 +27,7 @@
   "seats": {
     "title": "Quantos membros da equipa tem o estúdio?",
     "hint": "a partir de {{amount}} por mês",
-    "stepNote": "Cada lugar adicional custa {{amount}} por mês",
+    "stepNote": "Lugares {{from}}–{{to}}: +{{amount}} por lugar adicional/mês.",
     "unlimitedNote": "Equipa ilimitada",
     "perSeat": "Por membro da equipa"
   },

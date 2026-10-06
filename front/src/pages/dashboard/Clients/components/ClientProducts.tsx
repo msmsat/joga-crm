@@ -100,7 +100,7 @@ export function ClientProducts({ products, color, frozen, onRemind }: ClientProd
               )}
               {p.is_frozen && (
                 <span className="cp-chip" style={{ background: 'rgba(147,181,216,0.18)', color: '#4a7ca8' }}>
-                  {t('panel.products.frozen')}
+                  {t('panel.products.frozen')}{p.freeze_until && ` · ${t('panel.products.until', { date: fmtDate(p.freeze_until, i18n.language) })}`}
                 </span>
               )}
               <span className="cp-count" style={{ color: accent }}>

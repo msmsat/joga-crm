@@ -5,6 +5,7 @@
 """
 import logging
 import time
+from decimal import Decimal, ROUND_HALF_UP
 from datetime import date, datetime, timedelta
 from types import SimpleNamespace
 
@@ -401,18 +402,35 @@ def _period_saving(plan_name: str, period_months: int) -> int:
 
 
 def _invoice_saving(invoice):
-    """Net savings use frozen promo amounts, independently of collected tax."""
+    """Historical net savings come from the purchase, never today's prices."""
     original = getattr(invoice, 'billing_details_snapshot', None) or {}
-    promo = original.get('promo')
-    if not promo:
-        return _period_saving(invoice.plan_name, invoice.period_months)
-    period_saving = 0
-    if invoice.plan_name in PLANS and invoice.period_months in PERIOD_DISCOUNTS:
-        undiscounted = amount_for(invoice.plan_name, 1) * invoice.period_months
-        if original.get('item', {}).get('billing_mode') == 'combo':
-            undiscounted //= 2
-        period_saving = max(0, undiscounted - promo['amount_before_promo'])
-    return period_saving + promo['promo_discount_amount']
+    item = original.get('item') or {}
+    promo = original.get('promo') or {}
+    welcome = max(0, promo.get('promo_discount_amount', 0))
+    frozen_saving = item.get('period_discount_amount')
+    if frozen_saving is not None:
+        return max(0, frozen_saving) + welcome
+
+    before = promo.get('amount_before_promo')
+    if before is None:
+        before = (original.get('tax') or {}).get('net_minor')
+    if before is None:
+        tax_amount = getattr(invoice, 'tax_amount', None)
+        outcome = getattr(invoice, 'tax_outcome', None)
+        if tax_amount is not None:
+            before = invoice.amount - tax_amount
+        elif outcome in ('reverse_charge', 'exempt', 'out_of_scope'):
+            before = invoice.amount
+    if before is None or before < 0:
+        return welcome  # An unknown legacy tax amount cannot be called savings.
+    discount = PERIOD_DISCOUNTS.get(invoice.period_months, 0)
+    factor = Decimal('1') - Decimal(str(discount))
+    if factor <= 0:
+        return welcome
+    # Older snapshots predate the base price field. Recover their original base
+    # from the stored pre-promo net and the period's unchanged discount.
+    base = int((Decimal(before) / factor).quantize(Decimal('1'), rounding=ROUND_HALF_UP))
+    return max(0, base - before) + welcome
 
 
 def _months_between(start: datetime, end: datetime) -> int:
@@ -443,22 +461,28 @@ async def get_billing_stats(
         select(StudioBillingPlan).where(StudioBillingPlan.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
 
-    # Следующее списание: срок и сумму знает Stripe, но для плашки хватает каталога —
-    # налог и прорейтинг в неё не входят, это ориентир, а не счёт.
+    # The actual recurring Price retains its purchased amount after repricing.
+    # This is the period's net charge; taxes are finalized with the next invoice.
     next_charge = 0
-    if plan and _has_live_subscription(plan) and plan.auto_renewal and plan.status in ("active", "past_due"):
-        if plan.billing_mode == "combo":
-            next_charge = plan.fixed_base_amount or 0
-        elif plan.billing_mode == "subscription" and canon(plan.plan_name) in PLANS:
-            # Период берём у последнего счёта ЗА ТАРИФ, а не у последнего вообще:
-            # счёт за комиссию всегда месячный (period_months=1), и студия,
-            # перешедшая с «процента» на подписку, видела бы в плашке месячную
-            # цену вместо годовой — ровно за тот период, который сама и оплатила.
-            period_months = next(
-                (inv.period_months for inv in reversed(paid) if inv.kind == "subscription"), 1,
-            )
-            next_charge = amount_for(canon(plan.plan_name), period_months)
-        # percent: фикса нет, списывать по расписанию нечего — остаётся 0
+    if (plan and _has_live_subscription(plan) and plan.auto_renewal
+            and plan.status in ("active", "past_due")
+            and plan.billing_mode in ("subscription", "combo")):
+        try:
+            subscription = await stripe_billing.fetch_subscription(plan.stripe_subscription_id)
+            if (getattr(subscription, "status", None) in ("active", "past_due", "trialing")
+                    and not getattr(subscription, "cancel_at_period_end", False)):
+                items = getattr(subscription, "items", None)
+                data = getattr(items, "data", None) if items is not None else None
+                item = data[0] if data else None
+                price = getattr(item, "price", None)
+                amount = getattr(price, "unit_amount", None)
+                quantity = getattr(item, "quantity", 1)
+                if type(amount) is int and amount >= 0 and type(quantity) is int and quantity > 0:
+                    next_charge = amount * quantity
+        except Exception:
+            # An unavailable subscription cannot prove a future charge amount.
+            logger.warning("Stripe billing: next charge for studio %s is unavailable",
+                           plan.studio_id, exc_info=True)
 
     return BillingStatsRead(
         total_spent=total_spent,
@@ -1267,8 +1291,8 @@ if __name__ == "__main__":
     # Экономия за период считается по каталогу с ОБЕИХ сторон и не зависит от НДС,
     # который Stripe накинул сверху (из-за него прежняя формула показывала ноль).
     assert _period_saving("s2", 1) == 0                        # помесячно скидки нет
-    assert _period_saving("s2", 12) == 3000 * 12 - 25200       # 30% за год
-    assert _period_saving("s2", 6) == 3000 * 6 - 13500         # 25% за полгода
+    assert _period_saving("s2", 12) == 2500 * 12 - 21000       # 30% за год
+    assert _period_saving("s2", 6) == 2500 * 6 - 11250         # 25% за полгода
     assert _period_saving("unlimited", 12) > _period_saving("unlimited", 6)
     # Счёт за комиссию и легаси-строки не роняют плашку и ничего не «экономят».
     assert _period_saving("offline_fee", 1) == 0

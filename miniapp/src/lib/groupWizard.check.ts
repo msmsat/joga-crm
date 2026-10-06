@@ -8,10 +8,10 @@
 import assert from 'node:assert/strict';
 import type { LessonResponse } from '../api/lessons';
 import {
-  candidates, choose, closedReason, closedTimes, emptyGroupPick, focusLesson, groupTimes, isGroupChosen,
-  isOffered, lessonOf, lessonsAt, marksOf,
-  nextGroupStep, nextMarked, openingDay, reconcileGroupTime, rhythmOf, serviceIdsOf, teacherIdsOf, timesOf,
-  withChoice, type GroupPick,
+  candidates, choose, daySlots, emptyGroupPick, focusLesson, groupTimes, isGroupChosen,
+  isOffered, lessonOf, marksOf,
+  nextGroupStep, nextMarked, openingDay, reconcileGroupTime, rhythmOf, serviceIdsOf, slotsByPart, teacherIdsOf, timesOf,
+  withChoice, withDay, type GroupPick,
 } from './groupWizard.ts';
 import { hhmm, minutesOf } from './wizard.ts';
 
@@ -62,7 +62,6 @@ check('час сужает направления и тренеров', () => {
   assert.deepEqual([...serviceIdsOf(day, at({ time: m('18:00') }))], [1]);
   assert.deepEqual([...teacherIdsOf(day, at({ time: m('18:00') }))].sort(), [10, 20]);
   assert.deepEqual([...teacherIdsOf(day, at({ time: m('12:00') }))], [10]);
-  assert.equal(lessonsAt(day, at({}), m('18:00')).length, 2, 'под кнопкой 18:00 — два занятия');
 });
 check('занятие выводится из часа, когда оно одно', () => {
   assert.equal(lessonOf(day, at({ time: m('12:00') }))?.id, 4);
@@ -87,6 +86,7 @@ check('без часа записываться не на что — ведём 
 check('смена направления снимает час, в который его нет', () => {
   const pick = at({ time: m('09:00') });
   assert.equal(withChoice(day, pick, { serviceId: 2 }).time, null);
+  assert.equal(withChoice(day, choose(pick, day[0]), { serviceId: 2 }).lessonId, null, 'вместе с часом уходит и карточка');
   assert.equal(withChoice(day, pick, { serviceId: 1 }).time, m('09:00'));
   assert.equal(withChoice(null, pick, { serviceId: 2 }).time, m('09:00'), 'день не пришёл — час не трогаем');
 });
@@ -98,18 +98,53 @@ check('час, которого в пришедшем дне нет, снима�
 check('одинаковые занятия в один час — не тупик', () => {
   const twins = [lesson(11, '10:00', 3, 30, { branch_id: 1 }), lesson(12, '10:00', 3, 30, { branch_id: 2 })];
   assert.equal(lessonOf(twins, at({ time: m('10:00') }))?.id, 11);
+  assert.equal(lessonOf(twins, choose(at({}), twins[1]))?.id, 12, 'карточка второго филиала ведёт во второй филиал');
+  assert.equal(lessonOf(twins, { ...choose(at({}), twins[1]), teacherId: 31 }), null, 'выбранное карточкой не обходит фильтр');
 });
 check('подсказка строки — часы её занятий в дне', () => {
   assert.deepEqual(timesOf(day, (row) => row.teacher_id === 20).map(hhmm), ['18:00', '20:00']);
   assert.deepEqual(timesOf(day, (row) => row.service_id === 3), []);
 });
 
-check('полное и закрытое не прячутся — их часы погашены, с причиной', () => {
-  assert.deepEqual(closedTimes(day, at({})).map(hhmm), ['07:00', '21:00']);
-  assert.equal(closedReason(day, at({}), m('07:00')), 'full', 'мест нет');
-  assert.equal(closedReason(day, at({}), m('21:00')), 'closed', 'студия закрыла запись');
-  assert.deepEqual(closedTimes(day, at({ serviceId: 1 })).map(hhmm), ['07:00'], 'фильтр направления действует и на них');
-  assert.deepEqual(closedTimes(day, at({ teacherId: 10 })), [], 'у Анны закрытых нет');
+check('карточки дня — все занятия по началу, с состоянием и местами', () => {
+  const slots = daySlots(day, at({}));
+  assert.deepEqual(slots.map((slot) => slot.lesson.id), [5, 1, 4, 2, 3, 7, 6], 'одновременные — по номеру');
+  assert.deepEqual(slots.map((slot) => slot.state), ['full', 'open', 'open', 'open', 'open', 'mine', 'closed']);
+  assert.equal(slots[1].left, 10);
+  assert.equal(slots[0].left, 0);
+  assert.equal(slotsByPart(slots).map((group) => group.part).join(), 'morning,afternoon,evening');
+  assert.deepEqual(slotsByPart(daySlots(day, at({ serviceId: 2 }))).map((group) => group.part), ['afternoon', 'evening']);
+});
+check('полное и закрытое не прячутся — карточка погашена с причиной', () => {
+  const state = (id: number) => daySlots(day, at({})).find((slot) => slot.lesson.id === id)?.state;
+  assert.equal(state(5), 'full', 'мест нет');
+  assert.equal(state(6), 'closed', 'студия закрыла запись');
+  assert.equal(daySlots([lesson(8, '10:00', 1, 10, { bookable: false, total_spots: 1, taken_spots: [1] })], at({}))[0].state,
+    'closed', 'закрыто и полно разом — закрыто: место не поможет');
+  assert.deepEqual(daySlots(day, at({ serviceId: 1 })).map((slot) => slot.lesson.id), [5, 1, 2, 3], 'фильтр направления действует и на них');
+  assert.deepEqual(daySlots(day, at({ teacherId: 10 })).map((slot) => slot.state), ['open', 'open', 'open'], 'у Анны закрытых нет');
+  assert.equal(daySlots(day, at({ time: m('09:00') })).length, 7, 'выбранный час список не сужает');
+});
+check('карточка ведёт ровно в своё занятие, даже когда в час их несколько', () => {
+  const pick = choose(at({}), day[2]);
+  assert.equal(lessonOf(day, pick)?.id, 3);
+  assert.equal(nextGroupStep(pick, lessonOf(day, pick)), 'summary');
+  assert.ok(isGroupChosen(pick, lessonOf(day, pick), 'service'), 'направление выведено из занятия');
+});
+check('выбранная карточка не сужает «Время» — можно выбрать другую', () => {
+  const pick = choose(at({}), day[2]);
+  assert.equal(pick.serviceId, null);
+  assert.equal(pick.teacherId, null);
+  assert.equal(daySlots(day, pick).length, 7);
+  assert.equal(lessonOf(day, choose(pick, day[3]))?.id, 4, 'другая карточка — другое занятие');
+});
+check('другой день снимает выбранное занятие, но не названное во вкладках', () => {
+  const pick = { ...choose(at({ serviceId: 1 }), day[1]) };
+  const moved = withDay(pick, '2026-10-03');
+  assert.equal(moved.time, null);
+  assert.equal(moved.lessonId, null);
+  assert.equal(moved.serviceId, 1);
+  assert.equal(withDay(pick, pick.day), pick, 'тот же день — тот же выбор');
 });
 check('занятие из QR-кода: открытое — на итог, полное и пропавшее — нет', () => {
   assert.equal(focusLesson(day, 2)?.id, 2);

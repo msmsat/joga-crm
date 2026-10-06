@@ -9,6 +9,7 @@ from .identity import CustomerIdentity
 from .proposal import ActionProposal
 from .schedule import Hall, Lesson, Reservation
 from .service import Service, ServiceBundleItem, ServiceScheduleSlot
+from .recurring_schedule import RecurringLessonTemplate, RecurringLessonOccurrence
 from .booking_notification import BookingNotificationIntent
 from .booking_quote import BookingQuote
 from .settings import (
@@ -159,3 +160,5 @@ __all__ = [
     "DailyMetricSnapshot",
     "LandingVisit",
 ]
+
+from .studio_setup import StudioSetupLink

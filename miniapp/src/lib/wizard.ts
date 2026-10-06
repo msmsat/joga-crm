@@ -20,6 +20,18 @@ import type { DayPart, IsoDay } from './slots.ts';
 export type WizardStep = 'time' | 'service' | 'master' | 'summary';
 /** Порядок вкладок в шапке и свайпа по листу. */
 export const STEPS: WizardStep[] = ['time', 'service', 'master', 'summary'];
+const WITHOUT_MASTER: WizardStep[] = ['time', 'service', 'summary'];
+
+/**
+ * Разделы листа. Мастер в студии один — раздела «Мастер» нет: выбирать не из
+ * кого, и вкладка с одной строкой была бы лишним шагом. Мастер подставляется
+ * сам (`withSoloMaster`) и виден на итоге.
+ */
+export const stepsFor = (soloMaster: boolean): WizardStep[] => (soloMaster ? WITHOUT_MASTER : STEPS);
+
+/** Раздел, которого в листе нет, ведёт на итог: выбирать в нём нечего. */
+export const shownStep = (step: WizardStep, steps: WizardStep[]): WizardStep =>
+  steps.includes(step) ? step : 'summary';
 
 export interface WizardPick {
   day: IsoDay;
@@ -158,3 +170,15 @@ export function onService(pick: WizardPick, serviceId: number, staff: ResourceSt
 
 /** «Любой» имеет смысл, когда выбирать есть из кого. */
 export const offerAny = (choices: ResourceStaffMember[]): boolean => choices.length >= 2;
+
+/** Единственный мастер — номер его, иначе `null`. */
+export const soloOf = (staff: ResourceStaffMember[]): number | null =>
+  staff.length === 1 ? staff[0].teacher_id : null;
+
+/**
+ * Мастер один — он и выбран, пока человек не назвал другого (QR-кодом). Выбор
+ * не хранится, а выводится: список мастеров приходит после открытия листа, и
+ * подставлять его в состояние значило бы гоняться за ответом сети.
+ */
+export const withSoloMaster = (pick: WizardPick, solo: number | null): WizardPick =>
+  solo !== null && pick.master === null ? { ...pick, master: solo } : pick;

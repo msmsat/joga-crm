@@ -157,6 +157,8 @@ class SubscriptionProgramConfigRead(BaseSchema):
     allow_freeze: bool
     allow_transfer: bool
     auto_renewal: bool
+    max_freeze_days: Optional[int] = None
+    renewal_discount_percent: Optional[int] = None
 
 
 class SubscriptionProgramConfigUpdate(BaseSchema):

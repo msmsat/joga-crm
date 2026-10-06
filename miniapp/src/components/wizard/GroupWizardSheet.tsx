@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, type PanInfo, type Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import type { StudioCatalog } from '../../api/studio';
+import type { Studio, StudioCatalog } from '../../api/studio';
 import type { GroupWizardFlow } from '../../hooks/useGroupWizard';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
 import { bumpLessons } from '../../lib/revision';
 import { formatDay, relativeDay } from '../../lib/slots';
-import { hhmm, STEPS } from '../../lib/wizard';
+import { hhmm, shownStep, type WizardStep } from '../../lib/wizard';
 import { isGroupChosen, nextGroupStep } from '../../lib/groupWizard';
 import { Sheet, SheetAction } from '../ui/Sheet';
 import PhoneSheet from '../modals/PhoneSheet';
@@ -26,6 +26,9 @@ type Props = {
   /** Держать лист собранным заранее (`Sheet.keepMounted`): открытие — один выезд. */
   keepMounted?: boolean;
 };
+
+/** Без каталога — тот же пустой список, а не новый с каждой перерисовкой: «Время» сравнивает его по ссылке. */
+const NO_BRANCHES: Studio[] = [];
 
 /** Касания, которые не листают разделы: ряды, что сами едут вбок, и поля ввода. */
 const NO_SWIPE = '[data-noswipe], input, textarea';
@@ -54,6 +57,9 @@ const stepMotion: Variants = {
  * Итог», открываются в любом порядке, свайп листает их по очереди, выбор сам
  * ведёт дальше. На итоге — коврик и «Записаться».
  *
+ * Во «Времени» — не кнопки часов, а карточки занятий дня: тап по карточке
+ * выбирает занятие целиком и ведёт сразу на итог.
+ *
  * Консоли с колонкой шагов на десктопе у него нет: выбор группы — это один
  * список занятий дня, а не сборка из трёх частей, и вкладок над ним хватает
  * на любой ширине.
@@ -71,16 +77,18 @@ export default function GroupWizardSheet({ flow, catalog, onBuySubscription, kee
   const swipe = (event: PointerEvent, info: PanInfo) => {
     if ((event.target as HTMLElement | null)?.closest(NO_SWIPE)) return;
     if (Math.abs(info.offset.x) < 70 || Math.abs(info.offset.x) < Math.abs(info.offset.y) * 1.4) return;
-    const index = STEPS.indexOf(step) + (info.offset.x < 0 ? 1 : -1);
-    if (index >= 0 && index < STEPS.length) flow.goTo(STEPS[index]);
+    const index = flow.steps.indexOf(step) + (info.offset.x < 0 ? 1 : -1);
+    if (index >= 0 && index < flow.steps.length) flow.goTo(flow.steps[index]);
   };
 
   const relative = relativeDay(pick.day, flow.today);
   const day = relative ? t(`booking.${relative}`) : formatDay(pick.day, i18n.language, { day: 'numeric', month: 'short' });
   const serviceName = flow.service ? t(`lesson.name.${flow.service.name}`, { defaultValue: flow.service.name }) : null;
   const picked = [pick.time !== null ? `${day}, ${hhmm(pick.time)}` : null, serviceName].filter(Boolean).join(' · ');
-  const done = (s: (typeof STEPS)[number]) => isGroupChosen(pick, lesson, s);
-  const next = nextGroupStep(pick, lesson);
+  const done = (s: WizardStep) => isGroupChosen(pick, lesson, s);
+  // Куда вести, когда занятие не сложилось. Скрытый раздел (тренер один) —
+  // тоже «во Время»: уточнять тренером нечего.
+  const next = shownStep(nextGroupStep(pick, lesson), flow.steps);
   const missing = next === 'summary' ? 'time' : next;
 
   const footer = step !== 'summary' ? undefined : lesson ? (
@@ -141,7 +149,7 @@ export default function GroupWizardSheet({ flow, catalog, onBuySubscription, kee
         onBack={step !== 'summary' && lesson ? () => flow.goTo('summary') : undefined}
         backLabel={t('resource.back')}
         footer={footer}
-        toolbar={<WizardTabs current={step} done={done} onPick={flow.goTo} disabled={booking.isProcessing} />}
+        toolbar={<WizardTabs current={step} steps={flow.steps} done={done} onPick={flow.goTo} disabled={booking.isProcessing} />}
         keepMounted={keepMounted}
       >
         <motion.div
@@ -161,7 +169,7 @@ export default function GroupWizardSheet({ flow, catalog, onBuySubscription, kee
               animate="center"
               exit="exit"
             >
-              {step === 'time' && <GroupTime flow={flow} />}
+              {step === 'time' && <GroupTime flow={flow} branches={catalog?.branches ?? NO_BRANCHES} />}
               {step === 'service' && <GroupServices flow={flow} />}
               {step === 'master' && <GroupTeachers flow={flow} />}
               {step === 'summary' && <GroupSummary flow={flow} catalog={catalog} />}

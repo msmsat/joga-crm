@@ -104,6 +104,7 @@ async def _quote(
     product_type: str, promo_code: str | None, use_bonuses: bool,
     use_deposit: bool = False, certificate_code: str | None = None,
     *, manual_percent: int | None = None, hold_owner: int | None = None,
+    quote_at: datetime | None = None, renewal_previous_id: int | None = None,
 ) -> PriceQuote:
     """Общее ядро calculate (6.7) и pay (6.9) — обе должны считать одинаково,
     иначе pay пересчитает другую сумму, чем показал calculate.
@@ -142,6 +143,8 @@ async def _quote(
         db, studio_id, client_id, base_price, promo,
         first_lesson=getattr(package, "first_lesson", None),
         manual_percent=manual_percent,
+        renewal_package_id=package.id if product_type == "subscription" else None,
+        renewal_at=quote_at, renewal_previous_id=renewal_previous_id,
     )
     discount = base_price - resolved.final_price
 
@@ -297,9 +300,12 @@ async def consume_quote(db: AsyncSession, studio_id: int, client_id: int, quote:
         )
     # Промокод, персональный оффер и скидка новичка — все одноразовые, гасятся
     # вместе в той же транзакции, что и продажа (гонки «применили дважды» нет).
+    from services.subscription_renewal import consume_renewal
+    await consume_renewal(db, quote.resolved.renewal)
     quote.resolved.mark_used()
 
     return {
+        "renewal_previous_id": quote.resolved.renewal.previous_id if quote.resolved.renewal else None,
         "bonuses": quote.bonuses_applied,
         "deposit": quote.deposit_applied,
         # Код, а не id: у кассы на руках тоже он (payload заявки), и одна форма
@@ -525,6 +531,7 @@ async def perform_pay(
     method: str, expected_total: int | None = None, debt: "ClientPayment | None" = None,
     reservation_id: int | None = None, manual_percent: int | None = None,
     notify: bool = True, actor_name: str | None = None,
+    quote_at: datetime | None = None, renewal_previous_id: int | None = None,
 ) -> CheckoutPayResult:
     """Проведение оплаты. Одна транзакция: доход в Финансы, списание бонусов,
     начисление продукта, лог в События. Сбой на любом шаге откатывает всё —
@@ -591,6 +598,7 @@ async def perform_pay(
         body.product_type, body.promo_code, body.use_bonuses,
         body.use_deposit, body.certificate_code, manual_percent=manual_percent,
         hold_owner=holder.id if holder is not None else None,
+        quote_at=quote_at, renewal_previous_id=renewal_previous_id,
     )
     # Ничего ещё не добавлено в сессию — обе проверки ниже падают без отката.
     reject_dead_promo(body.promo_code, quote)

@@ -6,6 +6,8 @@ import { STEP_ICONS } from './stepIcons';
 
 type Props = {
   current: WizardStep;
+  /** Какие разделы есть: без «Мастера», когда мастер один (`stepsFor`). */
+  steps?: WizardStep[];
   done: (step: WizardStep) => boolean;
   onPick: (step: WizardStep) => void;
   disabled?: boolean;
@@ -20,20 +22,26 @@ type Props = {
  * framer. Общая раскладка framer при появлении заставляет его перемерять
  * дерево и читать прокрутку предков — синхронной перекладкой страницы в момент
  * открытия листа: замерено около 490 мс при CPU ×4, лист вставал с рывком.
- * Сетка известна заранее (четыре равные колонки, зазор 4 px, поле 4 px), так
- * что место подложки — арифметика, а не замер.
+ * Сетка известна заранее (равные колонки по числу разделов, зазор 4 px, поле
+ * 4 px), так что место подложки — арифметика, а не замер.
  */
-export default function WizardTabs({ current, done, onPick, disabled }: Props) {
+export default function WizardTabs({ current, steps = STEPS, done, onPick, disabled }: Props) {
   const { t } = useTranslation();
-  const index = STEPS.indexOf(current);
+  const index = steps.indexOf(current);
+  const count = steps.length;
   return (
-    <nav className="relative grid grid-cols-4 gap-1 rounded-[20px] bg-background p-1" aria-label={t('wizard.title')}>
+    <nav
+      className="relative grid gap-1 rounded-[20px] bg-background p-1"
+      style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}
+      aria-label={t('wizard.title')}
+    >
       <span
         aria-hidden="true"
-        className="absolute bottom-1 left-1 top-1 w-[calc((100%-20px)/4)] rounded-[16px] bg-card shadow-soft transition-transform duration-300 ease-[cubic-bezier(0.22,1.2,0.36,1)] motion-reduce:transition-none"
-        style={{ transform: `translateX(calc(${index} * (100% + 4px)))` }}
+        className="absolute bottom-1 left-1 top-1 rounded-[16px] bg-card shadow-soft transition-transform duration-300 ease-[cubic-bezier(0.22,1.2,0.36,1)] motion-reduce:transition-none"
+        // Ширина колонки: всё, кроме полей (2 × 4 px) и зазоров между колонками.
+        style={{ width: `calc((100% - ${8 + (count - 1) * 4}px) / ${count})`, transform: `translateX(calc(${index} * (100% + 4px)))` }}
       />
-      {STEPS.map((step) => {
+      {steps.map((step) => {
         const active = step === current;
         const ready = done(step);
         return (

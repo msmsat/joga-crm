@@ -483,6 +483,7 @@ class StudioBookingSettings(Base):
     # Лояльности не стирает другое.
     trial_discount_type: Mapped[str] = mapped_column(String(10), default="percent", server_default="percent")
     trial_discount_amount: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    trial_service_ids: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     coffee_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     # До 3 мест рядом со студией: [{"name": ..., "address": ..., "url": ...}].
     # Владелец выбирает их сам — внешнего справочника мест в продукте нет.

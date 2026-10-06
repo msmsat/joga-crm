@@ -27,7 +27,7 @@
   "seats": {
     "title": "Kuinka monta työntekijää studiossa on",
     "hint": "alkaen {{amount}} kuukaudessa",
-    "stepNote": "Jokainen lisäpaikka maksaa {{amount}} kuukaudessa",
+    "stepNote": "Paikat {{from}}–{{to}}: +{{amount}} lisäpaikalta/kk.",
     "unlimitedNote": "Ei työntekijärajaa",
     "perSeat": "Työntekijää kohti"
   },

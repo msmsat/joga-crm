@@ -91,7 +91,7 @@ def _live_products(client: Client) -> list[ClientSubscription]:
     live = [
         s for s in client.subscriptions
         if s.used_classes < s.total_classes
-        and (s.status == "pending" or (s.status == "active" and s.expires_at >= today))
+        and (s.status == "pending" or (s.status == "active" and (s.expires_at >= today or s.is_frozen and s.freeze_until is not None)))
     ]
     live.sort(key=lambda s: (
         s.status != "active",
@@ -111,6 +111,8 @@ def _product_out(sub: ClientSubscription) -> ClientProductOut:
         expires_at=sub.expires_at.isoformat(),
         type=sub.type,
         is_frozen=sub.is_frozen,
+        freeze_until=sub.freeze_until.isoformat()+"Z" if sub.freeze_until else None,
+        freeze_used_days=sub.freeze_used_days or 0,
         is_pending=pending,
         starts_at=sub.starts_at.isoformat() if sub.starts_at else None,
     )
@@ -860,6 +862,23 @@ async def freeze_client(
                 "code": "loyalty.freeze_disabled",
                 "message": "Заморозка клиентов выключена в настройках Каталога → Абонементы",
             })
+
+    config = (await db.execute(select(StudioSubscriptionProgramConfig).where(
+        StudioSubscriptionProgramConfig.studio_id == studio_id))).scalar_one_or_none()
+    if config is not None and config.max_freeze_days is not None:
+        from services.subscription_freeze import freeze_for_client, unfreeze_for_client
+        from datetime import timezone
+        try:
+            result = await (freeze_for_client if body.frozen else unfreeze_for_client)(
+                db, studio_id, client_id, now=datetime.now(timezone.utc))
+        except ValueError as exc:
+            raise HTTPException(400, detail=str(exc)) from exc
+        if result['changed']:
+            log_activity(db, studio_id, 'freeze' if body.frozen else 'unfreeze',
+                title=f"{'Заморозка' if body.frozen else 'Разморозка'} клиента: {client.name}",
+                actor_name=current_user.name, entity_type='client', entity_id=client.id)
+        await db.commit()
+        return OkFrozenOut(ok=True, frozen=result['frozen'])
 
     was_frozen = client.status == "frozen"
     client.status = "frozen" if body.frozen else "active"

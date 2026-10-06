@@ -1,28 +1,26 @@
 """Каталог тарифов — единственный источник истины о ценах и лимитах.
 
-Тариф = МЕСТА. Студия сама выбирает, сколько сотрудников ей нужно: 2 места стоят
-`SEAT_BASE`, каждое следующее +`SEAT_STEP`, а `UNLIMITED` снимает потолок вовсе.
-Одиночка (`SOLO_SEATS`) — отдельная точка входа НИЖЕ линии, по `SOLO_PRICE`.
-Ступеней поэтому не три, а двадцать одна — и «улучшить тариф» означает докупить
-места, а не угадать, в какую из трёх коробок студия помещается.
+Тариф = МЕСТА. От 1 до 7 мест цена растёт на 5 € за место,
+от 8 до 20 — на 10 €. Безлимит снимает потолок сотрудников.
+Все покупки и витрины используют этот каталог.
 
 Цены в центах EUR (младшие единицы, как их ждёт Stripe). Сумма к оплате
 считается ТОЛЬКО тут по period_discounts — фронту не доверяем. Лимиты
 используются задачей 8 (check_plan_limit); None = безлимит.
 """
 
-# Ценовая линия: 1 место — 20 €, 2 места — 30 €, каждое следующее — +5 €,
-# безлимит — 150 €. Вход одиночки НЕ лежит на линии (от 2 до 1 места шаг 10 €,
-# дальше 5 €): это отдельная цена для того, кто работает сам, — обещать её как
-# «минус 5 € за место» было бы неправдой, и ступень s1 поэтому своя константа.
+# 1–7 мест: 20, 25, 30, 35, 40, 45, 50 €; 8–20: 60–180 €.
+# Два шага цены живут только здесь; витрины читают готовые ступени.
 SOLO_SEATS = 1          # ступень «работаю один»
 SOLO_PRICE = 2000       # центы EUR/мес за неё
-SEAT_BASE = 3000        # центы EUR/мес за минимальные MIN_SEATS мест
-SEAT_STEP = 500         # +за каждое место сверх минимума
+SEAT_BASE = 2500        # центы EUR/мес за минимальные MIN_SEATS мест
+SEAT_STEP = 500         # шаг до седьмого места включительно
+HIGH_STEP_FROM = 8      # начиная с этой ступени шаг выше
+HIGH_SEAT_STEP = 1000
 MIN_SEATS = 2
 MAX_SEATS = 20
 UNLIMITED = "unlimited"
-UNLIMITED_PRICE = 15000
+UNLIMITED_PRICE = 23000
 AI_TRIAL_REQUESTS = 500
 AI_PERCENT_REQUESTS = 1500
 AI_REQUESTS_PER_SEAT = 500
@@ -34,10 +32,12 @@ def plan_id(seats: int | None) -> str:
 
 
 def _price(seats: int) -> int:
-    """Цена ступени, центы/мес. Ниже MIN_SEATS линии нет — там одна точка s1."""
+    """Цена ступени в центах: два диапазона доплаты за место."""
     if seats < MIN_SEATS:
         return SOLO_PRICE
-    return SEAT_BASE + (seats - MIN_SEATS) * SEAT_STEP
+    lower_steps = min(seats, HIGH_STEP_FROM - 1) - MIN_SEATS
+    higher_steps = max(0, seats - HIGH_STEP_FROM + 1)
+    return SEAT_BASE + lower_steps * SEAT_STEP + higher_steps * HIGH_SEAT_STEP
 
 
 def _name(seats: int | None) -> str:
@@ -212,22 +212,13 @@ def amount_for(plan_id: str, period_months: int) -> int:
 
 
 if __name__ == "__main__":
-    # Ценовая линия: 20 € одному, 30 € за двоих, +5 € за место, 150 € за безлимит.
-    assert PLANS["s1"]["price"] == SOLO_PRICE == 2000
-    assert PLANS["s2"]["price"] == 3000
-    assert PLANS["s3"]["price"] == 3500
-    assert PLANS["s20"]["price"] == 12000
-    assert PLANS[UNLIMITED]["price"] == UNLIMITED_PRICE == 15000
-    assert len(PLANS) == 21                      # 1..20 мест + безлимит
+    expected_prices = [2000, 2500, 3000, 3500, 4000, 4500, 5000, 6000,
+                       7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000,
+                       15000, 16000, 17000, 18000, 23000]
+    assert [p["price"] for p in PLANS.values()] == expected_prices
+    assert len(PLANS) == 21
     assert list(PLANS)[0] == "s1" and list(PLANS)[-1] == UNLIMITED
 
-    # Вход одиночки ниже линии, и шаг от него БОЛЬШЕ обычного: обещать «+5 € за
-    # место» от s1 нельзя. Дальше линия ровная — по ней считает шаг витрина.
-    assert PLANS["s2"]["price"] - PLANS["s1"]["price"] == 1000
-    assert all(
-        PLANS[plan_id(n + 1)]["price"] - PLANS[plan_id(n)]["price"] == SEAT_STEP
-        for n in range(MIN_SEATS, MAX_SEATS)
-    )
     # Безлимит обязан стоить дороже любой конечной ступени — иначе покупать 20 мест
     # незачем, а ступень «дороже безлимита» ломала бы и порядок tier().
     assert UNLIMITED_PRICE > PLANS[plan_id(MAX_SEATS)]["price"]
@@ -244,10 +235,10 @@ if __name__ == "__main__":
     assert all(p["limits"]["clients"] is None for p in PLANS.values())
 
     # Итоговые суммы к оплате в центах EUR.
-    assert amount_for("s2", 1) == 3000
-    assert amount_for("s2", 3) == round(3000 * 3 * 0.80) == 7200
-    assert amount_for("s2", 12) == round(3000 * 12 * 0.70) == 25200
-    assert amount_for(UNLIMITED, 6) == round(15000 * 6 * 0.75) == 67500
+    assert amount_for("s2", 1) == 2500
+    assert amount_for("s2", 3) == round(2500 * 3 * 0.80) == 6000
+    assert amount_for("s2", 12) == round(2500 * 12 * 0.70) == 21000
+    assert amount_for(UNLIMITED, 6) == round(23000 * 6 * 0.75) == 103500
 
     # Скидка за период обязана быть выгодной: длинный период дешевле помесячного.
     for _pid, _plan in PLANS.items():
@@ -255,8 +246,8 @@ if __name__ == "__main__":
             assert amount_for(_pid, _months) < _plan["price"] * _months, (_pid, _months)
 
     # Комбо-фикс производный от цены подписки — не константа, которую забудут обновить.
-    assert COMBO_FIXED["s2"] == 1500
-    assert COMBO_FIXED[UNLIMITED] == 7500
+    assert COMBO_FIXED["s2"] == 1250
+    assert COMBO_FIXED[UNLIMITED] == 11500
 
     # Комбо стоит половину подписки на каждом периоде — это и есть смысл тарифа
     # (вторую половину платформа добирает процентом с транзакций). Расхождение
@@ -306,8 +297,8 @@ if __name__ == "__main__":
         assert _bill["percent"] == _bill["subscription"] == _bill["combo"], (_pid, _bill)
 
     assert break_even_turnover("s1") == 66_667            # ~667 € оборота в месяц
-    assert break_even_turnover("s2") == 100_000           # 1000 € оборота в месяц
-    assert break_even_turnover(UNLIMITED) == 500_000      # 5000 €
+    assert break_even_turnover("s2") == 83_333            # ~833 € оборота в месяц
+    assert break_even_turnover(UNLIMITED) == 766_667      # ~7667 €
 
     # Ниже порога процент дешевле, выше — дороже, и разрыв растёт. Но на самой
     # дешёвой ступени «дешевле» не наступает НИКОГДА: минимальный платёж равен
@@ -320,9 +311,9 @@ if __name__ == "__main__":
     assert _monthly_bill("s6", 20_000)["percent"] < PLANS["s6"]["price"]
 
     # Студия с двумя тренерами и оборотом 5000 €/мес (200 клиентов по 25 € —
-    # обычная маленькая студия) платит на «проценте» впятеро против подписки.
+    # обычная маленькая студия) платит на «проценте» вшестеро против подписки.
     _real = _monthly_bill("s2", 500_000)                  # 5000 € оборота
-    assert (_real["subscription"], _real["percent"], _real["combo"]) == (3000, 15000, 9000)
+    assert (_real["subscription"], _real["percent"], _real["combo"]) == (2500, 15000, 8750)
 
     # Выше порога «комбо» всегда дешевле «процента»: половинная ставка растёт
     # вдвое медленнее, и с оборотом разрыв только увеличивается.
@@ -334,8 +325,8 @@ if __name__ == "__main__":
 
     # А НИЖЕ порога бывает наоборот, и это не сбой каталога: минимальный платёж
     # «процента» плоский (20 €), а фикс «комбо» тянется за ступенью. Студии на
-    # s20 пустой месяц обойдётся в 20 € на «проценте» и в 60 € на «комбо» —
+    # s20 пустой месяц обойдётся в 20 € на «проценте» и в 90 € на «комбо» —
     # то есть «комбо» не универсально дешевле, и продавать его так нельзя.
     _idle = _monthly_bill("s20", 0)
-    assert _idle["percent"] == MIN_MONTHLY_FEE < _idle["combo"] == 6000
+    assert _idle["percent"] == MIN_MONTHLY_FEE < _idle["combo"] == 9000
     print("plans self-check ok")

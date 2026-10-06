@@ -27,7 +27,7 @@
   "seats": {
     "title": "Câți membri are echipa studioului?",
     "hint": "de la {{amount}} pe lună",
-    "stepNote": "Fiecare loc suplimentar costă {{amount}} pe lună",
+    "stepNote": "Locurile {{from}}–{{to}}: +{{amount}} pentru fiecare loc suplimentar/lună.",
     "unlimitedNote": "Echipă nelimitată",
     "perSeat": "Per membru al echipei"
   },

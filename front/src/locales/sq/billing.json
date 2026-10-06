@@ -27,7 +27,7 @@
   "seats": {
     "title": "Sa anëtarë stafi ka studioja",
     "hint": "nga {{amount}} në muaj",
-    "stepNote": "Çdo vend shtesë kushton {{amount}} në muaj",
+    "stepNote": "Vendet {{from}}–{{to}}: +{{amount}} për vend shtesë/muaj.",
     "unlimitedNote": "Pa kufi stafi",
     "perSeat": "Për anëtar stafi"
   },

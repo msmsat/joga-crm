@@ -33,7 +33,7 @@ from services.discounts import FirstLessonDiscount, apply_discount
 from services import catalog, lesson_time
 from services.booking_rules import (
     BookingRules, assert_bookable, booking_window, is_bookable, load_rules,
-    within_widget_hours,
+    within_widget_hours, trial_service_allowed,
 )
 from services.notifier import _fmt_amount, _studio_prefs, lesson_context, notify
 from services.referral import fire_referral
@@ -199,6 +199,8 @@ def _lesson_fields(
 ) -> dict:
     """`first_lesson` — скидка первого занятия, положенная клиенту
     (`_first_lesson`); None — не положена."""
+    if not trial_service_allowed(rules, lesson.service_id):
+        first_lesson = None
     color = DEFAULT_HALL_COLOR
     if lesson.hall_id is not None:
         color = hall_colors.get(lesson.hall_id) or DEFAULT_HALL_COLOR

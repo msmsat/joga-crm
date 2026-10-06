@@ -48,6 +48,8 @@ class ResolvedPrice:
     # Ручная скидка администратора на шаге оплаты записи. Разовая по природе:
     # живёт в одном чеке, гасить после продажи нечего.
     manual_discount_applied: int = 0
+    renewal: object | None = None
+    renewal_discount_applied: int = 0
 
     def mark_used(self) -> None:
         """Зафиксировать одноразовые скидки как потраченные.
@@ -74,6 +76,9 @@ async def resolve_price(
     *,
     first_lesson: Optional[FirstLessonDiscount] = None,
     manual_percent: Optional[int] = None,
+    renewal_package_id: Optional[int] = None,
+    renewal_at: Optional[datetime] = None,
+    renewal_previous_id: Optional[int] = None,
 ) -> ResolvedPrice:
     """`promo` — уже найденный и провалидированный промокод (find_valid_promo),
     поиск по коду сюда не входит — вызывающий решает, что делать с 404/400.
@@ -148,6 +153,16 @@ async def resolve_price(
         if amount > 0:
             candidates.append(("manual", amount, None))
 
+    if renewal_package_id is not None:
+        from datetime import timezone
+        from services.subscription_renewal import renewal_candidate
+        renewal = await renewal_candidate(db, studio_id, client_id, renewal_package_id,
+            now=renewal_at or datetime.now(timezone.utc), previous_id=renewal_previous_id)
+        if renewal is not None:
+            amount = apply_discount(_AsDiscount('percent', renewal.percent), base_price)
+            if amount > 0:
+                candidates.append(('renewal', amount, renewal))
+
     if not candidates:
         return ResolvedPrice(final_price=base_price)
 
@@ -171,6 +186,9 @@ async def resolve_price(
             result.referral_discount_applied = amount
         elif kind == "first_lesson":
             result.first_lesson_discount_applied = amount
+        elif kind == "renewal":
+            result.renewal = obj
+            result.renewal_discount_applied = amount
         elif kind == "manual":
             result.manual_discount_applied = amount
 

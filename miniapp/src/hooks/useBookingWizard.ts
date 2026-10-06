@@ -13,8 +13,8 @@ import { spawnPetals } from '../lib/petals';
 import { getSession } from '../lib/session';
 import { availabilityQuery, dayList, lastBookableDay, studioToday, timeOf, type IsoDay } from '../lib/slots';
 import {
-  branchOf, emptyPick, isComplete, minutesOf, nextStep, onService, reconcileTime,
-  type WizardPick, type WizardStep, STEPS,
+  branchOf, emptyPick, isComplete, minutesOf, nextStep, onService, reconcileTime, shownStep, soloOf, stepsFor,
+  withSoloMaster, type WizardPick, type WizardStep,
 } from '../lib/wizard';
 import type { MasterChoice } from '../lib/bookingPage';
 import { useTelegram } from './useTelegram';
@@ -59,10 +59,12 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   );
 
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState<WizardStep>('time');
+  const [rawStep, setStep] = useState<WizardStep>('time');
   // Куда листнули: 1 — вперёд по вкладкам, -1 — назад. Раздел въезжает с этой стороны.
   const [dir, setDir] = useState(1);
-  const [pick, setPick] = useState<WizardPick>(() => emptyPick(today));
+  // Выбор человека. Единственный мастер в нём не хранится — подставляется
+  // при чтении (`pick` ниже).
+  const [chosen, setPick] = useState<WizardPick>(() => emptyPick(today));
   // Филиал, выбранный на главной до открытия листа; `null` — все. Он не
   // первый шаг, а рамка: время ищется только в нём, мастера — только его.
   const [scope, setScope] = useState<number | null>(null);
@@ -92,10 +94,10 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   }, [isOpen, staff]);
 
   // Снимок дня — по требованию, один раз на день. Ошибка остаётся в кеше до «Повторить».
-  const dayState = byDay[pick.day];
+  const dayState = byDay[chosen.day];
   useEffect(() => {
     if (!isOpen || dayState) return;
-    const day = pick.day;
+    const day = chosen.day;
     let cancelled = false;
     hybridApi.servicesDay(day)
       .then((data) => {
@@ -108,7 +110,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
         if (!cancelled) setByDay((prev) => ({ ...prev, [day]: { rows: null, error: true } }));
       });
     return () => { cancelled = true; };
-  }, [isOpen, pick.day, dayState]);
+  }, [isOpen, chosen.day, dayState]);
 
   const rows = dayState?.rows ?? null;
   // Мастера филиала — сужением уже полученного списка, а не вторым запросом:
@@ -122,6 +124,16 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
     () => offeredServices(members, (catalog?.services ?? []).filter(isBookableResource)),
     [members, catalog?.services],
   );
+  // Мастер один — раздела «Мастер» нет, а сам он подставлен в выбор. Пока
+  // список мастеров не пришёл, число вкладок подсказывает каталог студии:
+  // лист открывается сразу таким, каким и останется.
+  const solo = staff !== null ? soloOf(members) : null;
+  const soloMaster = staff !== null ? solo !== null : catalog?.staff.length === 1;
+  const steps = useMemo(() => stepsFor(soloMaster), [soloMaster]);
+  const pick = useMemo(() => withSoloMaster(chosen, solo), [chosen, solo]);
+  // Раздел, которого больше нет (мастеров оказалось меньше, чем обещал
+  // каталог), открыт не будет — на его месте итог.
+  const step = shownStep(rawStep, steps);
   const service = services.find((row) => row.id === pick.serviceId) ?? null;
   const master = typeof pick.master === 'number' ? members.find((row) => row.teacher_id === pick.master) ?? null : null;
   const branchId = rows ? branchOf(rows, pick) : null;
@@ -130,8 +142,9 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   const quote = quoted && quoted.key === pickKey ? quoted : null;
 
   const goTo = (next: WizardStep) => {
-    setDir(STEPS.indexOf(next) >= STEPS.indexOf(step) ? 1 : -1);
-    setStep(next);
+    const target = shownStep(next, steps);
+    setDir(steps.indexOf(target) >= steps.indexOf(step) ? 1 : -1);
+    setStep(target);
     setNotice(null);
   };
 
@@ -278,8 +291,8 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
 
   return {
     isOpen, open, close: () => setIsOpen(false),
-    step, dir, goTo, today, days,
-    pick, setPick, advance,
+    step, steps, dir, goTo, today, days,
+    pick, advance,
     pickDay: (day: IsoDay) => { setPick((current) => ({ ...current, day })); vibrateLight(); },
     pickTime: (time: number) => advance({ ...pick, time }, 'time'),
     pickService: (id: number) => advance(onService(pick, id, members), 'service'),

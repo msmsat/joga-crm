@@ -142,7 +142,7 @@ function WalletCard({ sub, t }: {
               </div>
             )}
           </div>
-          {sub.is_frozen && <span className={s.badgeFrozen}>{t('panel.wallet.frozenBadge')}</span>}
+          {sub.is_frozen && <span className={s.badgeFrozen}>{t('panel.wallet.frozenBadge')}{sub.freeze_until && ` · ${t('panel.wallet.until', { date: formatDate(sub.freeze_until) })}`}</span>}
         </div>
       </div>
     </Card>

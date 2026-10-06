@@ -27,7 +27,7 @@
   "seats": {
     "title": "Ilu pracowników ma studio?",
     "hint": "od {{amount}} miesięcznie",
-    "stepNote": "Każde dodatkowe miejsce kosztuje {{amount}} miesięcznie",
+    "stepNote": "Miejsca {{from}}–{{to}}: +{{amount}} za dodatkowe miejsce/miesiąc.",
     "unlimitedNote": "Nielimitowana liczba pracowników",
     "perSeat": "Za pracownika"
   },

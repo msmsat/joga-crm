@@ -5,7 +5,7 @@
 Prices не приходилось держать в конфиге и синхронизировать руками.
 
 Prices в Stripe НЕИЗМЕНЯЕМЫ. Поменялась цена — создаётся новый Price, а
-`transfer_lookup_key` переносит на него ключ и архивирует старый. Уже существующие
+`transfer_lookup_key` переносит на него ключ. Уже существующие
 подписки остаются на старом Price (грандфазеринг) — это штатное поведение Stripe,
 а не баг: людям, купившим по старой цене, её и оставляем.
 
@@ -109,6 +109,23 @@ async def _find_price(key: str):
     return found.data[0] if found.data else None
 
 
+def _matches_price(existing, plan_id: str, period_months: int, combo: bool) -> bool:
+    """A lookup key identifies a tariff, but does not prove its current price."""
+    if existing is None:
+        return False
+    amount = combo_amount_for(plan_id, period_months) if combo else amount_for(plan_id, period_months)
+    interval, interval_count = _INTERVALS[period_months]
+    # One-time Prices have recurring=None, even under one of our lookup keys.
+    recurring = getattr(existing, "recurring", None)
+    return recurring is not None and (
+        existing.unit_amount == amount
+        and existing.currency == CURRENCY
+        and recurring.interval == interval
+        and recurring.interval_count == interval_count
+        and existing.tax_behavior == TAX_BEHAVIOR
+    )
+
+
 async def _ensure_price(
     product_id: str, plan_id: str, period_months: int, combo: bool = False,
 ) -> str:
@@ -117,25 +134,11 @@ async def _ensure_price(
     interval, interval_count = _INTERVALS[period_months]
 
     existing = await _find_price(key)
-    # `recurring` отдельной переменной, а не цепочкой через existing напрямую:
-    # у разового Price это поле None, и прямой доступ к .interval уронил бы весь
-    # sync() посреди цикла с AttributeError. Такой Price под нашим ключом — чужой
-    # мусор; проваливаемся ниже и забираем ключ себе новым recurring-Price через
-    # transfer_lookup_key.
-    recurring = getattr(existing, "recurring", None) if existing is not None else None
-    if recurring is not None and (
-        existing.unit_amount == amount
-        and existing.currency == CURRENCY
-        and recurring.interval == interval
-        and recurring.interval_count == interval_count
-        # Price без tax_behavior роняет automatic_tax при создании подписки, а
-        # поменять поле у существующего Price нельзя — только пересоздать.
-        and existing.tax_behavior == TAX_BEHAVIOR
-    ):
+    if _matches_price(existing, plan_id, period_months, combo):
         return existing.id
 
     # Цена/валюта/интервал разошлись с каталогом — Price неизменяем, заводим новый.
-    # transfer_lookup_key снимает ключ со старого и архивирует его сам.
+    # transfer_lookup_key снимает ключ со старого; его историческая цена остаётся.
     stripe_env.guard_write(f"создание Price {key}")
     price = await asyncio.to_thread(
         stripe.Price.create,
@@ -170,14 +173,16 @@ async def sync() -> dict[str, str]:
 
 
 async def price_id(plan_id: str, period_months: int, combo: bool = False) -> str:
-    """Price для пары тариф×период (или её комбо-половины). Заводит недостающий.
+    """Текущий Price для пары тариф×период (или её комбо-половины).
 
     Раньше здесь был RuntimeError с просьбой запустить `sync` руками. Это значило,
     что переезд на БОЕВОЙ аккаунт Stripe ломал первую же оплату: Prices из тестового
     режима не переносятся, каталог на живом аккаунте пуст, и про забытый ручной шаг
     узнавала студия, а не мы.
 
-    Заводим на месте тем же кодом, что и `sync()`: цены живут в plans.py, операция
+    Сверяем сумму, валюту, период и налоговый режим даже у найденного Price:
+    lookup_key стабилен, а после смены каталога может вести на прежнюю цену.
+    Заводим актуальный на месте тем же кодом, что и `sync()`: операция
     идемпотентна (`lookup_key` + `transfer_lookup_key`), а параллельные вызовы
     сходятся на одном ключе. `sync()` остаётся — им удобно залить каталог заранее и
     увидеть его целиком, но обязательным шагом он больше не является.
@@ -187,10 +192,10 @@ async def price_id(plan_id: str, period_months: int, combo: bool = False) -> str
 
     key = lookup_key(plan_id, period_months, combo)
     price = await _find_price(key)
-    if price is not None:
+    if _matches_price(price, plan_id, period_months, combo):
         return price.id
 
-    logger.warning("Stripe catalog: Price %s не найден — заводим на месте", key)
+    logger.warning("Stripe catalog: Price %s отсутствует или устарел — обновляем", key)
     product_id = await _ensure_product(plan_id, PLANS[plan_id]["name"], combo)
     return await _ensure_price(product_id, plan_id, period_months, combo)
 

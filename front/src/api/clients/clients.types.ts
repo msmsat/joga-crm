@@ -16,6 +16,8 @@ export interface ActiveSubscription {
 export interface ClientProduct extends ActiveSubscription {
   id: number
   is_frozen: boolean
+  freeze_until?: string | null
+  freeze_used_days?: number
   /** Куплен поверх незаконченного: срок начнётся с первого посещения, expires_at пока условный. */
   is_pending: boolean
   starts_at: string | null
@@ -32,6 +34,8 @@ export interface WalletSubscription {
   expires_at: string
   status: string
   is_frozen: boolean
+  freeze_until?: string | null
+  freeze_used_days?: number
 }
 
 export interface ClientWallet {

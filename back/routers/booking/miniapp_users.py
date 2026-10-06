@@ -8,6 +8,7 @@
 """
 import json
 import os
+from services.subscription_renewal import renewal_payload
 from datetime import date, datetime
 from typing import Optional
 
@@ -547,6 +548,7 @@ async def create_checkout_session(
         # разошлась (баллы потратили в другом окне) — продажа не проводится
         # молча, а уходит в ветку «списано, но не проведено».
         payload={
+            **renewal_payload(quote),
             "client_id": client.id,
             "package_id": package.id,
             "promo_code": body.promo_code,

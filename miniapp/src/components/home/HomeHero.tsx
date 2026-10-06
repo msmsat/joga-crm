@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { StudioCatalog } from '../../api/studio';
@@ -9,6 +9,8 @@ import BranchPicker from './BranchPicker';
 /** С чего человек начинает запись. */
 export type BookingStart = 'time' | 'master' | 'service';
 const STARTS: BookingStart[] = ['time', 'master', 'service'];
+// Мастер в студии один — начинать с него не с чего: он и так выбран.
+const SOLO_STARTS: BookingStart[] = ['time', 'service'];
 
 type Props = {
   catalog: StudioCatalog | null;
@@ -18,6 +20,8 @@ type Props = {
   branch: number | null;
   onBranch: (id: number | null) => void;
   onStart: (start: BookingStart) => void;
+  /** Карта абонемента — под названием и адресом, частью вывески. */
+  pass?: ReactNode;
 };
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -33,7 +37,7 @@ const ease = [0.16, 1, 0.3, 1] as const;
  * раздела. Свет за ним — фирменный цвет студии (как и у всего приложения),
  * кольца — тонкие, чтобы сцена не превращалась в баннер.
  */
-export default function HomeHero({ catalog, name, branch, onBranch, onStart }: Props) {
+export default function HomeHero({ catalog, name, branch, onBranch, onStart, pass }: Props) {
   const { t } = useTranslation();
   const reduce = useReducedMotion();
   const [brokenLogo, setBrokenLogo] = useState(false);
@@ -48,6 +52,7 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart }: P
     : branches.length > 1 ? t('hero.branches', { count: branches.length }) : '';
   const logo = !brokenLogo ? studio?.logo_url : null;
   const monogram = words.map((word) => word[0]).join('').slice(0, 2).toUpperCase();
+  const starts = catalog && catalog.staff.length < 2 ? SOLO_STARTS : STARTS;
 
   const rise = (delay: number) => (reduce ? {} : {
     initial: { opacity: 0, y: 18 },
@@ -90,7 +95,8 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart }: P
         </motion.div>
       </div>
 
-      <div className="relative flex flex-1 flex-col justify-center py-[var(--home-stage-padding)] dt:py-10">
+      {/* С картой абонемента сцена теснее: пустоту вокруг названия заняла она. */}
+      <div className={`relative flex flex-1 flex-col justify-center dt:py-10 ${pass ? 'py-[calc(var(--home-stage-padding)*0.5)]' : 'py-[var(--home-stage-padding)]'}`}>
         <motion.div {...rise(0.08)} className="text-[12px] font-extrabold uppercase tracking-[0.24em] text-brand">
           {name ? t('hero.welcomeBack', { name }) : t('hero.welcome')}
         </motion.div>
@@ -125,6 +131,11 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart }: P
             </motion.span>
           </motion.div>
         )}
+        {pass && (
+          <motion.div {...rise(0.36)} className="mt-[var(--home-pass-gap)] max-w-[440px] dt:mt-8">
+            {pass}
+          </motion.div>
+        )}
       </div>
 
       <div className="relative pb-4">
@@ -140,8 +151,8 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart }: P
             </div>
           )}
         </motion.div>
-        <div className="flex flex-col gap-[var(--home-cards-gap)] dt:grid dt:grid-cols-3 dt:gap-4">
-          {STARTS.map((start, index) => (
+        <div className={`flex flex-col gap-[var(--home-cards-gap)] dt:grid dt:gap-4 ${starts.length === 3 ? 'dt:grid-cols-3' : 'dt:grid-cols-2'}`}>
+          {starts.map((start, index) => (
             <motion.button
               key={start}
               type="button"

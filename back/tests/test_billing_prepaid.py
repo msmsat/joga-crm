@@ -71,6 +71,9 @@ class _DB:
     async def execute(self, query):
         entity = query.column_descriptions[0]['entity']
         value = self.invoice if entity is BillingInvoice else self.plan if entity is StudioBillingPlan else None
+        if query.column_descriptions[0]['expr'] is BillingInvoice.id:
+            value = self.invoice.id if (self.invoice.kind == 'subscription'
+                and self.invoice.status in ('paid', 'refunded') and self.invoice.amount > 0) else None
         return NS(scalar_one_or_none=lambda: value)
 
     async def commit(self):
@@ -205,13 +208,16 @@ def test_paid_quote_has_no_future_automatic_debit(monkeypatch):
     from services.billing_tax import TaxPreview
     plan = _plan('free_trial', 'trial')
     current_payer = NS(id=2)
-    async def tax_preview(*args, payer):
+    async def tax_preview(db, studio_id, kind, net, currency, *, payer):
         assert payer is current_payer
-        return TaxPreview('taxable', 21, 4500, 945, 5445, 'EUR', 'domestic_standard_rate', None)
+        tax = round(net * .21)
+        return TaxPreview('taxable', 21, net, tax, net + tax, currency, 'domestic_standard_rate', None)
     monkeypatch.setattr(CO.billing_tax, 'preview', tax_preview)
     fn = getattr(CO.preview_checkout, '__wrapped__', CO.preview_checkout)
     preview = asyncio.run(fn(None, 's5', 1, False, NS(studio_id=7, user=current_payer), _DB(_invoice(), plan)))
-    assert preview.total == 4500 and preview.total_with_tax == 5445
+    assert preview.amount_before_promo == 4000 and preview.promo_discount_amount == 1200
+    assert preview.promo_code == 'WELCOME30'
+    assert preview.total == 2800 and preview.total_with_tax == 3388
     assert preview.free_until is None and preview.free_days == 0
     assert preview.access_starts_at and preview.access_until
 
@@ -230,19 +236,21 @@ def test_quotes_match_single_preview_for_every_tier_period_and_model(monkeypatch
     monkeypatch.setattr(CO.billing_tax, 'preview', tax_preview)
     plan = _plan('s5', 'active')   # оплачен s5: он продлевается, остальные — смена
     ctx = NS(studio_id=7, user=payer)
+    history = _invoice()
+    history.status = 'paid'  # Frozen 45 EUR purchase consumed the first-payment promotion.
     quotes_fn = getattr(CO.checkout_quotes, '__wrapped__', CO.checkout_quotes)
     preview_fn = getattr(CO.preview_checkout, '__wrapped__', CO.preview_checkout)
     dates = ('access_starts_at', 'access_until')
     for combo in (False, True):
-        quotes = asyncio.run(quotes_fn(None, combo, ctx, _DB(_invoice(), plan))).quotes
+        quotes = asyncio.run(quotes_fn(None, combo, ctx, _DB(history, plan))).quotes
         assert sorted((q.plan, q.period_months) for q in quotes) == sorted(
             (p, m) for p in PLANS for m in PERIOD_DISCOUNTS)
         for q in quotes:
-            single = asyncio.run(preview_fn(None, q.plan, q.period_months, combo, ctx, _DB(_invoice(), plan)))
+            single = asyncio.run(preview_fn(None, q.plan, q.period_months, combo, ctx, _DB(history, plan)))
             assert q.model_dump(exclude={'plan', 'period_months', *dates}) == single.model_dump(exclude=set(dates))
             for field in dates:
                 assert getattr(q, field)[:10] == getattr(single, field)[:10]
-    renewal = [q.kind for q in asyncio.run(quotes_fn(None, False, ctx, _DB(_invoice(), plan))).quotes if q.plan == 's5']
+    renewal = [q.kind for q in asyncio.run(quotes_fn(None, False, ctx, _DB(history, plan))).quotes if q.plan == 's5']
     assert set(renewal) == {'renewal'}
 
 

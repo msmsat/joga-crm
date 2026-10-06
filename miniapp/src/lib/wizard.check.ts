@@ -11,7 +11,8 @@ import type { ResourceStaffMember, ServiceDayRow } from '../api/hybrid.types';
 import { ANY } from './bookingPage.ts';
 import {
   branchChoices, branchOf, emptyPick, freeTimes, groupMinutes, hhmm, isComplete, masterChoices, minutesOf,
-  nextStep, offerAny, onService, reconcileTime, serviceChoices, type WizardPick,
+  nextStep, offerAny, onService, reconcileTime, serviceChoices, shownStep, soloOf, stepsFor, withSoloMaster,
+  STEPS, type WizardPick,
 } from './wizard.ts';
 
 let passed = 0;
@@ -105,6 +106,24 @@ check('части дня и «любой мастер»', () => {
   assert.deepEqual(groupMinutes([540, 720, 1020]).map((g) => g.part), ['morning', 'afternoon', 'evening']);
   assert.equal(offerAny([anna]), false);
   assert.equal(offerAny(staff), true);
+});
+
+check('мастер один — раздела «Мастер» нет, мастер подставляется сам', () => {
+  assert.deepEqual(stepsFor(true), ['time', 'service', 'summary']);
+  assert.deepEqual(stepsFor(false), STEPS);
+  assert.equal(shownStep('master', stepsFor(true)), 'summary', 'скрытый раздел ведёт на итог');
+  assert.equal(shownStep('service', stepsFor(true)), 'service');
+  assert.equal(soloOf([anna]), 10);
+  assert.equal(soloOf(staff), null);
+  assert.equal(soloOf([]), null);
+  const solo = withSoloMaster({ ...emptyPick('2026-10-01'), time: minutesOf('10:00'), serviceId: 1 }, 10);
+  assert.equal(solo.master, 10);
+  assert.ok(isComplete(solo), 'время и услуга — и запись сложилась');
+  assert.equal(nextStep(withSoloMaster({ ...emptyPick('2026-10-01'), serviceId: 1 }, 10), 'service'), 'time');
+  assert.equal(nextStep(solo, 'service'), 'summary', 'после услуги — сразу итог, мимо мастера');
+  assert.equal(withSoloMaster({ ...emptyPick('2026-10-01'), master: ANY }, 10).master, ANY, 'названное не перебивается');
+  const untouched = emptyPick('2026-10-01');
+  assert.equal(withSoloMaster(untouched, null), untouched, 'мастеров несколько — выбор тот же');
 });
 
 console.log(`ALL PASS — ${passed} проверок мастера записи`);

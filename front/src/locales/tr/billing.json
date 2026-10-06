@@ -27,7 +27,7 @@
   "seats": {
     "title": "Stüdyoda kaç ekip üyesi var?",
     "hint": "aylık {{amount}} tutarından başlayan fiyatlarla",
-    "stepNote": "Her ek koltuk aylık {{amount}} tutarındadır",
+    "stepNote": "{{from}}–{{to}}. koltuk: ek koltuk başına +{{amount}}/ay.",
     "unlimitedNote": "Sınırsız ekip",
     "perSeat": "Ekip üyesi başına"
   },

@@ -24,3 +24,32 @@ export function planLabel(planId: string, t: Translate): string {
   if (seats !== undefined) return t('planCards.staffLimit', { count: seats });
   return t(`planNames.${planId}`, planId);
 }
+
+
+export interface PlanPriceStep {
+  /** Seats reached by adding one place at this price. */
+  from: number;
+  to: number;
+  /** Per-place increase in the same units as the catalog prices. */
+  amount: number;
+}
+
+/** Group equal adjacent seat-price increases; unlimited is a separate product.
+ *  Reading every pair avoids advertising one flat increment for a tiered ladder. */
+export function planPriceSteps(tiers: readonly { seats: number | null | undefined; price: number }[]): PlanPriceStep[] {
+  const line = tiers.filter((tier): tier is { seats: number; price: number } =>
+    typeof tier.seats === 'number' && tier.seats > 0 && Number.isFinite(tier.price),
+  ).sort((a, b) => a.seats - b.seats);
+  const steps: PlanPriceStep[] = [];
+  for (let index = 1; index < line.length; index++) {
+    const previous = line[index - 1];
+    const current = line[index];
+    // A skipped seat count cannot promise that the whole jump buys one place.
+    if (current.seats !== previous.seats + 1) continue;
+    const amount = current.price - previous.price;
+    const last = steps[steps.length - 1];
+    if (last?.amount === amount && last.to + 1 === current.seats) last.to = current.seats;
+    else steps.push({ from: current.seats, to: current.seats, amount });
+  }
+  return steps;
+}

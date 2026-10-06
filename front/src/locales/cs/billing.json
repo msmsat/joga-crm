@@ -27,7 +27,7 @@
   "seats": {
     "title": "Kolik zaměstnanců má studio",
     "hint": "od {{amount}} měsíčně",
-    "stepNote": "Každé další místo přidá {{amount}} měsíčně",
+    "stepNote": "Místa {{from}}–{{to}}: +{{amount}} za další místo/měsíc.",
     "unlimitedNote": "Zaměstnanci bez omezení",
     "perSeat": "Za jedno místo"
   },

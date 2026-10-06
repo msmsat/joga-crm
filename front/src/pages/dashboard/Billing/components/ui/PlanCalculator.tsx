@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { PlanType, PlanPeriod } from '../../types';
 import type { PlanInfo } from '../../hooks/useBillingCalculator';
 import { formatMoney } from '../../../../../lib/money';
-import { planSeats } from '../../../../../lib/plan';
+import { planSeats, planPriceSteps } from '../../../../../lib/plan';
 import AnimatedPayButton from './AnimatedPayButton';
 import CheckoutDetails from './CheckoutDetails';
 import TeamLineup from './TeamLineup';
@@ -72,13 +72,11 @@ export default function PlanCalculator({
   const last = Math.max(planIds.length - 1, 0);
   const fill = last && !pending ? (index / last) * 100 : 0;
   const base = plans[planIds[0]]?.monthly ?? 0;
-  // Шаг берём в КОНЦЕ линии мест, а не в её начале: вход одиночки (s1) лежит
-  // ниже линии, и разность первых двух ступеней обещала бы +10 € вместо +5 €.
-  // Безлимит в счёт не идёт — его цена к шагу за место отношения не имеет.
-  const lineIds = planIds.filter(id => planSeats(id) !== null);
-  const step = lineIds.length > 1
-    ? (plans[lineIds[lineIds.length - 1]]?.monthly ?? 0) - (plans[lineIds[lineIds.length - 2]]?.monthly ?? 0)
-    : 0;
+  const priceSteps = planPriceSteps(planIds.map(id => ({
+    seats: planSeats(id), price: Math.round((plans[id]?.monthly ?? 0) * 100),
+  }))).map(step => t('seats.stepNote', {
+    from: step.from, to: step.to, amount: formatMoney(step.amount / 100, currency),
+  })).join(' · ');
 
   // Периоды и скидки диктует каталог: захардкоженные «6 / 12 / 24» пережили бы
   // правку и обещали скидку, которой сервер уже не даёт.
@@ -98,7 +96,7 @@ export default function PlanCalculator({
 
   const rows: { label: string; value: string; accent?: boolean }[] = [
     // Цена за место — то, ради чего линия и существует: ступень выше стоит
-    // дороже, но каждый следующий сотрудник обходится дешевле предыдущего.
+    // дороже; среднюю цену сотрудника считаем по выбранной ступени.
     seats
       ? {
         label: t('seats.perSeat'),
@@ -168,7 +166,7 @@ export default function PlanCalculator({
             {' · '}
             {seats === null
               ? t('seats.unlimitedNote')
-              : t('seats.stepNote', { amount: formatMoney(step, currency) })}
+              : priceSteps}
           </p>
 
           {/* ── Команда фигурками ──

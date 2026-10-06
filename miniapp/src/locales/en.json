@@ -585,12 +585,12 @@
     "later": "Later"
   },
   "groupWizard": {
-    "hint": "Pick a day and time — narrow it down by class or trainer if you like",
+    "hint": "Pick a day and a class — narrow it down by class type or trainer if you like",
     "titles": {
       "service": "Which class?",
       "master": "Who would you like to train with?"
     },
-    "lessonsAt": "Classes: {{count}}",
+    "left": "{{left}} of {{total}} spots free",
     "full": "Full",
     "closed": "Booking closed",
     "noLessons": "No open classes on this day",
@@ -659,5 +659,10 @@
       "manual": "Discount"
     },
     "prepayOnly": "The studio asks to pay in advance"
+  },
+  "pass": {
+    "kicker": "Membership",
+    "from": "from {{price}}",
+    "buy": "Buy"
   }
 }

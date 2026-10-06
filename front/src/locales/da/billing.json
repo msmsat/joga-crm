@@ -27,7 +27,7 @@
   "seats": {
     "title": "Hvor mange medarbejdere er der i studiet",
     "hint": "fra {{amount}} om måneden",
-    "stepNote": "Hver ekstra plads koster {{amount}} om måneden",
+    "stepNote": "Plads {{from}}–{{to}}: +{{amount}} pr. ekstra plads/måned.",
     "unlimitedNote": "Ingen grænse for medarbejdere",
     "perSeat": "Pr. medarbejder"
   },

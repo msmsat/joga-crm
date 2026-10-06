@@ -63,7 +63,7 @@ async def _plan(db, sid):
 
 
 @pytest.mark.parametrize(('combo', 'months', 'before', 'net'), [
-    (False, 1, 4500, 3150), (False, 3, 10800, 7560), (True, 3, 5400, 3780),
+    (False, 1, 4000, 2800), (False, 3, 9600, 6720), (True, 3, 4800, 3360),
 ])
 def test_preview_applies_promo_after_period_and_combo_before_tax(studio_id, monkeypatch, combo, months, before, net):
     from services.billing_tax import TaxPreview
@@ -87,9 +87,9 @@ def test_preview_applies_promo_after_period_and_combo_before_tax(studio_id, monk
 
 
 @pytest.mark.parametrize(('status', 'kind', 'amount', 'want'), [
-    ('paid', 'subscription', 4500, 4500), ('refunded', 'subscription', 4500, 4500),
-    ('pending', 'subscription', 4500, 3150), ('failed', 'subscription', 4500, 3150),
-    ('paid', 'offline_fee', 4500, 3150), ('paid', 'subscription', 0, 3150),
+    ('paid', 'subscription', 4500, 4000), ('refunded', 'subscription', 4500, 4000),
+    ('pending', 'subscription', 4500, 2800), ('failed', 'subscription', 4500, 2800),
+    ('paid', 'offline_fee', 4500, 2800), ('paid', 'subscription', 0, 2800),
 ])
 def test_tariff_payment_history_consumes_promo_only_after_money_arrived(studio_id, monkeypatch, status, kind, amount, want):
     from services.billing_tax import TaxPreview
@@ -99,12 +99,13 @@ def test_tariff_payment_history_consumes_promo_only_after_money_arrived(studio_i
 
     async def run():
         async with async_session_maker() as db:
+            # Historical 45 EUR purchases remain valid after the current tier becomes 40 EUR.
             db.add(BillingInvoice(studio_id=studio_id, plan_name='s5', kind=kind,
                                   amount=amount, status=status))
             await db.commit()
             quote = await checkout._quote(db, _ctx(studio_id), await _plan(db, studio_id), 's5', 1, False)
             assert quote['total'] == want
-            assert quote['promo_code'] == ('WELCOME30' if want == 3150 else None)
+            assert quote['promo_code'] == ('WELCOME30' if want == 2800 else None)
     asyncio.run(run())
 
 
@@ -116,6 +117,7 @@ def stripe_sessions(monkeypatch):
         sid = f'cs_promo_{metadata["invoice_id"]}'
         if sid in sessions:
             assert sessions[sid].amount_subtotal == amount
+            assert sessions[sid].metadata == metadata
             return sessions[sid]
         await asyncio.sleep(.02)
         from services import billing_tax
@@ -155,18 +157,18 @@ def test_checkout_retries_share_discounted_order_and_snapshot(studio_id, stripe_
     async def run():
         first, second = await asyncio.gather(_purchase(studio_id), _purchase(studio_id))
         assert first.invoice_id == second.invoice_id
-        assert first.amount_due == second.amount_due == 3150
+        assert first.amount_due == second.amount_due == 2800
         assert first.promo_code == second.promo_code == 'WELCOME30'
-        assert first.net_amount == 3150
+        assert first.net_amount == 2800
         async with async_session_maker() as db:
             row = await db.get(BillingInvoice, first.invoice_id)
-            assert row.amount == 3150
-            assert row.billing_details_snapshot['tax']['net_minor'] == 3150
-            assert row.billing_details_snapshot['promo']['amount_before_promo'] == 4500
-            assert row.billing_details_snapshot['promo']['promo_discount_amount'] == 1350
+            assert row.amount == 2800
+            assert row.billing_details_snapshot['tax']['net_minor'] == 2800
+            assert row.billing_details_snapshot['promo']['amount_before_promo'] == 4000
+            assert row.billing_details_snapshot['promo']['promo_discount_amount'] == 1200
         session = next(iter(stripe_sessions.values()))
         assert session.metadata['promo_code'] == 'WELCOME30'
-        assert session.metadata['net_amount'] == '3150'
+        assert session.metadata['net_amount'] == '2800'
         assert len(stripe_sessions) == 1
     asyncio.run(run())
 
@@ -178,13 +180,13 @@ def test_paid_session_reconciled_during_new_choice_removes_promo(studio_id, stri
         session.status, session.payment_status = 'complete', 'paid'
         new = await _purchase(studio_id, 's7')
         assert new.invoice_id != old.invoice_id
-        assert new.amount_due == 5500
+        assert new.amount_due == 5000
         assert new.promo_code is None
         async with async_session_maker() as db:
             old_row = await db.get(BillingInvoice, old.invoice_id)
             assert old_row.status == 'paid'
             quote = await checkout._quote(db, _ctx(studio_id), await _plan(db, studio_id), 's7', 1, False)
-            assert quote['total'] == 5500
+            assert quote['total'] == 5000
     asyncio.run(run())
 
 
@@ -197,7 +199,7 @@ def test_two_different_choices_leave_only_one_payable_promo_session(studio_id, s
                    isinstance(outcome, HTTPException) and outcome.status_code == 409 for outcome in outcomes)
         opened = [s for s in stripe_sessions.values() if s.status == 'open']
         assert len(opened) == 1
-        assert opened[0].amount_subtotal in (3850, 4550)
+        assert opened[0].amount_subtotal in (3500, 4900)
     asyncio.run(run())
 
 
@@ -250,7 +252,7 @@ def test_public_catalog_and_current_plan_expose_same_promo(studio_id):
     asyncio.run(run())
 
 
-@pytest.mark.parametrize(('combo', 'want_saved', 'want_spent'), [(False, 5940, 7560), (True, 2970, 3780)])
+@pytest.mark.parametrize(('combo', 'want_saved', 'want_spent'), [(False, 5280, 6720), (True, 2640, 3360)])
 def test_saved_stats_use_frozen_promo_and_correct_fixed_model(studio_id, stripe_sessions, combo, want_saved, want_spent):
     async def run():
         await _purchase(studio_id, months=3, combo=combo)
@@ -258,6 +260,9 @@ def test_saved_stats_use_frozen_promo_and_correct_fixed_model(studio_id, stripe_
         session.status, session.payment_status = 'complete', 'paid'
         async with async_session_maker() as db:
             await prepaid_webhook.handle_session(db, 'checkout.session.completed', session)
+            row = await db.get(BillingInvoice, int(session.metadata['invoice_id']))
+            assert row.billing_details_snapshot['item']['base_net_minor'] == (6000 if combo else 12000)
+            assert row.billing_details_snapshot['item']['period_discount_amount'] == (1200 if combo else 2400)
             stats = await router.get_billing_stats(_ctx(studio_id), db)
             assert stats.saved == want_saved
             assert stats.total_spent == want_spent
@@ -271,16 +276,16 @@ def test_promo_tax_snapshot_and_fiscal_document_share_discounted_net(studio_id, 
         outcome='taxable', basis='domestic_standard_rate', rate_percent=21))
     async def run():
         result = await _purchase(studio_id, tax=tax)
-        assert result.amount_due == 3812 and result.tax_amount == 662
+        assert result.amount_due == 3388 and result.tax_amount == 588
         session = next(iter(stripe_sessions.values()))
         session.status, session.payment_status = 'complete', 'paid'
         async with async_session_maker() as db:
             await prepaid_webhook.handle_session(db, 'checkout.session.completed', session)
             document = (await db.execute(select(BillingTaxDocument).where(
                 BillingTaxDocument.invoice_id == result.invoice_id))).scalar_one()
-            assert document.snapshot['tax']['net_minor'] == 3150
-            assert document.snapshot['tax']['tax_minor'] == 662
-            assert document.snapshot['tax']['total_minor'] == 3812
+            assert document.snapshot['tax']['net_minor'] == 2800
+            assert document.snapshot['tax']['tax_minor'] == 588
+            assert document.snapshot['tax']['total_minor'] == 3388
     asyncio.run(run())
 
 
@@ -295,4 +300,134 @@ def test_promo_metadata_mismatch_cannot_activate_paid_tariff(studio_id, stripe_s
                 await prepaid_webhook.handle_session(db, 'checkout.session.completed', session)
         async with async_session_maker() as db:
             assert (await db.get(BillingInvoice, result.invoice_id)).status == 'pending'
+    asyncio.run(run())
+
+
+async def _lose_session_reference(studio_id, invoice_id, session):
+    """Simulate Stripe creating a Session before the local cs_ commit times out."""
+    async with async_session_maker() as db:
+        row = await db.get(BillingInvoice, invoice_id)
+        row.order_id = f"prepaid:{session.metadata['profile_hash']}:test"
+        await db.commit()
+
+
+def _record_checkout_attempts(monkeypatch):
+    original = stripe_billing.create_period_checkout
+    calls = []
+    async def recorded(customer, amount, *args, **kwargs):
+        calls.append((amount, kwargs['idempotency_key']))
+        return await original(customer, amount, *args, **kwargs)
+    monkeypatch.setattr(stripe_billing, 'create_period_checkout', recorded)
+    return calls
+
+
+def test_recover_open_order_after_catalog_change_expires_old_price(studio_id, stripe_sessions, monkeypatch):
+    from routers.billing.plans import PLANS
+    async def run():
+        first = await _purchase(studio_id)
+        old = stripe_sessions[f'cs_promo_{first.invoice_id}']
+        assert old.amount_subtotal == 2800
+        await _lose_session_reference(studio_id, first.invoice_id, old)
+        calls = _record_checkout_attempts(monkeypatch)
+        monkeypatch.setitem(PLANS['s5'], 'price', 5000)
+        second = await _purchase(studio_id)
+        assert calls[0] == (2800, f'prepaid:{first.invoice_id}')
+        assert second.invoice_id != first.invoice_id
+        assert second.amount_before_promo == 5000 and second.net_amount == 3500
+        assert old.status == 'expired'
+        assert [s.id for s in stripe_sessions.values() if s.status == 'open'] == [
+            f'cs_promo_{second.invoice_id}']
+        async with async_session_maker() as db:
+            row = await db.get(BillingInvoice, first.invoice_id)
+            assert row.status == 'failed'
+            assert row.billing_details_snapshot['promo']['net_amount'] == 2800
+    asyncio.run(run())
+
+
+def test_recover_paid_order_after_catalog_change_returns_paid_purchase(studio_id, stripe_sessions, monkeypatch):
+    from routers.billing.plans import PLANS
+    async def run():
+        first = await _purchase(studio_id)
+        old = stripe_sessions[f'cs_promo_{first.invoice_id}']
+        old.status, old.payment_status = 'complete', 'paid'
+        await _lose_session_reference(studio_id, first.invoice_id, old)
+        calls = _record_checkout_attempts(monkeypatch)
+        monkeypatch.setitem(PLANS['s5'], 'price', 5000)
+        second = await _purchase(studio_id)
+        assert calls[0] == (2800, f'prepaid:{first.invoice_id}')
+        # A completed retry returns the already paid purchase, not a second renewal.
+        assert second.invoice_id == first.invoice_id and second.amount_due == 0
+        assert second.net_amount == 2800 and second.promo_code == 'WELCOME30'
+        async with async_session_maker() as db:
+            row = await db.get(BillingInvoice, first.invoice_id)
+            assert row.status == 'paid' and row.amount == 2800
+            assert row.billing_details_snapshot['promo']['net_amount'] == 2800
+            quote = await checkout._quote(db, _ctx(studio_id), await _plan(db, studio_id), 's5', 1, False)
+            assert quote['total'] == 5000 and quote['promo_code'] is None
+        assert len(stripe_sessions) == 1
+        assert not any(s.status == 'open' for s in stripe_sessions.values())
+    asyncio.run(run())
+
+
+def test_recover_processing_order_after_catalog_change_blocks_second_charge(studio_id, stripe_sessions, monkeypatch):
+    from routers.billing.plans import PLANS
+    async def run():
+        first = await _purchase(studio_id)
+        old = stripe_sessions[f'cs_promo_{first.invoice_id}']
+        old.status, old.payment_status = 'complete', 'unpaid'
+        await _lose_session_reference(studio_id, first.invoice_id, old)
+        calls = _record_checkout_attempts(monkeypatch)
+        monkeypatch.setitem(PLANS['s5'], 'price', 5000)
+        with pytest.raises(HTTPException) as error:
+            await _purchase(studio_id)
+        assert error.value.status_code == 409
+        assert error.value.detail['code'] == 'billing.payment_processing'
+        assert calls == [(2800, f'prepaid:{first.invoice_id}')]
+        assert len(stripe_sessions) == 1
+        assert old.amount_subtotal == 2800 and old.status == 'complete'
+        async with async_session_maker() as db:
+            assert (await db.get(BillingInvoice, first.invoice_id)).status == 'pending'
+    asyncio.run(run())
+
+
+def test_recover_manual_tax_order_reuses_frozen_stripe_request_before_repricing(studio_id, stripe_sessions, monkeypatch):
+    from routers.billing.plans import PLANS
+    from services.tax_rates import TaxApplication
+    from services.tax_policy import TaxDecision
+    tax = TaxApplication(False, ('txr_test',), 'none', TaxDecision(
+        outcome='taxable', basis='domestic_standard_rate', rate_percent=21))
+    async def run():
+        first = await _purchase(studio_id, tax=tax)
+        old = stripe_sessions[f'cs_promo_{first.invoice_id}']
+        assert old.amount_subtotal == 2800 and old.amount_total == 3388
+        await _lose_session_reference(studio_id, first.invoice_id, old)
+        original = stripe_billing.create_period_checkout
+        requests = []
+        async def recorded(customer, amount, name, metadata, return_url, cancel_url, **kwargs):
+            requests.append(dict(customer=customer, amount=amount, metadata=dict(metadata),
+                return_url=return_url, cancel_url=cancel_url, ui_mode=kwargs['ui_mode'],
+                rates=kwargs['tax'].rate_ids, key=kwargs['idempotency_key']))
+            return await original(customer, amount, name, metadata, return_url, cancel_url, **kwargs)
+        monkeypatch.setattr(stripe_billing, 'create_period_checkout', recorded)
+        monkeypatch.setitem(PLANS['s5'], 'price', 5000)
+        async with async_session_maker() as db:
+            second = await prepaid.create_payment(db, _ctx(studio_id), await _plan(db, studio_id),
+                f'cus_promo_{studio_id}', NS(plan='s5', period_months=1, combo=False, ui_mode='elements'),
+                tax, _profile(), 'pk_test', 'https://velora.test/updated', 'updated-cancel')
+        assert requests[0] == dict(customer=f'cus_promo_{studio_id}', amount=2800,
+            metadata=old.metadata, return_url=f'https://velora.test/return?invoice_id={first.invoice_id}',
+            cancel_url='cancel', ui_mode='elements', rates=('txr_test',), key=f'prepaid:{first.invoice_id}')
+        assert len(requests) == 2
+        assert requests[1]['amount'] == 3500
+        assert requests[1]['return_url'] == f'https://velora.test/updated?invoice_id={second.invoice_id}'
+        assert requests[1]['cancel_url'] == 'updated-cancel'
+        assert second.net_amount == 3500 and second.tax_amount == 735 and second.amount_due == 4235
+        assert old.status == 'expired'
+        assert [s.id for s in stripe_sessions.values() if s.status == 'open'] == [
+            f'cs_promo_{second.invoice_id}']
+        async with async_session_maker() as db:
+            frozen = await db.get(BillingInvoice, first.invoice_id)
+            assert frozen.status == 'failed'
+            assert frozen.billing_details_snapshot['tax']['net_minor'] == 2800
+            assert frozen.billing_details_snapshot['tax']['tax_minor'] == 588
     asyncio.run(run())

@@ -11,12 +11,10 @@ from routers.billing.plans import COMBO_FIXED, PERIOD_DISCOUNTS
 
 
 def test_combo_fixed_with_period_discount():
-    # 15 мест = 95.00 €/мес, комбо-фикс — половина, 47.50 €/мес (COMBO_FIXED,
-    # plans.py), период 12 → −30% → 33.25 €. Старое захардкоженное 124500 было
-    # ценой ДО EUR-миграции (Task 1) и разошлось молча, потому что файл не
-    # собирался (fake_iban, удалена в Task 7) — assert никогда не выполнялся.
-    assert COMBO_FIXED["s15"] == 4750
-    assert round(COMBO_FIXED["s15"] * (1 - PERIOD_DISCOUNTS[12])) == 3325
+    # 15 мест = 130.00 €/мес, комбо-фикс — половина, 65.00 €/мес.
+    # Годовой период со скидкой 30% даёт 45.50 €/мес фиксированной части.
+    assert COMBO_FIXED["s15"] == 6500
+    assert round(COMBO_FIXED["s15"] * (1 - PERIOD_DISCOUNTS[12])) == 4550
 
 
 if __name__ == "__main__":

@@ -2,31 +2,30 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { LessonResponse } from '../../api/lessons';
+import type { Studio } from '../../api/studio';
 import { addDays, formatDay, upperFirst, type IsoDay } from '../../lib/slots';
-import { groupMinutes, hhmm } from '../../lib/wizard';
-import {
-  closedReason, closedTimes, groupTimes, lessonsAt, nextMarked, type DayMarks, type GroupPick,
-} from '../../lib/groupWizard';
-import { cn } from '../../lib/utils';
+import { daySlots, lessonOf, nextMarked, slotsByPart, type DayMarks, type GroupPick } from '../../lib/groupWizard';
 import type { GroupWizardFlow } from '../../hooks/useGroupWizard';
 import DayStrip from './DayStrip';
+import GroupSlot from './GroupSlot';
 import { WizardEmpty } from './WizardRow';
 
 /**
- * Раздел «Время» групповой записи: лента дней и часы занятий выбранного дня
- * по частям дня — те же кнопки, что у индивидуальной записи.
+ * Раздел «Время» групповой записи: лента дней и занятия выбранного дня
+ * карточками по частям дня.
  *
- * Под часом — что в нём идёт: у группы час значит занятие, и «18:00» без
- * названия заставляло бы угадывать. Занятий в час несколько — их число, а
- * какое из них, уточнят «Услуга», «Мастер» или итог. Поэтому кнопок в ряду
- * три, а не четыре: подписи нужна ширина.
+ * У группы час значит занятие, поэтому здесь не кнопки времени, как у
+ * индивидуальной записи, а сами занятия: час, название, тренер, места и цена
+ * видны сразу. Тап выбирает занятие целиком и ведёт на итог — уточнять
+ * направление или тренера, когда в один час занятий несколько, не нужно.
+ * Выбранные в «Услуге» и «Мастере» направление и тренер сужают список.
  *
- * Полное и закрытое для записи занятие не исчезает — его час стоит погашенной
- * кнопкой с причиной. Отдельного расписания больше нет, и это единственное
- * место, где человек видит день студии целиком: «занятия нет» и «занятие есть,
- * но мест нет» — разные ответы.
+ * Полное и закрытое для записи занятие не исчезает — его карточка погашена,
+ * с причиной. Отдельного расписания больше нет, и это единственное место, где
+ * человек видит день студии целиком: «занятия нет» и «занятие есть, но мест
+ * нет» — разные ответы.
  */
-export default function GroupTime({ flow }: { flow: GroupWizardFlow }) {
+export default function GroupTime({ flow, branches }: { flow: GroupWizardFlow; branches: Studio[] }) {
   return (
     <GroupTimeView
       pick={flow.pick}
@@ -37,8 +36,10 @@ export default function GroupTime({ flow }: { flow: GroupWizardFlow }) {
       loading={flow.dayLoading}
       failed={flow.dayError}
       smooth={flow.isOpen && !flow.opening}
+      branches={branches}
+      scope={flow.scope}
       onPickDay={flow.pickDay}
-      onPickTime={flow.pickTime}
+      onPickLesson={flow.pickLesson}
       onRetry={flow.retryDay}
     />
   );
@@ -53,8 +54,11 @@ type ViewProps = {
   loading: boolean;
   failed: boolean;
   smooth: boolean;
+  branches: Studio[];
+  /** Филиал, с которым открыт лист; `null` — все. */
+  scope: number | null;
   onPickDay: (day: IsoDay) => void;
-  onPickTime: (minute: number) => void;
+  onPickLesson: (lesson: LessonResponse) => void;
   onRetry: () => void;
 };
 
@@ -66,27 +70,22 @@ type ViewProps = {
  * где перерисовка собранной заранее вкладки была главной статьёй расходов.
  */
 const GroupTimeView = memo(function GroupTimeView({
-  pick, lessons: dayLessons, days, today, marks, loading, failed, smooth, onPickDay, onPickTime, onRetry,
+  pick, lessons: dayLessons, days, today, marks, loading, failed, smooth, branches, scope, onPickDay, onPickLesson, onRetry,
 }: ViewProps) {
   const { t, i18n } = useTranslation();
   const lessons = dayLessons ?? [];
-  const open = groupTimes(lessons, pick);
-  const closed = new Set(closedTimes(lessons, pick));
-  const groups = groupMinutes([...open, ...closed].sort((a, b) => a - b));
+  const slots = daySlots(lessons, pick);
+  const groups = slotsByPart(slots);
+  const bookable = slots.some((slot) => slot.state === 'open' || slot.state === 'mine');
+  const chosen = lessonOf(lessons, pick)?.id ?? null;
+  // Адрес под тренером — только когда лист открыт на «Все филиалы» и их несколько.
+  const placeOf = (branchId: number | null) =>
+    branches.length > 1 && scope === null ? branches.find((row) => row.id === branchId)?.name : undefined;
   const lastDay = days[days.length - 1];
   // Пустой день ведёт не «на завтра», а туда, где занятия есть: отметки это
   // уже знают. Без отметок — по-прежнему на следующий день.
   const nearest = marks ? nextMarked(days, marks, pick.day) : null;
   const nextDay = marks ? nearest : pick.day < lastDay ? addDays(pick.day, 1) : null;
-
-  const caption = (minute: number) => {
-    if (closed.has(minute)) {
-      return t(closedReason(lessons, pick, minute) === 'full' ? 'groupWizard.full' : 'groupWizard.closed');
-    }
-    const rows = lessonsAt(lessons, pick, minute);
-    if (rows.length !== 1) return t('groupWizard.lessonsAt', { count: rows.length });
-    return rows[0].name ? t(`lesson.name.${rows[0].name}`, { defaultValue: rows[0].name }) : '';
-  };
 
   const empty = (
     <WizardEmpty
@@ -117,9 +116,10 @@ const GroupTimeView = memo(function GroupTimeView({
           <WizardEmpty title={t('wizard.loadError')} action={t('booking.retry')} onAction={onRetry} />
         </div>
       ) : loading ? (
-        <div aria-busy="true" className="grid grid-cols-3 gap-2 pt-4 @xl:grid-cols-5">
-          {Array.from({ length: 9 }, (_, i) => (
-            <div key={i} className="h-[58px] animate-pulse rounded-2xl bg-background" style={{ animationDelay: `${i * 50}ms` }} />
+        // Заглушки той же высоты, что карточки: пришедший день не двигает лист.
+        <div aria-busy="true" className="grid gap-2 pt-4 @xl:grid-cols-2">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i} className="h-[84px] animate-pulse rounded-[20px] bg-background" style={{ animationDelay: `${i * 70}ms` }} />
           ))}
         </div>
       ) : groups.length === 0 ? (
@@ -137,44 +137,22 @@ const GroupTimeView = memo(function GroupTimeView({
               <div className="pb-2.5 text-[10px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground">
                 {t(`resource.parts.${group.part}`)}
               </div>
-              <div className="grid grid-cols-3 gap-2 @xl:grid-cols-5">
-                {group.times.map((minute) => {
-                  const active = minute === pick.time;
-                  const off = closed.has(minute);
-                  // Обычная кнопка с CSS-сжатием, а не motion: часы монтируются
-                  // вместе с листом, и каждая лишняя пружина — в его первом кадре.
-                  return (
-                    <button
-                      key={minute}
-                      type="button"
-                      disabled={off}
-                      onClick={() => onPickTime(minute)}
-                      aria-pressed={active}
-                      className={cn(
-                        'flex h-[58px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-2xl px-2 transition-[transform,background-color,color] duration-200 enabled:active:scale-[0.94]',
-                        off ? 'cursor-default text-muted-foreground ring-1 ring-inset ring-border'
-                          : active ? 'bg-brand text-brand-foreground shadow-brand'
-                          : 'bg-background text-foreground dt:hover:bg-brand/16',
-                      )}
-                    >
-                      <span className={cn('text-[15px] font-bold leading-none tabular-nums', off && 'line-through decoration-1 opacity-60')}>
-                        {hhmm(minute)}
-                      </span>
-                      <span className={cn(
-                        'max-w-full truncate text-[10.5px] font-semibold leading-tight',
-                        active ? 'text-brand-foreground/70' : 'text-muted-foreground',
-                      )}>
-                        {caption(minute)}
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="grid gap-2 @xl:grid-cols-2">
+                {group.slots.map((slot) => (
+                  <GroupSlot
+                    key={slot.lesson.id}
+                    slot={slot}
+                    active={slot.lesson.id === chosen}
+                    place={placeOf(slot.lesson.branch_id)}
+                    onPick={() => onPickLesson(slot.lesson)}
+                  />
+                ))}
               </div>
             </section>
           ))}
           {/* Есть только полные и закрытые — день виден, но записаться в нём
               некуда: тут же, куда идти дальше. */}
-          {open.length === 0 && <div className="pt-4">{empty}</div>}
+          {!bookable && <div className="pt-4">{empty}</div>}
         </motion.div>
       )}
     </div>
@@ -187,4 +165,6 @@ const GroupTimeView = memo(function GroupTimeView({
   && before.marks === after.marks
   && before.loading === after.loading
   && before.failed === after.failed
-  && before.smooth === after.smooth);
+  && before.smooth === after.smooth
+  && before.branches === after.branches
+  && before.scope === after.scope);

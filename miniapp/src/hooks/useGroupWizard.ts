@@ -5,12 +5,12 @@ import type { StudioCatalog } from '../api/studio';
 import { useLessonsVersion } from '../lib/revision';
 import { dayList, lastBookableDay, studioToday, type IsoDay } from '../lib/slots';
 import {
-  choose, emptyGroupPick, focusLesson, lessonOf, marksOf, nextGroupStep, openingDay, reconcileGroupTime, withChoice,
+  choose, emptyGroupPick, focusLesson, lessonOf, marksOf, nextGroupStep, openingDay, reconcileGroupTime, withChoice, withDay,
   type DayMarks, type GroupPick,
 } from '../lib/groupWizard';
 import type { GroupFocus } from '../lib/entry';
 import { playDayWave } from '../lib/dayWave';
-import { STEPS, type WizardStep } from '../lib/wizard';
+import { shownStep, stepsFor, type WizardStep } from '../lib/wizard';
 import { useLessonBooking } from './useLessonBooking';
 import { useTelegram } from './useTelegram';
 
@@ -64,7 +64,7 @@ export function useGroupWizard({ catalog, onNeedAuth, enabled, branch }: Options
   );
 
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState<WizardStep>('time');
+  const [rawStep, setStep] = useState<WizardStep>('time');
   // Куда листнули: 1 — вперёд по вкладкам, -1 — назад. Раздел въезжает с этой стороны.
   const [dir, setDir] = useState(1);
   const [pick, setPick] = useState<GroupPick>(() => emptyGroupPick(today));
@@ -197,14 +197,18 @@ export function useGroupWizard({ catalog, onNeedAuth, enabled, branch }: Options
     [catalog?.services],
   );
   const staff = useMemo(() => catalog?.staff ?? [], [catalog?.staff]);
+  // Тренер один — раздела «Мастер» нет: тренер и так выводится из занятия.
+  const steps = stepsFor(staff.length === 1);
+  const step = shownStep(rawStep, steps);
   const serviceId = pick.serviceId ?? lesson?.service_id ?? null;
   const teacherId = pick.teacherId ?? lesson?.teacher_id ?? null;
   const selectedSpot = spot && lesson && spot.lessonId === lesson.id ? spot.spot : null;
 
   const goTo = (next: WizardStep) => {
-    setDir(STEPS.indexOf(next) >= STEPS.indexOf(step) ? 1 : -1);
+    const target = shownStep(next, steps);
+    setDir(steps.indexOf(target) >= steps.indexOf(step) ? 1 : -1);
     setInstantStep(false);
-    setStep(next);
+    setStep(target);
   };
 
   /** Выбор ведёт дальше: занятие сложилось — на итог, иначе — к тому, что его уточнит. */
@@ -245,7 +249,7 @@ export function useGroupWizard({ catalog, onNeedAuth, enabled, branch }: Options
     // и узнаёт, что перерисовываться в кадре открытия незачем.
     const next = { ...emptyGroupPick(day), serviceId: preset.serviceId ?? null, teacherId: preset.teacherId ?? null };
     setPick((current) => (
-      current.day === next.day && current.time === null
+      current.day === next.day && current.time === null && current.lessonId === null
       && current.serviceId === next.serviceId && current.teacherId === next.teacherId ? current : next
     ));
     // Пока лист был закрыт, места могли занять: свежее едет тихо, поверх
@@ -268,16 +272,15 @@ export function useGroupWizard({ catalog, onNeedAuth, enabled, branch }: Options
 
   return {
     isOpen, open, close,
-    step, dir, goTo, today, days, pick, scope,
+    step, steps, dir, goTo, today, days, pick, scope,
     /** Раздел сменился открытием, а не тапом — показать сразу, без перехода. */
     instantStep,
     /** Лист ещё выезжает: никаких своих движений поверх его анимации. */
     opening: isOpen && !quiet,
-    pickDay: (day: IsoDay) => { setPick((current) => ({ ...current, day })); vibrateLight(); },
-    pickTime: (minute: number) => advance({ ...pick, time: minute }),
+    pickDay: (day: IsoDay) => { setPick((current) => withDay(current, day)); vibrateLight(); },
     pickService: (id: number) => advance(withChoice(lessons, pick, { serviceId: id })),
     pickTeacher: (id: number) => advance(withChoice(lessons, pick, { teacherId: id })),
-    /** Одно из нескольких занятий в один час — прямо из итога. */
+    /** Занятие целиком — карточкой во «Времени» или одно из нескольких в час на итоге. */
     pickLesson: (row: LessonResponse) => advance(choose(pick, row)),
     /** Отметки ленты: `undefined` — ещё грузятся, `null` — недоступны. */
     marks,
