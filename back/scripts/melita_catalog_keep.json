@@ -1,0 +1,402 @@
+[
+  {
+    "id": 36,
+    "name": "Класичне бікіні",
+    "category": "БІКІНІ",
+    "price": 850,
+    "duration_min": 30,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 1000,
+        "duration_min": 30
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 850,
+        "duration_min": 30
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 37,
+    "name": "Глибоке бікіні",
+    "category": "БІКІНІ",
+    "price": 1300,
+    "duration_min": 40,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 1400,
+        "duration_min": 40
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 1300,
+        "duration_min": 40
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 38,
+    "name": "Ніжки повністю",
+    "category": "НІЖКИ",
+    "price": 1800,
+    "duration_min": 50,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 2000,
+        "duration_min": 50
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 1800,
+        "duration_min": 50
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 39,
+    "name": "Ніжки з коліном",
+    "category": "НІЖКИ",
+    "price": 1300,
+    "duration_min": 30,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 1500,
+        "duration_min": 30
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 1300,
+        "duration_min": 30
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 40,
+    "name": "Ніжки вище коліна",
+    "category": "НІЖКИ",
+    "price": 1300,
+    "duration_min": 40,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 1500,
+        "duration_min": 30
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 1300,
+        "duration_min": 40
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 41,
+    "name": "Руки повністю",
+    "category": "РУКИ",
+    "price": 1400,
+    "duration_min": 40,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 1600,
+        "duration_min": 40
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 1400,
+        "duration_min": 40
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 42,
+    "name": "Руки до ліктя",
+    "category": "РУКИ",
+    "price": 900,
+    "duration_min": 30,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 1000,
+        "duration_min": 30
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 900,
+        "duration_min": 30
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 43,
+    "name": "Підмишки",
+    "category": "РУКИ",
+    "price": 650,
+    "duration_min": 20,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 800,
+        "duration_min": 20
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 650,
+        "duration_min": 20
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 44,
+    "name": "Живіт",
+    "category": "ДОДАТКОВІ ЗОНИ",
+    "price": 600,
+    "duration_min": 20,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 600,
+        "duration_min": 20
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 600,
+        "duration_min": 20
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 45,
+    "name": "Лінія живота",
+    "category": "ДОДАТКОВІ ЗОНИ",
+    "price": 200,
+    "duration_min": 10,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 200,
+        "duration_min": 10
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 200,
+        "duration_min": 10
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 46,
+    "name": "Сідниці",
+    "category": "ДОДАТКОВІ ЗОНИ",
+    "price": 400,
+    "duration_min": 30,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 400,
+        "duration_min": 20
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 400,
+        "duration_min": 30
+      }
+    ],
+    "parts": []
+  },
+  {
+    "id": 53,
+    "name": "Глибоке бікіні + підмишки",
+    "category": "КОМПЛЕКСИ",
+    "price": 1700,
+    "duration_min": 50,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 2000,
+        "duration_min": 50
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 1700,
+        "duration_min": 50
+      }
+    ],
+    "parts": [
+      37,
+      43
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Глибоке бікіні + підмишки + ніжки з коліном",
+    "category": "КОМПЛЕКСИ",
+    "price": 2800,
+    "duration_min": 90,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 3200,
+        "duration_min": 80
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 2800,
+        "duration_min": 90
+      }
+    ],
+    "parts": [
+      37,
+      43,
+      39
+    ]
+  },
+  {
+    "id": 55,
+    "name": "Глибоке бікіні + підмишки + ніжки з коліном + руки до ліктя",
+    "category": "КОМПЛЕКСИ",
+    "price": 3500,
+    "duration_min": 110,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 3900,
+        "duration_min": 100
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 3500,
+        "duration_min": 110
+      }
+    ],
+    "parts": [
+      37,
+      43,
+      39,
+      42
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Глибоке бікіні + підмишки + ніжки повністю",
+    "category": "КОМПЛЕКСИ",
+    "price": 3100,
+    "duration_min": 110,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 3500,
+        "duration_min": 100
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 3100,
+        "duration_min": 110
+      }
+    ],
+    "parts": [
+      37,
+      43,
+      38
+    ]
+  },
+  {
+    "id": 57,
+    "name": "Глибоке бікіні + підмишки + ніжки повністю + руки повністю",
+    "category": "КОМПЛЕКСИ",
+    "price": 4250,
+    "duration_min": 130,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 4500,
+        "duration_min": 110
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 4250,
+        "duration_min": 130
+      }
+    ],
+    "parts": [
+      37,
+      43,
+      38,
+      41
+    ]
+  },
+  {
+    "id": 58,
+    "name": "Глибоке бікіні + підмишки + ніжки повністю + руки до ліктя",
+    "category": "КОМПЛЕКСИ",
+    "price": 4000,
+    "duration_min": 120,
+    "masters": [
+      {
+        "user_id": 42,
+        "name": "Melita",
+        "price": 4300,
+        "duration_min": 110
+      },
+      {
+        "user_id": 43,
+        "name": "Анастасія",
+        "price": 4000,
+        "duration_min": 120
+      }
+    ],
+    "parts": [
+      37,
+      43,
+      38,
+      42
+    ]
+  }
+]

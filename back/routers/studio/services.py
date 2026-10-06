@@ -109,7 +109,9 @@ def _service_read(
     )
 
 
-async def _read_all(studio_id: int, db: AsyncSession) -> dict[int, ServiceRead]:
+async def _read_all(
+    studio_id: int, db: AsyncSession, *, include_archived: bool = True,
+) -> dict[int, ServiceRead]:
     """Каталог услуг студии целиком, по названию — {id: карточка}.
 
     Одна услуга читается тем же путём, что и весь список: у комплекса в
@@ -136,6 +138,8 @@ async def _read_all(studio_id: int, db: AsyncSession) -> dict[int, ServiceRead]:
 
     containing: dict[int, list[ServiceRefRead]] = defaultdict(list)
     for bundle_id, part_ids in compositions.items():
+        if not include_archived and by_id[bundle_id].is_archived:
+            continue
         for part_id in part_ids:
             containing[part_id].append(ServiceRefRead(id=bundle_id, name=by_id[bundle_id].name))
 
@@ -159,7 +163,7 @@ async def _read_all(studio_id: int, db: AsyncSession) -> dict[int, ServiceRead]:
             in_bundles=containing.get(s.id),
             duration_range=durations.get(s.id),
         )
-        for s in services
+        for s in services if include_archived or not s.is_archived
     }
 
 
@@ -217,7 +221,7 @@ async def list_services(
     ctx: StudioContext = Depends(require_role("owner", "admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    return list((await _read_all(ctx.studio_id, db)).values())
+    return list((await _read_all(ctx.studio_id, db, include_archived=False)).values())
 
 
 @router.get("/services/{service_id}", response_model=ServiceRead)

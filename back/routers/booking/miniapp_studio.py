@@ -359,6 +359,8 @@ async def get_studio_catalog(
     # Состав комплексов — тоже одним запросом на всю витрину.
     compositions = await service_bundles.compositions(db, studio_id)
     names = {s.id: s.name for s in services}
+    # Названия частей сохраняем для составов, архивные услуги не предлагаем.
+    services = [service for service in services if not service.is_archived]
 
     # Цена со скидками — по каждому пакету, потому что часть скидок зависит от
     # суммы (min_purchase_amount у студийной, фиксированный оффер в деньгах).

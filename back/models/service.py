@@ -46,6 +46,9 @@ class Service(Base):
     # существующие resource-интервалы обслуживаются как прежде (AC-05),
     # каталог для НОВОЙ записи её не предлагает.
     is_bookable: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
+    # Скрыть из каталога, сохранив строку и ссылки журнала/финансов.
+    # is_bookable отдельно запрещает новые записи на архивную услугу.
+    is_archived: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     # Пресет терминов конкретной услуги — переопределяет пресет студии в
     # смешанном бизнесе (HB-14). NULL — наследовать пресет студии.
     terminology_profile: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
