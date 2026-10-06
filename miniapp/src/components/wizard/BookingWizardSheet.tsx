@@ -17,6 +17,7 @@ import WizardTicket from './WizardTicket';
 import WizardRail from './WizardRail';
 import WizardPaySheet from './WizardPaySheet';
 import WizardDone from './WizardDone';
+import { WizardSummaryAction } from './WizardSummaryAction';
 
 type Props = {
   flow: BookingWizardFlow;
@@ -75,8 +76,6 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
     serviceName,
   ].filter(Boolean).join(' · ');
 
-  const funding = quote?.terms.domain.funding;
-  const mustPay = funding?.kind === 'pay' && funding.price > 0;
   const close = () => {
     setPaying(false);
     setHover(null);
@@ -86,26 +85,10 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
   // Не выбрано — кнопка ведёт в первый невыбранный раздел, а не перечисляет,
   // чего не хватает. Филиал — исключение: его чипы стоят тут же, на итоге.
   // Скрытый раздел (мастер один) сюда не попадает: его выбор подставлен сам.
-  const missing = (['time', 'service', 'master'] as const).find((s) => flow.steps.includes(s) && !isChosen(pick, s));
-
   const footer = booking ? (
     <SheetAction onClick={() => { close(); onMyLessons(); }}>{t('wizard.toMyLessons')}</SheetAction>
-  ) : step === 'summary' && missing ? (
-    <SheetAction onClick={() => flow.goTo(missing)}>{t(`wizard.go.${missing}`)}</SheetAction>
   ) : step === 'summary' ? (
-    <SheetAction
-      disabled={!flow.complete || flow.quoting || flow.saving}
-      onClick={() => {
-        if (!quote) void flow.requestQuote();
-        else if (mustPay) setPaying(true);
-        else void flow.submit(flow.defaultMethod, null);
-      }}
-    >
-      {flow.saving ? t('resource.confirming')
-        : !flow.complete ? t('wizard.chooseBranch')
-        : quote && mustPay ? t('pay.payAmount')
-        : t('wizard.book')}
-    </SheetAction>
+    <WizardSummaryAction flow={flow} onPay={() => setPaying(true)} />
   ) : undefined;
 
   return (

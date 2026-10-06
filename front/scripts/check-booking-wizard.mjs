@@ -9,10 +9,14 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const require = createRequire(pathToFileURL(`${root}/package.json`));
 const ts = require('typescript');
 const base = 'src/pages/dashboard/Journal/components/modals/booking-wizard/';
-async function harness(file, extra = {}) {
+async function harness(file, extra = {}, effects = false) {
   let cursor = 0;
   const state = [];
-  const context = vm.createContext({ console, get localStorage() { return globalThis.localStorage; } });
+  let pending = [];
+  const context = vm.createContext({ console, get localStorage() { return globalThis.localStorage; }, Date: class extends Date {
+    constructor(...args) { super(...(args.length ? args : ['2026-09-30T08:00:00'])); }
+    static now() { return new Date('2026-09-30T08:00:00').getTime(); }
+  } });
   const jsx = (type, props) => ({ type, props });
   const deps = {
     react: {
@@ -21,12 +25,19 @@ async function harness(file, extra = {}) {
         if (!(i in state)) state[i] = typeof initial === 'function' ? initial() : initial;
         return [state[i], value => { state[i] = typeof value === 'function' ? value(state[i]) : value; }];
       },
-      useRef: initial => ({ current: initial }), useMemo: fn => fn(), useEffect: () => {},
+      useRef(initial) { const i = cursor++; return state[i] ??= { current: initial }; },
+      useMemo: fn => fn(),
+      useEffect(fn, deps) {
+        const i = cursor++;
+        const previous = state[i];
+        state[i] = deps;
+        if (effects && (!previous || deps.some((value, index) => !Object.is(value, previous[index])))) pending.push(fn);
+      },
     },
     'react/jsx-runtime': { jsx, jsxs: jsx, Fragment: 'fragment' },
     'react-i18next': { useTranslation: () => ({ t: key => key, i18n: { language: 'en' } }) },
     '../../../utils': { toDateStr: date => date.toISOString().slice(0, 10) },
-    './useBookingWizard': { isTime: value => /^([01]\d|2[0-3]):[0-5]\d$/.test(value), TIME_STEPS: [1, 2, 5, 15] },
+    './useBookingWizard': { isTime: value => /^([01]\d|2[0-3]):[0-5]\d$/.test(value), TIME_STEPS: [1, 2, 5, 15], TIME_STEP: 0, SERVICE_STEP: 2, SUMMARY_STEP: 4 },
     './timeOptions': { useTimeOptions: () => ({ times: ['10:00', '10:05'], loading: false }) },
     './WizardParts': { WizardEmpty: 'empty' },
     '../../../../../../components/Icons': { Clock: 'clock', Check: 'check' },
@@ -55,6 +66,8 @@ async function harness(file, extra = {}) {
       cursor = 0;
       let tree = mod.namespace[name](props);
       while (tree && typeof tree.type === 'function') tree = tree.type(tree.props);
+      const run = pending; pending = [];
+      for (const effect of run) effect();
       return tree;
     },
     call(name, args) { return mod.namespace[name](...args); },
@@ -93,7 +106,7 @@ test('complete manual time applies immediately and Enter advances', async () => 
 // значит, пока услуга не выбрана, раздел «Клиент» нужен.
 const MIXED = { services: [{ id: 2, booking_mode: 'resource', masters: [] }],
   resourceStaff: { staff: [{ teacher_id: 7, service_ids: [2] }] } };
-async function navigation(overrides = {}, catalog = MIXED) {
+async function navigation(overrides = {}, catalog = MIXED, effects = false) {
   const noop = () => {};
   const resource = { choice: { serviceOptions: [], masterOptions: [] }, slots: [],
     setDate: noop, setClient: noop, setTeacherId: noop };
@@ -118,12 +131,68 @@ async function navigation(overrides = {}, catalog = MIXED) {
     // Касса — владельцу и администратору; роль подменяют отдельные тесты.
     auth: { getUserRoleFromToken: () => 'owner' },
     ...overrides,
-  });
+  }, effects);
   return (extra = {}) => {
     const options = { defaultTeacherId: null, defaultDate: '2026-10-01', onClose: noop, onCreated: noop, ...extra };
     return () => app.render('useBookingWizard', options);
   };
 }
+
+test('a quote for the same clock time on another day cannot enable confirmation', async () => {
+  const noop = () => {};
+  const resource = { choice: { serviceOptions: [], masterOptions: [] }, slots: [{ local_start: '2026-10-08T19:00:00' }],
+    quote: { terms: { domain: { local_start: '2026-10-07T19:00:00', funding: {} } } },
+    setDate: noop, setClient: noop, setTeacherId: noop, setServiceId: noop };
+  const form = (await navigation({ useResourceBooking: { useResourceBooking: () => resource } }))({ defaultDate: '2026-10-08', defaultTime: '19:00', defaultTeacherId: 7 });
+  form().pickService(MIXED.services[0]);
+  form().pickClient(901, 'Matvii');
+  assert.equal(form().ready, false);
+});
+
+test('the branch is resolved when the day finishes loading after the selections', async () => {
+  const noop = () => {};
+  let loading = true;
+  const resource = { serviceId: 2, branchId: 1, teacherId: 7, choice: { serviceOptions: [], masterOptions: [] }, slots: [],
+    setDate: noop, setClient: noop, setTeacherId: noop, setServiceId: noop,
+    setBranchId(id) { resource.branchId = id; } };
+  const form = (await navigation({
+    useResourceBooking: { useResourceBooking: () => resource },
+    './useWizardAvailability': { useWizardAvailability: () => ({ serviceStates: new Map(), masterStates: new Map(),
+      loading, conflict: false, branchFor: () => loading ? undefined : 5 }) },
+  }, MIXED, true))({ defaultDate: '2026-10-08', defaultTime: '19:00', defaultTeacherId: 7 });
+  form().pickService(MIXED.services[0]);
+  form().pickClient(901, 'Matvii');
+  form();
+  assert.equal(resource.branchId, 1);
+  loading = false;
+  form();
+  assert.equal(resource.branchId, 5);
+});
+
+test('summary offers a retry after a failed quote and keeps the filled form', async () => {
+  const app = await harness(`${base}SummaryAction.tsx`, { money: { formatMoney: () => '' } });
+  let retries = 0;
+  const w = { steps: [0, 1, 2, 3, 4], done: step => step !== 4, ready: false, isResource: true,
+    availability: {}, resource: { quoteError: 'Network unavailable' }, settle: { ready: true, check: {} },
+    retryQuote: () => retries++ };
+  const tree = app.render('SummaryAction', { w });
+  assert.equal(nodes(tree, 'button')[0].disabled, false);
+  assert.ok(nodes(tree, 'div').some(props => props.role === 'status' && props.children === 'Network unavailable'));
+  nodes(tree, 'button')[0].onClick();
+  assert.equal(retries, 1);
+});
+
+test('summary offers an enabled retry when availability failed, rather than calling it a busy slot', async () => {
+  const app = await harness(`${base}SummaryAction.tsx`, { money: { formatMoney: () => '' } });
+  let retries = 0;
+  const w = { steps: [0, 1, 2, 3, 4], done: step => step !== 4, ready: false, isResource: true, busy: true,
+    availability: { error: true, loading: true }, resource: { slotsError: new Error() }, settle: { ready: true, check: {} },
+    retryAvailability: () => retries++ };
+  const tree = app.render('SummaryAction', { w });
+  assert.equal(nodes(tree, 'button')[0].disabled, false);
+  nodes(tree, 'button')[0].onClick();
+  assert.equal(retries, 1);
+});
 test('sections and swipes work before selecting a client; time is not automatically completed', async () => {
   const render = (await navigation())();
   let w = render();

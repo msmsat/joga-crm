@@ -153,6 +153,7 @@ export function useBookingWizard(o: WizardOptions) {
   const [notes, setNotes] = useState('');
   const notePhotos = useNotePhotos();
   const autoPicked = useRef<string | null>(null);
+  const [branchPicked, setBranchPicked] = useState(false);
   const currency = useStudioCurrency();
   // Из карточки клиента приходит только id — имя для проверки берём из профиля.
   const { data: profile } = useQuery({
@@ -185,7 +186,7 @@ export function useBookingWizard(o: WizardOptions) {
 
   // Занятия дня: по ним считается, свободны ли групповая услуга и её мастер
   // в названное время, и есть ли занятие, куда можно просто записать.
-  const { data: dayLessons = NO_LESSONS, isFetched: lessonsReady, isFetching: lessonsLoading } = useQuery({
+  const { data: dayLessons = NO_LESSONS, isFetched: lessonsReady, isFetching: lessonsLoading, isError: lessonsError, refetch: refreshLessons } = useQuery({
     queryKey: ['booking-wizard-lessons', date],
     queryFn: () => scheduleApi.getLessons({ date_from: date, date_to: date }),
     enabled: !!date,
@@ -251,6 +252,7 @@ export function useBookingWizard(o: WizardOptions) {
 
   /** Раздел «Время»: день и час; at пустой — час ещё не назван. */
   const syncBranch = (at: string, id = teacherId) => {
+    setBranchPicked(false);
     if (!isResource || !service) return;
     const branch = availability.branchFor(service.id, masterChosen ? id : null, at);
     if (branch != null && branch !== resource.branchId) resource.setBranchId(branch);
@@ -261,6 +263,7 @@ export function useBookingWizard(o: WizardOptions) {
       return;
     }
     autoPicked.current = null;
+    setBranchPicked(false);
     if (day !== date) { setDateState(day); resource.setDate(day); }
     setTimeState(at);
     o.onDateChange?.(day);
@@ -307,6 +310,7 @@ export function useBookingWizard(o: WizardOptions) {
     resource.setClient(id);
   };
   const pickService = (s: ServiceRead) => {
+    setBranchPicked(false);
     autoPicked.current = null;
     const compatible = teacherId == null || (s.booking_mode === 'resource'
       ? resourceStaff?.staff.some(m => m.teacher_id === teacherId && m.service_ids.includes(s.id))
@@ -325,6 +329,7 @@ export function useBookingWizard(o: WizardOptions) {
   };
   /** at — ближайшее свободное время, которое предложили у занятого мастера. */
   const pickMaster = (id: number | null, at?: string) => {
+    setBranchPicked(false);
     autoPicked.current = null;
     setTeacherState(id);
     resource.setTeacherId(id);
@@ -351,31 +356,62 @@ export function useBookingWizard(o: WizardOptions) {
   const joined = service && !isResource && needsClient && !solo
     ? lessonToJoin(dayLessons, service.id, teacherId, time) : undefined;
   const slotAtTime = resource.slots.find(s => s.local_start.slice(11, 16) === time);
+  // Выбор мог завершиться раньше запроса дня. Подставляем подходящий филиал
+  // после ответа, но явно выбранный на итоге адрес сохраняем.
+  const suggestedBranch = isResource && service && masterChosen && isTime(time) && !availability.loading && !conflict
+    ? availability.branchFor(service.id, teacherId, time) : undefined;
+  const setResourceBranch = resource.setBranchId;
+  const resourceBranch = resource.branchId;
+  useEffect(() => {
+    if (!branchPicked && suggestedBranch != null && suggestedBranch !== resourceBranch) setResourceBranch(suggestedBranch);
+  }, [branchPicked, suggestedBranch, resourceBranch, setResourceBranch]);
   /** Выбранный мастер в это время занят — итог это показывает и не записывает. */
   const busy = isTime(time) && masterChosen && !!service && (isResource
-    ? !resource.slotsLoading && !slotAtTime
-    : lessonsReady && !joined && !eventFree?.isFree(time));
+    ? !resource.loadingChoice && !resource.slotsLoading && !resource.slotsError && !slotAtTime
+    : lessonsReady && !lessonsLoading && !lessonsError && !joined && !eventFree?.isFree(time));
 
   // Индивидуальная: всё выбрано и время свободно — условия берутся сами,
   // один раз на набор выбора (отказ сервера не должен повторяться на каждый рендер).
   const autoKey = `${client?.id}|${resource.serviceId}|${resource.branchId}|${resource.teacherId}|${date}|${time}`;
 
-  const quotedTime = resource.quote?.terms.domain.local_start.slice(11, 16);
+  const quotedStart = resource.quote?.terms.domain.local_start.slice(0, 16);
+  const selectedStart = `${date}T${time}`;
+  const branchPending = !branchPicked && suggestedBranch != null && suggestedBranch !== resource.branchId;
   const { pick, quoting } = resource;
   useEffect(() => {
-    if (!isResource || !masterChosen || conflict || availability.loading || step !== SUMMARY_STEP || client == null || quoting || quotedTime === time
+    if (!isResource || !masterChosen || conflict || availability.loading || resource.loadingChoice || resource.loadError
+      || resource.slotsLoading || resource.slotsError || branchPending || step !== SUMMARY_STEP || client == null || quoting || quotedStart === selectedStart
       || autoPicked.current === autoKey || !slotAtTime) return;
     autoPicked.current = autoKey;
     void pick(slotAtTime);
-  }, [isResource, masterChosen, conflict, availability.loading, step, client, quoting, quotedTime, time, autoKey, slotAtTime, pick]);
+  }, [isResource, masterChosen, conflict, availability.loading, resource.loadingChoice, resource.loadError, resource.slotsLoading,
+    resource.slotsError, branchPending, step, client, quoting, quotedStart, selectedStart, autoKey, slotAtTime, pick]);
+
+  const retryAvailability = () => {
+    autoPicked.current = null;
+    if (isResource) {
+      if (resource.loadError) void resource.refreshChoice();
+      void availability.refresh();
+      void resource.refreshSlots();
+    } else void refreshLessons();
+  };
+  const retryQuote = () => {
+    if (!slotAtTime || availability.loading || resource.slotsLoading || resource.slotsError || branchPending) {
+      retryAvailability();
+      return;
+    }
+    autoPicked.current = autoKey;
+    void pick(slotAtTime);
+  };
 
   // Место не участвует в расписании (барбершоп) — зал не выбирается.
   const noHall = spaceIsAxis === false || halls.length === 0;
   const branch = branchId ?? branches[0]?.id ?? null;
-  const ready = !conflict && !busy && !availability.loading && isTime(time) && !isPastSlot(date, time, now)
+  const pastTime = isTime(time) && isPastSlot(date, time, now);
+  const ready = !conflict && !busy && !availability.loading && isTime(time) && !pastTime
     && masterChosen && (isResource
-    ? !!resource.quote && quotedTime === time && !quoting
-    : (!needsClient || clientOptional || client != null) && service != null && masterChosen && teacherId != null && isTime(time) && !busy);
+    ? !!resource.quote && quotedStart === selectedStart && !quoting && !branchPending && !resource.slotsLoading && !resource.slotsError && !resource.loadError
+    : !lessonsError && (!needsClient || clientOptional || client != null) && service != null && masterChosen && teacherId != null && isTime(time) && !busy);
 
   const note = { notes: notes.trim(), photos: notePhotos.photos };
   const hasNote = note.notes !== '' || note.photos.length > 0;
@@ -483,7 +519,9 @@ export function useBookingWizard(o: WizardOptions) {
     payLabel: [service?.name, time].filter(Boolean).join(' · '),
     clientName, priceText, durationMin, joined, busy, needsClient, client, fresh, service, teacherId, masterChosen, date, time,
     hallId, setHallId, branches, branch, setBranchId, noHall, isResource, serviceList, services, masters,
-    serviceStates, masterStates, trainers, halls, resource, ready, saving: saving || resource.saving,
+    serviceStates, masterStates, trainers, halls, resource, ready, pastTime, lessonsError, retryQuote, retryAvailability,
+    pickResourceBranch: (id: number) => { setBranchPicked(true); autoPicked.current = null; resource.setBranchId(id); },
+    saving: saving || resource.saving,
     dayLessons, lessonsReady: lessonsReady && !lessonsLoading, notBefore: isToday ? nowMin : null,
     pickClient, clearClient, addFreshClient, pickService, pickMaster, setWhen, pickTime, submit, pastAsk, acceptPast, choosePastOwn,
     notes, setNotes, notePhotos, notePending, settle,

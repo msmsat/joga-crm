@@ -70,6 +70,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   const [scope, setScope] = useState<number | null>(null);
   const [staff, setStaff] = useState<ResourceStaffMember[] | null>(null);
   const [staffError, setStaffError] = useState(false);
+  const [staffAttempt, setStaffAttempt] = useState(0);
   const [byDay, setByDay] = useState<Record<IsoDay, Day>>({});
   const [quoted, setQuoted] = useState<Quoted | null>(null);
   const [quoting, setQuoting] = useState(false);
@@ -91,7 +92,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
       .then((data) => { if (!cancelled) { setStaff(data.staff); setStaffError(false); } })
       .catch(() => { if (!cancelled) setStaffError(true); });
     return () => { cancelled = true; };
-  }, [isOpen, staff]);
+  }, [isOpen, staff, staffAttempt]);
 
   // Снимок дня — по требованию, один раз на день. Ошибка остаётся в кеше до «Повторить».
   const dayState = byDay[chosen.day];
@@ -136,10 +137,16 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   const step = shownStep(rawStep, steps);
   const service = services.find((row) => row.id === pick.serviceId) ?? null;
   const master = typeof pick.master === 'number' ? members.find((row) => row.teacher_id === pick.master) ?? null : null;
-  const branchId = rows ? branchOf(rows, pick) : null;
+  const branchId = rows ? branchOf(scope === null ? rows : rows.filter(row => row.branch_id === scope), pick) : null;
   const complete = isComplete(pick) && branchId !== null;
   const pickKey = `${pick.day}|${pick.time}|${pick.serviceId}|${pick.master}|${branchId}`;
   const quote = quoted && quoted.key === pickKey ? quoted : null;
+
+  const invalidateQuote = () => {
+    attempt.current += 1;
+    setQuoted(null);
+    setQuoting(false);
+  };
 
   const goTo = (next: WizardStep) => {
     const target = shownStep(next, steps);
@@ -150,6 +157,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
 
   /** Выбор в разделе ведёт дальше — в ближайший невыбранный или на итог. */
   const advance = (next: WizardPick, from: WizardStep) => {
+    invalidateQuote();
     setPick(next);
     vibrateLight();
     goTo(nextStep(next, from));
@@ -159,6 +167,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
    *  отсекает окна других адресов), `null` — во всех. `preset` — услуга и
    *  мастер, уже названные QR-кодом студии (`lib/entry.wizardFocusOf`). */
   const open = (first: WizardStep, branch: number | null = null, preset: ResourceFocus = {}) => {
+    invalidateQuote();
     setScope(branch);
     setPick({
       ...emptyPick(today),
@@ -216,6 +225,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
     const key = pickKey;
     const teacherId = typeof pick.master === 'number' ? pick.master : null;
     setQuoting(true);
+    setNotice(current => current === 'TERMS_REFRESHED' ? current : null);
     try {
       const free = await hybridApi.availability(availabilityQuery({
         serviceId: pick.serviceId, branchId, teacherId, from: pick.day, to: pick.day,
@@ -229,7 +239,8 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
         starts_at: slot.starts_at, payment_method: method,
       });
       const result = { key, method, data };
-      if (id === attempt.current) setQuoted(result);
+      if (id !== attempt.current) return null;
+      setQuoted(result);
       return result;
     } catch (error) {
       if (id === attempt.current) fail(error as ApiError);
@@ -290,16 +301,16 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   };
 
   return {
-    isOpen, open, close: () => setIsOpen(false),
+    isOpen, open, close: () => { invalidateQuote(); setIsOpen(false); },
     step, steps, dir, goTo, today, days,
     pick, advance,
-    pickDay: (day: IsoDay) => { setPick((current) => ({ ...current, day })); vibrateLight(); },
+    pickDay: (day: IsoDay) => { invalidateQuote(); setPick((current) => ({ ...current, day })); setNotice(null); vibrateLight(); },
     pickTime: (time: number) => advance({ ...pick, time }, 'time'),
     pickService: (id: number) => advance(onService(pick, id, members), 'service'),
     pickMaster: (choice: MasterChoice) => advance({ ...pick, master: choice }, 'master'),
-    pickBranch: (id: number) => setPick((current) => ({ ...current, branchId: id })),
+    pickBranch: (id: number) => { invalidateQuote(); setPick((current) => ({ ...current, branchId: id })); setNotice(null); },
     staff: members, staffLoading: staff === null && !staffError, staffError,
-    retryStaff: () => { setStaffError(false); setStaff(null); },
+    retryStaff: () => { setStaffError(false); setStaff(null); setStaffAttempt(value => value + 1); },
     // Дня нет в кеше — значит, он грузится: запись в кеш появляется с ответом.
     rows, dayLoading: !dayState,
     dayError: Boolean(dayState?.error),

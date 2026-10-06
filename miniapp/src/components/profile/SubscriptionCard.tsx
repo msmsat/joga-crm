@@ -14,6 +14,7 @@ type Props = {
   loadingLabel: string;
   emptyTitle: string;
   emptyHint: string;
+  buyLabel: string;
   onBuy: () => void;
 };
 
@@ -38,6 +39,7 @@ export default function SubscriptionCard({
   loadingLabel,
   emptyTitle,
   emptyHint,
+  buyLabel,
   onBuy,
 }: Props) {
   const hasSubscription = Boolean(name) && total > 0;
@@ -92,12 +94,13 @@ export default function SubscriptionCard({
             </div>
           </>
         ) : (
-          <Press onClick={onBuy} role="button" tabIndex={0} className="mt-4 cursor-pointer">
+          <Press onClick={onBuy} role="button" tabIndex={0} className="mt-4 cursor-pointer rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
             <div className={`text-[19px] font-extrabold tracking-[-0.02em] ${ON_SURFACE}`}>
               {emptyTitle}
             </div>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2.5 text-[12.5px] font-extrabold text-brand-foreground">
-              {emptyHint}
+            <div className={`mt-2 text-[12.5px] font-medium leading-relaxed opacity-70 ${ON_SURFACE}`}>{emptyHint}</div>
+            <div className="mt-5 flex min-h-11 items-center justify-between gap-3 rounded-[14px] bg-brand px-4 py-3 text-[13px] font-extrabold text-brand-foreground">
+              {buyLabel}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />

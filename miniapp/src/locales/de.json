@@ -233,7 +233,7 @@
   "buyModal": {
     "tag": "Studio-Preis",
     "title": "Abo wählen",
-    "sub": "Alle Abos gelten 30 Tage",
+    "sub": "Wähle das Kurspaket, das zu dir passt",
     "choose_plan": "Tarif wählen",
     "popular": "Beliebt",
     "pay": "Bezahlen · {{price}}",
@@ -241,9 +241,12 @@
     "success": "Abo „{{name}}“ erfolgreich bezahlt! Die Einheiten sind Ihrem Guthaben gutgeschrieben.",
     "activate_error": "Fehler bei der Aktivierung des Abos.",
     "checking_payment": "Zahlungsstatus wird geprüft — Ihr Abo erscheint hier, sobald die Bank es bestätigt",
-    "pay_in_studio": "Sie können ein Abo im Studio kaufen",
+    "pay_in_studio": "Abos können nur per Direktnachricht oder im Studio gekauft werden",
     "activated": "Abo aktiviert",
-    "certificate_ready": "Der Gutschein wird beim Bezahlen angerechnet"
+    "certificate_ready": "Der Gutschein wird beim Bezahlen angerechnet",
+    "duration": "Gültig für {{count}} Tage",
+    "no_plans": "Zurzeit sind keine Abos online erhältlich. Frage im Studio nach den Möglichkeiten.",
+    "offline_help": "Schreibe dem Studio eine Direktnachricht oder wende dich an das Team im Studio, um ein Abo auszuwählen."
   },
   "successModal": {
     "title": "Sie sind angemeldet",
@@ -663,6 +666,10 @@
   "pass": {
     "kicker": "Abo",
     "from": "ab {{price}}",
-    "buy": "Kaufen"
+    "buy": "Kaufen",
+    "choose": "Abo auswählen",
+    "view": "Abos ansehen",
+    "choose_hint": "Wähle ein Kurspaket in deinem Rhythmus",
+    "details": "Verbleibende Kurse · Details ansehen"
   }
 }

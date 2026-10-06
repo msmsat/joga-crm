@@ -233,7 +233,7 @@
   "buyModal": {
     "tag": "Ceník studia",
     "title": "Vybrat předplatné",
-    "sub": "Všechna předplatná platí 30 dní",
+    "sub": "Vyberte si balíček, který vám vyhovuje",
     "choose_plan": "Vyberte předplatné",
     "popular": "Oblíbené",
     "pay": "Zaplatit · {{price}}",
@@ -241,9 +241,12 @@
     "success": "Předplatné \"{{name}}\" bylo úspěšně zaplaceno! Lekce byly připsány na váš zůstatek.",
     "activate_error": "Při aktivaci předplatného došlo k chybě.",
     "checking_payment": "Kontrolujeme stav platby — předplatné se zobrazí, jakmile banka platbu potvrdí",
-    "pay_in_studio": "Předplatné lze zakoupit ve studiu",
+    "pay_in_studio": "Předplatné lze koupit pouze přes přímou zprávu nebo ve studiu",
     "activated": "Předplatné aktivováno",
-    "certificate_ready": "Certifikát bude uplatněn při platbě"
+    "certificate_ready": "Certifikát bude uplatněn při platbě",
+    "duration": "Platnost: {{count}} dní",
+    "no_plans": "Momentálně nejsou k dispozici předplatná k nákupu online. Zeptejte se ve studiu na možnosti.",
+    "offline_help": "Napište studiu přímou zprávu nebo se obraťte na tým ve studiu, který vám pomůže vybrat předplatné."
   },
   "successModal": {
     "title": "Jste zapsáni",
@@ -663,6 +666,10 @@
   "pass": {
     "kicker": "Předplatné",
     "from": "od {{price}}",
-    "buy": "Koupit"
+    "buy": "Koupit",
+    "choose": "Vybrat předplatné",
+    "view": "Prohlédnout předplatná",
+    "choose_hint": "Vyberte si balíček lekcí ve svém tempu",
+    "details": "Zbývající lekce · Zobrazit podrobnosti"
   }
 }

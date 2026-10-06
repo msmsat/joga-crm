@@ -13,5 +13,5 @@ export function useWizardAvailability(o: Omit<Parameters<typeof buildAvailabilit
   const matrix = useMemo(() => buildAvailability({ services, trainers, lessons, lessonsReady, notBefore, joinable,
     rows: day.data?.services ?? [], resourceReady: !hasResource || (!!day.data && !day.isFetching && !day.isError),
   }), [services, trainers, lessons, lessonsReady, notBefore, joinable, day.data, day.isFetching, day.isError, hasResource]);
-  return { ...selectAvailability(matrix, o), error: day.isError };
+  return { ...selectAvailability(matrix, o), error: day.isError, refresh: day.refetch };
 }

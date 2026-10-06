@@ -57,7 +57,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
   // студии. Ответ об абонементе не пришёл с ошибкой — иначе «Купить» обещало
   // бы то, что у человека, возможно, уже есть.
   const showPass = Boolean(catalog) && !subscription.failed
-    && (subscription.loading || subscription.active !== null || (catalog?.packages.length ?? 0) > 0);
+    && (subscription.loading || subscription.active !== null || (catalog?.packages.length ?? 0) > 0 || catalog?.can_pay_online === false);
 
   // QR-код студии — запись с тем, что он назвал, со «Времени»: остальное код
   // назвал. Занятие групповой мастер сам уведёт на итог, когда придёт его день.
@@ -101,6 +101,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
             active={subscription.active}
             loading={subscription.loading}
             packages={catalog?.packages ?? []}
+            canPayOnline={catalog?.can_pay_online ?? false}
             onOpen={() => onNavigate('prof')}
             onBuy={onBuySubscription}
           />

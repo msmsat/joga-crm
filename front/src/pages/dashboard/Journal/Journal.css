@@ -1267,6 +1267,8 @@
 .kp-foot > button { height: 38px; border-radius: 8px; font-size: 12.5px; }
 .kp-foot > .btn-ghost-sm { padding: 0 16px; }
 .kp-foot > .btn-primary-sm { padding: 0 24px; }
+.kp-foot.bw-summary-foot { flex-wrap: wrap; }
+.bw-submit-status { flex-basis: 100%; font-size: 12.5px; line-height: 1.5; color: var(--text2); }
 .kp-section-title {
   font-size: 11px;
   font-weight: 800;

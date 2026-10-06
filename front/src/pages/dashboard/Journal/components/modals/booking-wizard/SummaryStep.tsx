@@ -50,7 +50,7 @@ export function SummaryStep({ w }: { w: BookingWizardState }) {
   // занятия; у стоящего занятия место уже задано, менять тут нечего.
   const place = !w.service ? null : w.isResource
     ? w.resource.choice.branchOptions.length > 1 && (
-      <WizardChips value={w.resource.branchId ?? 0} onPick={id => w.resource.setBranchId(id)}
+      <WizardChips value={w.resource.branchId ?? 0} onPick={w.pickResourceBranch}
                    options={w.resource.choice.branchOptions.map(b => ({ value: b.id, label: b.name }))} />)
     : w.joined ? null
     : w.noHall ? w.branches.length > 1 && (

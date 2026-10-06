@@ -21,7 +21,7 @@ const receipt = { currency: 'EUR', base_price: 25, covered_by: null, discounts: 
 // Ответы приходят через несколько микрозадач (условия → чек) — ждём макрозадачу.
 const settle = () => new Promise(done => setTimeout(done, 0));
 
-async function setup(file, api = {}, { phone = false, now } = {}) {
+async function setup(file, api = {}, { phone = false, now = '2026-09-30T08:00:00' } = {}) {
   let cursor = 0;
   const state = [];
   const calls = [];
@@ -127,6 +127,24 @@ const modalPath = '../src/pages/dashboard/Journal/components/modals/ResourceBook
 const formPath = '../src/pages/dashboard/Journal/hooks/useResourceBooking.ts';
 const keypadPath = '../src/pages/dashboard/Journal/components/modals/ResourceKeypadModal.tsx';
 const props = { defaultDate: '2026-10-01', defaultServiceId: 2, teacherId: 7, onClose() {}, onCreated() {} };
+
+test('a failed quote exposes a persistent reason and can be retried without changing any selection', async () => {
+  let attempts = 0;
+  const app = await setup(formPath, { quote: () => {
+    if (++attempts === 1) throw new Error('Network unavailable');
+    return quoted;
+  } });
+  const form = () => app.render('useResourceBooking', { ...props, checkout: false });
+  form().setClient(901);
+  assert.equal(await form().pick(slot), 'failed');
+  assert.equal(form().quoteError, 'Error: Network unavailable');
+  assert.equal(form().quoting, false);
+  assert.equal(form().client, 901);
+  assert.equal(await form().pick(slot), 'ok');
+  assert.equal(form().quoteError, null);
+  assert.equal(form().quote.quote_id, 'quote-1');
+  assert.deepEqual(app.calls.filter(call => typeof call === 'object')[0], app.calls.filter(call => typeof call === 'object')[1]);
+});
 
 test('creation offers individual services; event editing still excludes them', async () => {
   const app = await setup('../src/pages/dashboard/Journal/hooks/useServiceOptions.ts');

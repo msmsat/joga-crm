@@ -72,6 +72,7 @@ export function useResourceBooking({
   const [quote, setQuote] = useState<QuoteRead | null>(null);
   const [saving, setSaving] = useState(false);
   const [quoting, setQuoting] = useState(false);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
   // Скидка на первое занятие для ЭТОЙ записи: ставится сама, если положена;
   // выключатель на шаге оплаты её снимает. Новый клиент — снова включена.
   const [firstLesson, setFirstLessonState] = useState(true);
@@ -82,14 +83,14 @@ export function useResourceBooking({
   const lastSlot = useRef<AvailabilitySlot | null>(null);
   const resetQuote = () => {
     quoteVersion.current += 1; lastSlot.current = null;
-    setQuote(null); setQuoting(false); payment.reset();
+    setQuote(null); setQuoting(false); setQuoteError(null); payment.reset();
   };
 
-  const { data: services = [], error: servicesError, isPending: servicesLoading } = useQuery({ queryKey: queryKeys.services, queryFn: () => servicesApi.list() });
+  const { data: services = [], error: servicesError, isPending: servicesLoading, refetch: refreshServices } = useQuery({ queryKey: queryKeys.services, queryFn: () => servicesApi.list() });
   const { data: branches = [] } = useQuery({ queryKey: queryKeys.branches, queryFn: () => studioApi.getBranches() });
   // Кто какие услуги ведёт и где принимает. staleTime 0: мастеров услуге
   // назначают и в Каталоге, а тот ключ staff не инвалидирует.
-  const { data: links, error: linksError, isPending: linksLoading } = useQuery({
+  const { data: links, error: linksError, isPending: linksLoading, refetch: refreshLinks } = useQuery({
     queryKey: queryKeys.resourceStaff, queryFn: () => hybridApi.resourceStaff(), staleTime: 0,
   });
 
@@ -150,6 +151,7 @@ export function useResourceBooking({
     if (serviceId == null || branchId == null || client == null || saving) return 'stale';
     const version = ++quoteVersion.current;
     setQuoting(true);
+    setQuoteError(null);
     try {
       const request = {
         booking_mode: 'resource' as const, client_id: client, service_id: serviceId,
@@ -166,7 +168,9 @@ export function useResourceBooking({
       return 'ok';
     } catch (err) {
       if (version !== quoteVersion.current) return 'stale';
-      toast.error(errorMessage(err, t));
+      const message = errorMessage(err, t);
+      setQuoteError(message);
+      toast.error(message);
       return 'failed';
     } finally {
       if (version === quoteVersion.current) setQuoting(false);
@@ -239,9 +243,10 @@ export function useResourceBooking({
     date, setDate: (value: string) => { setDate(value); resetQuote(); onDateChange?.(value); },
     choice, serviceId, branchId, teacherId, chosenService, loadingChoice,
     loadError: servicesError ?? linksError,
+    refreshChoice: () => Promise.all([refreshServices(), refreshLinks()]),
     rangeOf, priceAt, durationAt, serviceHint,
     slots, reason, slotsLoading, slotsError, refreshSlots,
-    quote, quoting, saving, pick, confirm,
+    quote, quoteError, quoting, saving, pick, confirm,
     firstLesson, setFirstLesson, payment,
   };
 }

@@ -17,7 +17,7 @@ import { TimeStep } from './TimeStep';
 import { WhenChip } from './WhenPicker';
 import { useGridSwipe } from '../../../hooks/useGridSwipe';
 import { SummaryStep } from './SummaryStep';
-import { formatMoney } from '../../../../../../lib/money';
+import { SummaryAction } from './SummaryAction';
 import { NewClientStep } from './NewClientStep';
 import { WizardTabs } from './WizardTabs';
 import { ConfirmModal } from '../../../../../../components/ui/index';
@@ -88,7 +88,6 @@ export function BookingWizard(props: WizardOptions) {
   const showFoot = w.step === SUMMARY_STEP || canContinue;
   const payable = w.ready && (!w.isResource || w.settle.ready);
   // Снимок заметки ещё грузится — подтверждать рано, он бы не попал в запись.
-  const confirmable = payable && !w.notePending;
   // ConfirmModal после «Продолжить» зовёт и onClose — отличаем его от
   // «Выбрать своё», иначе принятый час тут же сменился бы разделом «Время».
   const pastAccepted = useRef(false);
@@ -144,17 +143,9 @@ export function BookingWizard(props: WizardOptions) {
               </div>
 
               {showFoot && (
-                <div className="kp-foot">
+                <div className={`kp-foot${w.step === SUMMARY_STEP ? ' bw-summary-foot' : ''}`}>
                   {w.step === SUMMARY_STEP ? (
-                    // Выбрали на итоге «Оплату» — деньги принимаются вместе с
-                    // записью: сумму, которую примут, сервер сверяет с чеком.
-                    // Кнопка её и называет. Без оплаты — просто «Подтвердить».
-                    <button type="button" className="btn-primary-sm" disabled={!confirmable || w.saving}
-                            style={{ opacity: !confirmable || w.saving ? 0.5 : 1 }} onClick={() => void w.submit()}>
-                      {w.isResource && w.settle.amount
-                        ? t('journal:payment.confirmAndPay', { amount: formatMoney(w.settle.amount, w.settle.check.preview?.currency ?? '') })
-                        : w.payNow ? t('journal:wizard.confirmAndPay') : t('journal:wizard.confirm')}
-                    </button>
+                    <SummaryAction w={w} />
                   ) : (
                     <button type="button" className="btn-primary-sm" disabled={!canContinue}
                             style={{ opacity: canContinue ? 1 : 0.5 }} onClick={w.advance}>

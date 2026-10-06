@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
 import PaymentModal from './PaymentModal';
@@ -42,6 +42,7 @@ export default function BuyModal({
 }: BuyModalProps) {
   const { t } = useTranslation();
   const { tg, vibrateLight } = useTelegram();
+  const reduce = useReducedMotion();
 
   // Раскрывающаяся карточка заменена на выбор: раскрытие прятало кнопку оплаты
   // внутрь карточки, и до неё было два тапа вместо одного.
@@ -58,7 +59,7 @@ export default function BuyModal({
 
   // Расчёт запрашиваем только когда лист оплаты открыт: в списке пакетов
   // рычагов ещё нет, и дёргать сервер на каждый выбор пакета незачем.
-  const { calc, isCalculating } = useCheckoutCalc(isPaymentOpen ? selectedId : null, options);
+  const { calc, isCalculating } = useCheckoutCalc(canPayOnline && isPaymentOpen ? selectedId : null, options);
 
   const handleClose = () => {
     setSelectedId(null);
@@ -93,7 +94,7 @@ export default function BuyModal({
   };
 
   const startPayment = async () => {
-    if (!selected) return;
+    if (!selected || !canPayOnline) return;
 
     try {
       const { url, paid } = await createCheckoutSession(selected.id, options);
@@ -124,21 +125,18 @@ export default function BuyModal({
         onClose={handleClose}
         kicker={t('buyModal.tag')}
         title={t('buyModal.title')}
-        subtitle={t('buyModal.sub')}
+        subtitle={t(canPayOnline ? 'buyModal.sub' : 'buyModal.pay_in_studio')}
         footer={
-          canPayOnline ? (
+          canPayOnline && packages.length > 0 ? (
             <SheetAction onClick={() => setIsPaymentOpen(true)} disabled={!selected}>
               {selected ? t('buyModal.pay', { price: selected.final_price_str }) : t('buyModal.choose_plan')}
             </SheetAction>
           ) : (
-            // Пустая кнопка, ведущая в ошибку (Stripe не подключён), хуже честного текста.
-            <div className="rounded-[18px] bg-muted px-4 py-3.5 text-center text-[13px] font-semibold text-muted-foreground">
-              {t('buyModal.pay_in_studio')}
-            </div>
+            <SheetAction onClick={handleClose}>{t('buyModal.close')}</SheetAction>
           )
         }
       >
-        {pendingCertificate && (
+        {pendingCertificate && canPayOnline && (
           <motion.div
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
@@ -157,66 +155,40 @@ export default function BuyModal({
           </motion.div>
         )}
 
-        <div className="flex flex-col gap-2.5">
-          {packages.map((plan, i) => {
+        {packages.length === 0 && <div className="rounded-[20px] bg-background p-5 text-[13px] font-medium leading-relaxed text-muted-foreground">{t(canPayOnline ? 'buyModal.no_plans' : 'buyModal.offline_help')}</div>}
+        <div className="flex flex-col gap-3">
+          {packages.map((plan) => {
             const isSelected = selectedId === plan.id;
 
             return (
               <motion.button
                 key={plan.id}
                 type="button"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.34, delay: i * 0.045, ease: [0.16, 1, 0.3, 1] }}
-                whileTap={{ scale: 0.985 }}
+                aria-pressed={isSelected}
+                whileTap={reduce ? undefined : { scale: 0.985 }}
                 onClick={() => {
                   setSelectedId(plan.id);
                   vibrateLight();
                 }}
-                className={`relative flex items-center gap-3 rounded-[20px] px-4 py-4 text-left transition ${
-                  isSelected ? 'bg-brand/10 ring-1 ring-brand/50' : 'bg-background'
+                className={`relative flex flex-col gap-5 rounded-[22px] p-5 text-left shadow-soft transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand ${
+                  isSelected ? 'bg-background ring-2 ring-brand' : 'bg-background ring-1 ring-inset ring-border hover:ring-brand/50'
                 }`}
               >
-                <span
-                  className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full ${
-                    isSelected ? 'bg-brand' : 'ring-1 ring-foreground/15'
-                  }`}
-                >
-                  {isSelected && (
-                    <motion.span
-                      initial={{ scale: 0.3 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 520, damping: 24 }}
-                      className="h-2 w-2 rounded-full bg-brand-foreground"
-                    />
-                  )}
-                </span>
-
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[15px] font-extrabold tracking-[-0.02em] text-foreground">
-                    {nameOf(plan)}
-                  </span>
-                  <span className="mt-0.5 flex items-center gap-1.5 text-[11.5px] font-medium text-muted-foreground">
-                    {plan.class_count} {t('common.classes_count')}
-                    {/* Бейдж скидки рядом с количеством занятий, а не у цены:
-                        у цены уже стоит зачёркнутая база, два акцента в одной
-                        точке спорили бы друг с другом. */}
-                    {plan.discount_label && (
-                      <span className="rounded-full bg-brand/12 px-2 py-0.5 text-[10.5px] font-extrabold text-brand">
-                        {plan.discount_label}
-                      </span>
-                    )}
+                <span className="flex items-start justify-between gap-4">
+                  <span className="min-w-0 text-[16px] font-extrabold leading-snug tracking-[-0.025em] text-foreground [overflow-wrap:anywhere]">{nameOf(plan)}</span>
+                  <span aria-hidden="true" className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${isSelected ? 'bg-brand text-brand-foreground' : 'ring-1 ring-foreground/20'}`}>
+                    {isSelected && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="m5 12 4 4L19 6" /></svg>}
                   </span>
                 </span>
-
-                <span className="shrink-0 text-right">
-                  {plan.discount_label && (
-                    <span className="block text-[11.5px] font-bold tabular-nums text-muted-foreground line-through">
-                      {plan.price_str}
-                    </span>
-                  )}
-                  <span className="block text-[15px] font-extrabold tabular-nums tracking-[-0.025em] text-foreground">
-                    {plan.final_price_str}
+                <span className="flex flex-wrap items-end justify-between gap-4">
+                  <span>
+                    <span className="block text-[36px] font-extrabold leading-none tabular-nums tracking-[-0.06em] text-foreground">{plan.class_count}</span>
+                    <span className="mt-1.5 block text-[11.5px] font-semibold text-muted-foreground">{t('common.classes_count')}</span>
+                  </span>
+                  <span className="text-right">
+                    {plan.discount_label && <span className="mb-1 flex flex-wrap items-baseline justify-end gap-2 text-[11px] font-semibold"><span className="text-muted-foreground line-through">{plan.price_str}</span><span className="rounded-full bg-brand px-2 py-0.5 text-brand-foreground">{plan.discount_label}</span></span>}
+                    <span className="block text-[22px] font-extrabold tabular-nums tracking-[-0.04em] text-foreground">{plan.final_price_str}</span>
+                    <span className="mt-1 block text-[11.5px] font-medium text-muted-foreground">{t('buyModal.duration', { count: plan.duration_days })}</span>
                   </span>
                 </span>
               </motion.button>
@@ -226,7 +198,7 @@ export default function BuyModal({
       </Sheet>
 
       <PaymentModal
-        isOpen={isPaymentOpen}
+        isOpen={canPayOnline && isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}
         itemName={selected ? nameOf(selected) : ''}
         amountStr={selected ? selected.final_price_str : ''}

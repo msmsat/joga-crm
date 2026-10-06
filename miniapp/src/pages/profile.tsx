@@ -7,6 +7,7 @@ import BuyModal from '../components/modals/BuyModal';
 import LanguagePopover from '../components/profile/LanguagePopover';
 import Auth from './auth';
 import SubscriptionCard from '../components/profile/SubscriptionCard';
+import SubscriptionPurchaseButton from '../components/profile/SubscriptionPurchaseButton';
 import SettingRow from '../components/profile/SettingRow';
 import LogoutButton from '../components/profile/LogoutButton';
 import { SectionLabel } from '../components/ui/SectionLabel';
@@ -289,7 +290,8 @@ export default function Profile({
               isLoading={isLoadingSub}
               loadingLabel={t('profile.checking_subs')}
               emptyTitle={subError ? t('profile.sub_load_error') : t('profile.no_sub')}
-              emptyHint={subError ?? t('profile.buy_sub_hint')}
+              emptyHint={subError ?? t(catalog?.can_pay_online ? 'pass.choose_hint' : 'buyModal.pay_in_studio')}
+              buyLabel={t(catalog?.can_pay_online ? 'pass.choose' : 'pass.view')}
               onBuy={open(setIsBuyOpen)}
             />
           </div>
@@ -328,11 +330,9 @@ export default function Profile({
         <div>
           <SectionLabel>{t('profile.subscription_group')}</SectionLabel>
           <div className="flex flex-col gap-2 px-5">
-            <SettingRow
-              accent
-              label={t('profile.buy_btn')}
+            <SubscriptionPurchaseButton
+              canPayOnline={catalog?.can_pay_online ?? false}
               onClick={open(setIsBuyOpen)}
-              icon={<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z M3 6h18 M16 10a4 4 0 01-8 0" />}
             />
             <SettingRow
               label={t('profile.history')}

@@ -38,8 +38,9 @@ export function WizardServices({ flow, onPreview }: { flow: BookingWizardFlow; o
   const priceOf = useServicePrice();
   const durationOf = useServiceDuration();
   const { pick } = flow;
-  if (flow.staffLoading || (pick.time !== null && flow.dayLoading)) return <RowSkeleton />;
   if (flow.staffError) return <WizardEmpty title={t('wizard.loadError')} action={t('booking.retry')} onAction={flow.retryStaff} />;
+  if (pick.time !== null && flow.dayError) return <WizardEmpty title={t('wizard.loadError')} action={t('booking.retry')} onAction={flow.retryDay} />;
+  if (flow.staffLoading || (pick.time !== null && flow.dayLoading)) return <RowSkeleton />;
 
   const ids = serviceChoices(flow.services.map((row) => row.id), flow.staff, flow.rows ?? [], pick);
   const list = flow.services.filter((row) => ids.includes(row.id));
@@ -99,8 +100,9 @@ export function Avatar({ member, size = 48 }: { member: ResourceStaffMember; siz
 export function WizardMasters({ flow, onPreview }: { flow: BookingWizardFlow; onPreview?: Preview }) {
   const { t } = useTranslation();
   const { pick } = flow;
-  if (flow.staffLoading || (pick.time !== null && flow.dayLoading)) return <RowSkeleton />;
   if (flow.staffError) return <WizardEmpty title={t('wizard.loadError')} action={t('booking.retry')} onAction={flow.retryStaff} />;
+  if (pick.time !== null && flow.dayError) return <WizardEmpty title={t('wizard.loadError')} action={t('booking.retry')} onAction={flow.retryDay} />;
+  if (flow.staffLoading || (pick.time !== null && flow.dayLoading)) return <RowSkeleton />;
 
   const list = masterChoices(flow.staff, flow.rows ?? [], pick);
   const serviceName = flow.service ? t(`lesson.name.${flow.service.name}`, { defaultValue: flow.service.name }) : null;
