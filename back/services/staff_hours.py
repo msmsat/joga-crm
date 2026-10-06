@@ -111,12 +111,13 @@ def unavailable_blocks(hours_rows, overrides, busy_rows, day):
     for anchor in (day-timedelta(days=1),day):
         source=effective_hours(hours_rows,overrides,anchor)
         if source is not None and source.is_open:
-            labels.extend((s,e,"break",label) for s,e,label in break_bounds(source,anchor))
-    labels.extend((b.start_time,b.end_time,"busy",b.reason) for b in busy_rows)
+            labels.extend((s,e,"break",label,None) for s,e,label in break_bounds(source,anchor))
+    # id занятости едет в журнал: по нему блок «Время студии» открывается на правку.
+    labels.extend((b.start_time,b.end_time,"busy",b.reason,getattr(b,"id",None)) for b in busy_rows)
     cuts={lo,hi}
     for s,e in free:
         cuts.update((max(lo,s),min(hi,e)))
-    for s,e,_,_ in labels:
+    for s,e,*_ in labels:
         if s<hi and lo<e:
             cuts.update((max(lo,s),min(hi,e)))
     result=[]
@@ -126,9 +127,14 @@ def unavailable_blocks(hours_rows, overrides, busy_rows, day):
         explicit=next((b for b in reversed(labels) if b[0]<=mid<b[1]),None)
         if explicit is None and any(s<=mid<e for s,e in free):
             continue
-        kind,label=(explicit[2],explicit[3]) if explicit else ("off_hours",None)
-        if result and result[-1]["end_time"]==start and result[-1]["kind"]==kind and result[-1]["label"]==label:
+        kind,label,busy_id=(explicit[2],explicit[3],explicit[4]) if explicit else ("off_hours",None,None)
+        # Две «Уборки» встык — два блока, а не один: каждую правят и снимают отдельно.
+        if result and result[-1]["end_time"]==start and result[-1]["kind"]==kind and result[-1]["label"]==label \
+                and result[-1].get("id")==busy_id:
             result[-1]["end_time"]=end
         else:
-            result.append({"start_time":start,"end_time":end,"kind":kind,"label":label})
+            block={"start_time":start,"end_time":end,"kind":kind,"label":label}
+            if busy_id is not None:
+                block["id"]=busy_id
+            result.append(block)
     return result

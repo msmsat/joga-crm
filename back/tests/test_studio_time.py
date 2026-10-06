@@ -1,313 +1,171 @@
-"""Локальное время студии и правила перехода на летнее время (P1.1).
-
-Даты переходов взяты КОНКРЕТНЫЕ и историчные — 29 марта и 25 октября 2026 года
-для Европы, — а не вычисленные от `datetime.now().year`: тест, который считает
-границы сам, повторяет ошибку кода и молчит ровно тогда, когда должен кричать.
-
-Ни один результат здесь не зависит от часового пояса машины: всё считается от
-момента в UTC и переводится зоной студии.
-
-Часть проверок требует БД (настройки студии, рабочие часы); остальное — чистые
-функции. Запуск из back/:  python -m tests.test_studio_time
+"""«Время студии»: блок без занятия из Журнала -> сетка -> ассистент.
+Все записи живут в откатываемой транзакции тестовой БД, как в test_staff_schedule_editor.
 """
 import asyncio
-import os
 import time
-import warnings
 from datetime import date, datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
+from types import SimpleNamespace
 
-warnings.filterwarnings("ignore")
+import pytest
+from fastapi import HTTPException
+from pydantic import ValidationError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from sqlalchemy import delete, select
-
-from database import async_session_maker
-from models import Studio, StudioAISettings, StudioWorkingHours
-from services import client_agent, studio_time
-from services.studio_time import (
-    AmbiguousLocalTime, NonexistentLocalTime, clock, parse, to_local, to_utc,
+from database import engine
+from models import Lesson, Studio, StudioMember, StaffWorkingHours, User
+from routers.schedule.staff_blocks import (
+    create_studio_time, delete_studio_time, staff_blocks, update_studio_time,
 )
-
-# Прага, 2026: вперёд 29 марта в 02:00, назад 25 октября в 03:00.
-_SPRING_GAP = datetime(2026, 3, 29, 2, 30)
-_AUTUMN_FOLD = datetime(2026, 10, 25, 2, 30)
-
-_NAME = "TEST-STUDIO-TIME"
+from schemas.schedule.time_blocks import StudioTimeCreate, StudioTimeUpdate
+from services import ai_tools, time_blocks
 
 
-class _Studio:
-    """Студия как её видит резолвер: только два поля и ничего лишнего."""
-
-    def __init__(self, tz_iana=None, timezone=None):
-        self.tz_iana, self.timezone = tz_iana, timezone
-
-
-def test_valid_and_invalid_zones():
-    """A и B: зона принимается, всё остальное — нет."""
-    assert parse("Europe/Prague") is not None
-    assert parse("America/New_York") is not None
-    assert parse("Asia/Dubai") is not None
-    assert parse("UTC") is not None
-
-    for bad in ("UTC+2", "Europe/Praha", "Prague", "GMT+17", "", None, "  "):
-        assert parse(bad) is None, bad
-    # Замороженные псевдонимы — тоже нет: это тот же офсет под другим именем,
-    # ради избавления от которого всё и затевалось.
-    for frozen in ("EST", "MST", "HST"):
-        assert parse(frozen) is None, frozen
-
-
-def test_prague_winter_and_summer():
-    """C и D: одно и то же «19:00» — разные моменты зимой и летом."""
-    prague = _Studio(tz_iana="Europe/Prague")
-    winter = to_utc(datetime(2026, 1, 15, 19, 0), prague)
-    summer = to_utc(datetime(2026, 7, 15, 19, 0), prague)
-    assert winter == datetime(2026, 1, 15, 18, 0), winter      # UTC+1
-    assert summer == datetime(2026, 7, 15, 17, 0), summer      # UTC+2
-    assert winter.hour != summer.hour, "сдвиг не изменился между зимой и летом"
+def run(case):
+    async def body():
+        async with engine.connect() as conn:
+            outer = await conn.begin()
+            try:
+                async with AsyncSession(bind=conn, join_transaction_mode="create_savepoint", expire_on_commit=False) as db:
+                    studio = Studio(name="TEST-STUDIO-TIME", tz_iana="Europe/Prague", strict_schedule_enabled=False)
+                    other = Studio(name="TEST-STUDIO-TIME-OTHER", tz_iana="Europe/Prague")
+                    user = User(email=f"studio-time-{time.time_ns()}@test.local", hashed_password="x", name="T")
+                    db.add_all([studio, other, user]); await db.flush()
+                    db.add(StudioMember(studio_id=studio.id, user_id=user.id, role="trainer", status="active", name="T"))
+                    for dow in range(7):
+                        db.add(StaffWorkingHours(studio_id=studio.id, user_id=user.id, day_of_week=dow,
+                                                 is_open=True, open_time="09:00", close_time="21:00"))
+                    await db.commit()
+                    day = date.today() + timedelta(days=14)
+                    ctx = SimpleNamespace(studio_id=studio.id, user=SimpleNamespace(id=user.id), role="owner")
+                    await case(db, ctx, day, other.id)
+            finally:
+                await outer.rollback()
+    asyncio.run(body())
 
 
-def test_utc_to_local_is_unambiguous():
-    """E и K: момент -> местное время однозначен всегда, в том числе в сутки
-    перевода стрелок. Занятие, уже имеющее момент, повторно «угадывать» не надо."""
-    prague = _Studio(tz_iana="Europe/Prague")
-    assert to_local(datetime(2026, 1, 15, 18, 0), prague).hour == 19
-    assert to_local(datetime(2026, 7, 15, 17, 0), prague).hour == 19
-
-    # Две стороны осеннего повтора — разные моменты и разные сдвиги, но каждый
-    # переводится в местное время без всякой неоднозначности.
-    before = to_local(datetime(2026, 10, 25, 0, 30), prague)   # ещё +2
-    after = to_local(datetime(2026, 10, 25, 1, 30), prague)    # уже +1
-    assert (before.hour, after.hour) == (2, 2)
-    assert before.utcoffset() != after.utcoffset()
+def at(day, hour, minute=0):
+    return datetime.combine(day, datetime.min.time()) + timedelta(hours=hour, minutes=minute)
 
 
-def test_local_to_utc_ordinary_day():
-    """F: обычный день переводится туда и обратно без потерь."""
-    prague = _Studio(tz_iana="Europe/Prague")
-    local = datetime(2026, 5, 20, 9, 15)
-    assert to_local(to_utc(local, prague), prague).replace(tzinfo=None) == local
+async def put(db, ctx, day, hour, minutes=60, label="Уборка", minute=0):
+    return await create_studio_time(StudioTimeCreate(staff_id=ctx.user.id, start_time=at(day, hour, minute),
+                                                     duration_min=minutes, label=label), ctx, db)
 
 
-def test_dst_spring_gap():
-    """I: несуществующее местное время не превращается молча в другой момент."""
-    prague = _Studio(tz_iana="Europe/Prague")
-    try:
-        to_utc(_SPRING_GAP, prague)
-        raise AssertionError("02:30 в ночь перевода принято как обычное время")
-    except NonexistentLocalTime:
-        pass
-    # Соседние часы тех же суток обычные — отсекается именно дыра, а не день.
-    assert to_utc(datetime(2026, 3, 29, 1, 30), prague) == datetime(2026, 3, 29, 0, 30)
-    assert to_utc(datetime(2026, 3, 29, 4, 30), prague) == datetime(2026, 3, 29, 2, 30)
+async def lesson(db, ctx, day, hour, *, after=0, status="confirmed"):
+    row = Lesson(studio_id=ctx.studio_id, teacher_id=ctx.user.id, teacher_name="T", name="Пилатес",
+                 start_time=at(day, hour), duration_min=60, price=100, level="", equipment="", total_spots=8,
+                 status=status, tz_iana="Europe/Prague", buffer_after_min=after)
+    db.add(row); await db.commit(); return row
 
 
-def test_dst_autumn_fold():
-    """J: время, случившееся дважды, распознаётся как неоднозначное."""
-    prague = _Studio(tz_iana="Europe/Prague")
-    try:
-        to_utc(_AUTUMN_FOLD, prague)
-        raise AssertionError("двойное время разрешено наугад")
-    except AmbiguousLocalTime:
-        pass
-    assert to_utc(datetime(2026, 10, 25, 1, 30), prague) == datetime(2026, 10, 24, 23, 30)
-    assert to_utc(datetime(2026, 10, 25, 4, 30), prague) == datetime(2026, 10, 25, 3, 30)
+def refused(exc: pytest.ExceptionInfo) -> str:
+    detail = exc.value.detail
+    return detail["code"] if isinstance(detail, dict) else detail
 
 
-def test_today_across_utc_boundary(monkeypatch=None):
-    """G и H: календарная дата студии, а не сервера.
-
-    23:30 UTC — в Праге уже следующее число, и «сегодня» обязано быть им.
-    Момент подменяем целиком, чтобы проверка не зависела от того, когда её
-    запустили.
-    """
-    prague = _Studio(tz_iana="Europe/Prague")
-    fixed = datetime(2026, 1, 15, 23, 30, tzinfo=timezone.utc)
-
-    real_datetime = studio_time.datetime
-
-    class _Frozen(real_datetime):
-        @classmethod
-        def now(cls, tz=None):
-            return fixed if tz is None else fixed.astimezone(tz)
-
-    studio_time.datetime = _Frozen
-    try:
-        assert studio_time.today(prague) == date(2026, 1, 16), "дата взята по серверу"
-        assert studio_time.tomorrow(prague) == date(2026, 1, 17)
-        # У студии на UTC этот же момент — ещё 15-е.
-        assert studio_time.today(_Studio(tz_iana="UTC")) == date(2026, 1, 15)
-    finally:
-        studio_time.datetime = real_datetime
+def test_block_reaches_journal_as_its_own_card():
+    async def case(db, ctx, day, _):
+        block = await put(db, ctx, day, 10, label="  Уборка   зала ")
+        assert block["label"] == "Уборка зала" and block["duration_min"] == 60
+        blocks = [b for b in await staff_blocks(day, day, ctx, db) if b["kind"] == "busy"]
+        assert blocks == [{"staff_id": ctx.user.id, "date": day.isoformat(), "start_minute": 600,
+                           "end_minute": 660, "kind": "busy", "label": "Уборка зала", "id": block["id"]}]
+        # Две одинаковые «Уборки» встык — два блока: каждый правится и снимается отдельно.
+        second = await put(db, ctx, day, 11, label="Уборка зала")
+        ids = [b.get("id") for b in await staff_blocks(day, day, ctx, db) if b["kind"] == "busy"]
+        assert ids == [block["id"], second["id"]]
+        # Перерыв по графику id не получает — открывать на правку там нечего.
+        assert all("id" not in b for b in await staff_blocks(day, day, ctx, db) if b["kind"] != "busy")
+    run(case)
 
 
-def test_two_studios_do_not_interfere():
-    """P: две зоны считаются независимо."""
-    prague = _Studio(tz_iana="Europe/Prague")
-    dubai = _Studio(tz_iana="Asia/Dubai")
-    local = datetime(2026, 7, 15, 19, 0)
-    assert to_utc(local, prague) == datetime(2026, 7, 15, 17, 0)
-    assert to_utc(local, dubai) == datetime(2026, 7, 15, 15, 0)   # Дубай круглый год +4
+def test_block_goes_only_into_a_free_window():
+    async def case(db, ctx, day, _):
+        await lesson(db, ctx, day, 12, after=15)
+        with pytest.raises(HTTPException) as exc:
+            await put(db, ctx, day, 12, 30)
+        assert exc.value.status_code == 409 and refused(exc) == "studio_time.lesson_overlap"
+        # Уборка после клиента — тоже его время: буфер занятия не отдаётся блоку.
+        with pytest.raises(HTTPException) as exc:
+            await put(db, ctx, day, 13, 30)
+        assert refused(exc) == "studio_time.lesson_overlap"
+        await put(db, ctx, day, 13, 30, minute=15)            # сразу за буфером — свободно
+        await lesson(db, ctx, day, 16, status="cancelled")
+        await put(db, ctx, day, 16)                           # отменённое занятие окно не держит
+        with pytest.raises(HTTPException) as exc:
+            await put(db, ctx, day, 16, 30, minute=30, label="Планёрка")
+        assert refused(exc) == "studio_time.overlap"
+        await put(db, ctx, day, 17, label="Планёрка")         # встык к другому блоку — можно
+    run(case)
 
 
-def test_os_timezone_does_not_change_answer():
-    """H3/H9: смена зоны ОС не меняет ответа.
-
-    Веб и воркер могут работать на машинах с разной настройкой, и результат
-    обязан совпадать: момент берётся в UTC и переводится зоной студии.
-    """
-    prague = _Studio(tz_iana="Europe/Prague")
-    instant = datetime(2026, 7, 15, 17, 0)
-    expected = to_local(instant, prague)
-
-    saved = os.environ.get("TZ")
-    try:
-        for zone in ("UTC", "America/New_York", "Asia/Tokyo"):
-            os.environ["TZ"] = zone
-            if hasattr(time, "tzset"):     # на Windows его нет — проверка всё равно значима
-                time.tzset()
-            assert to_local(instant, prague) == expected
-            assert to_utc(datetime(2026, 7, 15, 19, 0), prague) == instant
-    finally:
-        if saved is None:
-            os.environ.pop("TZ", None)
-        else:
-            os.environ["TZ"] = saved
-        if hasattr(time, "tzset"):
-            time.tzset()
+def test_update_moves_and_renames_without_tripping_on_itself():
+    async def case(db, ctx, day, _):
+        block = await put(db, ctx, day, 10)
+        moved = await update_studio_time(block["id"], StudioTimeUpdate(start_time=at(day, 10, 30)), ctx, db)
+        assert (moved["start_time"], moved["duration_min"], moved["label"]) == (at(day, 10, 30), 60, "Уборка")
+        renamed = await update_studio_time(block["id"], StudioTimeUpdate(label="Проветривание", duration_min=15), ctx, db)
+        assert (renamed["end_time"], renamed["label"]) == (at(day, 10, 45), "Проветривание")
+        await lesson(db, ctx, day, 14)
+        with pytest.raises(HTTPException) as exc:
+            await update_studio_time(block["id"], StudioTimeUpdate(start_time=at(day, 14)), ctx, db)
+        assert refused(exc) == "studio_time.lesson_overlap"
+    run(case)
 
 
-def test_legacy_studio_is_not_verified():
-    """O и H1: старый офсет работает, но точным не считается — и уж точно не
-    превращается в Прагу."""
-    legacy = _Studio(timezone="UTC+2")
-    what = clock(legacy)
-    assert what.verified is False, "неоднозначный офсет объявлен подтверждённой зоной"
-    assert what.zone.utcoffset(None) == timedelta(hours=2)
-    assert not isinstance(what.zone, ZoneInfo), "офсет выдан за зону IANA"
-
-    # И зимой он остаётся +2 — именно поэтому по нему нельзя обещать время.
-    assert to_utc(datetime(2026, 1, 15, 19, 0), legacy) == datetime(2026, 1, 15, 17, 0)
-    assert to_utc(datetime(2026, 7, 15, 19, 0), legacy) == datetime(2026, 7, 15, 17, 0)
-
-    # Ни пустая студия, ни None не притворяются подтверждёнными.
-    assert clock(_Studio()).verified is False
-    assert clock(None).verified is False
-
-
-def test_invalid_saved_zone_reads_as_unverified():
-    """H7: опечатка в сохранённой зоне не делает вид, что время известно."""
-    typo = _Studio(tz_iana="Europe/Praha", timezone="UTC+1")
-    what = clock(typo)
-    assert what.verified is False
-    assert what.zone.utcoffset(None) == timedelta(hours=1)   # откат на старый офсет
+def test_delete_and_foreign_studio():
+    async def case(db, ctx, day, other_studio):
+        block = await put(db, ctx, day, 10)
+        stranger = SimpleNamespace(studio_id=other_studio, user=ctx.user, role="owner")
+        for call in (lambda: delete_studio_time(block["id"], stranger, db),
+                     lambda: update_studio_time(block["id"], StudioTimeUpdate(label="x"), stranger, db)):
+            with pytest.raises(HTTPException) as exc:
+                await call()
+            assert exc.value.status_code == 404
+        removed = await delete_studio_time(block["id"], ctx, db)
+        assert removed["id"] == block["id"]
+        assert not [b for b in await staff_blocks(day, day, ctx, db) if b["kind"] == "busy"]
+        with pytest.raises(HTTPException) as exc:
+            await delete_studio_time(block["id"], ctx, db)
+        assert refused(exc) == "studio_time.not_found"
+        # Сотрудник другой студии сюда не ставится.
+        with pytest.raises(HTTPException) as exc:
+            await create_studio_time(StudioTimeCreate(staff_id=ctx.user.id, start_time=at(day, 10),
+                                                      duration_min=30, label="Уборка"), stranger, db)
+        assert exc.value.status_code == 404
+    run(case)
 
 
-def test_cancellation_window_is_instant_based():
-    """N: 12 часов остаются 12 настоящими часами и в сутки перевода стрелок.
-
-    Окно считается разностью моментов, а не пересчётом по стенным часам, —
-    иначе в ночь перевода клиент получал бы на час больше или меньше.
-    """
-    prague = _Studio(tz_iana="Europe/Prague")
-    # Занятие в 14:00 в день ВЕСЕННЕГО перевода: в этих сутках 23 часа, и
-    # разница по стенным часам расходится с настоящей сильнее всего.
-    start_utc = to_utc(datetime(2026, 3, 29, 14, 0), prague)
-    deadline = start_utc - timedelta(hours=12)
-    assert (start_utc - deadline) == timedelta(hours=12)
-    # А по стенным часам между теми же моментами «прошло» 13 часов — вот почему
-    # окно отмены нельзя считать вычитанием местного времени из местного.
-    wall = to_local(start_utc, prague).replace(tzinfo=None) - to_local(deadline, prague).replace(tzinfo=None)
-    assert wall == timedelta(hours=13), wall
-    # Осенью перекос обратный: те же 12 настоящих часов дают 11 стенных.
-    autumn_start = to_utc(datetime(2026, 10, 25, 14, 0), prague)
-    autumn_deadline = autumn_start - timedelta(hours=13)
-    autumn_wall = (to_local(autumn_start, prague).replace(tzinfo=None)
-                   - to_local(autumn_deadline, prague).replace(tzinfo=None))
-    assert autumn_wall == timedelta(hours=12), autumn_wall
+def test_daylight_saving_gap_is_refused():
+    async def case(db, ctx, _day, __):
+        # 29.03.2026 в Праге часы прыгают с 02:00 на 03:00 — 02:30 не наступает.
+        gap = date(2026, 3, 29)
+        with pytest.raises(HTTPException) as exc:
+            await put(db, ctx, gap, 2, 30, minute=15)
+        assert refused(exc) == "studio_time.bad_clock"
+    run(case)
 
 
-# ─── Проверки с БД ───────────────────────────────────────────────────────────
-
-async def _seed(tz_iana=None, legacy=None) -> int:
-    async with async_session_maker() as db:
-        studio = Studio(name=_NAME, tz_iana=tz_iana, timezone=legacy)
-        db.add(studio)
-        await db.commit()
-        return studio.id
-
-
-async def _cleanup(studio_id: int) -> None:
-    async with async_session_maker() as db:
-        await db.execute(delete(StudioWorkingHours).where(StudioWorkingHours.studio_id == studio_id))
-        await db.execute(delete(StudioAISettings).where(StudioAISettings.studio_id == studio_id))
-        await db.execute(delete(Studio).where(Studio.id == studio_id))
-        await db.commit()
+def test_schema_guards():
+    base = {"staff_id": 1, "start_time": "2030-01-10T10:00:00", "duration_min": 30}
+    with pytest.raises(ValidationError):
+        StudioTimeCreate(**base, label="   ")
+    with pytest.raises(ValidationError):
+        StudioTimeCreate(**base, label="x" * 81)
+    with pytest.raises(ValidationError):
+        StudioTimeCreate(**{**base, "duration_min": 4}, label="Уборка")
+    with pytest.raises(ValidationError):
+        StudioTimeCreate(**{**base, "start_time": datetime(2030, 1, 10, 10, tzinfo=timezone.utc)}, label="Уборка")
 
 
-async def _run_db():
-    # ── Валидация на границе настроек: сохранить можно только зону.
-    from pydantic import ValidationError
-
-    from schemas.settings.general import GeneralUpdate
-
-    assert GeneralUpdate(tz_iana="Europe/Prague").tz_iana == "Europe/Prague"
-    for bad in ("UTC+2", "Prague", "Europe/Praha", "EST"):
-        try:
-            GeneralUpdate(tz_iana=bad)
-            raise AssertionError(f"{bad!r} сохранён как зона IANA")
-        except ValidationError:
-            pass
-    assert GeneralUpdate(tz_iana="").tz_iana is None      # очистка поля разрешена
-
-    # ── L: день недели рабочих часов определяется по студии, а не по серверу.
-    studio_id = await _seed(tz_iana="Europe/Prague")
-    try:
-        async with async_session_maker() as db:
-            studio = await db.get(Studio, studio_id)
-            assert clock(studio).verified is True
-
-            # Момент, в который у сервера ещё воскресенье, а в Праге уже
-            # понедельник: 23:30 UTC воскресенья.
-            sunday_late = datetime(2026, 1, 18, 23, 30, tzinfo=timezone.utc)
-            local = sunday_late.astimezone(clock(studio).zone)
-            assert local.weekday() == 0, "понедельник по студии не наступил"
-            assert sunday_late.weekday() == 6, "проверка потеряла смысл: у сервера тот же день"
-
-            # Тот же момент глазами _within_working_hours: понедельник открыт.
-            hours = [StudioWorkingHours(studio_id=studio_id, day_of_week=0, is_open=True,
-                                        open_time="00:00", close_time="23:59")]
-            assert client_agent._within_working_hours(hours, local.replace(tzinfo=None))
-    finally:
-        await _cleanup(studio_id)
-
-    # ── H8: смена зоны не двигает уже сохранённые моменты.
-    studio_id = await _seed(tz_iana="Europe/Prague")
-    try:
-        instant = datetime(2026, 7, 15, 17, 0)          # момент занятия, как он в БД
-        async with async_session_maker() as db:
-            studio = await db.get(Studio, studio_id)
-            before = to_local(instant, studio)
-            assert before.hour == 19
-            studio.tz_iana = "Asia/Dubai"
-            await db.commit()
-        async with async_session_maker() as db:
-            studio = await db.get(Studio, studio_id)
-            after = to_local(instant, studio)
-        assert after.hour == 21, "местное представление не поменялось"
-        assert before.astimezone(timezone.utc) == after.astimezone(timezone.utc), \
-            "смена зоны сдвинула сам момент"
-    finally:
-        await _cleanup(studio_id)
-
-
-def test_db_paths():
-    asyncio.run(_run_db())
-
-
-if __name__ == "__main__":
-    for name, fn in sorted(globals().items()):
-        if name.startswith("test_") and callable(fn):
-            fn()
-            print(f"  ok  {name}")
-    print("ALL PASS")
+def test_assistant_puts_lists_and_undoes():
+    async def case(db, ctx, day, _):
+        args = ai_tools.StudioTimeArgs(staff_id=ctx.user.id, start_time=at(day, 9), duration_min=45, label="Планёрка")
+        made = (await ai_tools.add_studio_time(ctx, db, args))["studio_time"]
+        listed = await time_blocks.list_period(db, ctx.studio_id, day, day)
+        assert [(b["id"], b["label"]) for b in listed] == [(made["id"], "Планёрка")]
+        # Кнопка «Вернуть» у карточки ассистента снимает поставленный блок.
+        await ai_tools.UNDO["add_studio_time"]({"id": made["id"]}, ctx, db)
+        assert await time_blocks.list_period(db, ctx.studio_id, day, day) == []
+    run(case)

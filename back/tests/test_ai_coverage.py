@@ -155,14 +155,18 @@ UI_ONLY: dict[str, str] = {
     "POST /staff/{staff_id}/schedule/{lesson_id}/cancel": "снятие тренера с занятия задевает записанных — руками",
 
     # ── HB-05 (Hybrid Booking): CRUD перерывов/отсутствий специалиста
-    # (StaffBusyInterval). Пока без CRM-формы — она появляется у Сотрудников
-    # только в HB-18 (docs/EPIC_HYBRID_BOOKING_IMPLEMENTATION.md). Инструмент
-    # ассистента по образцу set_staff_day (тот же класс правки: точечная
-    # отметка поверх недельного графика) — отдельная, не входящая в HB-05
-    # задача; заводить его раньше формы, которой он объясняет результат
-    # человеку, преждевременно.
-    "POST /staff/{staff_id}/schedule/busy": "перерыв/отсутствие — CRM-форма и инструмент ассистента появятся в HB-18",
-    "DELETE /staff/{staff_id}/schedule/busy/{interval_id}": "то же — снятие перерыва/отсутствия",
+    # (StaffBusyInterval) из раздела Сотрудники. Та же занятость из Журнала —
+    # «время студии» — у ассистента есть: add_studio_time / remove_studio_time
+    # ходят в /schedule/staff-blocks, и второй инструмент на ту же строку
+    # базы только раздвоил бы выбор модели.
+    "POST /staff/{staff_id}/schedule/busy": "дубль POST /schedule/staff-blocks — у ассистента add_studio_time",
+    "DELETE /staff/{staff_id}/schedule/busy/{interval_id}": "дубль DELETE /schedule/staff-blocks/{block_id} — "
+                                                            "у ассистента remove_studio_time",
+    # Правка блока — перетаскивание времени и названия в окне Журнала;
+    # ассистент переносит блок снятием и новой постановкой, так ему проще
+    # объяснить человеку, что произошло.
+    "PATCH /schedule/staff-blocks/{block_id}": "правка блока в окне Журнала; ассистент переносит "
+                                               "remove_studio_time + add_studio_time",
 
     # ── Каталог: правка и удаление сущностей, фото
     "PATCH /studio/branches/{branch_id}": "правка филиала — форма с часами работы и фото",

@@ -63,6 +63,8 @@ export function useTrainerPages(trainers: Trainer[]) {
   }, [trainers, selectedIds, isPhone]);
 
   const pageCount = isPhone ? Math.max(1, Math.ceil(shown.length / perPage)) : 1;
+  // Номер за концом значит «последняя»: листание назад через край дня встаёт
+  // на последнюю страницу предыдущего, даже если мастеров в нём другое число.
   const safePage = Math.min(page, pageCount - 1);
   const start = Math.max(0, Math.min(safePage * perPage, shown.length - perPage));
   // Одна и та же ссылка, пока страница не сменилась: по ней сетка решает,

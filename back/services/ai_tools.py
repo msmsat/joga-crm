@@ -103,6 +103,10 @@ from routers.schedule.lessons import (
     list_lessons as _r_list_lessons,
     update_lesson as _r_update_lesson,
 )
+from routers.schedule.staff_blocks import (
+    create_studio_time as _r_create_studio_time,
+    delete_studio_time as _r_delete_studio_time,
+)
 from routers.schedule.reservations import (
     cancel_reservation as _r_cancel_reservation,
     cancel_reservation_payment as _r_cancel_reservation_payment,
@@ -157,6 +161,7 @@ from schemas.loyalty.loyalty import (
 from schemas.schedule.halls import HallCreate
 from schemas.schedule.lessons import LessonCreateRequest, LessonUpdateRequest
 from schemas.schedule.reservations import ReservationCreate, ReservationPayRequest
+from schemas.schedule.time_blocks import StudioTimeCreate, StudioTimeRead
 from schemas.settings.booking import BookingSettingsUpdate
 from schemas.settings.notifications import EventToggle
 from schemas.settings.team import (
@@ -165,7 +170,7 @@ from schemas.settings.team import (
 from schemas.staff.staff import StaffProfileResponse
 from schemas.staff.staff import StaffDayOverrideRequest
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
-from services import service_pricing, studio_time
+from services import service_pricing, studio_time, time_blocks
 from services.members import STAFF_PALETTE
 from services.contacts import normalize, normalized_column
 from services.working_hours import assert_within_working_hours
@@ -969,6 +974,24 @@ class StaffDayArgs(BaseModel):
     is_working: bool = True
 
 
+class StudioTimeArgs(BaseModel):
+    """«Поставь Оле уборку в четверг с 14:00 на час», «закрой Диме полчаса на планёрку».
+
+    Длительность без умолчания намеренно: «уборка» бывает и на 15 минут, и на
+    два часа, и выдуманный час закрыл бы мастеру запись, о которой не просили.
+    Не назвал человек — окно подтверждения спросит само.
+    """
+    staff_id: int
+    start_time: LocalDateTime
+    duration_min: int = Field(ge=5, le=12 * 60, description="Сколько минут занимает блок")
+    label: str = Field(min_length=1, max_length=80,
+                       description="Название блока словами человека: «Уборка», «Планёрка»")
+
+
+class StudioTimeIdArgs(BaseModel):
+    block_id: int = Field(description="id блока из get_schedule, поле studio_time")
+
+
 # Категория — свободная строка самой студии («Стрижка», «Уход за бородой»), а
 # не отрасль: список направлений из формы убран, чем занимается бизнес — уже
 # известно с регистрации. Здесь был Literal из четырёх йога-ключей, и он стал
@@ -1301,13 +1324,25 @@ def _period_range(period: str, today: date) -> tuple[date, date]:
 @tool()
 async def get_schedule(ctx: StudioContext, db: AsyncSession, args: ScheduleArgs) -> dict:
     """Расписание занятий студии за период дат. Тренер видит только свои занятия.
-    Отдаёт название, время, тренера, зал, число мест и сколько уже записано."""
+    Отдаёт название, время, тренера, зал, число мест и сколько уже записано.
+    Поле studio_time — «время студии»: блоки в Журнале без занятия (уборка,
+    планёрка) с id, сотрудником, временем и названием."""
     rows = await _r_list_lessons(
         date_from=args.date_from, date_to=args.date_to, hall_id=args.hall_id, ctx=ctx, db=db,
     )
     if args.trainer_id is not None:
         rows = [r for r in rows if getattr(r, "teacher_id", None) == args.trainer_id]
-    return _items(rows, currency=await _currency(db, ctx.studio_id))
+    result = _items(rows, currency=await _currency(db, ctx.studio_id))
+    # Тем же вызовом — «время студии»: без него «что у Оли в четверг» молчало бы
+    # про уборку, а снять её было бы не по чему. Тренер видит только своё —
+    # как и в сетке Журнала (GET /schedule/staff-blocks).
+    blocks = await time_blocks.list_period(
+        db, ctx.studio_id, args.date_from, args.date_to,
+        staff_id=ctx.user.id if ctx.role == "trainer" else args.trainer_id,
+    )
+    if blocks:
+        result["studio_time"] = [_dump(StudioTimeRead.model_validate(b)) for b in blocks[:_MAX_ITEMS]]
+    return result
 
 
 @tool()
@@ -2958,6 +2993,42 @@ async def set_staff_day(ctx: StudioContext, db: AsyncSession, args: StaffDayArgs
 
 
 @tool(
+    mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/staff-blocks",
+    summary="Время студии «{label}»: сотрудник {staff_id}, {start_time}, {duration_min} мин",
+    effect="Блок встанет в колонку сотрудника в Журнале, как перерыв: на это время "
+           "к нему не запишут ни в журнале, ни онлайн.",
+)
+async def add_studio_time(ctx: StudioContext, db: AsyncSession, args: StudioTimeArgs) -> dict:
+    """Поставить в Журнал «время студии» — блок БЕЗ занятия у сотрудника:
+    уборка, подготовка зала, планёрка, обслуживание. В сетке он выглядит как
+    перерыв и закрывает это время для записи.
+
+    Ставится только в свободное окно: занятие или другой блок в это время —
+    отказ сервера; предложи соседнее свободное время, а не ставь поверх.
+    Перерыв КАЖДЫЙ день (обед по графику) — это часы сотрудника
+    (set_staff_schedule), а не блок на одну дату."""
+    block = await _r_create_studio_time(
+        payload=StudioTimeCreate(staff_id=args.staff_id, start_time=args.start_time,
+                                 duration_min=args.duration_min, label=args.label),
+        ctx=ctx, db=db,
+    )
+    return {"studio_time": _dump(StudioTimeRead.model_validate(block))}
+
+
+@tool(
+    mutating=True, roles=("owner", "admin"), endpoint="DELETE /schedule/staff-blocks/{block_id}",
+    summary="Убрать время студии {block_id}",
+    effect="Блок исчезнет из Журнала, и время снова откроется для записи.",
+)
+async def remove_studio_time(ctx: StudioContext, db: AsyncSession, args: StudioTimeIdArgs) -> dict:
+    """Убрать «время студии» (уборку, планёрку) из Журнала. id блока — из
+    get_schedule за этот день, поле studio_time. Перенести блок — убрать и
+    поставить заново через add_studio_time."""
+    removed = await _r_delete_studio_time(block_id=args.block_id, ctx=ctx, db=db)
+    return {"removed": _dump(StudioTimeRead.model_validate(removed))}
+
+
+@tool(
     mutating=True, roles=("owner",), danger=True,
     summary="Удалить из команды сотрудника: {staff_id}",
     endpoint="DELETE /staff/{staff_id}",
@@ -3449,6 +3520,7 @@ UNDO: dict[str, Callable] = {
     "create_account": lambda p, ctx, db: _r_delete_account(account_id=p["id"], ctx=ctx, db=db),
     "create_counterparty": lambda p, ctx, db: _r_delete_counterparty(
         cp_id=p["id"], ctx=ctx, db=db),
+    "add_studio_time": lambda p, ctx, db: _r_delete_studio_time(block_id=p["id"], ctx=ctx, db=db),
 }
 
 
@@ -4034,8 +4106,8 @@ if __name__ == "__main__":
     # Самопроверка без сети и БД: реестр, ролевой скоуп, обрезка результата.
     import asyncio
 
-    assert len(TOOLS) == 65, sorted(TOOLS)
-    assert sum(1 for t in TOOLS.values() if t.mutating) == 34
+    assert len(TOOLS) == 68, sorted(TOOLS)
+    assert sum(1 for t in TOOLS.values() if t.mutating) == 37
     # Память студии данные студии не трогает — карточка подтверждения на
     # «запомни, что по воскресеньям мы не работаем» превратила бы одну фразу в
     # двухшаговый диалог (эпик AI-6, задача 16).

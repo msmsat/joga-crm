@@ -11,20 +11,30 @@ const i18n = createInstance();
 await i18n.init({ lng: 'ru', resources: { ru: { translation: JSON.parse(await readFile(new URL('../src/locales/ru/journal.json', import.meta.url), 'utf8')) } }, interpolation: { escapeValue: false } });
 const jsx = await import('react/jsx-runtime');
 const context = vm.createContext({ console });
-const source = await readFile(new URL('../src/pages/dashboard/Journal/components/lesson/FundingChips.tsx', import.meta.url), 'utf8');
-const mod = new vm.SourceTextModule(ts.transpileModule(source, { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText, { context });
-await mod.link(name => {
-  const exports = name === 'react/jsx-runtime' ? jsx : name === 'react-i18next' ? { useTranslation: () => ({ t: i18n.t.bind(i18n) }) } : name.endsWith('/money') ? { formatMoney: n => `${n} EUR` } : {};
-  return new vm.SyntheticModule(Object.keys(exports), function () { for (const [key, value] of Object.entries(exports)) this.setExport(key, value); }, { context });
-});
-await mod.evaluate();
-// Расчёты чипов и цены клиента — отдельный модуль (lesson/funding.ts).
-const fundingSource = await readFile(new URL('../src/pages/dashboard/Journal/components/lesson/funding.ts', import.meta.url), 'utf8');
-const funding = new vm.SourceTextModule(ts.transpileModule(fundingSource, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText, { context });
-await funding.link(() => { throw new Error('funding.ts must stay import-free at runtime'); });
-await funding.evaluate();
+const translation = { useTranslation: () => ({ t: i18n.t.bind(i18n) }) };
+const money = { formatMoney: n => `${n} EUR` };
+/** Модуль из src/…/lesson в vm: импорты отдаёт `mocks` по окончанию имени, прочее — пустышка (стили). */
+async function lessonModule(file, mocks = {}) {
+  const source = await readFile(new URL(`../src/pages/dashboard/Journal/components/lesson/${file}`, import.meta.url), 'utf8');
+  const module = new vm.SourceTextModule(ts.transpileModule(source, { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText, { context });
+  await module.link(name => {
+    const all = { 'react/jsx-runtime': jsx, 'react-i18next': translation, ...mocks };
+    const key = Object.keys(all).find(k => name === k || name.endsWith(`/${k}`));
+    const exports = key ? all[key] : {};
+    return new vm.SyntheticModule(Object.keys(exports), function () { for (const [k, value] of Object.entries(exports)) this.setExport(k, value); }, { context });
+  });
+  await module.evaluate();
+  return module.namespace;
+}
+// Разбор оплаты — общий модуль чипов, чека и «Итога» (lesson/funding.ts); импортов у него нет.
+const funding = await lessonModule('funding.ts');
+const fundingMocks = { money, funding: { ...funding } };
+const mod = { namespace: await lessonModule('FundingChips.tsx', fundingMocks) };
+const bill = await lessonModule('LessonBill.tsx', fundingMocks);
 const base = { price: 250, trialPercent: null, manualPercent: null, isTrial: false, subscriptionName: null, bySubscription: false, debt: 125, paidAmount: 0, payment: null };
 const render = patch => renderToStaticMarkup(React.createElement(mod.namespace.FundingChips, { funding: { ...base, ...patch }, currency: 'EUR' }));
+const renderBill = patch => renderToStaticMarkup(React.createElement(bill.LessonBill, { funding: { ...base, ...patch }, currency: 'EUR' }));
+const paidSnapshot = { base_price: 250, discounts: [{ kind: 'manual', amount: 50 }], promo_code: null, bonuses_applied: 0, bonuses_value: 0, deposit_applied: 0, certificate_applied: 0, total: 200, method: 'transfer' };
 
 test('unpaid manual discount explains the missing 125 with its source and percentage', () => {
   const html = render({ manualPercent: 50 });
@@ -77,10 +87,9 @@ test('the lesson roster passes the saved manual discount to the displayed receip
   await roster.link(name => {
     const exports = name === 'react' ? React : name === 'react/jsx-runtime' ? jsx
       : name === 'react-i18next' ? { useTranslation: () => ({ t: i18n.t.bind(i18n) }) }
-      : name.endsWith('/FundingChips') ? { FundingChips: mod.namespace.FundingChips }
-      : name.endsWith('/funding') ? { ...funding.namespace }
-      : name.endsWith('/money') ? { formatMoney: n => `${n} EUR` }
-      : name.endsWith('/VisitMarks') ? { AttendMark: () => null, PayMark: ({ amount }) => React.createElement('b', null, `pay ${amount}`) }
+      : name.endsWith('/LessonBill') ? { LessonBill: bill.LessonBill }
+      : name.endsWith('/funding') ? { ...funding }
+      : name.endsWith('/VisitMarks') ? { AttendMark: () => null, PayMark: () => null }
       : name.endsWith('/utils') ? { attendanceOf: () => 'waiting' }
       : name.endsWith('/ReservationPayModal') ? { ReservationPayModal: () => null }
       : name.endsWith('/PaidSheet') ? { PaidSheet: () => null }
@@ -94,13 +103,50 @@ test('the lesson roster passes the saved manual discount to the displayed receip
     clients: [{ reservation_id: 1, client_id: 1, name: 'Anna', status: 'active', is_trial: false, manual_discount_percent: 50, debt: 125, paid_amount: 0, payment: null }],
     price: 250, canEdit: false, removable: false, started: false,
   }));
-  assert.match(html, /Скидка администратора −50% · −125 EUR/);
-  // Кнопка оплаты называет долг — уже со скидкой клиента, а не прайс.
-  assert.match(html, /pay 125 EUR/);
+  // Чек записанного: итог со скидкой клиента крупно, прайс «было», скидка строкой.
+  assert.match(html, /Итог/);
+  assert.match(html, /lc-bill-amount">125 EUR/);
+  assert.match(html, /было <s>250 EUR<\/s>/);
+  assert.match(html, /Скидка администратора −50%<\/span><span>−125 EUR/);
+  assert.match(html, /Не оплачено/);
+});
+test('the bill of a paid booking names the method instead of a debt', () => {
+  const html = renderBill({ debt: 0, paidAmount: 200, payment: paidSnapshot });
+  assert.match(html, /lc-bill-amount">200 EUR/);
+  assert.match(html, /было <s>250 EUR<\/s>/);
+  assert.match(html, /Оплачено · переводом/);
+  assert.doesNotMatch(html, /Не оплачено/);
+});
+test('the bill shows what points paid and the cash part separately', () => {
+  const html = renderBill({ debt: 0, payment: { ...paidSnapshot, bonuses_applied: 10, bonuses_value: 40, total: 160 } });
+  assert.match(html, /lc-bill-amount">200 EUR/);
+  assert.match(html, /Баллы \(10\)<\/span><span>−40 EUR/);
+  assert.match(html, /Оплачено<\/span><span>160 EUR/);
+});
+test('a partial payment keeps the remaining debt in the bill status', () => {
+  const html = renderBill({ manualPercent: 50, debt: 75, paidAmount: 50 });
+  assert.match(html, /Не оплачено · 75 EUR/);
+  assert.match(html, /Оплачено<\/span><span>50 EUR/);
+});
+test('a subscription visit has no money total in the bill', () => {
+  const html = renderBill({ bySubscription: true, subscriptionName: 'Yoga', debt: 0 });
+  assert.match(html, /Абонемент «Yoga»/);
+  assert.doesNotMatch(html, /Итог|EUR/);
+});
+test('a full discount reads as free, with the list price as before', () => {
+  const html = renderBill({ manualPercent: 100, debt: 0 });
+  assert.match(html, /lc-bill-amount">0 EUR/);
+  assert.match(html, /было <s>250 EUR<\/s>/);
+  assert.match(html, /Бесплатно/);
+});
+test('a bill without any discount does not show a crossed-out price', () => {
+  const html = renderBill({ debt: 250 });
+  assert.match(html, /lc-bill-amount">250 EUR/);
+  assert.doesNotMatch(html, /было/);
 });
 test('the client price is the list price minus the client discounts', () => {
   // Копия — объект из vm-контекста с чужим прототипом deepStrictEqual не равен.
-  const price = patch => { const r = funding.namespace.discountedPrice({ ...base, ...patch }); return r && { ...r }; };
+  const price = patch => { const r = funding.discountedPrice({ ...base, ...patch }); return r && { ...r }; };
   assert.deepEqual(price({ manualPercent: 50 }), { base: 250, price: 125 });
   // Частичная оплата: долг и внесённое вместе — это цена клиента.
   assert.deepEqual(price({ debt: 75, paidAmount: 50 }), { base: 250, price: 125 });

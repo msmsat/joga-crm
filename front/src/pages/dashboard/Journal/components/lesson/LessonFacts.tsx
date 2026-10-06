@@ -40,10 +40,12 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency, lo
     : null;
   const level = detail?.level?.trim();
   const equipment = detail?.equipment?.trim();
-  // Индивидуальное занятие — это цена одного клиента: со скидкой, которую ему
-  // дали, а прайс зачёркнут рядом. У группового у каждого своя — там прайс.
-  const own = booking.bookingMode === 'resource' && booked?.length === 1
-    ? discountedPrice(fundingOf(booked[0], booking.price)) : null;
+  // Индивидуальное занятие с клиентом — «Итог»: сколько оно стоит ему, со
+  // скидкой, которую ему дали, крупно, а прайс под ним («было»). У группового
+  // у каждого своя цена — там прайс; у абонемента денег за занятие не ждут.
+  const single = booking.bookingMode === 'resource' && booked?.length === 1 ? fundingOf(booked[0], booking.price) : null;
+  const isTotal = single != null && !single.bySubscription && !single.subscriptionName;
+  const own = isTotal ? discountedPrice(single) : null;
 
   return (
     <div className="lc-facts">
@@ -71,14 +73,14 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency, lo
           <span className="lc-dot" style={{ background: booking.color }} />
           {trainerName ?? '—'}
         </Tile>
-        <Tile label={t('lessonCard.price')}>
-          {own ? (
-            <>
-              {formatMoney(own.price, currency)}
-              <s className="lc-tile-was">{formatMoney(own.base, currency)}</s>
-            </>
-          ) : formatMoney(booking.price, currency)}
-        </Tile>
+        {isTotal ? (
+          <Tile label={t('lessonCard.total')} className="is-total"
+                caption={own && <span className="lc-tile-was">{`${t('lessonCard.was')} `}<s>{formatMoney(own.base, currency)}</s></span>}>
+            {formatMoney(own?.price ?? booking.price, currency)}
+          </Tile>
+        ) : (
+          <Tile label={t('lessonCard.price')}>{formatMoney(booking.price, currency)}</Tile>
+        )}
         {booking.bookingMode !== 'resource' && (
           <Tile label={t('lessonCard.spots')}>{booking.clients} / {booking.maxClients}</Tile>
         )}
@@ -139,9 +141,11 @@ function MoneyStrip({ booked, started, currency }: { booked: BookedClient[]; sta
   );
 }
 
-function Tile({ label, children, caption }: { label: string; children: React.ReactNode; caption?: React.ReactNode }) {
+function Tile({ label, children, caption, className }: {
+  label: string; children: React.ReactNode; caption?: React.ReactNode; className?: string;
+}) {
   return (
-    <div className="lc-tile">
+    <div className={`lc-tile${className ? ` ${className}` : ''}`}>
       <span className="lc-tile-label">{label}</span>
       <span className="lc-tile-value">{children}</span>
       {caption}

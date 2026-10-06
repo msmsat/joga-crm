@@ -78,6 +78,7 @@ const NOT_A_MODAL = {
   'Journal/TimeStep': 'раздел «Дата и время» внутри листа BookingWizard, своего окна нет',
   'Journal/WizardParts': 'поиск, чипы и строки списка внутри BookingWizard',
   'Journal/SummaryStep': 'шаг «Итог записи» внутри BookingWizard',
+  'Journal/SummaryAction': 'кнопка подтверждения и причина, почему она недоступна, на итоге BookingWizard; своего окна нет',
   'Journal/WizardTabs': 'кнопки разделов в шапке листа BookingWizard, своего окна нет',
   'Journal/NewClientStep': 'форма нового клиента внутри листа BookingWizard, своего окна нет',
   'Journal/SettleBlock': 'цена, скидка и плитки «Оплата»/«Посещение» на итоге BookingWizard; окно оплаты — PaySheet, как у ReservationPayModal',

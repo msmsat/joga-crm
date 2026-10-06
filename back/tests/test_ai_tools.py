@@ -70,6 +70,8 @@ _PROXIES = {
     "update_staff": ai_tools._r_update_staff,
     "set_staff_schedule": ai_tools._r_update_staff,
     "set_staff_day": ai_tools._r_set_day_override,
+    "add_studio_time": ai_tools._r_create_studio_time,
+    "remove_studio_time": ai_tools._r_delete_studio_time,
     "delete_staff": ai_tools._r_delete_staff,
     "get_catalog_settings": ai_tools._r_subscription_config,
     "create_service": ai_tools._r_create_service,

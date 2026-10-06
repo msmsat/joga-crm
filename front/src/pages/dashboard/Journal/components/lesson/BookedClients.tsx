@@ -1,6 +1,7 @@
 // Записанные на занятие: кто, чем платит, пришёл ли, что сказал о занятии.
-// Строка открывает карточку клиента; справа — две отметки иконками: «Оплата»
-// (пока есть долг — крупная кнопка с суммой к оплате, уже со скидкой клиента,
+// Каждый — карточкой: шапка (аватар, имя, отметки) и под ней чек LessonBill —
+// «Итог» за занятие крупно, прайс, статус оплаты и скидки. Карточка открывает
+// клиента; в шапке справа — две отметки иконками: «Оплата» (пока есть долг —
 // открывает окно оплаты; оплачено — галочка, а принятую у стойки она открывает
 // окном «Поменять», PaidSheet) и «Посещение»
 // (по умолчанию «пришёл»: до начала — выбор, после — переключение, см.
@@ -12,12 +13,11 @@ import * as Icons from '../../../../../components/Icons';
 import type { BookedClient } from '../../../../../api/schedule/schedule.types';
 import { errorMessage } from '../../../../../api/errorMessage';
 import { useToast } from '../../../../../components/ui/index';
-import { formatMoney } from '../../../../../lib/money';
 import type { useJournalMutations } from '../../hooks/useJournalMutations';
 import { ReservationPayModal } from './ReservationPayModal';
 import { PaidSheet } from './PaidSheet';
 import { paymentChangeable } from './paymentChange';
-import { FundingChips } from './FundingChips';
+import { LessonBill } from './LessonBill';
 import { fundingOf } from './funding';
 import { AttendMark, PayMark } from './VisitMarks';
 import { attendanceOf } from '../../utils';
@@ -32,7 +32,7 @@ interface Props {
    *  переключается нажатием без выбора. */
   started: boolean;
   currency?: string;
-  /** Цена занятия — от неё считаются скидки в чипах. */
+  /** Цена занятия — от неё считаются скидки в чеке. */
   price: number;
   lessonLabel: string;
   mutations: ReturnType<typeof useJournalMutations>;
@@ -128,50 +128,52 @@ export function BookedClients({ clients, canEdit, removable, started, currency, 
               onPeek(c.client_id);
             }}
           >
-            <span className="lc-avatar" style={{ background: c.avatar_color ?? 'var(--peach)' }}>{initials(c)}</span>
-            <div className="lc-person-main">
-              <div className="lc-person-name">{c.name} {c.last_name ?? ''}</div>
-              {/* Чем записан и чем закрыт: абонемент, скидки, баллы, сертификат,
-                  оплачено или долг — строкой чипов, как на чеке. */}
-              <FundingChips funding={fundingOf(c, price)} currency={currency} />
-              <div className="lc-badges">
-                {c.status === 'pending' && <span className="lc-badge is-peach">{t('bookingPopup.awaitingConfirmation')}</span>}
-                {c.rating != null && <span className="lc-badge is-star">★ {c.rating}</span>}
-                {c.coffee && <span className="lc-badge">{t('lessonCard.coffee')}</span>}
-                {c.booking_channel && CHANNELS.has(c.booking_channel) && (
-                  <span className="lc-badge is-quiet">{t(`lessonCard.channel.${c.booking_channel}`)}</span>
+            <div className="lc-person-head">
+              <span className="lc-avatar" style={{ background: c.avatar_color ?? 'var(--peach)' }}>{initials(c)}</span>
+              <div className="lc-person-id">
+                <div className="lc-person-name">{c.name} {c.last_name ?? ''}</div>
+                <div className="lc-badges">
+                  {c.status === 'pending' && <span className="lc-badge is-peach">{t('bookingPopup.awaitingConfirmation')}</span>}
+                  {c.rating != null && <span className="lc-badge is-star">★ {c.rating}</span>}
+                  {c.coffee && <span className="lc-badge">{t('lessonCard.coffee')}</span>}
+                  {c.booking_channel && CHANNELS.has(c.booking_channel) && (
+                    <span className="lc-badge is-quiet">{t(`lessonCard.channel.${c.booking_channel}`)}</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="lc-person-actions">
+                {c.status === 'pending' ? (
+                  canEdit && (
+                    <button type="button" className="lc-act is-peach" title={t('bookingPopup.confirmBooking')}
+                            aria-label={t('bookingPopup.confirmBooking')}
+                            onClick={e => { e.stopPropagation(); confirm(c); }}>
+                      <Icons.Check />
+                    </button>
+                  )
+                ) : (
+                  <>
+                    <PayMark client={c} canPay={canEdit} onPay={() => setPaying(c)}
+                             onReview={canEdit && paymentChangeable(c) ? () => setReviewing(c) : undefined} />
+                    <AttendMark state={attendanceOf(c, started)} started={started}
+                                onSet={canEdit ? attended => mark(c, attended) : undefined} />
+                  </>
+                )}
+                {canEdit && (removable || c.status === 'pending') && (
+                  <button type="button" className="lc-act is-quiet"
+                          title={c.status === 'pending' ? t('bookingPopup.rejectBooking') : t('bookingPopup.removeFromLesson')}
+                          aria-label={c.status === 'pending' ? t('bookingPopup.rejectBooking') : t('bookingPopup.removeFromLesson')}
+                          onClick={e => { e.stopPropagation(); onRemove(c); }}>
+                    <Icons.X />
+                  </button>
                 )}
               </div>
-              {c.review_text && <div className="lc-review">«{c.review_text}»</div>}
             </div>
 
-            <div className="lc-person-actions">
-              {c.status === 'pending' ? (
-                canEdit && (
-                  <button type="button" className="lc-act is-peach" title={t('bookingPopup.confirmBooking')}
-                          aria-label={t('bookingPopup.confirmBooking')}
-                          onClick={e => { e.stopPropagation(); confirm(c); }}>
-                    <Icons.Check />
-                  </button>
-                )
-              ) : (
-                <>
-                  <PayMark client={c} canPay={canEdit} amount={formatMoney(c.debt, currency)}
-                           onPay={() => setPaying(c)}
-                           onReview={canEdit && paymentChangeable(c) ? () => setReviewing(c) : undefined} />
-                  <AttendMark state={attendanceOf(c, started)} started={started}
-                              onSet={canEdit ? attended => mark(c, attended) : undefined} />
-                </>
-              )}
-              {canEdit && (removable || c.status === 'pending') && (
-                <button type="button" className="lc-act is-quiet"
-                        title={c.status === 'pending' ? t('bookingPopup.rejectBooking') : t('bookingPopup.removeFromLesson')}
-                        aria-label={c.status === 'pending' ? t('bookingPopup.rejectBooking') : t('bookingPopup.removeFromLesson')}
-                        onClick={e => { e.stopPropagation(); onRemove(c); }}>
-                  <Icons.X />
-                </button>
-              )}
-            </div>
+            {/* Чек: итог за занятие со скидками клиента, прайс, оплачено ли и
+                что сняло деньги с цены (скидки, баллы, депозит, сертификат). */}
+            <LessonBill funding={fundingOf(c, price)} currency={currency} />
+            {c.review_text && <div className="lc-review">«{c.review_text}»</div>}
           </div>
         ))}
       </div>

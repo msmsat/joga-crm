@@ -2204,8 +2204,8 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
     --j-col-min: 0px;
     --j-card-gap: 6px;
   }
-  /* Горизонтальный жест на сетке — наш (useGridSwipe листает неделю или
-     страницу тренеров). Без этого Chrome на Android считал свайп вправо
+  /* Горизонтальный жест на сетке — наш (useGridSwipe листает неделю,
+     страницу тренеров или день). Без этого Chrome на Android считал свайп вправо
      жестом «назад» и уводил со страницы: вбок сетке листать нечего, и жест
      уходил браузеру. Вертикальная прокрутка и зум пальцами остаются. */
   .j-grid-wrapper { touch-action: pan-y pinch-zoom; overscroll-behavior-x: none; }

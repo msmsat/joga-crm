@@ -19,6 +19,7 @@ import { usePopupPosition } from './hooks/usePopupPosition';
 import { usePrefetchLesson } from './hooks/useLessonDetail';
 import { useLessonPurge } from './hooks/useLessonPurge';
 import { useGridSwipe } from './hooks/useGridSwipe';
+import { useGridKeys } from './hooks/useGridKeys';
 import { useTrainerPages } from './hooks/useTrainerPages';
 import { TrainerPicker } from './components/TrainerPicker';
 import { WeekTrainerPicker } from './components/WeekTrainerPicker';
@@ -541,19 +542,24 @@ export default function Journal() {
     setSlideBack(dir < 0);
     withAnimation('date', () => changeDay(dir));
   };
-  // Страница тренеров листается той же анимацией, что и дата.
-  const stepTrainerPage = (dir: number) => {
-    const next = trainerPages.page + dir;
-    if (next < 0 || next >= trainerPages.pageCount) return;
-    setSlideBack(dir < 0);
-    withAnimation('date', () => trainerPages.setPage(next));
-  };
+  // Свайп по сетке и клавиши ←/→ листают одной лентой: неделю за неделей, а
+  // в дне — страницы мастеров (телефон), за крайней из которых соседний день.
+  // Вперёд день открывается с первой страницы, назад — с последней: обратный
+  // жест возвращает ровно туда, откуда пришли. Анимация та же, что у даты.
   const pagedTrainers = calendarView === 'day' && viewMode === 'trainers' && trainerPages.pageCount > 1;
-  useGridSwipe(
-    gridWrapperRef,
-    !isTransitioning && (calendarView === 'week' || pagedTrainers),
-    dir => (calendarView === 'week' ? stepDate(dir) : stepTrainerPage(dir)),
-  );
+  const stepGrid = (dir: 1 | -1) => {
+    const next = trainerPages.page + dir;
+    const withinDay = pagedTrainers && next >= 0 && next < trainerPages.pageCount;
+    setSlideBack(dir < 0);
+    withAnimation('date', () => {
+      if (withinDay) { trainerPages.setPage(next); return; }
+      changeDay(dir);
+      // Страницу за последней useTrainerPages читает как последнюю — сколько
+      // бы их ни оказалось в соседнем дне.
+      if (pagedTrainers) trainerPages.setPage(dir > 0 ? 0 : Infinity);
+    });
+  };
+  useGridSwipe(gridWrapperRef, !isTransitioning, stepGrid);
 
   // Diff двух карточек → payload PATCH (общий для forward- и backward-хода правки).
   const diffPayload = React.useCallback((prev: Booking, next: Booking): Partial<LessonCreate> => {
@@ -620,6 +626,13 @@ export default function Journal() {
     showToast,
     onCommit: commitBookingChange
   });
+  // Стрелки клавиатуры — только когда в журнале ничего не открыто и ничего не
+  // тащат: занятие, оставшееся на соседнем дне, утянуло бы окно за собой.
+  useGridKeys(
+    !isTransitioning && !drag && !popupBooking && !showNewForm && !resourceBooking
+      && !sourceModal && !pastChoice && !confirmCancelBooking,
+    stepGrid,
+  );
 
   const handleDateInputSubmit = () => {
     setIsEditingDate(false);
