@@ -1,4 +1,4 @@
-"""Preview first; --apply commits only the reviewed test studio configuration."""
+"""Preview first; --apply configures the explicitly selected approved stretch studio."""
 import argparse
 import asyncio
 import json

@@ -169,22 +169,32 @@ async def _push_one(access_token: str, calendar_id: str, lesson: Lesson, hall_na
     return result.get("id", lesson.gcal_event_id)
 
 
-async def push_lesson(db: AsyncSession, studio_id: int, lesson_id: int) -> bool:
-    """Одно занятие (создание/перенос/отмена) -> Google. Тихо выходит (False), если
-    интеграция не подключена/не настроена — вызывающий код не должен на это реагировать,
-    это не ошибка. Ошибки Google обрабатывает сама (эпик 4.4): не пробрасывает наружу."""
+async def _calendar_of(db: AsyncSession, studio_id: int) -> tuple[StudioIntegration, str, str] | None:
+    """Подключённый календарь студии: (интеграция, calendar_id, refresh_token).
+    None — интеграции нет, она отключена или календарь в ней не выбран."""
     integ = (await db.execute(
         select(StudioIntegration).where(
             StudioIntegration.studio_id == studio_id, StudioIntegration.integration_type == "gcal",
         )
     )).scalar_one_or_none()
     if integ is None or not integ.is_connected:
-        return False
+        return None
     config = integ.config or {}
     calendar_id = config.get("calendar_id")
     refresh_token = config.get("refresh_token")
     if not calendar_id or not refresh_token:
+        return None
+    return integ, calendar_id, refresh_token
+
+
+async def push_lesson(db: AsyncSession, studio_id: int, lesson_id: int) -> bool:
+    """Одно занятие (создание/перенос/отмена) -> Google. Тихо выходит (False), если
+    интеграция не подключена/не настроена — вызывающий код не должен на это реагировать,
+    это не ошибка. Ошибки Google обрабатывает сама (эпик 4.4): не пробрасывает наружу."""
+    calendar = await _calendar_of(db, studio_id)
+    if calendar is None:
         return False
+    integ, calendar_id, refresh_token = calendar
 
     lesson = (await db.execute(
         select(Lesson).where(Lesson.id == lesson_id, Lesson.studio_id == studio_id)
@@ -217,6 +227,30 @@ async def push_lesson(db: AsyncSession, studio_id: int, lesson_id: int) -> bool:
         return False
     except (aiohttp.ClientError, TimeoutError):
         logger.exception("gcal push_lesson failed: studio=%s lesson=%s", studio_id, lesson_id)
+        return False
+
+
+async def drop_event(db: AsyncSession, studio_id: int, event_id: str) -> bool:
+    """Занятие удалили из базы навсегда -> снять его событие в Google.
+
+    push_lesson тут не помощник: он ищет занятие по id, а его больше нет.
+    Событие, которое уже снято (404/410), — тоже успех. Ошибки Google глотает,
+    как push_lesson: удаление занятия от них не зависит."""
+    calendar = await _calendar_of(db, studio_id)
+    if calendar is None:
+        return False
+    integ, calendar_id, refresh_token = calendar
+    try:
+        access_token = await _access_token(refresh_token)
+        await _calendar_request("DELETE", access_token, f"/calendars/{calendar_id}/events/{event_id}")
+        return True
+    except GcalAuthError:
+        integ.is_connected = False
+        await db.commit()
+        logger.warning("gcal drop_event: refresh_token отозван, studio=%s — интеграция отключена", studio_id)
+        return False
+    except (aiohttp.ClientError, TimeoutError):
+        logger.exception("gcal drop_event failed: studio=%s event=%s", studio_id, event_id)
         return False
 
 

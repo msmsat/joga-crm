@@ -229,6 +229,7 @@
     "book_client": "A reservar a aula…",
     "cancel_booking": "A cancelar a reserva…",
     "pay_booking": "A registar o pagamento da aula…",
+    "cancel_booking_payment": "A anular o pagamento da aula…",
     "clear_schedule": "A limpar o horário…",
     "create_account": "A criar uma conta…",
     "create_branch": "A criar uma filial…",

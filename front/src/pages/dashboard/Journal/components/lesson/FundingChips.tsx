@@ -4,23 +4,9 @@
 // записанного в Журнале и на посещение в истории клиента: разойдись они, одна
 // и та же бронь читалась бы по-разному в двух местах.
 import { useTranslation } from 'react-i18next';
-import type { PaymentBreakdown } from '../../../../../api/schedule/schedule.types';
 import { formatMoney } from '../../../../../lib/money';
+import type { Funding } from './funding';
 import './lessonCard.css';
-
-export interface Funding {
-  price: number;
-  trialPercent: number | null;
-  /** Скидка первого занятия суммой — тогда процента у брони нет. */
-  trialAmount?: number | null;
-  manualPercent?: number | null;
-  isTrial: boolean;
-  subscriptionName: string | null;
-  bySubscription: boolean;
-  debt: number;
-  paidAmount: number;
-  payment: PaymentBreakdown | null;
-}
 
 const METHODS = new Set(['cash', 'transfer', 'stripe']);
 

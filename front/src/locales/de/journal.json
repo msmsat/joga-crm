@@ -82,7 +82,15 @@
     "addClient": "Kunde hinzufügen",
     "edit": "Bearbeiten",
     "editLesson": "Kurs bearbeiten",
-    "deleteLesson": "Kurs löschen",
+    "cancelLesson": "Kurs stornieren",
+    "purge": {
+      "action": "Endgültig löschen",
+      "title": "Endgültig löschen?",
+      "message": "Er verschwindet samt Buchungsverlauf aus dem Journal. Das lässt sich nicht rückgängig machen.",
+      "keep": "Behalten",
+      "confirm": "Löschen",
+      "deleting": "Wird gelöscht…"
+    },
     "cancel": "Abbrechen",
     "save": "Speichern",
     "lessonTitle": "Kurstitel",
@@ -191,6 +199,7 @@
     "selectTrainer": "Wählen Sie einen Trainer",
     "alreadyCancelled": "Der Kurs ist bereits storniert",
     "lessonCancelled": "Kurs storniert",
+    "lessonDeleted": "Kurs gelöscht",
     "noPermission": "Nicht genug Rechte, um den Plan zu ändern",
     "undoLabel": "Rückgängig gemacht: {{label}}",
     "redoLabel": "Wiederholt: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Pro Freund: +{{amount}} aufs Guthaben",
       "discount": "Pro Freund: {{amount}} Rabatt"
     }
+  },
+  "paidSheet": {
+    "chosen": "Gewählt",
+    "paidAt": "Erhalten am {{date}}",
+    "bySystem": "Vom System nach dem Kurs verbucht",
+    "noExtras": "Ohne Punkte, Guthaben und Codes",
+    "changeHint": "Falsche Zahlungsart, Rabatt oder Punkte? „Ändern“ storniert diese Zahlung, danach kann sie neu erfasst werden.",
+    "change": "Ändern",
+    "confirmTitle": "Zahlung ändern?",
+    "confirmMessage": "Die Zahlung über {{amount}} wird storniert: Der Betrag wird in den Finanzen als Erstattung gebucht, Punkte, Guthaben, Gutschein und Rabatte gehen an den Kunden zurück. Danach wählen Sie die Zahlung neu.",
+    "confirm": "Ändern",
+    "keep": "Behalten",
+    "cancelled": "Bisherige Zahlung storniert — bitte neu wählen"
   },
   "mark": {
     "pay": "Zahlung",

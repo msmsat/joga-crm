@@ -1,7 +1,9 @@
-# Настройка тестовой студии «Стретч»
+# Настройка студий «Стретч» и MY STRETCH
 
-Этот пресет работает только со студией **17**, активным владельцем **6**, email
-**sadomat31@gmail.com**. Студия **16 / tokarmaria1106@gmail.com** не изменяется.
+Пресет разрешён для двух явно выбранных студий: тестовая **17**, активный владелец
+**6**, email **sadomat31@gmail.com**; рабочая **16**, активный владелец **44**,
+email **tokarmaria1106@gmail.com**. ID и email должны соответствовать друг другу.
+Каждый запуск меняет только выбранную студию. Название рабочей студии сохраняется.
 Клиентов, оплат и посещений настройка не создаёт. Индивидуальные занятия
 назначаются вручную на согласованное время, по одному человеку.
 
@@ -57,6 +59,47 @@
 
 Все команды ниже — **Linux SSH Google Cloud**, приглашение
 `cartoonlvl2@velora-eu:~$`. Это не Windows PowerShell.
+
+### Рабочая студия MY STRETCH
+
+После публикации изменённого кода в Git обновите сервер и сделайте preview:
+
+```bash
+cd "$HOME/joga-crm" &&
+bash ./backup.sh &&
+git pull --ff-only &&
+docker compose up -d --build api worker &&
+docker compose exec -T api python -m scripts.setup_stretch_studio \
+  --owner-email tokarmaria1106@gmail.com \
+  --studio-id 16 \
+  --report /app/uploads/stretch/preview-main.json &&
+docker compose exec -T api cat /app/uploads/stretch/preview-main.json
+```
+
+Ожидаются `ready: true`, `owner_id: 44`, `services: 4`, `weekly_templates: 17`,
+`booking_window_days: 30` и пустой `schedule.conflicts`. Повторно используются
+два подтверждённых старых пакета «4 заняття» и «8 заннять»: их ID сохраняются,
+во второй добавляется подарочное посещение. Изменения показаны в `adopted_packages`.
+Если пакет уже продан или имеет ограничения услуг, настройка полностью откатывается
+и просит проверить его условия. Клиентские абонементы не переписываются.
+Существующая услуга «Стретчинг» и её записи сохраняются; добавляются четыре услуги
+из прайса. Не копируются клиенты, платежи или подключения тестовой студии.
+
+После проверки:
+
+```bash
+cd "$HOME/joga-crm" &&
+docker compose exec -T api python -m scripts.setup_stretch_studio \
+  --owner-email tokarmaria1106@gmail.com \
+  --studio-id 16 \
+  --apply \
+  --report /app/uploads/stretch/applied-main.json &&
+docker compose exec -T api cat /app/uploads/stretch/applied-main.json
+```
+
+Успех подтверждается `ready: true`, `complete: true`, студией 16 и владельцем 44.
+Занятия назначаются владельцу Марії, недельные правила пополняют журнал на 30 дней.
+Stripe подключает владелец этой студии. Повторный запуск сохраняет созданные ID.
 
 ### 1. Обновить код
 

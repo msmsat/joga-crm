@@ -82,7 +82,15 @@
     "addClient": "Lisää asiakas",
     "edit": "Muokkaa",
     "editLesson": "Muokkaa tuntia",
-    "deleteLesson": "Poista tunti",
+    "cancelLesson": "Peru tunti",
+    "purge": {
+      "action": "Poista pysyvästi",
+      "title": "Poistetaanko pysyvästi?",
+      "message": "Se katoaa päiväkirjasta varaushistorioineen. Tätä ei voi perua.",
+      "keep": "Säilytä",
+      "confirm": "Poista",
+      "deleting": "Poistetaan…"
+    },
     "cancel": "Peruuta",
     "save": "Tallenna",
     "lessonTitle": "Tunnin nimi",
@@ -191,6 +199,7 @@
     "selectTrainer": "Valitse ohjaaja",
     "alreadyCancelled": "Tunti on jo peruttu",
     "lessonCancelled": "Tunti peruttu",
+    "lessonDeleted": "Tunti poistettu",
     "noPermission": "Oikeudet eivät riitä aikataulun muuttamiseen",
     "undoLabel": "Kumottu: {{label}}",
     "redoLabel": "Tehty uudelleen: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Ystävästä: +{{amount}} talletukselle",
       "discount": "Ystävästä: {{amount}} alennusta"
     }
+  },
+  "paidSheet": {
+    "chosen": "Valinnat",
+    "paidAt": "Vastaanotettu {{date}}",
+    "bySystem": "Järjestelmä kirjasi tunnin jälkeen",
+    "noExtras": "Ei pisteitä, talletusta tai koodeja",
+    "changeHint": "Väärä maksutapa, alennus tai pisteet? ”Muuta” peruu tämän maksun, ja sen voi ottaa vastaan uudelleen.",
+    "change": "Muuta",
+    "confirmTitle": "Muutetaanko maksua?",
+    "confirmMessage": "Maksu {{amount}} perutaan: summa kirjataan Talouteen palautuksena, ja pisteet, talletus, lahjakortti ja alennukset palautuvat asiakkaalle. Valitse sitten maksu uudelleen.",
+    "confirm": "Muuta",
+    "keep": "Säilytä",
+    "cancelled": "Edellinen maksu peruttu – valitse uusi"
   },
   "mark": {
     "pay": "Maksu",

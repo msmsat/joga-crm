@@ -224,6 +224,7 @@
     "book_client": "Booking the class…",
     "cancel_booking": "Cancelling the booking…",
     "pay_booking": "Recording the class payment…",
+    "cancel_booking_payment": "Cancelling the class payment…",
     "clear_schedule": "Clearing the schedule…",
     "create_account": "Creating an account…",
     "create_branch": "Creating a branch…",

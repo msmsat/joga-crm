@@ -82,7 +82,15 @@
     "addClient": "Shto klient",
     "edit": "Redakto",
     "editLesson": "Redakto mësimin",
-    "deleteLesson": "Fshi mësimin",
+    "cancelLesson": "Anulo mësimin",
+    "purge": {
+      "action": "Fshi përgjithmonë",
+      "title": "Të fshihet përgjithmonë?",
+      "message": "Do të zhduket nga ditari bashkë me historikun e rezervimeve. Nuk mund të rikthehet.",
+      "keep": "Mbaje",
+      "confirm": "Fshi",
+      "deleting": "Po fshihet…"
+    },
     "cancel": "Anulo",
     "save": "Ruaj",
     "lessonTitle": "Titulli i mësimit",
@@ -191,6 +199,7 @@
     "selectTrainer": "Zgjidhni një trajner",
     "alreadyCancelled": "Mësimi është tashmë i anuluar",
     "lessonCancelled": "Mësimi u anulua",
+    "lessonDeleted": "Mësimi u fshi",
     "noPermission": "Nuk keni të drejta për të ndryshuar orarin",
     "undoLabel": "U zhbë: {{label}}",
     "redoLabel": "U ribë: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Për mik: +{{amount}} në depozitë",
       "discount": "Për mik: zbritje {{amount}}"
     }
+  },
+  "paidSheet": {
+    "chosen": "Çfarë u zgjodh",
+    "paidAt": "U arkëtua më {{date}}",
+    "bySystem": "E regjistroi sistemi pas orës",
+    "noExtras": "Pa pikë, depozitë dhe kode",
+    "changeHint": "Mënyrë, zbritje apo pikë të gabuara? „Ndrysho” e anulon këtë pagesë që ta pranoni sërish.",
+    "change": "Ndrysho",
+    "confirmTitle": "Të ndryshohet pagesa?",
+    "confirmMessage": "Pagesa prej {{amount}} do të anulohet: shuma del nga Financat si rimbursim, ndërsa pikët, depozita, kuponi dhe zbritjet i kthehen klientit. Pastaj zgjidhni sërish pagesën.",
+    "confirm": "Ndrysho",
+    "keep": "Mbaje",
+    "cancelled": "Pagesa e mëparshme u anulua — zgjidhni një të re"
   },
   "mark": {
     "pay": "Pagesa",

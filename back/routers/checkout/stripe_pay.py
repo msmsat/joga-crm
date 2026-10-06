@@ -33,7 +33,7 @@ from database import async_session_maker, get_db
 from ratelimit import limiter
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
-    ClientSubscription, GiftCertificate, Operation, OnlineChannel, StripeCheckout,
+    ClientSubscription, Operation, OnlineChannel, StripeCheckout,
     Studio, SubscriptionPackage, User,
 )
 from schemas.checkout import (
@@ -43,7 +43,9 @@ from routers.clients.subscriptions import attach_subscription
 from services import booking_payment, platform_fee, stripe_connect, stripe_env
 from services.notifier import notify_payment
 
-from .router import _get_client_package, _quote, consume_quote, perform_pay, reject_dead_promo, resolve_account
+from .router import (
+    _get_client_package, _quote, consume_quote, perform_pay, reject_dead_promo, resolve_account, restore_spent,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1083,11 +1085,8 @@ async def _restore_consumed(db: AsyncSession, checkout: StripeCheckout) -> None:
     покупка. Не коммитит. Идемпотентна: опись стирается после отката, поэтому
     повторный возврат (спор поверх refund) не начислит второй раз.
 
-    Сертификат ищем по коду: он уникален глобально, и это единственная форма,
-    которая одинаково доступна и кассе, и мини-приложению.
+    Сам возврат — общий с отменой оплаты у стойки (`router.restore_spent`).
     """
-    from routers.clients.loyalty import apply_deposit_change, apply_points_change
-
     consumed = (checkout.payload or {}).get(CONSUMED_KEY)
     if not consumed:
         return
@@ -1096,27 +1095,11 @@ async def _restore_consumed(db: AsyncSession, checkout: StripeCheckout) -> None:
     if client_id is None:
         return
 
-    if consumed.get("bonuses"):
-        await apply_points_change(
-            client_id, checkout.studio_id, consumed["bonuses"], "Возврат оплаты бонусами", db,
-        )
-    if consumed.get("deposit"):
-        await apply_deposit_change(
-            client_id, checkout.studio_id, consumed["deposit"], "Возврат оплаты депозитом", db,
-        )
-    code = consumed.get("certificate_code")
-    if code:
-        cert = (await db.execute(
-            select(GiftCertificate).where(
-                GiftCertificate.code == code,
-                GiftCertificate.studio_id == checkout.studio_id,
-            )
-        )).scalar_one_or_none()
-        # Истёкший за это время сертификат обратно в "active" не воскрешаем —
-        # это был бы подарок сверх возврата.
-        if cert is not None and cert.status == "used":
-            cert.status = "active"
-            cert.used_at = None
+    await restore_spent(
+        db, checkout.studio_id, client_id,
+        bonuses=consumed.get("bonuses") or 0, deposit=consumed.get("deposit") or 0,
+        certificate_code=consumed.get("certificate_code"), reason="Возврат оплаты",
+    )
 
     payload = {**checkout.payload}
     payload.pop(CONSUMED_KEY, None)

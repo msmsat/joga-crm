@@ -10,6 +10,7 @@ import { useRoleLabel } from '../../../../../hooks/useBusinessTerms';
 import type { Booking } from '../../types';
 import { attendanceOf, formatDate, isLessonStarted } from '../../utils';
 import './lessonCard.css';
+import { discountedPrice, fundingOf } from './funding';
 import { MasterCompensation } from './MasterCompensation';
 
 interface Props {
@@ -39,6 +40,10 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency, lo
     : null;
   const level = detail?.level?.trim();
   const equipment = detail?.equipment?.trim();
+  // Индивидуальное занятие — это цена одного клиента: со скидкой, которую ему
+  // дали, а прайс зачёркнут рядом. У группового у каждого своя — там прайс.
+  const own = booking.bookingMode === 'resource' && booked?.length === 1
+    ? discountedPrice(fundingOf(booked[0], booking.price)) : null;
 
   return (
     <div className="lc-facts">
@@ -66,7 +71,14 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency, lo
           <span className="lc-dot" style={{ background: booking.color }} />
           {trainerName ?? '—'}
         </Tile>
-        <Tile label={t('lessonCard.price')}>{formatMoney(booking.price, currency)}</Tile>
+        <Tile label={t('lessonCard.price')}>
+          {own ? (
+            <>
+              {formatMoney(own.price, currency)}
+              <s className="lc-tile-was">{formatMoney(own.base, currency)}</s>
+            </>
+          ) : formatMoney(booking.price, currency)}
+        </Tile>
         {booking.bookingMode !== 'resource' && (
           <Tile label={t('lessonCard.spots')}>{booking.clients} / {booking.maxClients}</Tile>
         )}

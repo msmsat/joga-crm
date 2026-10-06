@@ -37,7 +37,10 @@ test('imported completion does not fabricate attendance or payment', async () =>
   });
   const client = { booking_channel: 'import', debt: 0, payment: null, by_subscription: false, paid_amount: 0 };
   assert.equal(marks.PayMark({ client, canPay: true, onPay() {} }).props.state, 'idle');
-  assert.equal(marks.PayMark({ client: { ...client, debt: 1200 }, canPay: true, onPay() {} }).props.state, 'due');
+  const due = marks.PayMark({ client: { ...client, debt: 1200 }, canPay: true, onPay() {}, amount: '1 200 Kč' });
+  assert.equal(due.props.state, 'due');
+  assert.equal(due.props.amount, '1 200 Kč');
+  assert.equal(marks.PayMark({ client: { ...client, paid_amount: 1200 }, canPay: true, onPay() {}, amount: '0 Kč' }).props.amount, undefined);
   assert.equal(marks.PayMark({ client: { ...client, paid_amount: 1200 }, canPay: true, onPay() {} }).props.state, 'done');
 });
 function nodes(tree) {

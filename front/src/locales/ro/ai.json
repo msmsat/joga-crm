@@ -232,6 +232,7 @@
     "book_client": "Se rezervă clasa…",
     "cancel_booking": "Se anulează rezervarea…",
     "pay_booking": "Se înregistrează plata clasei…",
+    "cancel_booking_payment": "Se anulează plata clasei…",
     "clear_schedule": "Se golește programul…",
     "create_account": "Se creează un cont…",
     "create_branch": "Se creează o filială…",

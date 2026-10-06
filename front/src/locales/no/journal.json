@@ -82,7 +82,15 @@
     "addClient": "Legg til kunde",
     "edit": "Rediger",
     "editLesson": "Rediger økt",
-    "deleteLesson": "Slett økt",
+    "cancelLesson": "Avlys økten",
+    "purge": {
+      "action": "Slett permanent",
+      "title": "Slette permanent?",
+      "message": "Den forsvinner fra timeplanen sammen med bookinghistorikken. Dette kan ikke angres.",
+      "keep": "Behold",
+      "confirm": "Slett",
+      "deleting": "Sletter…"
+    },
     "cancel": "Avbryt",
     "save": "Lagre",
     "lessonTitle": "Navn på økten",
@@ -191,6 +199,7 @@
     "selectTrainer": "Velg en instruktør",
     "alreadyCancelled": "Økten er allerede avlyst",
     "lessonCancelled": "Økten er avlyst",
+    "lessonDeleted": "Økten er slettet",
     "noPermission": "Ikke nok rettigheter til å endre timeplanen",
     "undoLabel": "Angret: {{label}}",
     "redoLabel": "Gjort om: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Per venn: +{{amount}} på depositum",
       "discount": "Per venn: {{amount}} i rabatt"
     }
+  },
+  "paidSheet": {
+    "chosen": "Valgt",
+    "paidAt": "Mottatt {{date}}",
+    "bySystem": "Registrert av systemet etter timen",
+    "noExtras": "Uten poeng, innskudd og koder",
+    "changeHint": "Feil metode, rabatt eller poeng? «Endre» annullerer betalingen, så du kan ta imot den på nytt.",
+    "change": "Endre",
+    "confirmTitle": "Endre betalingen?",
+    "confirmMessage": "Betalingen på {{amount}} annulleres: beløpet føres ut av Økonomi som refusjon, og poeng, innskudd, gavekort og rabatter går tilbake til kunden. Velg deretter betalingen på nytt.",
+    "confirm": "Endre",
+    "keep": "Behold",
+    "cancelled": "Forrige betaling annullert – velg en ny"
   },
   "mark": {
     "pay": "Betaling",

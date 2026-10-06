@@ -82,7 +82,15 @@
     "addClient": "Tilføj kunde",
     "edit": "Rediger",
     "editLesson": "Rediger hold",
-    "deleteLesson": "Slet hold",
+    "cancelLesson": "Aflys holdet",
+    "purge": {
+      "action": "Slet permanent",
+      "title": "Slet permanent?",
+      "message": "Det forsvinder fra kalenderen sammen med bookinghistorikken. Det kan ikke fortrydes.",
+      "keep": "Behold",
+      "confirm": "Slet",
+      "deleting": "Sletter…"
+    },
     "cancel": "Annuller",
     "save": "Gem",
     "lessonTitle": "Holdets navn",
@@ -191,6 +199,7 @@
     "selectTrainer": "Vælg en underviser",
     "alreadyCancelled": "Holdet er allerede aflyst",
     "lessonCancelled": "Holdet er aflyst",
+    "lessonDeleted": "Holdet er slettet",
     "noPermission": "Ikke rettigheder nok til at ændre planen",
     "undoLabel": "Fortrudt: {{label}}",
     "redoLabel": "Gentaget: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Pr. ven: +{{amount}} på depositum",
       "discount": "Pr. ven: {{amount}} i rabat"
     }
+  },
+  "paidSheet": {
+    "chosen": "Valgt",
+    "paidAt": "Modtaget {{date}}",
+    "bySystem": "Bogført af systemet efter holdet",
+    "noExtras": "Uden point, depositum og koder",
+    "changeHint": "Forkert metode, rabat eller point? „Skift“ annullerer betalingen, så du kan tage imod den igen.",
+    "change": "Skift",
+    "confirmTitle": "Skift betalingen?",
+    "confirmMessage": "Betalingen på {{amount}} annulleres: beløbet går ud af Økonomi som refusion, og point, depositum, gavekort og rabatter går tilbage til kunden. Vælg derefter betalingen igen.",
+    "confirm": "Skift",
+    "keep": "Behold",
+    "cancelled": "Tidligere betaling annulleret — vælg en ny"
   },
   "mark": {
     "pay": "Betaling",

@@ -82,7 +82,15 @@
     "addClient": "Přidat klienta",
     "edit": "Upravit",
     "editLesson": "Upravit lekci",
-    "deleteLesson": "Smazat lekci",
+    "cancelLesson": "Zrušit lekci",
+    "purge": {
+      "action": "Smazat natrvalo",
+      "title": "Smazat natrvalo?",
+      "message": "Zmizí z deníku i s historií rezervací. Obnovit ji už nepůjde.",
+      "keep": "Ponechat",
+      "confirm": "Smazat",
+      "deleting": "Mažeme…"
+    },
     "cancel": "Zrušit",
     "save": "Uložit",
     "lessonTitle": "Název lekce",
@@ -193,6 +201,7 @@
     "selectTrainer": "Vyberte trenéra",
     "alreadyCancelled": "Lekce už je zrušená",
     "lessonCancelled": "Lekce zrušena",
+    "lessonDeleted": "Lekce smazána",
     "noPermission": "Nedostatečná oprávnění ke změně rozvrhu",
     "undoLabel": "Vráceno: {{label}}",
     "redoLabel": "Zopakováno: {{label}}",
@@ -480,6 +489,19 @@
       "deposit": "Za přítele: +{{amount}} na zálohu",
       "discount": "Za přítele: sleva {{amount}}"
     }
+  },
+  "paidSheet": {
+    "chosen": "Co bylo zvoleno",
+    "paidAt": "Přijato {{date}}",
+    "bySystem": "Zaúčtoval systém po lekci",
+    "noExtras": "Bez bodů, zálohy a kódů",
+    "changeHint": "Špatný způsob, sleva nebo body? „Změnit“ tuto platbu zruší a můžete ji přijmout znovu.",
+    "change": "Změnit",
+    "confirmTitle": "Změnit platbu?",
+    "confirmMessage": "Platba {{amount}} bude zrušena: částka odejde z Financí jako vratka a body, záloha, poukaz a slevy se vrátí klientovi. Pak zvolte platbu znovu.",
+    "confirm": "Změnit",
+    "keep": "Ponechat",
+    "cancelled": "Předchozí platba zrušena — zvolte novou"
   },
   "mark": {
     "pay": "Platba",

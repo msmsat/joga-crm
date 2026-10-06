@@ -226,6 +226,7 @@
     "book_client": "Kurs wird gebucht…",
     "cancel_booking": "Buchung wird storniert…",
     "pay_booking": "Kurszahlung wird erfasst…",
+    "cancel_booking_payment": "Kurszahlung wird storniert…",
     "clear_schedule": "Zeitplan wird geleert…",
     "create_account": "Konto wird angelegt…",
     "create_branch": "Filiale wird angelegt…",

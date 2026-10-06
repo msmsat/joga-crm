@@ -229,6 +229,7 @@
     "book_client": "Ders ayırtılıyor…",
     "cancel_booking": "Rezervasyon iptal ediliyor…",
     "pay_booking": "Ders ödemesi kaydediliyor…",
+    "cancel_booking_payment": "Ders ödemesi iptal ediliyor…",
     "clear_schedule": "Program temizleniyor…",
     "create_account": "Hesap oluşturuluyor…",
     "create_branch": "Şube oluşturuluyor…",

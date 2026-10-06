@@ -17,6 +17,7 @@ import { useResourceMove } from './hooks/useResourceMove';
 import { useUndoHistory } from './hooks/useUndoHistory';
 import { usePopupPosition } from './hooks/usePopupPosition';
 import { usePrefetchLesson } from './hooks/useLessonDetail';
+import { useLessonPurge } from './hooks/useLessonPurge';
 import { useGridSwipe } from './hooks/useGridSwipe';
 import { useTrainerPages } from './hooks/useTrainerPages';
 import { TrainerPicker } from './components/TrainerPicker';
@@ -51,6 +52,14 @@ const JOURNAL_DATE_KEY = 'journal:selectedDate';
 /** Сколько закрытый попап занятия доигрывает уход (Journal.css: popup-out,
  *  popup-sheet-out) — с запасом на последний кадр. */
 const POPUP_EXIT_MS = 260;
+
+/** Отмена занятия, ждущая конца undo-тоста (см. startDeferredCancel). */
+interface DeferredCancel {
+  commit: () => Promise<boolean>;
+  committed: boolean;
+  /** Разрешить тост сейчас — как по таймеру: он уходит и коммитит отмену. */
+  settleToast?: () => void;
+}
 
   // ─── ГЛАВНЫЙ КОМПОНЕНТ ────────────────────────────────────────────────────────
 export default function Journal() {
@@ -677,25 +686,30 @@ export default function Journal() {
   // или страховкой (уход со страницы/закрытие вкладки), «Отменить» в тосте —
   // на сервер не ходит вовсе. Осознанно НЕ кладём в общий undo-стек (задача 3):
   // до коммита операция обратима через сам undo-тост, после коммита — необратима.
-  const deferredCancelRef = useRef<Map<number, { commit: () => void; committed: boolean }>>(new Map());
+  const deferredCancelRef = useRef<Map<number, DeferredCancel>>(new Map());
+  // Отмены, ушедшие на сервер и ещё не ответившие: «Удалить навсегда» ждёт их.
+  const cancelCommitsRef = useRef<Map<number, Promise<boolean>>>(new Map());
 
-  const runDeferredCancel = React.useCallback((lessonId: number) => {
+  // Отдаёт, принял ли сервер отмену; отмены не было вовсе — true.
+  const runDeferredCancel = React.useCallback((lessonId: number): Promise<boolean> => {
     const entry = deferredCancelRef.current.get(lessonId);
-    if (!entry || entry.committed) return;
+    if (!entry || entry.committed) return cancelCommitsRef.current.get(lessonId) ?? Promise.resolve(true);
     entry.committed = true;
-    entry.commit();
     deferredCancelRef.current.delete(lessonId);
+    const done = entry.commit().finally(() => cancelCommitsRef.current.delete(lessonId));
+    cancelCommitsRef.current.set(lessonId, done);
+    return done;
   }, []);
 
   // Страховка: уход со страницы (размонт Журнала) коммитит все ещё тикающие отмены.
   useEffect(() => () => {
-    deferredCancelRef.current.forEach((entry, id) => { if (!entry.committed) runDeferredCancel(id); });
+    deferredCancelRef.current.forEach((entry, id) => { if (!entry.committed) void runDeferredCancel(id); });
   }, [runDeferredCancel]);
 
   // Страховка: закрытие вкладки/обновление страницы — тот же немедленный коммит.
   useEffect(() => {
     const onBeforeUnload = () => {
-      deferredCancelRef.current.forEach((entry, id) => { if (!entry.committed) runDeferredCancel(id); });
+      deferredCancelRef.current.forEach((entry, id) => { if (!entry.committed) void runDeferredCancel(id); });
     };
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
@@ -707,7 +721,7 @@ export default function Journal() {
   const isFirstLessonsKey = useRef(true);
   useEffect(() => {
     if (isFirstLessonsKey.current) { isFirstLessonsKey.current = false; return; }
-    deferredCancelRef.current.forEach((entry, id) => { if (!entry.committed) runDeferredCancel(id); });
+    deferredCancelRef.current.forEach((entry, id) => { if (!entry.committed) void runDeferredCancel(id); });
   }, [lessonsKeyStr, runDeferredCancel]);
 
   const startDeferredCancel = React.useCallback(async (booking: Booking) => {
@@ -715,19 +729,18 @@ export default function Journal() {
     // получен, оставил бы rollback без данных для отката.
     const snapshot = await mutations.patchLocalCancelled(booking);
 
-    const entry = {
+    const entry: DeferredCancel = {
       committed: false,
-      commit: () => {
-        mutations.commitDeferredCancel(booking.id).catch((e: unknown) => {
-          // Сервер упал уже после истечения тоста — откатить кэш + сообщить.
-          mutations.rollback(snapshot);
-          toast.error(errorMessage(e, t));
-        });
-      },
+      commit: () => mutations.commitDeferredCancel(booking.id).then(() => true, (e: unknown) => {
+        // Сервер упал уже после истечения тоста — откатить кэш + сообщить.
+        mutations.rollback(snapshot);
+        toast.error(errorMessage(e, t));
+        return false;
+      }),
     };
     deferredCancelRef.current.set(booking.id, entry);
 
-    toast.undo(t('toasts.lessonCancelled'), {
+    entry.settleToast = toast.undo(t('toasts.lessonCancelled'), {
       // Страховка могла закоммитить это занятие немедленно (уход со страницы,
       // листание дня) уже ПОСЛЕ того как тост стартовал (React-эффект и
       // JS-таймер тоста независимы) — клик «Отменить» тогда не должен трогать
@@ -737,9 +750,18 @@ export default function Journal() {
         deferredCancelRef.current.delete(booking.id);
         mutations.rollback(snapshot);
       },
-      onExpire: () => runDeferredCancel(booking.id),
+      onExpire: () => { void runDeferredCancel(booking.id); },
     });
   }, [mutations, toast, runDeferredCancel, t]);
+
+  // «Удалить навсегда» таймера не ждёт: отмена уходит на сервер сейчас, а тост
+  // уходит вместе с ней — его «Отменить» после коммита уже ничего не вернёт.
+  const settleCancelNow = React.useCallback((lessonId: number) => {
+    deferredCancelRef.current.get(lessonId)?.settleToast?.();
+    return runDeferredCancel(lessonId);
+  }, [runDeferredCancel]);
+  const closePopup = useCallback(() => setPopupBooking(null), []);
+  const purgeLesson = useLessonPurge({ mutations, settleCancel: settleCancelNow, closePopup });
 
   const deleteBooking = (id: number) => {
     const booking = bookings.find(b => b.id === id);
@@ -1094,6 +1116,7 @@ export default function Journal() {
           mutations={mutations}
           onSave={commitBookingChange}
           deleteBooking={deleteBooking}
+          purgeLesson={purgeLesson}
           onAddClients={confirmAddClients} // Изменено здесь
           showToast={showToast}
           pushHistoryEntry={history.push}

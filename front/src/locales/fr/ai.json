@@ -229,6 +229,7 @@
     "book_client": "Réservation du cours…",
     "cancel_booking": "Annulation de la réservation…",
     "pay_booking": "Enregistrement du paiement du cours…",
+    "cancel_booking_payment": "Annulation du paiement du cours…",
     "clear_schedule": "Effacement du planning…",
     "create_account": "Création d’un compte…",
     "create_branch": "Création d’un établissement…",

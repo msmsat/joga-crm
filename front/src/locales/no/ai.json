@@ -229,6 +229,7 @@
     "book_client": "Bestiller timen…",
     "cancel_booking": "Avbestiller bookingen…",
     "pay_booking": "Registrerer betaling for timen…",
+    "cancel_booking_payment": "Annullerer betaling for timen…",
     "clear_schedule": "Tømmer timeplanen…",
     "create_account": "Oppretter en konto…",
     "create_branch": "Oppretter en avdeling…",

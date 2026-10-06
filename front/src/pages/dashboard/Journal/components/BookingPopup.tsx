@@ -21,6 +21,7 @@ import { LessonFacts } from './lesson/LessonFacts';
 import { BookedClients } from './lesson/BookedClients';
 import { EligibleClientRow } from './lesson/EligibleClientRow';
 import { EditorConsequence, LessonEditor } from './lesson/LessonEditor';
+import { PurgeLesson } from './lesson/PurgeLesson';
 import { useLessonEditor } from './lesson/editor/useLessonEditor';
 import type { LessonDraft } from './lesson/editor/editorModel';
 import type { useJournalMutations } from '../hooks/useJournalMutations';
@@ -60,8 +61,11 @@ interface BookingPopupProps {
   /** Сохранить правку. Индивидуальная запись отвечает, удался ли перенос:
    *  окно «Изменить время» по нему решает, закрываться ли. */
   onSave: (prev: Booking, next: Booking) => Promise<boolean> | void;
+  /** Корзина в подвале: ОТМЕНЯЕТ занятие (с уведомлением записанным). */
   deleteBooking: (id: number) => void;
-  onAddClients: (clientIds: number[]) => void | Promise<void>;
+  /** «Удалить навсегда» у уже отменённого занятия — оно уходит и из сетки. */
+  purgeLesson: (booking: Booking) => Promise<boolean>;
+  onAddClients:(clientIds: number[]) => void | Promise<void>;
   showToast: (msg: string) => void;
   pushHistoryEntry: (entry: HistoryEntry) => void;
 }
@@ -84,6 +88,7 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
   mutations,
   onSave,
   deleteBooking,
+  purgeLesson,
   onAddClients,
   showToast,
   pushHistoryEntry
@@ -497,7 +502,13 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
         )}
       </div>
 
-      {/* КНОПКИ ДЕЙСТВИЙ: у отменённого занятия их нет вовсе */}
+      {/* Отменённое занятие остаётся в сетке серым следом; убрать и его —
+          единственное, что с ним можно сделать. */}
+      {isCancelled && canEdit && (
+        <PurgeLesson onPurge={() => purgeLesson(popupBooking)} />
+      )}
+
+      {/* КНОПКИ ДЕЙСТВИЙ живого занятия */}
       {!isCancelled && (
       <div className="bp-actions" style={{ position: 'relative', zIndex: 1 }}>
 
@@ -592,7 +603,8 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
             )}
 
             {canEdit && (
-              <button className="bp-btn danger icon-only" title={t('bookingPopup.deleteLesson')} onClick={() => deleteBooking(popupBooking.id)}>
+              <button className="bp-btn danger icon-only" title={t('bookingPopup.cancelLesson')}
+                      aria-label={t('bookingPopup.cancelLesson')} onClick={() => deleteBooking(popupBooking.id)}>
                 <Icons.Trash />
               </button>
             )}

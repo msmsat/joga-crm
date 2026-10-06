@@ -23,7 +23,9 @@ interface ToastContextValue {
   success: (message: string) => void;
   error: (message: string) => void;
   info: (message: string) => void;
-  undo: (message: string, opts: UndoToastOptions) => void;
+  /** Возвращает «разрешить сейчас»: тост уходит так же, как по таймеру
+   *  (onExpire), — когда операцию закоммитили раньше и «Отменить» уже лжёт. */
+  undo: (message: string, opts: UndoToastOptions) => () => void;
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -114,6 +116,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       duration, actionLabel: opts.actionLabel ?? 'Отменить',
     }]);
     timers.current.set(id, setTimeout(() => expireUndo(id), duration));
+    return () => expireUndo(id);
   }, [expireUndo]);
 
   // Клик «Отменить»: откат без коммита (onExpire не зовём).

@@ -1,6 +1,8 @@
 // Записанные на занятие: кто, чем платит, пришёл ли, что сказал о занятии.
 // Строка открывает карточку клиента; справа — две отметки иконками: «Оплата»
-// (пока есть долг — открывает окно оплаты, оплачено — галочка) и «Посещение»
+// (пока есть долг — крупная кнопка с суммой к оплате, уже со скидкой клиента,
+// открывает окно оплаты; оплачено — галочка, а принятую у стойки она открывает
+// окном «Поменять», PaidSheet) и «Посещение»
 // (по умолчанию «пришёл»: до начала — выбор, после — переключение, см.
 // AttendMark). У группового занятия ещё и снятие с занятия; индивидуальную
 // запись отменяют удалением в подвале попапа.
@@ -10,9 +12,13 @@ import * as Icons from '../../../../../components/Icons';
 import type { BookedClient } from '../../../../../api/schedule/schedule.types';
 import { errorMessage } from '../../../../../api/errorMessage';
 import { useToast } from '../../../../../components/ui/index';
+import { formatMoney } from '../../../../../lib/money';
 import type { useJournalMutations } from '../../hooks/useJournalMutations';
 import { ReservationPayModal } from './ReservationPayModal';
-import { FundingChips, type Funding } from './FundingChips';
+import { PaidSheet } from './PaidSheet';
+import { paymentChangeable } from './paymentChange';
+import { FundingChips } from './FundingChips';
+import { fundingOf } from './funding';
 import { AttendMark, PayMark } from './VisitMarks';
 import { attendanceOf } from '../../utils';
 import './lessonCard.css';
@@ -49,6 +55,10 @@ export function BookedClients({ clients, canEdit, removable, started, currency, 
   const toast = useToast();
   // Кому сейчас принимаем оплату.
   const [paying, setPaying] = useState<BookedClient | null>(null);
+  // Чью принятую оплату смотрим («Поменять»), и принимаем ли оплату заново
+  // после отмены прежней.
+  const [reviewing, setReviewing] = useState<BookedClient | null>(null);
+  const [repaying, setRepaying] = useState(false);
 
   const setStatus = (id: number, status: BookedClient['status']) =>
     patch(list => list.map(x => x.reservation_id === id ? { ...x, status } : x));
@@ -85,6 +95,19 @@ export function BookedClients({ clients, canEdit, removable, started, currency, 
       ? { ...x, debt: 0, paid_amount: total } : x));
     showToast(t('toasts.paymentAccepted'));
     reload();
+  };
+
+  // Прежняя оплата отменена, окно «Оплачено» доиграло уход. Долг снова открыт
+  // — сразу окно оплаты, выбрать заново. Отметку под ним правит перечитанное
+  // занятие: долг сервер пересчитал по цене брони, угадывать его здесь незачем.
+  const changed = () => {
+    if (!reviewing) return;
+    const client = reviewing;
+    setReviewing(null);
+    showToast(t('paidSheet.cancelled'));
+    reload();
+    setRepaying(true);
+    setPaying(client);
   };
 
   return (
@@ -133,7 +156,9 @@ export function BookedClients({ clients, canEdit, removable, started, currency, 
                 )
               ) : (
                 <>
-                  <PayMark client={c} canPay={canEdit} onPay={() => setPaying(c)} />
+                  <PayMark client={c} canPay={canEdit} amount={formatMoney(c.debt, currency)}
+                           onPay={() => setPaying(c)}
+                           onReview={canEdit && paymentChangeable(c) ? () => setReviewing(c) : undefined} />
                   <AttendMark state={attendanceOf(c, started)} started={started}
                               onSet={canEdit ? attended => mark(c, attended) : undefined} />
                 </>
@@ -151,33 +176,35 @@ export function BookedClients({ clients, canEdit, removable, started, currency, 
         ))}
       </div>
 
-      {paying && (
+      {(paying || reviewing) && (
         // Обёртка гасит всплытие React-событий из портала окна: иначе клик в
         // нём дошёл бы до строки клиента и сетки под попапом.
         <div onMouseDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} onPointerDown={e => e.stopPropagation()}>
-          <ReservationPayModal
-            booked={paying}
-            lessonLabel={lessonLabel}
-            mutations={mutations}
-            onPaid={paid}
-            onClose={() => setPaying(null)}
-          />
+          {reviewing?.payment && (
+            <PaidSheet
+              booked={reviewing}
+              payment={reviewing.payment}
+              lessonLabel={lessonLabel}
+              currency={currency}
+              mutations={mutations}
+              onChanged={changed}
+              onClose={() => setReviewing(null)}
+            />
+          )}
+          {paying && (
+            <ReservationPayModal
+              booked={paying}
+              lessonLabel={lessonLabel}
+              mutations={mutations}
+              // После отмены прежней оплаты «Отмена» читалась бы как «верните
+              // как было» — а долг уже открыт.
+              cancelLabel={repaying ? t('lessonPay.notNow') : undefined}
+              onPaid={paid}
+              onClose={() => { setPaying(null); setRepaying(false); }}
+            />
+          )}
         </div>
       )}
     </div>
   );
 }
-
-/** Строка записанного → общий вид «как записан и чем закрыт». */
-const fundingOf = (c: BookedClient, price: number): Funding => ({
-  price,
-  trialPercent: c.trial_discount_percent ?? null,
-  trialAmount: c.trial_discount_amount ?? null,
-  manualPercent: c.manual_discount_percent ?? null,
-  isTrial: c.is_trial,
-  subscriptionName: c.subscription_name ?? null,
-  bySubscription: c.by_subscription,
-  debt: c.debt,
-  paidAmount: c.paid_amount ?? 0,
-  payment: c.payment ?? null,
-});

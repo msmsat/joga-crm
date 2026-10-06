@@ -120,6 +120,16 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     patchCache(list => list.map(b => (b.id === booking.id ? { ...b, status: 'cancelled' as const, clients: 0 } : b)));
   const commitDeferredCancel = (lessonId: number) => scheduleApi.cancelLesson(lessonId);
 
+  // ── Удалить отменённое занятие навсегда: карточка уходит из сетки сразу,
+  // отказ сервера возвращает её на место.
+  const purgeMut = useMutation({
+    mutationFn: (booking: Booking) => scheduleApi.deleteLesson(booking.id),
+    onMutate: (booking: Booking) => patchCache(list => list.filter(b => b.id !== booking.id)),
+    onError: (_err, _vars, ctx) => rollback(ctx),
+    onSettled: () => invalidate(),
+  });
+  const purgeLesson = (booking: Booking) => purgeMut.mutateAsync(booking);
+
   // ── Создать занятие: оптимистичная карточка (временный id) → invalidate заменяет реальной ──
   const createMut = useMutation({
     mutationFn: ({ payload }: { payload: LessonCreate; optimisticBooking: Booking }) =>
@@ -214,6 +224,18 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
                           options?: ReservationPaymentOptions & { expected_total?: number }) =>
     payMut.mutateAsync({ reservationId, method, options });
 
+  // ── Отменить принятую оплату («Поменять»): деньги уходят из Финансов, баллы
+  // и депозит возвращаются клиенту — те же срезы, что и при приёме оплаты.
+  const cancelPaymentMut = useMutation({
+    mutationFn: (reservationId: number) => scheduleApi.cancelReservationPayment(reservationId),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.journalLessonsAll });
+      qc.invalidateQueries({ queryKey: ['clients'] });
+      qc.invalidateQueries({ queryKey: ['finances'] });
+    },
+  });
+  const cancelPayment = (reservationId: number) => cancelPaymentMut.mutateAsync(reservationId);
+
   return {
     /** HB-22: новые команды (quote/confirm) обновляют журнал так же. */
     invalidate,
@@ -227,8 +249,10 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     setAttendance,
     confirmReservation,
     payReservation,
+    cancelPayment,
     patchLocalCancelled,
     commitDeferredCancel,
+    purgeLesson,
     rollback,
   };
 }

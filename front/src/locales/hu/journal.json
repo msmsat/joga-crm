@@ -82,7 +82,15 @@
     "addClient": "Ügyfél hozzáadása",
     "edit": "Szerkesztés",
     "editLesson": "Óra szerkesztése",
-    "deleteLesson": "Óra törlése",
+    "cancelLesson": "Óra lemondása",
+    "purge": {
+      "action": "Végleges törlés",
+      "title": "Véglegesen törli?",
+      "message": "Eltűnik a naplóból a foglalási előzményekkel együtt. Nem lehet visszaállítani.",
+      "keep": "Megtartás",
+      "confirm": "Törlés",
+      "deleting": "Törlés…"
+    },
     "cancel": "Mégse",
     "save": "Mentés",
     "lessonTitle": "Az óra neve",
@@ -191,6 +199,7 @@
     "selectTrainer": "Válasszon oktatót",
     "alreadyCancelled": "Az óra már le van mondva",
     "lessonCancelled": "Az óra lemondva",
+    "lessonDeleted": "Az óra törölve",
     "noPermission": "Nincs elég jogosultság az órarend módosításához",
     "undoLabel": "Visszavonva: {{label}}",
     "redoLabel": "Megismételve: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Barátonként: +{{amount}} a letétre",
       "discount": "Barátonként: {{amount}} kedvezmény"
     }
+  },
+  "paidSheet": {
+    "chosen": "A választás",
+    "paidAt": "Átvéve: {{date}}",
+    "bySystem": "A rendszer könyvelte az óra után",
+    "noExtras": "Pontok, letét és kódok nélkül",
+    "changeHint": "Rossz fizetési mód, kedvezmény vagy pontok? A „Módosítás” sztornózza ezt a fizetést, és újra felveheti.",
+    "change": "Módosítás",
+    "confirmTitle": "Módosítja a fizetést?",
+    "confirmMessage": "A(z) {{amount}} összegű fizetés sztornózásra kerül: az összeg visszatérítésként kikerül a Pénzügyekből, a pontok, a letét, az utalvány és a kedvezmények pedig visszakerülnek az ügyfélhez. Ezután válassza ki újra a fizetést.",
+    "confirm": "Módosítás",
+    "keep": "Megtartás",
+    "cancelled": "Az előző fizetés sztornózva — válasszon újat"
   },
   "mark": {
     "pay": "Fizetés",

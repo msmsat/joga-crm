@@ -229,6 +229,7 @@
     "book_client": "Prenotazione della lezione…",
     "cancel_booking": "Annullamento della prenotazione…",
     "pay_booking": "Registrazione del pagamento della lezione…",
+    "cancel_booking_payment": "Annullamento del pagamento della lezione…",
     "clear_schedule": "Pulizia dell’orario…",
     "create_account": "Creazione di un account…",
     "create_branch": "Creazione di una sede…",

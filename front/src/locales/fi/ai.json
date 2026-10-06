@@ -229,6 +229,7 @@
     "book_client": "Varataan tuntia…",
     "cancel_booking": "Perutaan varausta…",
     "pay_booking": "Kirjataan tunnin maksua…",
+    "cancel_booking_payment": "Perutaan tunnin maksua…",
     "clear_schedule": "Tyhjennetään aikataulua…",
     "create_account": "Luodaan tiliä…",
     "create_branch": "Luodaan toimipistettä…",

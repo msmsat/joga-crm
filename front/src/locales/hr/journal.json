@@ -82,7 +82,15 @@
     "addClient": "Dodaj klijenta",
     "edit": "Uredi",
     "editLesson": "Uredi termin",
-    "deleteLesson": "Izbriši termin",
+    "cancelLesson": "Otkaži termin",
+    "purge": {
+      "action": "Izbriši trajno",
+      "title": "Izbrisati trajno?",
+      "message": "Nestat će iz dnevnika zajedno s poviješću rezervacija. Neće ga se moći vratiti.",
+      "keep": "Zadrži",
+      "confirm": "Izbriši",
+      "deleting": "Brisanje…"
+    },
     "cancel": "Odustani",
     "save": "Spremi",
     "lessonTitle": "Naziv termina",
@@ -193,6 +201,7 @@
     "selectTrainer": "Odaberite trenera",
     "alreadyCancelled": "Termin je već otkazan",
     "lessonCancelled": "Termin otkazan",
+    "lessonDeleted": "Termin izbrisan",
     "noPermission": "Nedovoljne ovlasti za izmjenu rasporeda",
     "undoLabel": "Poništeno: {{label}}",
     "redoLabel": "Ponovljeno: {{label}}",
@@ -480,6 +489,19 @@
       "deposit": "Po prijatelju: +{{amount}} na polog",
       "discount": "Po prijatelju: popust {{amount}}"
     }
+  },
+  "paidSheet": {
+    "chosen": "Odabrano",
+    "paidAt": "Primljeno {{date}}",
+    "bySystem": "Sustav je evidentirao nakon termina",
+    "noExtras": "Bez bodova, pologa i kodova",
+    "changeHint": "Pogrešan način, popust ili bodovi? „Promijeni” poništava ovo plaćanje pa ga možete ponovno primiti.",
+    "change": "Promijeni",
+    "confirmTitle": "Promijeniti plaćanje?",
+    "confirmMessage": "Plaćanje od {{amount}} bit će poništeno: iznos izlazi iz Financija kao povrat, a bodovi, polog, bon i popusti vraćaju se klijentu. Zatim ponovno odaberite plaćanje.",
+    "confirm": "Promijeni",
+    "keep": "Zadrži",
+    "cancelled": "Prethodno plaćanje poništeno — odaberite novo"
   },
   "mark": {
     "pay": "Plaćanje",

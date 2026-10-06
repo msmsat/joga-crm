@@ -232,6 +232,7 @@
     "book_client": "Rezerwowanie zajęć…",
     "cancel_booking": "Anulowanie rezerwacji…",
     "pay_booking": "Rejestrowanie płatności za zajęcia…",
+    "cancel_booking_payment": "Anulowanie płatności za zajęcia…",
     "clear_schedule": "Czyszczenie harmonogramu…",
     "create_account": "Tworzenie konta…",
     "create_branch": "Tworzenie oddziału…",

@@ -229,6 +229,7 @@
     "book_client": "Óra foglalása…",
     "cancel_booking": "Foglalás lemondása…",
     "pay_booking": "Óra fizetésének rögzítése…",
+    "cancel_booking_payment": "Óra fizetésének sztornózása…",
     "clear_schedule": "Időbeosztás törlése…",
     "create_account": "Fiók létrehozása…",
     "create_branch": "Telephely létrehozása…",

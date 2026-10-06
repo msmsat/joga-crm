@@ -232,6 +232,7 @@
     "book_client": "Резервише се час…",
     "cancel_booking": "Отказује се резервација…",
     "pay_booking": "Евидентира се уплата за час…",
+    "cancel_booking_payment": "Поништава се уплата за час…",
     "clear_schedule": "Брише се распоред…",
     "create_account": "Креира се налог…",
     "create_branch": "Креира се филијала…",

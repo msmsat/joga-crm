@@ -98,9 +98,20 @@ async def discount_debt(db: AsyncSession, studio_id: int, reservation: Reservati
     скидкой — тем же ядром кассы, каким её потом проведёт оплата (скидки не
     суммируются: действует самая выгодная). Скидка на всю сумму — долга нет.
     Не коммитит."""
+    reservation.manual_discount_percent = percent
+    await reprice_debt(db, studio_id, reservation)
+
+
+async def reprice_debt(db: AsyncSession, studio_id: int, reservation: Reservation) -> None:
+    """Пересчитать открытый долг брони тем же ядром кассы, каким его потом
+    проведёт оплата: со скидкой администратора, данной брони, и с кодами, которые
+    бронь держит с записи. Скидка на всю сумму — долга нет. Не коммитит.
+
+    Зовут скидка при записи (`discount_debt`) и отмена оплаты у стойки
+    (services/reservation_refund): погашенный долг хранит уплаченное, а не
+    выставленное, и снова открытым должен стать по цене брони."""
     from routers.checkout.router import _get_client_package, _quote  # ponytail: локальный импорт разрывает цикл
 
-    reservation.manual_discount_percent = percent
     if reservation.debt_payment_id is None:
         return
     debt = await db.get(ClientPayment, reservation.debt_payment_id)
@@ -114,7 +125,7 @@ async def discount_debt(db: AsyncSession, studio_id: int, reservation: Reservati
     codes = held_codes.codes_of(reservation)
     quote = await _quote(db, studio_id, reservation.client_id, package, "lesson", codes.promo_code,
                          codes.use_bonuses, codes.use_deposit, codes.certificate_code,
-                         manual_percent=percent, hold_owner=reservation.id)
+                         manual_percent=reservation.manual_discount_percent, hold_owner=reservation.id)
     if quote.total_price > 0:
         debt.amount = quote.total_price
     else:

@@ -82,7 +82,15 @@
     "addClient": "Ajouter un client",
     "edit": "Modifier",
     "editLesson": "Modifier le cours",
-    "deleteLesson": "Supprimer le cours",
+    "cancelLesson": "Annuler le cours",
+    "purge": {
+      "action": "Supprimer définitivement",
+      "title": "Supprimer définitivement ?",
+      "message": "Il disparaîtra du journal avec son historique de réservations. Impossible de revenir en arrière.",
+      "keep": "Conserver",
+      "confirm": "Supprimer",
+      "deleting": "Suppression…"
+    },
     "cancel": "Annuler",
     "save": "Enregistrer",
     "lessonTitle": "Titre du cours",
@@ -191,6 +199,7 @@
     "selectTrainer": "Choisissez un coach",
     "alreadyCancelled": "Le cours est déjà annulé",
     "lessonCancelled": "Cours annulé",
+    "lessonDeleted": "Cours supprimé",
     "noPermission": "Droits insuffisants pour modifier le planning",
     "undoLabel": "Annulé : {{label}}",
     "redoLabel": "Rétabli : {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Par ami : +{{amount}} sur l’acompte",
       "discount": "Par ami : {{amount}} de remise"
     }
+  },
+  "paidSheet": {
+    "chosen": "Choix effectués",
+    "paidAt": "Encaissé le {{date}}",
+    "bySystem": "Enregistré par le système après le cours",
+    "noExtras": "Sans points, dépôt ni codes",
+    "changeHint": "Mauvais mode, remise ou points ? « Modifier » annule ce paiement pour pouvoir l’encaisser à nouveau.",
+    "change": "Modifier",
+    "confirmTitle": "Modifier le paiement ?",
+    "confirmMessage": "Le paiement de {{amount}} sera annulé : le montant sort des Finances en remboursement, et les points, le dépôt, le bon cadeau et les remises reviennent au client. Choisissez ensuite le paiement à nouveau.",
+    "confirm": "Modifier",
+    "keep": "Conserver",
+    "cancelled": "Paiement précédent annulé — choisissez-en un nouveau"
   },
   "mark": {
     "pay": "Paiement",

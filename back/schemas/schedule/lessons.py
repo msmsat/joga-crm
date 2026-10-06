@@ -95,6 +95,9 @@ class PaymentBreakdown(BaseSchema):
     # cash / transfer / stripe (карта онлайн).
     method: Optional[str] = None
     paid_at: Optional[datetime] = None
+    # Оплата перенесена импортом из прошлой системы — «Поменять» у стойки её
+    # не отменяет (services/reservation_refund.refusal).
+    migration_basis: Optional[str] = None
 
 
 class BookedClient(BaseSchema):

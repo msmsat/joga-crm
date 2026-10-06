@@ -229,6 +229,7 @@
     "book_client": "Bokar passet…",
     "cancel_booking": "Avbokar bokningen…",
     "pay_booking": "Registrerar betalning för passet…",
+    "cancel_booking_payment": "Makulerar betalningen för passet…",
     "clear_schedule": "Rensar schemat…",
     "create_account": "Skapar ett konto…",
     "create_branch": "Skapar en filial…",

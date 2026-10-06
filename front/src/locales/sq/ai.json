@@ -229,6 +229,7 @@
     "book_client": "Po rezervohet ora…",
     "cancel_booking": "Po anulohet rezervimi…",
     "pay_booking": "Po regjistrohet pagesa e orës…",
+    "cancel_booking_payment": "Po anulohet pagesa e orës…",
     "clear_schedule": "Po pastrohet orari…",
     "create_account": "Po krijohet një llogari…",
     "create_branch": "Po krijohet një degë…",

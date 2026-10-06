@@ -61,6 +61,7 @@ _PROXIES = {
     "book_client": ai_tools._r_create_reservation,
     "cancel_booking": ai_tools._r_cancel_reservation,
     "pay_booking": ai_tools._r_pay_reservation,
+    "cancel_booking_payment": ai_tools._r_cancel_reservation_payment,
     "create_client": ai_tools._r_create_client,
     "freeze_client": ai_tools._r_freeze_client,
     # Сотрудники и Каталог (эпик AI-6, задача 10).

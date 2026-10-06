@@ -105,6 +105,7 @@ from routers.schedule.lessons import (
 )
 from routers.schedule.reservations import (
     cancel_reservation as _r_cancel_reservation,
+    cancel_reservation_payment as _r_cancel_reservation_payment,
     create_reservation as _r_create_reservation,
     pay_reservation as _r_pay_reservation,
 )
@@ -770,6 +771,10 @@ class BookClientArgs(BaseModel):
 
 
 class CancelBookingArgs(BaseModel):
+    reservation_id: int
+
+
+class BookingPaymentArgs(BaseModel):
     reservation_id: int
 
 
@@ -2514,6 +2519,26 @@ async def pay_booking(ctx: StudioContext, db: AsyncSession, args: PayBookingArgs
             use_bonuses=args.use_bonuses, use_deposit=args.use_deposit,
         ),
         ctx=ctx, current_user=ctx.user, db=db,
+    )
+    return {"reservation": _dump(reservation)}
+
+
+@tool(
+    mutating=True, roles=("owner", "admin"),
+    endpoint="POST /schedule/reservations/{reservation_id}/payment-cancel",
+    summary="Отменить оплату за занятие (запись #{reservation_id})",
+    effect="Доход за занятие погасится возвратом в Финансах, клиенту вернутся списанные баллы, "
+           "депозит, сертификат и одноразовые скидки, начисленные за оплату баллы снимутся. "
+           "Долг за занятие снова откроется — оплату можно принять заново.",
+)
+async def cancel_booking_payment(ctx: StudioContext, db: AsyncSession, args: BookingPaymentArgs) -> dict:
+    """Отменить оплату за занятие, принятую у стойки (наличными или переводом),
+    — когда её провели по ошибке: не тем способом, без нужной скидки, баллов или
+    депозита, или деньги не дошли. Долг снова открывается; принять оплату
+    заново — pay_booking. Оплату картой онлайн так не отменить: её возвращают
+    через Stripe."""
+    reservation = await _r_cancel_reservation_payment(
+        reservation_id=args.reservation_id, ctx=ctx, current_user=ctx.user, db=db,
     )
     return {"reservation": _dump(reservation)}
 

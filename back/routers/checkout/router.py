@@ -314,6 +314,36 @@ async def consume_quote(db: AsyncSession, studio_id: int, client_id: int, quote:
     }
 
 
+async def restore_spent(
+    db: AsyncSession, studio_id: int, client_id: int, *,
+    bonuses: int, deposit: int, certificate_code: str | None, reason: str,
+) -> None:
+    """Обратное к `consume_quote`: вернуть клиенту баллы, депозит и сертификат,
+    которыми он расплатился за отменённую продажу. Не коммитит.
+
+    Числа берутся из описи (payload заявки Stripe, снимок чека на брони), а не
+    пересчётом: сертификат к этому моменту погашен, баллы списаны, и `_quote`
+    дал бы нули. Сертификат ищем по коду — он уникален глобально, и это
+    единственная форма, одинаково доступная кассе и мини-приложению.
+    """
+    if bonuses:
+        await apply_points_change(client_id, studio_id, bonuses, f"{reason} бонусами", db)
+    if deposit:
+        await apply_deposit_change(client_id, studio_id, deposit, f"{reason} депозитом", db)
+    if certificate_code:
+        cert = (await db.execute(
+            select(GiftCertificate).where(
+                GiftCertificate.code == certificate_code,
+                GiftCertificate.studio_id == studio_id,
+            )
+        )).scalar_one_or_none()
+        # Истёкший за это время сертификат обратно в "active" не воскрешаем —
+        # это был бы подарок сверх возврата.
+        if cert is not None and cert.status == "used":
+            cert.status = "active"
+            cert.used_at = None
+
+
 def reject_dead_promo(promo_code: str | None, quote: PriceQuote) -> None:
     """400, если кассир ввёл промокод, а он больше не действует.
 

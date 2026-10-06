@@ -659,8 +659,21 @@
 @container jcard (width < 50px) and (height >= 64px) { .jc-title { -webkit-line-clamp: 5; } }
 @container jcard (width < 50px) and (height >= 96px) { .jc-title { -webkit-line-clamp: 8; } }
 
+/* Занятие удалили навсегда: карточка не пропадает рывком, а растворяется на
+   месте. Атрибут ставит прямо в DOM useLessonPurge и убирает занятие из кэша,
+   когда анимация доиграла. */
+.booking-card[data-vanishing] {
+  pointer-events: none;
+  animation: card-vanish 0.34s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes card-vanish {
+  to { opacity: 0; transform: scale(0.9); filter: grayscale(1) blur(6px); }
+}
+@keyframes card-fade { to { opacity: 0; } }
+
 @media (prefers-reduced-motion: reduce) {
   .jc-live { animation: none; }
   .jc-elapsed, .jc-rail > i { transition: none; }
   .booking-card { transition: none; }
+  .booking-card[data-vanishing] { animation-name: card-fade; }
 }

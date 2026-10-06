@@ -1,0 +1,80 @@
+/* ── «Удалить навсегда» у отменённого занятия (PurgeLesson) ──────────────
+   Кнопка подвала раскрывается на месте в вопрос. Пыльная роза — цвет ошибки
+   дизайн-системы, но панель ею не заливается: тон держат кромка, плитка с
+   корзиной и сама кнопка «Удалить». */
+.bp-purge {
+  margin: 4px 24px 24px;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(216,140,154,0.14), rgba(216,140,154,0.03) 72%);
+  box-shadow: inset 0 0 0 1px rgba(216,140,154,0.28);
+  /* Прокрутка в вид (PurgeLesson, по концу анимации) захватывает и поле под
+     панелью — иначе она вставала бы вплотную к краю попапа. */
+  scroll-margin-bottom: 24px;
+  animation: bp-purge-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes bp-purge-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes bp-purge-fade { from { opacity: 0; } }
+
+.bp-purge-head { display: flex; align-items: flex-start; gap: 14px; }
+.bp-purge-ic {
+  width: 40px; height: 40px; border-radius: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(216,140,154,0.2); color: #C2697B;
+}
+.bp-purge-ic .icon-trash { width: 18px; height: 18px; }
+/* Пока идёт вопрос, крышка приоткрыта — и на входе один раз вздрагивает. */
+.bp-purge-ic .trash-lid {
+  transform: translateY(-3px) rotate(-12deg);
+  animation: bp-purge-lid 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s both;
+}
+@keyframes bp-purge-lid {
+  0% { transform: none; }
+  45% { transform: translateY(-5px) rotate(-20deg); }
+  100% { transform: translateY(-3px) rotate(-12deg); }
+}
+
+.bp-purge-copy { min-width: 0; padding-top: 1px; }
+.bp-purge-title {
+  font-size: 15px; font-weight: 800; line-height: 1.3; letter-spacing: -0.2px;
+  color: var(--onyx);
+}
+.bp-purge-text {
+  margin: 4px 0 0;
+  font-size: 13px; font-weight: 500; line-height: 1.5;
+  color: var(--muted);
+}
+
+.bp-purge-foot { display: flex; gap: 10px; margin-top: 16px; }
+.bp-btn.bp-purge-go {
+  background: linear-gradient(135deg, var(--rose) 0%, #B25D6E 100%);
+  color: #fff;
+  box-shadow: 0 8px 22px -8px rgba(178,93,110,0.6);
+}
+.bp-btn.bp-purge-go:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -8px rgba(178,93,110,0.7);
+}
+/* Идёт удаление — кнопка занята, а не выключена: не гаснет до полупрозрачной. */
+.bp-btn.bp-purge-go[aria-busy="true"] { opacity: 1; cursor: progress; }
+.bp-purge .spinner { width: 14px; height: 14px; }
+/* У кнопок попапа outline снят — клавиатуре нужен свой знак фокуса. */
+.bp-purge .bp-btn:focus-visible { box-shadow: 0 0 0 3px rgba(216,140,154,0.45); }
+
+/* Без движения — только проявление: по его концу панель и доводится в вид. */
+@media (prefers-reduced-motion: reduce) {
+  .bp-purge { animation: bp-purge-fade 0.2s ease; }
+  .bp-purge-ic .trash-lid { animation: none; }
+}
+
+/* ТЕЛЕФОН: поля как у .bp-actions шита и запас под индикатор жестов. */
+@media (max-width: 767px) {
+  .bp-purge {
+    margin: 4px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+    padding: 16px;
+    scroll-margin-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+}

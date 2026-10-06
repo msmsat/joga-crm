@@ -226,6 +226,7 @@
     "book_client": "Zapisuji na lekci…",
     "cancel_booking": "Ruším rezervaci…",
     "pay_booking": "Zaznamenávám platbu za lekci…",
+    "cancel_booking_payment": "Ruším platbu za lekci…",
     "clear_schedule": "Čistím rozvrh…",
     "create_account": "Vytvářím účet…",
     "create_branch": "Vytvářím pobočku…",

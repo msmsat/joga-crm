@@ -18,6 +18,11 @@ await mod.link(name => {
   return new vm.SyntheticModule(Object.keys(exports), function () { for (const [key, value] of Object.entries(exports)) this.setExport(key, value); }, { context });
 });
 await mod.evaluate();
+// Расчёты чипов и цены клиента — отдельный модуль (lesson/funding.ts).
+const fundingSource = await readFile(new URL('../src/pages/dashboard/Journal/components/lesson/funding.ts', import.meta.url), 'utf8');
+const funding = new vm.SourceTextModule(ts.transpileModule(fundingSource, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText, { context });
+await funding.link(() => { throw new Error('funding.ts must stay import-free at runtime'); });
+await funding.evaluate();
 const base = { price: 250, trialPercent: null, manualPercent: null, isTrial: false, subscriptionName: null, bySubscription: false, debt: 125, paidAmount: 0, payment: null };
 const render = patch => renderToStaticMarkup(React.createElement(mod.namespace.FundingChips, { funding: { ...base, ...patch }, currency: 'EUR' }));
 
@@ -73,9 +78,13 @@ test('the lesson roster passes the saved manual discount to the displayed receip
     const exports = name === 'react' ? React : name === 'react/jsx-runtime' ? jsx
       : name === 'react-i18next' ? { useTranslation: () => ({ t: i18n.t.bind(i18n) }) }
       : name.endsWith('/FundingChips') ? { FundingChips: mod.namespace.FundingChips }
-      : name.endsWith('/VisitMarks') ? { AttendMark: () => null, PayMark: () => null }
+      : name.endsWith('/funding') ? { ...funding.namespace }
+      : name.endsWith('/money') ? { formatMoney: n => `${n} EUR` }
+      : name.endsWith('/VisitMarks') ? { AttendMark: () => null, PayMark: ({ amount }) => React.createElement('b', null, `pay ${amount}`) }
       : name.endsWith('/utils') ? { attendanceOf: () => 'waiting' }
       : name.endsWith('/ReservationPayModal') ? { ReservationPayModal: () => null }
+      : name.endsWith('/PaidSheet') ? { PaidSheet: () => null }
+      : name.endsWith('/paymentChange') ? { paymentChangeable: () => false }
       : name.endsWith('/errorMessage') ? { errorMessage: () => '' }
       : name.endsWith('/ui/index') ? { useToast: () => ({}) } : {};
     return new vm.SyntheticModule(Object.keys(exports), function () { for (const [key, value] of Object.entries(exports)) this.setExport(key, value); }, { context });
@@ -86,6 +95,23 @@ test('the lesson roster passes the saved manual discount to the displayed receip
     price: 250, canEdit: false, removable: false, started: false,
   }));
   assert.match(html, /Скидка администратора −50% · −125 EUR/);
+  // Кнопка оплаты называет долг — уже со скидкой клиента, а не прайс.
+  assert.match(html, /pay 125 EUR/);
+});
+test('the client price is the list price minus the client discounts', () => {
+  // Копия — объект из vm-контекста с чужим прототипом deepStrictEqual не равен.
+  const price = patch => { const r = funding.namespace.discountedPrice({ ...base, ...patch }); return r && { ...r }; };
+  assert.deepEqual(price({ manualPercent: 50 }), { base: 250, price: 125 });
+  // Частичная оплата: долг и внесённое вместе — это цена клиента.
+  assert.deepEqual(price({ debt: 75, paidAmount: 50 }), { base: 250, price: 125 });
+  // После оплаты — по снимку кассы; баллы и депозит — средства оплаты, не скидка.
+  assert.deepEqual(price({ debt: 0, payment: { base_price: 300, discounts: [{ kind: 'manual', amount: 60 }], promo_code: null,
+    bonuses_applied: 10, bonuses_value: 40, deposit_applied: 0, certificate_applied: 0, total: 200, method: 'cash' } }),
+  { base: 300, price: 240 });
+  assert.deepEqual(price({ manualPercent: 100, debt: 0 }), { base: 250, price: 0 });
+  assert.equal(price({ debt: 250 }), null);
+  assert.equal(price({ bySubscription: true, debt: 0 }), null);
+  assert.equal(price({ debt: 0 }), null);
 });
 test('legacy paid bookings retain their recorded manual discount', () => {
   assert.match(render({ manualPercent: 50, debt: 0, paidAmount: 125 }), /Скидка администратора −50% · −125 EUR/);

@@ -226,6 +226,7 @@
     "book_client": "Записую на заняття…",
     "cancel_booking": "Скасовую запис…",
     "pay_booking": "Фіксую оплату заняття…",
+    "cancel_booking_payment": "Скасовую оплату заняття…",
     "clear_schedule": "Очищаю розклад…",
     "create_account": "Створюю обліковий запис…",
     "create_branch": "Створюю філіал…",

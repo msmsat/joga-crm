@@ -224,6 +224,7 @@
     "book_client": "Записываю на занятие…",
     "cancel_booking": "Снимаю с занятия…",
     "pay_booking": "Провожу оплату за занятие…",
+    "cancel_booking_payment": "Отменяю оплату за занятие…",
     "clear_schedule": "Очищаю расписание…",
     "create_account": "Завожу счёт…",
     "create_branch": "Завожу филиал…",

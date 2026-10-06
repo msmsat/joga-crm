@@ -82,7 +82,15 @@
     "addClient": "Add client",
     "edit": "Edit",
     "editLesson": "Edit lesson",
-    "deleteLesson": "Delete lesson",
+    "cancelLesson": "Cancel lesson",
+    "purge": {
+      "action": "Delete forever",
+      "title": "Delete forever?",
+      "message": "It will disappear from the journal along with its booking history. This can't be undone.",
+      "keep": "Keep",
+      "confirm": "Delete",
+      "deleting": "Deleting…"
+    },
     "cancel": "Cancel",
     "save": "Save",
     "lessonTitle": "Lesson title",
@@ -191,6 +199,7 @@
     "selectTrainer": "Select a trainer",
     "alreadyCancelled": "Lesson is already cancelled",
     "lessonCancelled": "Lesson cancelled",
+    "lessonDeleted": "Lesson deleted",
     "noPermission": "Not enough permissions to change the schedule",
     "undoLabel": "Undone: {{label}}",
     "redoLabel": "Redone: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Per friend: +{{amount}} to deposit",
       "discount": "Per friend: {{amount}} off"
     }
+  },
+  "paidSheet": {
+    "chosen": "What was chosen",
+    "paidAt": "Received {{date}}",
+    "bySystem": "Recorded by the system after the class",
+    "noExtras": "No points, deposit or codes",
+    "changeHint": "Wrong method, discount or points? “Change” cancels this payment so you can take it again.",
+    "change": "Change",
+    "confirmTitle": "Change the payment?",
+    "confirmMessage": "The {{amount}} payment will be cancelled: the amount leaves Finances as a refund, and points, deposit, voucher and discounts go back to the client. Then choose the payment again.",
+    "confirm": "Change",
+    "keep": "Keep",
+    "cancelled": "Previous payment cancelled — choose a new one"
   },
   "mark": {
     "pay": "Payment",

@@ -232,6 +232,7 @@
     "book_client": "Rezervira se termin…",
     "cancel_booking": "Otkazuje se rezervacija…",
     "pay_booking": "Evidentira se plaćanje termina…",
+    "cancel_booking_payment": "Poništava se plaćanje termina…",
     "clear_schedule": "Briše se raspored…",
     "create_account": "Stvara se račun…",
     "create_branch": "Stvara se podružnica…",

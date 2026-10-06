@@ -82,7 +82,15 @@
     "addClient": "Adaugă client",
     "edit": "Editează",
     "editLesson": "Editează ședința",
-    "deleteLesson": "Șterge ședința",
+    "cancelLesson": "Anulează ședința",
+    "purge": {
+      "action": "Șterge definitiv",
+      "title": "Ștergeți definitiv?",
+      "message": "Va dispărea din jurnal împreună cu istoricul rezervărilor. Nu va mai putea fi recuperată.",
+      "keep": "Păstrează",
+      "confirm": "Șterge",
+      "deleting": "Se șterge…"
+    },
     "cancel": "Anulează",
     "save": "Salvează",
     "lessonTitle": "Titlul ședinței",
@@ -193,6 +201,7 @@
     "selectTrainer": "Alegeți un antrenor",
     "alreadyCancelled": "Ședința este deja anulată",
     "lessonCancelled": "Ședința a fost anulată",
+    "lessonDeleted": "Ședința a fost ștearsă",
     "noPermission": "Drepturi insuficiente pentru a modifica programul",
     "undoLabel": "Anulat: {{label}}",
     "redoLabel": "Refăcut: {{label}}",
@@ -480,6 +489,19 @@
       "deposit": "Per prieten: +{{amount}} în depozit",
       "discount": "Per prieten: reducere {{amount}}"
     }
+  },
+  "paidSheet": {
+    "chosen": "Ce s-a ales",
+    "paidAt": "Încasat pe {{date}}",
+    "bySystem": "Înregistrat de sistem după clasă",
+    "noExtras": "Fără puncte, depozit sau coduri",
+    "changeHint": "Metodă, reducere sau puncte greșite? „Schimbă” anulează această plată, ca s-o poți încasa din nou.",
+    "change": "Schimbă",
+    "confirmTitle": "Schimbi plata?",
+    "confirmMessage": "Plata de {{amount}} va fi anulată: suma iese din Finanțe ca rambursare, iar punctele, depozitul, voucherul și reducerile revin clientului. Apoi alege din nou plata.",
+    "confirm": "Schimbă",
+    "keep": "Păstrează",
+    "cancelled": "Plata anterioară a fost anulată — alege una nouă"
   },
   "mark": {
     "pay": "Plată",

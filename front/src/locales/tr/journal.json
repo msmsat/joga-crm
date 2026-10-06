@@ -82,7 +82,15 @@
     "addClient": "Müşteri ekle",
     "edit": "Düzenle",
     "editLesson": "Dersi düzenle",
-    "deleteLesson": "Dersi sil",
+    "cancelLesson": "Dersi iptal et",
+    "purge": {
+      "action": "Kalıcı olarak sil",
+      "title": "Kalıcı olarak silinsin mi?",
+      "message": "Rezervasyon geçmişiyle birlikte takvimden kaybolur. Geri alınamaz.",
+      "keep": "Kalsın",
+      "confirm": "Sil",
+      "deleting": "Siliniyor…"
+    },
     "cancel": "İptal",
     "save": "Kaydet",
     "lessonTitle": "Ders adı",
@@ -191,6 +199,7 @@
     "selectTrainer": "Bir eğitmen seçin",
     "alreadyCancelled": "Ders zaten iptal edilmiş",
     "lessonCancelled": "Ders iptal edildi",
+    "lessonDeleted": "Ders silindi",
     "noPermission": "Programı değiştirmek için yetki yetersiz",
     "undoLabel": "Geri alındı: {{label}}",
     "redoLabel": "Yinelendi: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Arkadaş başına: depozitoya +{{amount}}",
       "discount": "Arkadaş başına: {{amount}} indirim"
     }
+  },
+  "paidSheet": {
+    "chosen": "Seçilenler",
+    "paidAt": "Tahsil edildi: {{date}}",
+    "bySystem": "Dersten sonra sistem kaydetti",
+    "noExtras": "Puan, depozito ve kod yok",
+    "changeHint": "Yöntem, indirim veya puan mı yanlış? “Değiştir” bu ödemeyi iptal eder, ardından yeniden alabilirsiniz.",
+    "change": "Değiştir",
+    "confirmTitle": "Ödeme değiştirilsin mi?",
+    "confirmMessage": "{{amount}} tutarındaki ödeme iptal edilecek: tutar Finans’tan iade olarak çıkar; puanlar, depozito, kupon ve indirimler müşteriye geri döner. Ardından ödemeyi yeniden seçin.",
+    "confirm": "Değiştir",
+    "keep": "Kalsın",
+    "cancelled": "Önceki ödeme iptal edildi — yenisini seçin"
   },
   "mark": {
     "pay": "Ödeme",

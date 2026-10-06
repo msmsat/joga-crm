@@ -19,8 +19,9 @@ import { FirstLessonTile, PaymentCodes } from './PaymentCodes';
 import { BalanceTile, FailedNote, Line, ManualDiscount, ReferralTile } from './PayTiles';
 import './lessonCard.css';
 
-/** Выше попапа журнала (9000) и карточки клиента (9500). */
-const FLOOR = 9600;
+/** Выше попапа журнала (9000) и карточки клиента (9500). Тот же этаж у окна
+ *  уже принятой оплаты (PaidSheet). */
+export const PAY_SHEET_FLOOR = 9600;
 
 /** Наличные или карта у стойки (терминал, перевод) — `transfer` на сервере. */
 export type PayMethod = 'cash' | 'transfer';
@@ -56,7 +57,7 @@ export function PaySheet({ payment, clientId, title, subtitle, deferred, chosen,
   const nothingToPay = preview != null && preview.total <= 0;
 
   return (
-    <Dialog onClose={onClose} zIndex={FLOOR} maxWidth="760px">
+    <Dialog onClose={onClose} zIndex={PAY_SHEET_FLOOR} maxWidth="760px">
       <CloseWhen when={done} />
       <ModalHeader title={title} subtitle={subtitle} />
       <ModalBody>

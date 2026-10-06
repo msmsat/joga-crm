@@ -82,7 +82,15 @@
     "addClient": "Lägg till kund",
     "edit": "Redigera",
     "editLesson": "Redigera passet",
-    "deleteLesson": "Radera passet",
+    "cancelLesson": "Ställ in passet",
+    "purge": {
+      "action": "Radera permanent",
+      "title": "Radera permanent?",
+      "message": "Det försvinner från schemat tillsammans med bokningshistoriken. Det går inte att ångra.",
+      "keep": "Behåll",
+      "confirm": "Radera",
+      "deleting": "Raderar…"
+    },
     "cancel": "Avbryt",
     "save": "Spara",
     "lessonTitle": "Passets namn",
@@ -191,6 +199,7 @@
     "selectTrainer": "Välj en instruktör",
     "alreadyCancelled": "Passet är redan inställt",
     "lessonCancelled": "Passet är inställt",
+    "lessonDeleted": "Passet är raderat",
     "noPermission": "Otillräcklig behörighet för att ändra schemat",
     "undoLabel": "Ångrat: {{label}}",
     "redoLabel": "Gjort om: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Per vän: +{{amount}} på depositionen",
       "discount": "Per vän: {{amount}} i rabatt"
     }
+  },
+  "paidSheet": {
+    "chosen": "Valt",
+    "paidAt": "Mottagen {{date}}",
+    "bySystem": "Bokförd av systemet efter passet",
+    "noExtras": "Utan poäng, insättning och koder",
+    "changeHint": "Fel betalsätt, rabatt eller poäng? ”Ändra” makulerar betalningen så att du kan ta emot den igen.",
+    "change": "Ändra",
+    "confirmTitle": "Ändra betalningen?",
+    "confirmMessage": "Betalningen på {{amount}} makuleras: beloppet går ut ur Ekonomi som återbetalning, och poäng, insättning, presentkort och rabatter går tillbaka till kunden. Välj sedan betalningen igen.",
+    "confirm": "Ändra",
+    "keep": "Behåll",
+    "cancelled": "Tidigare betalning makulerad – välj en ny"
   },
   "mark": {
     "pay": "Betalning",

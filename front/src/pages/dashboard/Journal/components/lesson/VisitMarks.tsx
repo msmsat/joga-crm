@@ -1,6 +1,7 @@
 // Две отметки записи иконками — «Оплата» и «Посещение». Одни и те же в строке
 // записанного (просмотр занятия, компактно) и на итоге мастера записи
 // (плиткой с подписью). Сделанное — галочка в уголке, неявка — крестик.
+// «Оплата» с долгом в строке записанного — крупная кнопка с суммой к оплате.
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
@@ -11,19 +12,24 @@ import './lessonCard.css';
 
 export type MarkState = 'idle' | 'due' | 'done' | 'missed';
 
-export function VisitMark({ icon, state, label, hint, onClick, disabled, tile, expanded }: {
+export function VisitMark({ icon, state, label, hint, amount, onClick, disabled, tile, expanded }: {
   icon: React.ReactNode; state: MarkState; label: string; hint: string;
+  /** Сумма рядом с иконкой (только не плиткой): кнопка становится крупнее и
+   *  сразу называет, сколько принять. */
+  amount?: string;
   onClick?: (el: HTMLButtonElement) => void; disabled?: boolean; tile?: boolean;
   /** Кнопка раскрывает выбор: скринридер должен знать, что он есть и открыт ли. */
   expanded?: boolean;
 }) {
   const inert = disabled || !onClick;
+  const withAmount = amount != null && !tile;
+  const name = withAmount ? `${label} · ${hint} · ${amount}` : `${label} · ${hint}`;
   return (
     <button
       type="button"
-      className={`lc-mark is-${state}${tile ? ' is-tile' : ''}`}
-      title={`${label} · ${hint}`}
-      aria-label={`${label} · ${hint}`}
+      className={`lc-mark is-${state}${tile ? ' is-tile' : ''}${withAmount ? ' has-amount' : ''}`}
+      title={name}
+      aria-label={name}
       aria-pressed={expanded === undefined ? state === 'done' : undefined}
       aria-haspopup={expanded === undefined ? undefined : 'menu'}
       aria-expanded={expanded}
@@ -36,6 +42,7 @@ export function VisitMark({ icon, state, label, hint, onClick, disabled, tile, e
           <span key={state} className="lc-mark-badge" aria-hidden>{state === 'done' ? <Icons.Check /> : <Icons.X />}</span>
         )}
       </span>
+      {withAmount && <span className="lc-mark-amount">{amount}</span>}
       {tile && (
         <span className="lc-mark-text">
           <span className="lc-mark-label">{label}</span>
@@ -47,14 +54,21 @@ export function VisitMark({ icon, state, label, hint, onClick, disabled, tile, e
 }
 
 /** Как оплачена бронь: долг — «Оплатить», оплачено — галочка со способом,
- *  абонемент или подарок — галочка «платить нечего». */
-export function PayMark({ client: c, canPay, onPay, tile }: {
+ *  абонемент или подарок — галочка «платить нечего». Оплату, принятую у
+ *  стойки, галочка открывает (`onReview`): там её можно «Поменять». */
+export function PayMark({ client: c, canPay, onPay, onReview, tile, amount }: {
   client: BookedClient; canPay: boolean; onPay: () => void; tile?: boolean;
+  /** Открыть уже принятую оплату. Нет — галочка просто показывает способ. */
+  onReview?: () => void;
+  /** Долг строкой денег — на кнопке рядом с иконкой. Сервер заводит долг уже
+   *  по цене этого клиента (его скидки учтены): эту сумму и предложит окно
+   *  оплаты. */
+  amount?: string;
 }) {
   const { t } = useTranslation('journal');
   const label = t('mark.pay');
   if (c.debt > 0) {
-    return <VisitMark icon={<Icons.CardIcon />} state="due" label={label} hint={t('mark.unpaid')}
+    return <VisitMark icon={<Icons.CardIcon />} state="due" label={label} hint={t('mark.unpaid')} amount={amount}
                       onClick={canPay ? onPay : undefined} tile={tile} />;
   }
   if (['import', 'bumpix'].includes(c.booking_channel ?? '') && !c.payment && !c.by_subscription && !(c.paid_amount > 0)) {
@@ -65,7 +79,7 @@ export function PayMark({ client: c, canPay, onPay, tile }: {
     : c.paid_amount > 0 || c.payment ? (method === 'cash' ? t('mark.cash') : method ? t('mark.card') : t('mark.paid'))
     : t('payment.coveredBy.free');
   return <VisitMark icon={method === 'cash' ? <Icons.CashIcon /> : <Icons.CardIcon />} state="done"
-                    label={label} hint={hint} tile={tile} />;
+                    label={label} hint={hint} tile={tile} onClick={onReview} />;
 }
 
 /** Пришёл ли клиент (utils.attendanceOf). По умолчанию — пришёл: до начала

@@ -567,6 +567,16 @@ def _schedule_gcal_push(background_tasks: BackgroundTasks | None, studio_id: int
         background_tasks.add_task(_gcal_push_task, studio_id, lesson_id)
 
 
+async def _gcal_drop_task(studio_id: int, event_id: str) -> None:
+    """Близнец _gcal_push_task для удалённого занятия: строки уже нет, событие
+    снимается по сохранённому id."""
+    async with async_session_maker() as db:
+        try:
+            await gcal.drop_event(db, studio_id, event_id)
+        except Exception:
+            logger.exception("gcal drop failed: studio=%s event=%s", studio_id, event_id)
+
+
 async def _notify_schedule_conflict(db: AsyncSession, studio_id: int, lesson: Lesson) -> None:
     """a7: находит конфликт для текущих время/зал/тренера занятия и, если
     есть, уведомляет админа. Общий хвост для create_lesson и update_lesson."""
@@ -935,13 +945,17 @@ async def delete_lesson(
     lesson_id: int,
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
+    background_tasks: BackgroundTasks = None,
 ):
-    """Настоящее удаление занятия — для отката только что созданного (undo, V4-3).
+    """Настоящее удаление занятия. Путей два: откат только что созданного
+    (undo, V4-3; очистка расписания ассистентом) и «Удалить навсегда» у
+    ОТМЕНЁННОГО занятия в Журнале — оно больше не нужно даже как след в сетке.
 
-    Не подменяет cancel: пользовательская отмена оставляет занятие в базе со
-    статусом cancelled. DELETE существует для цикла «создал-передумал», чтобы не
-    копить мусорные отменённые занятия, а не для стирания истории — поэтому
-    занятие с активными записями удалить нельзя.
+    Не подменяет cancel: отмена уведомляет записанных и оставляет занятие в
+    базе, а удаление не уведомляет никого — поэтому занятие с активными
+    записями удалить нельзя, сперва его отменяют. Отменённые брони уходят
+    вместе с занятием; деньги клиентов (ClientPayment) на занятие не ссылаются
+    и остаются в Финансах.
     """
     await lock_studio(db, ctx.studio_id)
     if ctx.role == "trainer":
@@ -954,8 +968,14 @@ async def delete_lesson(
             detail="На занятие записаны клиенты — сначала снимите их или отмените занятие",
         )
 
+    event_id = lesson.gcal_event_id
     await db.delete(lesson)
     await db.commit()
+    if event_id and background_tasks is not None:
+        # У отменённого занятия событие обычно уже сняла сама отмена. Но если та
+        # не дошла до Google или её фоновая задача ещё в пути, событие осталось бы
+        # в календаре навсегда: push_lesson ищет занятие по id, а его больше нет.
+        background_tasks.add_task(_gcal_drop_task, ctx.studio_id, event_id)
 
 
 @router.patch("/lessons/{lesson_id}/cancel", response_model=LessonRead)

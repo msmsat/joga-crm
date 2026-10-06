@@ -133,6 +133,8 @@ export interface PaymentBreakdown {
   /** cash / transfer / stripe (карта онлайн). */
   method: string | null
   paid_at: string | null
+  /** Перенесена импортом из прошлой системы — «Поменять» её не отменяет. */
+  migration_basis?: string | null
 }
 
 /** Где проходит занятие. Без филиала адрес — из карточки студии. */

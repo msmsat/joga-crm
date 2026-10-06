@@ -102,6 +102,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("PATCH", "/schedule/reservations/{reservation_id}/attendance"): ("*studio",),  # пришёл/не пришёл на СВОЁМ; снять автозачисление тренеру 403
     ("PATCH", "/schedule/reservations/{reservation_id}/confirm"): ("*studio",),  # одобрение заявки из мини-аппа
     ("POST", "/schedule/reservations/{reservation_id}/pay"): ("*studio",),     # тело: тренеру 403 — кассу он не ведёт
+    ("POST", "/schedule/reservations/{reservation_id}/payment-cancel"): ("*studio",),  # тело: тренеру 403 — кассу он не ведёт
 
     # ── Настройки: персональные вкладки доступны всем ролям (ТЗ 2.13)
     ("GET", "/settings/general"): ("*studio",),      # название/валюта студии — читают все, PATCH owner

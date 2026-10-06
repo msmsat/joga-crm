@@ -229,6 +229,7 @@
     "book_client": "Booker holdet…",
     "cancel_booking": "Annullerer bookingen…",
     "pay_booking": "Registrerer holdbetalingen…",
+    "cancel_booking_payment": "Annullerer holdbetalingen…",
     "clear_schedule": "Rydder skemaet…",
     "create_account": "Opretter en konto…",
     "create_branch": "Opretter en afdeling…",

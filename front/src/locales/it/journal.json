@@ -82,7 +82,15 @@
     "addClient": "Aggiungi cliente",
     "edit": "Modifica",
     "editLesson": "Modifica lezione",
-    "deleteLesson": "Elimina lezione",
+    "cancelLesson": "Annulla la lezione",
+    "purge": {
+      "action": "Elimina definitivamente",
+      "title": "Eliminare definitivamente?",
+      "message": "Sparirà dall'agenda insieme allo storico delle prenotazioni. Non si potrà ripristinare.",
+      "keep": "Mantieni",
+      "confirm": "Elimina",
+      "deleting": "Eliminazione…"
+    },
     "cancel": "Annulla",
     "save": "Salva",
     "lessonTitle": "Titolo della lezione",
@@ -191,6 +199,7 @@
     "selectTrainer": "Seleziona un istruttore",
     "alreadyCancelled": "La lezione è già annullata",
     "lessonCancelled": "Lezione annullata",
+    "lessonDeleted": "Lezione eliminata",
     "noPermission": "Permessi insufficienti per modificare il calendario",
     "undoLabel": "Annullato: {{label}}",
     "redoLabel": "Ripetuto: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Per amico: +{{amount}} sul deposito",
       "discount": "Per amico: {{amount}} di sconto"
     }
+  },
+  "paidSheet": {
+    "chosen": "Scelte fatte",
+    "paidAt": "Incassato il {{date}}",
+    "bySystem": "Registrato dal sistema dopo la lezione",
+    "noExtras": "Senza punti, deposito né codici",
+    "changeHint": "Metodo, sconto o punti sbagliati? «Modifica» annulla questo pagamento per poterlo incassare di nuovo.",
+    "change": "Modifica",
+    "confirmTitle": "Modificare il pagamento?",
+    "confirmMessage": "Il pagamento di {{amount}} sarà annullato: l’importo esce da Finanze come rimborso e punti, deposito, buono e sconti tornano al cliente. Poi scegli di nuovo il pagamento.",
+    "confirm": "Modifica",
+    "keep": "Mantieni",
+    "cancelled": "Pagamento precedente annullato: scegline uno nuovo"
   },
   "mark": {
     "pay": "Pagamento",

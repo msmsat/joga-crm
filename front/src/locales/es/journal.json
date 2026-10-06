@@ -82,7 +82,15 @@
     "addClient": "Añadir cliente",
     "edit": "Editar",
     "editLesson": "Editar la clase",
-    "deleteLesson": "Eliminar la clase",
+    "cancelLesson": "Cancelar la clase",
+    "purge": {
+      "action": "Eliminar para siempre",
+      "title": "¿Eliminar para siempre?",
+      "message": "Desaparecerá de la agenda junto con su historial de reservas. No se podrá recuperar.",
+      "keep": "Conservar",
+      "confirm": "Eliminar",
+      "deleting": "Eliminando…"
+    },
     "cancel": "Cancelar",
     "save": "Guardar",
     "lessonTitle": "Título de la clase",
@@ -191,6 +199,7 @@
     "selectTrainer": "Selecciona un monitor",
     "alreadyCancelled": "La clase ya está cancelada",
     "lessonCancelled": "Clase cancelada",
+    "lessonDeleted": "Clase eliminada",
     "noPermission": "Permisos insuficientes para cambiar el horario",
     "undoLabel": "Deshecho: {{label}}",
     "redoLabel": "Rehecho: {{label}}",
@@ -476,6 +485,19 @@
       "deposit": "Por amigo: +{{amount}} al depósito",
       "discount": "Por amigo: {{amount}} de descuento"
     }
+  },
+  "paidSheet": {
+    "chosen": "Lo elegido",
+    "paidAt": "Cobrado el {{date}}",
+    "bySystem": "Registrado por el sistema tras la clase",
+    "noExtras": "Sin puntos, depósito ni códigos",
+    "changeHint": "¿Método, descuento o puntos equivocados? «Cambiar» anula este pago para que puedas cobrarlo de nuevo.",
+    "change": "Cambiar",
+    "confirmTitle": "¿Cambiar el pago?",
+    "confirmMessage": "El pago de {{amount}} se anulará: el importe sale de Finanzas como reembolso y los puntos, el depósito, el vale y los descuentos vuelven al cliente. Después elige el pago de nuevo.",
+    "confirm": "Cambiar",
+    "keep": "Mantener",
+    "cancelled": "Pago anterior anulado: elige uno nuevo"
   },
   "mark": {
     "pay": "Pago",

@@ -37,8 +37,8 @@ from sqlalchemy import func, select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from activity import log_activity
-from models import Client, ClientPayment, Lesson, Operation, Reservation, Studio
-from services import booking, lesson_time, platform_fee, reservation_payment, stripe_connect
+from models import Client, ClientPayment, Lesson, Reservation, Studio
+from services import booking, lesson_time, reservation_payment, reservation_refund
 from services.booking_rules import lesson_finished, load_rules
 from services.notifier import notify
 from services.schedule_guard import lock_studio
@@ -174,34 +174,15 @@ async def settle(db: AsyncSession, studio_id: int, lesson_id: int, reservation_i
 
 async def _reverse(db: AsyncSession, studio: Studio, lesson: Lesson, reservation: Reservation) -> None:
     """Откатить автозачисление: клиент не пришёл, денег у стойки не было. Не коммитит."""
-    from routers.checkout.router import resolve_account
-    from routers.clients.loyalty import revert_purchase
-
     payment = await db.get(ClientPayment, reservation.debt_payment_id) if reservation.debt_payment_id else None
     if payment is not None and payment.status == "success":
-        amount = payment.amount
-        if amount > 0:
-            currency = studio.currency or "CZK"
-            account = await resolve_account(db, studio.id, None, default_type="cash")
-            db.add(Operation(
-                studio_id=studio.id,
-                type="out",
-                title=f"Отмена автозачисления: «{lesson.name}» — клиент не пришёл",
-                amount=amount,
-                op_date=date.today(),
-                # Категория возврата — по ней отчёты гасят выручку, а комиссия
-                # платформы снимается ниже (как у возврата по карте).
-                category=platform_fee.REFUND_CATEGORY,
-                method="cash",
-                account_id=account.id,
-                client_id=reservation.client_id,
-                service_id=lesson.service_id,
-            ))
-            account.balance -= amount
-            await platform_fee.reverse_offline_fee(
-                db, studio.id, stripe_connect.to_minor_units(amount, currency), currency,
-                client_id=reservation.client_id)
-            await revert_purchase(db, studio.id, reservation.client_id, amount, "Отмена автозачисления")
+        # Деньги уводит тот же путь, что и отмена оплаты кассиром «Поменять»
+        # (services/reservation_refund): две копии разошлись бы.
+        await reservation_refund.reverse_income(
+            db, studio, lesson, reservation, payment.amount, method="cash",
+            title=f"Отмена автозачисления: «{lesson.name}» — клиент не пришёл",
+            note="Отмена автозачисления",
+        )
         # Долг снова открыт: неявка оставляет его ровно таким, каким он был у
         # неотмеченной брони до автоматики.
         payment.status = "pending"

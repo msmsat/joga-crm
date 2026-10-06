@@ -14,10 +14,11 @@ from schemas.schedule.reservations import (
     AttendanceUpdate, ReservationCreate, ReservationPaymentOptions, ReservationPaymentPreview,
     ReservationPayRequest, ReservationRead,
 )
-from services import attendance, booking, reservation_payment
+from services import attendance, booking, reservation_payment, reservation_refund
 from services.booking_access import assert_can_book
 from services.booking_http import reject
 from services.booking_rules import assert_staff_bookable
+from services.members import member_name
 from services.notifier import lesson_context, notify
 from services.subscription_charge import (
     notify_subscription_remaining,
@@ -370,5 +371,55 @@ async def pay_reservation(
         manual_percent=reservation_payment.manual_of(reservation, body.manual_discount_percent),
         expected_total=body.expected_total,
     )
+    await db.refresh(reservation)
+    return ReservationRead.model_validate(reservation)
+
+
+@router.post("/reservations/{reservation_id}/payment-cancel", response_model=ReservationRead)
+async def cancel_reservation_payment(
+    reservation_id: int,
+    ctx: StudioContext = Depends(get_studio_context),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Отменить оплату занятия, принятую у стойки, — «Поменять» в окне оплаты.
+
+    Кассир ошибся способом, забыл про баллы или скидку, деньги не дошли: доход
+    гасится возвратом в Финансах, баллы, депозит, сертификат и одноразовые
+    скидки возвращаются клиенту, долг снова открыт — и оплату принимают заново
+    тем же окном (services/reservation_refund).
+
+    Оплату картой онлайн так не отменить — её возвращают через Stripe; на неё,
+    перенесённую историю и оплату без снимка чека — 409 с причиной.
+    Деньги, как и при приёме, трогают владелец и администратор (ТЗ 2.3).
+    """
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Отменять оплату могут владелец и администратор")
+    await lock_studio(db, ctx.studio_id)
+
+    # populate_existing: решение — по тому, что в базе после замка, а не по
+    # прочитанному до него (второй кассир мог успеть отменить первым).
+    reservation = (await db.execute(
+        select(Reservation).where(Reservation.id == reservation_id)
+        .execution_options(populate_existing=True)
+    )).scalar_one_or_none()
+    if reservation is None:
+        raise HTTPException(status_code=404, detail="Запись не найдена")
+    lesson = await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404 чужая студия
+    if reservation.status == "cancelled":
+        raise HTTPException(status_code=409, detail="Запись отменена")
+
+    payment = (await db.get(ClientPayment, reservation.debt_payment_id, populate_existing=True)
+               if reservation.debt_payment_id is not None else None)
+    reason = reservation_refund.refusal(reservation, payment)
+    if reason is not None:
+        raise HTTPException(status_code=409, detail=reason)
+
+    studio = await db.get(Studio, ctx.studio_id)
+    await reservation_refund.cancel(
+        db, studio=studio, lesson=lesson, reservation=reservation,
+        actor_name=await member_name(db, ctx.studio_id, current_user.id),
+    )
+    await db.commit()
     await db.refresh(reservation)
     return ReservationRead.model_validate(reservation)

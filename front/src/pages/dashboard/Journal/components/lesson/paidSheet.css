@@ -1,0 +1,14 @@
+/* ── Уже принятая оплата (PaidSheet) ─────────────────────────────
+   Каркас — тот же, что у окна приёма оплаты (.rp-* в lessonCard.css);
+   здесь только плитка способа и плитка «ничего сверх денег». */
+.ps-method { flex-direction: row; align-items: center; gap: 12px; }
+.ps-method-icon {
+  flex: none; width: 38px; height: 38px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-card); color: var(--peach);
+  box-shadow: 0 6px 16px -10px rgba(249,160,139,0.9);
+}
+.ps-method-icon svg { width: 18px; height: 18px; }
+.ps-method-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ps-method-name { font-size: 15px; font-weight: 900; color: var(--onyx); letter-spacing: -0.2px; }
+.ps-plain { font-size: 12.5px; font-weight: 700; color: var(--muted); }

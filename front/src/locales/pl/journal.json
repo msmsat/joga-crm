@@ -82,7 +82,15 @@
     "addClient": "Dodaj klienta",
     "edit": "Edytuj",
     "editLesson": "Edytuj zajęcia",
-    "deleteLesson": "Usuń zajęcia",
+    "cancelLesson": "Odwołaj zajęcia",
+    "purge": {
+      "action": "Usuń na zawsze",
+      "title": "Usunąć na zawsze?",
+      "message": "Znikną z grafiku razem z historią zapisów. Nie da się ich przywrócić.",
+      "keep": "Zostaw",
+      "confirm": "Usuń",
+      "deleting": "Usuwanie…"
+    },
     "cancel": "Anuluj",
     "save": "Zapisz",
     "lessonTitle": "Nazwa zajęć",
@@ -195,6 +203,7 @@
     "selectTrainer": "Wybierz trenera",
     "alreadyCancelled": "Zajęcia są już odwołane",
     "lessonCancelled": "Zajęcia odwołane",
+    "lessonDeleted": "Zajęcia usunięte",
     "noPermission": "Za mało uprawnień, aby zmienić grafik",
     "undoLabel": "Cofnięto: {{label}}",
     "redoLabel": "Ponowiono: {{label}}",
@@ -484,6 +493,19 @@
       "deposit": "Za znajomego: +{{amount}} na depozyt",
       "discount": "Za znajomego: zniżka {{amount}}"
     }
+  },
+  "paidSheet": {
+    "chosen": "Co wybrano",
+    "paidAt": "Przyjęto {{date}}",
+    "bySystem": "Zaksięgowane przez system po zajęciach",
+    "noExtras": "Bez punktów, depozytu i kodów",
+    "changeHint": "Zła metoda, rabat lub punkty? „Zmień” anuluje tę płatność, aby można ją było przyjąć ponownie.",
+    "change": "Zmień",
+    "confirmTitle": "Zmienić płatność?",
+    "confirmMessage": "Płatność {{amount}} zostanie anulowana: kwota wyjdzie z Finansów jako zwrot, a punkty, depozyt, bon i rabaty wrócą do klienta. Następnie wybierz płatność ponownie.",
+    "confirm": "Zmień",
+    "keep": "Zostaw",
+    "cancelled": "Poprzednia płatność anulowana — wybierz nową"
   },
   "mark": {
     "pay": "Płatność",

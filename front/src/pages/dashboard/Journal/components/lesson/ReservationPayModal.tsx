@@ -18,10 +18,12 @@ interface Props {
    *  записи сразу после записи «Индивидуального» (там своих мутаций журнала нет). */
   mutations: Pick<ReturnType<typeof useJournalMutations>, 'payReservation'>;
   onPaid: (total: number) => void;
+  /** Левая кнопка подвала. По умолчанию «Отмена». */
+  cancelLabel?: string;
   onClose: () => void;
 }
 
-export function ReservationPayModal({ booked, lessonLabel, mutations, onPaid, onClose }: Props) {
+export function ReservationPayModal({ booked, lessonLabel, mutations, onPaid, cancelLabel, onClose }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const toast = useToast();
   const payment = useReservationPayment(booked.reservation_id, booked.manual_discount_percent);
@@ -54,7 +56,7 @@ export function ReservationPayModal({ booked, lessonLabel, mutations, onPaid, on
       sending={sending}
       done={done}
       onPay={accept}
-      cancelLabel={t('common:buttons.cancel')}
+      cancelLabel={cancelLabel ?? t('common:buttons.cancel')}
       onClose={onClose}
     />
   );

@@ -36,8 +36,8 @@ export const scheduleApi = {
   cancelLesson: (id: number, reason?: string) =>
     client.patch<void>(`/schedule/lessons/${id}/cancel`, reason ? { reason } : {}),
 
-  // Настоящее удаление — только для undo только что созданного занятия (V4-3);
-  // занятие с записанными клиентами сервер не удалит (409).
+  // Настоящее удаление: undo только что созданного занятия (V4-3) и «Удалить
+  // навсегда» у отменённого. Занятие с записанными клиентами сервер не удалит (409).
   deleteLesson: (id: number) =>
     client.delete<void>(`/schedule/lessons/${id}`),
 
@@ -75,4 +75,10 @@ export const scheduleApi = {
   // Чек погашения долга — только чтение, ничего не списывает.
   reservationPaymentPreview: (id: number, options: ReservationPaymentOptions) =>
     client.post<ReservationPaymentPreview>(`/schedule/reservations/${id}/payment-preview`, options),
+
+  // «Поменять» оплату, принятую у стойки: доход гасится возвратом в Финансах,
+  // баллы, депозит, сертификат и разовые скидки возвращаются клиенту, долг снова
+  // открыт. Оплату картой онлайн и импорт сервер не отменит (409 с причиной).
+  cancelReservationPayment: (id: number) =>
+    client.post<Reservation>(`/schedule/reservations/${id}/payment-cancel`, {}),
 }
