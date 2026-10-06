@@ -1,4 +1,10 @@
-"""Real DB + HTTP: a debt made on 26, appointment on 28 and payment on 29."""
+"""Real DB + HTTP: a debt made on 26, appointment on 28 and payment on 29.
+
+The year is far ahead on purpose: the kind of an appointment is computed from
+"now", and a fixed September 2026 turned the upcoming booking into a completed
+visit (with the visit time as its moment) once that date passed. September keeps
+the Kyiv offset at +03:00.
+"""
 import asyncio
 from datetime import datetime
 
@@ -32,15 +38,15 @@ def test_debt_settlement_dates_and_freeze_history_in_actual_api():
                     studio = await db.get(Studio, ids['studio'])
                     studio.tz_iana = 'Europe/Kyiv'
                     lesson = await db.get(Lesson, r.lesson_id)
-                    lesson.start_time = datetime(2026, 9, 28, 10)
+                    lesson.start_time = datetime(2099, 9, 28, 10)
                     reservation = await db.get(Reservation, r.id)
-                    reservation.created_at = datetime(2026, 9, 26, 9)
-                    reservation.payment_breakdown = dict(reservation.payment_breakdown, paid_at='2026-09-29T17:20:00')
+                    reservation.created_at = datetime(2099, 9, 26, 9)
+                    reservation.payment_breakdown = dict(reservation.payment_breakdown, paid_at='2099-09-29T17:20:00')
                     payment = await db.get(ClientPayment, r.debt_payment_id)
-                    payment.created_at = datetime(2026, 9, 26, 9)
+                    payment.created_at = datetime(2099, 9, 26, 9)
                     # A temporary checkout hold must not appear as a confirmed booking.
                     hold_lesson = Lesson(studio_id=ids['studio'], name='Hidden hold', teacher_name='Anna',
-                        teacher_id=ids['teacher'], start_time=datetime(2026, 9, 30, 10), duration_min=60,
+                        teacher_id=ids['teacher'], start_time=datetime(2099, 9, 30, 10), duration_min=60,
                         price=100, level='', equipment='', total_spots=5, status='confirmed', booking_mode='event')
                     db.add(hold_lesson)
                     await db.flush()
@@ -50,10 +56,10 @@ def test_debt_settlement_dates_and_freeze_history_in_actual_api():
                 assert response.status_code == 200, response.text
                 events = response.json()
                 booking, = [e for e in events if e['type'] == 'booking']
-                assert booking['scheduled_at'] == '2026-09-28T10:00:00'
-                assert booking['occurred_at'] == '2026-09-26T12:00:00+03:00'
+                assert booking['scheduled_at'] == '2099-09-28T10:00:00'
+                assert booking['occurred_at'] == '2099-09-26T12:00:00+03:00'
                 payment, = [e for e in events if e['type'] == 'payment']
-                assert payment['occurred_at'] == '2026-09-29T20:20:00+03:00'
+                assert payment['occurred_at'] == '2099-09-29T20:20:00+03:00'
                 assert payment['scheduled_at'] == booking['scheduled_at']
                 assert events.index(payment) < events.index(booking)
                 for frozen in [True, True, False, False]:

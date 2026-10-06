@@ -81,7 +81,8 @@ def test_fill_schedule_cycles_the_services_in_order():
         teacher_id=1, service_id=10, alternate_with=[20], date_from=day, date_to=day,
         weekdays=[day.weekday()], time_from="09:00", time_to="14:00", duration_min=60,
     )
-    db = _DB([[_Hours(day.weekday())], None, []])   # график, отгула нет, занятых часов нет
+    # график, отгула нет, занятых часов нет, «времени студии» нет
+    db = _DB([[_Hours(day.weekday())], None, [], []])
     seen = []
     original = T._r_create_lesson
 
@@ -108,7 +109,7 @@ def test_fill_schedule_without_alternation_is_untouched():
         teacher_id=1, service_id=10, date_from=day, date_to=day,
         weekdays=[day.weekday()], time_from="09:00", time_to="11:00", duration_min=60,
     )
-    db = _DB([[_Hours(day.weekday())], None, []])
+    db = _DB([[_Hours(day.weekday())], None, [], []])
     seen = []
     original = T._r_create_lesson
 

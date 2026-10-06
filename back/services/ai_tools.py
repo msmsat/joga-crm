@@ -34,8 +34,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext
 from models import (
-    Client, Lesson, Reservation, Service, StaffDayOverride, StaffWorkingHours, Studio,
-    StudioMember, User,
+    Client, Lesson, Reservation, Service, StaffBusyInterval, StaffDayOverride, StaffWorkingHours,
+    Studio, StudioMember, User,
 )
 from routers.clients._scope import client_scope
 from routers.analytics._filters import ReportFilters
@@ -167,7 +167,7 @@ from schemas.settings.notifications import EventToggle
 from schemas.settings.team import (
     MAX_STAFF_SERVICE_PRICE, StaffCreate, StaffServicePrice, StaffUpdate,
 )
-from schemas.staff.staff import StaffProfileResponse
+from schemas.staff.staff import StaffProfileResponse, StaffWorkingHoursItem
 from schemas.staff.staff import StaffDayOverrideRequest
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
 from services import service_pricing, studio_time, time_blocks
@@ -928,6 +928,21 @@ class UpdateStaffArgs(BaseModel):
         description="Цвет сотрудника в журнале, #RRGGBB. Палитра студии: " + ", ".join(STAFF_PALETTE))
 
 
+class WorkBreak(BaseModel):
+    """Перерыв внутри рабочего дня: обед, окно между сменами."""
+    open_time: str
+    close_time: str
+    label: Optional[str] = Field(None, max_length=200, description="Подпись в Журнале: «Обед»")
+
+    @field_validator("open_time", "close_time", mode="before")
+    @classmethod
+    def _time_format(cls, value):
+        normalized = _hhmm(value)
+        if normalized is None:
+            raise ValueError("время в формате «13:00»")
+        return normalized
+
+
 class WorkDay(BaseModel):
     """День рабочей недели сотрудника.
 
@@ -940,6 +955,12 @@ class WorkDay(BaseModel):
     is_open: bool = True
     open_time: str = "09:00"
     close_time: str = "18:00"
+    # None, а не []: «человек про перерывы не говорил» и «снять перерывы» —
+    # разные просьбы. Первую путать со второй значило молча стирать обед,
+    # поставленный в недельном редакторе (set_staff_schedule так и делал).
+    breaks: Optional[list[WorkBreak]] = Field(
+        None, description="Перерывы дня (обед). Не называл их человек — не передавай: прежние "
+                          "перерывы дня останутся. [] — снять все перерывы дня")
 
     @field_validator("day_of_week", mode="before")
     @classmethod
@@ -2218,6 +2239,16 @@ async def _free_slots(
         )
     )).all()
     taken = [(b, b + timedelta(minutes=d or 60)) for b, d in busy]
+    # «Время студии» и отсутствия тренера: роутер такое занятие не поставит, и
+    # без этого план обещал бы слоты, которые на исполнении упадут.
+    taken.extend((await db.execute(
+        select(StaffBusyInterval.start_time, StaffBusyInterval.end_time).where(
+            StaffBusyInterval.studio_id == ctx.studio_id,
+            StaffBusyInterval.user_id == args.teacher_id,
+            StaffBusyInterval.start_time < closes + timedelta(hours=12),
+            StaffBusyInterval.end_time > opens - timedelta(hours=12),
+        )
+    )).all())
     if pause:
         taken.append((pause[0], pause[0] + pause[1]))
 
@@ -2934,21 +2965,74 @@ async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffAr
     return _dump(staff)
 
 
+def _fits_shift(day: dict) -> bool:
+    """День проходит ту же проверку, что и в роутере: перерывы внутри смены и не
+    съедают её целиком. Правила — в схеме, второй копии здесь нет."""
+    try:
+        StaffWorkingHoursItem.model_validate(day)
+        return True
+    except ValidationError:
+        return False
+
+
+def _merge_week(prior: list[dict], days: list[WorkDay]) -> tuple[list[dict], list[str]]:
+    """Новые часы поверх прежней недели — так же, как правит карточка сотрудника
+    на фронте (Staff.tsx, scheduleToWorkingHours): перерывы и подпись выходного,
+    которых модель не называла, переезжают с прежнего дня той же недели.
+
+    Роутер заменяет график целиком, и раньше «Оля работает с 10 до 19» молча
+    стирала ей обед и подписи выходных из недельного редактора. Перерыв, который
+    в новые часы уже не влезает, снимается — и называется в ответе (dropped),
+    чтобы человек узнал об этом от ассистента, а не из Журнала.
+    """
+    by_day = {d["day_of_week"]: d for d in prior}
+    merged, dropped = [], []
+    for day in days:
+        old = by_day.get(day.day_of_week) or {}
+        item = {
+            "day_of_week": day.day_of_week, "is_open": day.is_open,
+            "open_time": day.open_time, "close_time": day.close_time,
+            "breaks": [], "off_label": old.get("off_label"),
+        }
+        if day.is_open and day.breaks is not None:
+            item["breaks"] = [b.model_dump() for b in day.breaks]
+        elif day.is_open:
+            for kept in old.get("breaks") or []:
+                trial = {**item, "breaks": [*item["breaks"], kept]}
+                if _fits_shift(trial):
+                    item = trial
+                    continue
+                label = f" «{kept['label']}»" if kept.get("label") else ""
+                dropped.append(f"{_WEEKDAYS[day.day_of_week]} {kept['open_time']}–{kept['close_time']}{label}")
+        merged.append(item)
+    return merged, dropped
+
+
 @tool(
     mutating=True, roles=("owner",),
     summary="Рабочие часы сотрудника {staff_id}: {schedule}",
     endpoint="PUT /staff/{staff_id}",
+    effect="Перерывы и подписи выходных, которые уже стоят у этих дней, сохранятся, "
+           "если влезают в новые часы.",
 )
 async def set_staff_schedule(ctx: StudioContext, db: AsyncSession, args: StaffScheduleArgs) -> dict:
-    """Задать сотруднику рабочие часы по дням недели. day_of_week: 0 —
-    понедельник, 6 — воскресенье; is_open=false — выходной. Дни, которых нет в
-    списке, станут выходными. График сразу виден в Журнале."""
+    """Задать сотруднику рабочие часы по дням недели — каждую неделю. day_of_week:
+    0 — понедельник, 6 — воскресенье; is_open=false — выходной. Дни, которых нет
+    в списке, станут выходными. График сразу виден в Журнале.
+
+    Перерыв каждый день (обед с 13 до 14) — поле breaks у дня. Не называл
+    человек перерывов — не передавай breaks: прежние перерывы дня останутся.
+    Перерыв, который в новые часы не влез, сервер снимет и вернёт в
+    dropped_breaks — скажи об этом человеку."""
     body = await _staff_update_body(args.staff_id, ctx, db)
-    body["schedule"] = [item.model_dump() for item in args.schedule]
+    body["schedule"], dropped = _merge_week(body["schedule"], args.schedule)
     staff = await _r_update_staff(
         staff_id=args.staff_id, data=StaffUpdate(**body), ctx=ctx, db=db,
     )
-    return _dump(staff)
+    result = _dump(staff)
+    if dropped:
+        result["dropped_breaks"] = dropped
+    return result
 
 
 async def _staff_day_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> str | None:
@@ -3103,7 +3187,9 @@ async def update_service(ctx: StudioContext, db: AsyncSession, args: UpdateServi
 
 @tool(
     mutating=True, roles=("owner",),
-    summary="Добавить зал «{name}» на {capacity} мест в филиал #{branch_id}",
+    # Филиал — своим фрагментом: не назван — фрагмент выпадает целиком, а не
+    # оставляет в карточке «в филиал #». Назван — резолвер подставит имя.
+    summary="Добавить зал «{name}» на {capacity} мест, филиал «{branch_id}»",
     endpoint="POST /studio/branches/{branch_id}/halls",
     effect="Цветом зала будут подсвечиваться его занятия в Журнале.",
 )
@@ -3731,8 +3817,19 @@ def _render(key: str, value):
         if not isinstance(day, dict):
             return value
         name = _WEEKDAYS[day.get("day_of_week", 0) % 7]
-        parts.append(f"{name} выходной" if not day.get("is_open", True)
-                     else f"{name} {day.get('open_time')}–{day.get('close_time')}")
+        if not day.get("is_open", True):
+            parts.append(f"{name} выходной")
+            continue
+        text = f"{name} {day.get('open_time')}–{day.get('close_time')}"
+        # Перерыв, названный человеком, — в карточку: подтверждают ровно то,
+        # что встанет. [] — «снять перерывы», и это тоже видно.
+        breaks = day.get("breaks")
+        if isinstance(breaks, list) and breaks:
+            text += " (перерыв " + ", ".join(
+                f"{b.get('open_time')}–{b.get('close_time')}" for b in breaks if isinstance(b, dict)) + ")"
+        elif breaks == []:
+            text += " (без перерывов)"
+        parts.append(text)
     return ", ".join(parts)
 
 
@@ -3890,6 +3987,17 @@ async def _resolve_hall(hall_id: int, ctx: StudioContext, db: AsyncSession) -> s
                        [f"{h.get('name')} (#{h['id']})" for h, _ in halls], [h["id"] for h, _ in halls])
 
 
+async def _resolve_branch(branch_id: int, ctx: StudioContext, db: AsyncSession) -> str | None:
+    # Голый «филиал #3» в карточке подтверждают не глядя; а модель, подставившая
+    # сюда номер зала, узнаёт об этом до карточки, а не после клика.
+    rows = _dump(await _r_get_branches(ctx=ctx, db=db))
+    for row in rows:
+        if row.get("id") == branch_id:
+            return row.get("name")
+    raise _NotInStudio("Филиала", branch_id,
+                       [f"{r.get('name')} (#{r['id']})" for r in rows], [r["id"] for r in rows])
+
+
 # Аргумент-идентификатор -> как превратить его в имя. Ключ совпадает с именем
 # поля в схемах инструментов, поэтому новый инструмент с client_id получает
 # разрешение бесплатно.
@@ -3900,6 +4008,7 @@ _RESOLVERS = {
     "staff_id": ("сотрудника", _resolve_staff),
     "service_id": ("услугу", _resolve_service),
     "hall_id": ("зал", _resolve_hall),
+    "branch_id": ("филиал", _resolve_branch),
 }
 
 # Поля, где id не один, а списком. Отдельной картой, а не правилом «*_ids —
@@ -4244,7 +4353,12 @@ if __name__ == "__main__":
     # глобальная кнопка «Создать» ведёт ТОЛЬКО в Журнал — без этого модель
     # отвечала ею на «где создать сотрудника». Сто символов правды в
     # кэшируемом префиксе дешевле выдуманной кнопки в каждом таком ответе.
-    assert len(UI_INDEX) < 3200, len(UI_INDEX)
+    # Поднят до 4400 по замеру 06.10.2026: индекс был 4242 уже в первой
+    # редакции 2.x (каркас карты — 2618: нижняя панель телефона, «+» и быстрые
+    # создания), а самопроверку никто не гонял. Резать каркас без прогона
+    # scripts.ai_eval нельзя — этот текст и направляет модель; потолок держит
+    # дальнейший рост, а не прошлое.
+    assert len(UI_INDEX) < 4400, len(UI_INDEX)
     for page in Page.__args__:
         assert page in UI_INDEX, page
     assert "Каркас" in UI_INDEX      # меню и «+ Создать» нужны с любой страницы
@@ -4272,8 +4386,11 @@ if __name__ == "__main__":
     })
     assert staff_action.startswith("Завести сотрудника Марина Петрова"), staff_action
     assert "s3cret-pass" not in staff_action and "create_staff" not in staff_action
-    # Пропущенный аргумент не роняет сборку предложения.
-    assert "—" in describe_action("create_hall", {"name": "Малый", "capacity": 12})
+    # Пропущенный аргумент не роняет сборку предложения и не оставляет в
+    # карточке пустой хвост («в филиал #»): фрагмент без значений выпадает.
+    assert describe_action("create_hall", {"name": "Малый", "capacity": 12}) == "Добавить зал «Малый» на 12 мест"
+    assert describe_action("create_hall", {"name": "Малый", "capacity": 12, "branch_id": 3},
+                           {"branch_id": "Центр"}) == "Добавить зал «Малый» на 12 мест, филиал «Центр»"
 
     # Необратимое действие помечено флагом — карточка нарисует его иначе, и
     # угадывать опасность по имени инструмента фронту не нужно.

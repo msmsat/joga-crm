@@ -353,7 +353,9 @@ def _quote(**kw):
         "bonuses_available": 250, "bonuses_applied": 0, "bonuses_value": 0,
         "point_value": 1, "deposit_available": 0, "deposit_applied": 0,
         "certificate_applied": 0, "certificate": None, "total_price": 0,
-        "resolved": SimpleNamespace(mark_used=lambda: None), **kw
+        # renewal — скидка на продление (services/subscription_renewal): у
+        # обычной продажи её нет, consume_renewal(None) ничего не гасит.
+        "resolved": SimpleNamespace(mark_used=lambda: None, renewal=None), **kw
     })
 
 
@@ -436,7 +438,7 @@ def test_enough_balance_still_goes_through():
         CR.apply_points_change, CR.apply_deposit_change = saved
 
     assert sorted(spent) == [("deposit", -500), ("points", -250)]
-    assert out == {"bonuses": 250, "deposit": 500, "certificate_code": None}
+    assert out == {"renewal_previous_id": None, "bonuses": 250, "deposit": 500, "certificate_code": None}
 
 
 # ─── 5. возврат уходит в Stripe ровно один раз ────────────────────────────────

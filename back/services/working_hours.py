@@ -7,15 +7,20 @@
 
 Строки графика в базе нет — не ограничиваем: пустая таблица значит «часы не
 заполнили» (студия не дошла до Каталога/Сотрудников), а не «закрыто всегда».
+
+Занятость сотрудника на конкретные часы — «время студии» из Журнала (уборка,
+планёрка) и отсутствия из его карточки (StaffBusyInterval) — тоже здесь:
+онлайн-запись её вычитала всегда (resource_hours), а групповое занятие из
+журнала вставало поверх уборки молча.
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import (
-    BranchWorkingHours, Hall, StaffDayOverride, StaffWorkingHours, StudioWorkingHours,
+    BranchWorkingHours, Hall, StaffBusyInterval, StaffDayOverride, StaffWorkingHours, StudioWorkingHours,
 )
 
 # (именительный, родительный) — падеж отличается в двух текстах отказа.
@@ -43,6 +48,31 @@ def fits_hours(open_time: str, close_time: str, start: datetime, duration_min: i
     if at < opens:
         at += 24 * 60
     return at >= opens and at + duration_min <= closes
+
+
+async def _assert_not_busy(db: AsyncSession, studio_id: int, teacher_id: int,
+                           start: datetime, end: datetime) -> None:
+    """Занятие не встаёт на «время студии» или отсутствие сотрудника.
+
+    Сравнение в местном времени студии, как и у самих занятий: тем же правилом
+    time_blocks не даёт поставить блок поверх занятия — стороны сходятся.
+    Последним запросом гейта: часы и выходные объясняют отказ точнее.
+    """
+    busy = (await db.execute(
+        select(StaffBusyInterval).where(
+            StaffBusyInterval.studio_id == studio_id,
+            StaffBusyInterval.user_id == teacher_id,
+            StaffBusyInterval.start_time < end,
+            StaffBusyInterval.end_time > start,
+        ).order_by(StaffBusyInterval.start_time).limit(1)
+    )).scalar_one_or_none()
+    if busy is not None:
+        raise HTTPException(status_code=400, detail={
+            "code": "studio_time.blocks_lesson",
+            "message": f"Занятие попадает на «{busy.reason or 'занятость'}» сотрудника "
+                       f"({busy.start_time:%H:%M}–{busy.end_time:%H:%M}) — выберите другое время",
+            "params": {"block_id": busy.id},
+        })
 
 
 def _assert_window(hours, start: datetime, duration_min: int, subject: tuple[str, str]) -> None:
@@ -89,6 +119,7 @@ async def assert_within_working_hours(
 
     if teacher_id is None:
         return
+    end_time = start_time + timedelta(minutes=duration_min)
 
     # Отметка на конкретную дату сильнее недельного графика: «выходной» — отказ
     # сразу, «работает» — день открыт, даже если по неделе он нерабочий.
@@ -115,6 +146,7 @@ async def assert_within_working_hours(
     # строки. Отметки на рабочие дни проставляются автоматом (staff/schedule.py),
     # так что «есть отметка» само по себе часы тренера не отменяет.
     if override_value and hours is not None and not hours.is_open and not getattr(override,"hours",None):
+        await _assert_not_busy(db, studio_id, teacher_id, start_time, end_time)
         return
 
     if getattr(override,"hours",None):
@@ -123,6 +155,6 @@ async def assert_within_working_hours(
     _assert_window(hours, start_time, duration_min, _STAFF)
     if hours is not None and getattr(hours,"breaks",None):
         from services.staff_hours import schedule_contains
-        from datetime import timedelta
-        if not schedule_contains(hours,start_time,start_time+timedelta(minutes=duration_min)):
+        if not schedule_contains(hours,start_time,end_time):
             raise HTTPException(status_code=400,detail="Занятие попадает на перерыв сотрудника")
+    await _assert_not_busy(db, studio_id, teacher_id, start_time, end_time)

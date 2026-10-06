@@ -171,7 +171,8 @@
       "lesson_overlap": "Der Mitarbeiter hat zu dieser Zeit einen Kurs — wählen Sie ein freies Zeitfenster",
       "overlap": "Der Mitarbeiter hat zu dieser Zeit bereits einen anderen Block",
       "not_found": "Dieser Block wurde bereits entfernt",
-      "bad_clock": "Diese Uhrzeit gibt es nicht oder sie wiederholt sich wegen der Zeitumstellung — wählen Sie eine andere"
+      "bad_clock": "Diese Uhrzeit gibt es nicht oder sie wiederholt sich wegen der Zeitumstellung — wählen Sie eine andere",
+      "blocks_lesson": "Der Kurs überschneidet sich mit der Studiozeit des Mitarbeiters (Reinigung, Meeting) — wählen Sie eine andere Zeit"
     }
   },
   "units": {

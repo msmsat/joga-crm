@@ -171,7 +171,8 @@
       "lesson_overlap": "Pracovník má v tuto dobu lekci — vyberte volný čas",
       "overlap": "Pracovník už má v tuto dobu jiný blok",
       "not_found": "Tento blok už byl odebrán",
-      "bad_clock": "Tento čas neexistuje nebo se opakuje kvůli změně času — vyberte jiný"
+      "bad_clock": "Tento čas neexistuje nebo se opakuje kvůli změně času — vyberte jiný",
+      "blocks_lesson": "Lekce zasahuje do času studia pracovníka (úklid, porada) — vyberte jiný čas"
     }
   },
   "units": {

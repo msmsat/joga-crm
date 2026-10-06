@@ -171,7 +171,8 @@
       "lesson_overlap": "Den anställda har ett pass vid den tiden — välj en ledig tid",
       "overlap": "Den anställda har redan ett annat block vid den tiden",
       "not_found": "Det här blocket har redan tagits bort",
-      "bad_clock": "Den tiden finns inte eller upprepas på grund av tidsomställningen — välj en annan"
+      "bad_clock": "Den tiden finns inte eller upprepas på grund av tidsomställningen — välj en annan",
+      "blocks_lesson": "Passet krockar med den anställdas studiotid (städning, möte) — välj en annan tid"
     }
   },
   "units": {

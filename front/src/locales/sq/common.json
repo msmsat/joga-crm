@@ -171,7 +171,8 @@
       "lesson_overlap": "Punonjësi ka seancë në këtë orë — zgjidhni një dritare të lirë",
       "overlap": "Punonjësi ka tashmë një bllok tjetër në këtë orë",
       "not_found": "Ky bllok është hequr tashmë",
-      "bad_clock": "Kjo orë nuk ekziston ose përsëritet për shkak të ndërrimit të orës — zgjidhni një tjetër"
+      "bad_clock": "Kjo orë nuk ekziston ose përsëritet për shkak të ndërrimit të orës — zgjidhni një tjetër",
+      "blocks_lesson": "Seanca përputhet me kohën e studios së punonjësit (pastrim, mbledhje) — zgjidhni një orë tjetër"
     }
   },
   "units": {

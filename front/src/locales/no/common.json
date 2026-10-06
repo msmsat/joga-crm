@@ -171,7 +171,8 @@
       "lesson_overlap": "Den ansatte har en time på dette tidspunktet — velg et ledig tidsrom",
       "overlap": "Den ansatte har allerede en annen blokk på dette tidspunktet",
       "not_found": "Denne blokken er allerede fjernet",
-      "bad_clock": "Dette tidspunktet finnes ikke eller gjentas på grunn av tidsomstilling — velg et annet"
+      "bad_clock": "Dette tidspunktet finnes ikke eller gjentas på grunn av tidsomstilling — velg et annet",
+      "blocks_lesson": "Timen overlapper den ansattes studiotid (rengjøring, møte) — velg et annet tidspunkt"
     }
   },
   "units": {

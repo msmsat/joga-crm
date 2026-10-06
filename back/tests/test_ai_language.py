@@ -22,6 +22,7 @@ from dependencies import StudioContext
 from models import Studio, StudioAISettings, StudioBillingPlan, StudioMember, User
 from services import ai_language
 from services.ai_language import detect, explicit_request, resolve
+from services.i18n import DEFAULT_LANG
 from services.assistant import build_messages
 
 _OWNER = "ai-lang-owner@test.local"
@@ -69,8 +70,9 @@ def test_studio_locale_never_wins_over_a_clear_message():
 def test_locale_is_used_only_when_the_message_says_nothing():
     got = _lang(("user", "OK"), studio="cs")
     assert (got.code, got.source) == ("cs", "locale_fallback")
-    # Языка студии тоже нет — язык продукта по умолчанию.
-    assert _lang(("user", "123")).code == "ru"
+    # Языка студии тоже нет — язык продукта по умолчанию (services/i18n:
+    # английский — понятен там, где русский может быть не понят вовсе).
+    assert _lang(("user", "123")).code == DEFAULT_LANG == "en"
     assert _lang(("user", "123")).source == "default_fallback"
 
 
@@ -361,7 +363,7 @@ def test_no_diacritics_still_resolves_by_stopwords():
 def test_empty_and_missing_input_never_crash():
     assert detect("") is None and detect(None) is None
     assert resolve([]).source == "default_fallback"
-    assert resolve(None).code == "ru"
+    assert resolve(None).code == DEFAULT_LANG
     assert ai_language.name("cs") == "Czech" and ai_language.name("zz") == "zz"
 
 

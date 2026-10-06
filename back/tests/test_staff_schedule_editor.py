@@ -175,3 +175,31 @@ def test_today_cannot_be_marked_off_after_a_lesson_has_finished():
             await save(db,ctx,monday,[item(today.weekday(),opened=False)])
         assert err.value.detail["code"] == "STAFF_SCHEDULE_CONFLICT"
     asyncio.run(fixture(case))
+
+def test_assistant_hours_keep_editor_lunch_and_day_off_label():
+    """Ассистент правит часы карточкой сотрудника (set_staff_schedule → PUT
+    /staff/{id}), а роутер заменяет график целиком. Раньше «работает с 10 до
+    21» молча стирало обед и подписи выходных, поставленные этим редактором."""
+    async def case(db, ctx, monday, _):
+        from services import ai_tools
+        # Карточку правит StaffUpdate, а его EmailStr не пускает служебный
+        # домен фикстуры (.local) — даём сотруднику обычный адрес.
+        user = await db.get(User, ctx.user.id)
+        user.email = f"staff-split-{time.time_ns()}@example.com"
+        await db.commit()
+        early = [{"open_time": "09:30", "close_time": "10:00", "label": None}]
+        await save(db, ctx, monday, [item(breaks=PAUSE), item(1, start="09:00", end="18:00", breaks=early),
+                                     item(6, opened=False, label="Семейный день")], repeat=True)
+        result = await ai_tools.set_staff_schedule(ctx, db, ai_tools.StaffScheduleArgs(staff_id=ctx.user.id, schedule=[
+            {"day_of_week": 0, "open_time": "10:00", "close_time": "21:00"},
+            {"day_of_week": 1, "open_time": "11:00", "close_time": "21:00"},
+            {"day_of_week": 2, "open_time": "10:00", "close_time": "19:00",
+             "breaks": [{"open_time": "14:00", "close_time": "15:00", "label": "Обед"}]},
+            {"day_of_week": 6, "is_open": False}]))
+        week = await get_schedule_editor(ctx.user.id, monday + timedelta(days=14), ctx, db)
+        assert (week["days"][0]["open_time"], week["days"][0]["breaks"]) == ("10:00", PAUSE)
+        # Ранний перерыв во вторник в новые часы не влез — снят, и ассистент его называет.
+        assert week["days"][1]["breaks"] == [] and result["dropped_breaks"] == ["Вт 09:30–10:00"]
+        assert week["days"][2]["breaks"] == [{"open_time": "14:00", "close_time": "15:00", "label": "Обед"}]
+        assert not week["days"][6]["is_open"] and week["days"][6]["off_label"] == "Семейный день"
+    asyncio.run(fixture(case))

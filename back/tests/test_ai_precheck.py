@@ -100,6 +100,7 @@ def test_fill_precheck_names_what_occupies_the_hours():
         [_Hours(day.weekday())],        # _week_hours
         None,                           # отгула на этот день нет
         [(taken, 60)],                  # единственный слот занят
+        [],                             # «времени студии» у тренера нет
         [_Lesson(taken)],               # _busy_lessons — чем именно
     ])
     said = _run(T._fill_precheck(_fill_args(day), _ctx(), db))
@@ -111,7 +112,8 @@ def test_fill_precheck_names_what_occupies_the_hours():
 
 def test_fill_precheck_silent_when_a_slot_is_free():
     day = date.today() + timedelta(days=3)
-    db = _DB([[_Hours(day.weekday())], None, []])
+    # часы, отгула нет, занятий нет, «времени студии» нет
+    db = _DB([[_Hours(day.weekday())], None, [], []])
     assert _run(T._fill_precheck(_fill_args(day), _ctx(), db)) is None
 
 
@@ -278,9 +280,13 @@ def test_staff_day_precheck_refuses_the_past_and_a_day_with_bookings():
 
     # Выходной поверх дня, куда уже записаны люди, роутер не поставит — и
     # человек обязан узнать это до клика, а не после.
+    # _has_bookings читает сами занятия дня (с буфером после — ночное занятие
+    # прошлого дня тоже держит день), а не счётчик броней.
+    day = date.today() + timedelta(days=3)
+    lesson = _Lesson(datetime(day.year, day.month, day.day, 10, 0))
+    lesson.duration_min, lesson.buffer_after_min = 60, 0
     said = _run(T._staff_day_precheck(
-        {"staff_id": 340, "day": (date.today() + timedelta(days=3)).isoformat(),
-         "is_working": False}, _ctx(), _DB([1])))
+        {"staff_id": 340, "day": day.isoformat(), "is_working": False}, _ctx(), _DB([[lesson]])))
     assert said and "записанные клиенты" in said, said
 
 

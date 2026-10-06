@@ -286,8 +286,10 @@ async def _run():
         checkout.subscription_id = sub_id
 
         # Опись списанного сохранена — по ней и пойдёт откат.
+        # renewal_previous_id — абонемент, чья скидка на продление погашена этой
+        # продажей (services/subscription_renewal); без продления — None.
         assert checkout.payload.get(SP.CONSUMED_KEY) == {
-            "bonuses": 100, "deposit": 200, "certificate_code": cert_code,
+            "renewal_previous_id": None, "bonuses": 100, "deposit": 200, "certificate_code": cert_code,
         }, checkout.payload
 
         await SP._revert_sale(db, checkout)

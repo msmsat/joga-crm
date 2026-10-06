@@ -51,6 +51,22 @@ _ALLOWED: dict[str, str] = {
         "сообщений — проверяется отсутствием мутаций ниже",
 }
 
+# Перенос истории из другой CRM (Bumpix) — тот же класс, что сиды и миграции:
+# подготовка данных, а не поведение продукта. Пишут его только серверные
+# скрипты (scripts/import_bumpix*.py), роутеры зовут из пакета одно чтение.
+# Через домен прошлый визит пройти не может по определению: домен проверяет
+# покрытие, списывает абонемент и шлёт уведомления, а история обязана лечь
+# без кассы, списаний и писем (см. native_projection: «Past imports never
+# trigger automatic cash, attendance or messages»).
+_IMPORT: dict[str, str] = {
+    os.path.join("services", "bumpix_import", "native_projection.py"):
+        "перенос записей Bumpix в обычные занятия и брони, без бизнес-эффектов",
+    os.path.join("services", "bumpix_import", "journal.py"):
+        "привязка перенесённых записей к журналу (CLI import_bumpix_journal)",
+    os.path.join("services", "bumpix_import", "historical_cash.py"):
+        "явный --historical-cash: прошлый визит отмечен посещённым без кассы и списаний",
+}
+
 # Что считаем прямой записью в бизнес-состояние брони. Присваивание, а НЕ
 # сравнение: `== "active"` — это чтение, и ловить его значит приучить всех
 # обходить проверку исключениями вместо того, чтобы держать инвариант.
@@ -84,7 +100,7 @@ def test_only_the_domain_creates_reservations():
     offenders = []
     for path in _files():
         rel = _relative(path)
-        if rel in _ALLOWED:
+        if rel in _ALLOWED or rel in _IMPORT:
             continue
         with open(path, encoding="utf-8") as handle:
             tree = ast.parse(handle.read(), filename=path)
@@ -110,7 +126,7 @@ def test_only_the_domain_moves_reservation_state():
                    or _CANCELLED_AT.search(line))
             if not hit:
                 continue
-            if rel in _DOMAIN:
+            if rel in _DOMAIN or rel in _IMPORT:
                 continue
             # Единственное разрешённое исключение — отметка посещения.
             if rel in _ALLOWED and '"attended"' in line:
@@ -144,7 +160,7 @@ def test_routers_do_not_charge_subscriptions_themselves():
 
 def test_every_exception_has_a_reason():
     """Исключение без объяснения — это забытый писатель, а не решение."""
-    for path, reason in _ALLOWED.items():
+    for path, reason in {**_ALLOWED, **_IMPORT}.items():
         assert reason and len(reason) > 20, path
         assert os.path.exists(os.path.join(BACK, path)), path
 

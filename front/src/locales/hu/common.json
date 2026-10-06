@@ -171,7 +171,8 @@
       "lesson_overlap": "A munkatársnak ekkor órája van — válasszon szabad időpontot",
       "overlap": "A munkatársnak ekkor már van másik blokkja",
       "not_found": "Ezt a blokkot már eltávolították",
-      "bad_clock": "Ez az időpont nem létezik vagy az óraátállítás miatt ismétlődik — válasszon másikat"
+      "bad_clock": "Ez az időpont nem létezik vagy az óraátállítás miatt ismétlődik — válasszon másikat",
+      "blocks_lesson": "Az óra ütközik a munkatárs stúdióidejével (takarítás, megbeszélés) — válasszon másik időpontot"
     }
   },
   "units": {

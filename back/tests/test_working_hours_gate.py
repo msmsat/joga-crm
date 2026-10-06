@@ -91,8 +91,8 @@ def test_studio_hours_exceeded_rejected():
 
 def test_no_studio_row_does_not_restrict():
     """Часы не заполнены — не «закрыто всегда»: студия, тренер (нет отметки, нет
-    недельной строки) молчат, занятие проходит."""
-    _run(_DB(None, None, None))
+    недельной строки, нет «времени студии») молчат, занятие проходит."""
+    _run(_DB(None, None, None, None))
 
 
 # ─── филиал через зал ────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ def test_branch_closed_day_rejected():
 
 
 def test_hall_without_branch_hours_does_not_restrict():
-    _run(_DB(None, None, None, None), hall_id=5)
+    _run(_DB(None, None, None, None, None), hall_id=5)
 
 
 # ─── тренер ──────────────────────────────────────────────────────────────────
@@ -121,7 +121,7 @@ def test_staff_date_override_day_off_rejected():
 
 def test_staff_date_override_opens_day_closed_in_week():
     """Отметка «работает» открывает день, помеченный в неделе нерабочим."""
-    _run(_DB(None, True, _Hours(is_open=False)))
+    _run(_DB(None, True, _Hours(is_open=False), None))
 
 
 def test_staff_date_override_working_still_respects_hours():
@@ -132,11 +132,33 @@ def test_staff_date_override_working_still_respects_hours():
                 "рабочие часы сотрудника")
 
 
+class _Busy:
+    def __init__(self, reason="Уборка зала"):
+        self.id = 7
+        self.reason = reason
+        self.start_time = MON_10.replace(minute=30)
+        self.end_time = MON_10.replace(hour=11)
+
+
+def test_studio_time_rejects_lesson_last():
+    """«Время студии» (уборка) закрывает занятие — последним запросом гейта:
+    выходной и часы объясняют отказ точнее, их спрашиваем раньше."""
+    for db in (_DB(None, None, None, _Busy()), _DB(None, True, _Hours(is_open=False), _Busy(None))):
+        try:
+            _run(db)
+        except HTTPException as e:
+            assert e.status_code == 400 and e.detail["code"] == "studio_time.blocks_lesson", e.detail
+            assert "10:30–11:00" in e.detail["message"]
+            continue
+        raise AssertionError("занятие встало поверх «времени студии»")
+
+
 def test_no_teacher_skips_staff_queries():
     _run(_DB(None), teacher_id=None)
 
 
 def test_working_hours_gate():
+    test_studio_time_rejects_lesson_last()
     test_fits_hours_inside_window()
     test_fits_hours_ends_exactly_at_close()
     test_fits_hours_rejects_tail_past_close()

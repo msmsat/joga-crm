@@ -171,7 +171,8 @@
       "lesson_overlap": "O funcionário tem uma aula a esta hora — escolha um horário livre",
       "overlap": "O funcionário já tem outro bloco a esta hora",
       "not_found": "Este bloco já foi removido",
-      "bad_clock": "Esta hora não existe ou repete-se devido à mudança de hora — escolha outra"
+      "bad_clock": "Esta hora não existe ou repete-se devido à mudança de hora — escolha outra",
+      "blocks_lesson": "A aula coincide com o tempo do estúdio do funcionário (limpeza, reunião) — escolha outra hora"
     }
   },
   "units": {

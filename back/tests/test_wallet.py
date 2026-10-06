@@ -26,6 +26,10 @@ class _Sub:
         self.total_classes = total
         self.expires_at = date.today() + timedelta(days=expires_days)
         self.is_frozen = is_frozen
+        # Заморозка до даты и потраченные на неё дни — поля модели, которые
+        # кошелёк отдаёт в ответе (_to_read); фейк обязан их нести.
+        self.freeze_until = None
+        self.freeze_used_days = 0
         # Очередь (status="pending") ещё не стартовала — starts_at is None.
         self.starts_at = starts_at if starts_at is not None else (
             None if status == "pending" else date.today()

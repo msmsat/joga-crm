@@ -171,7 +171,8 @@
       "lesson_overlap": "Çalışanın bu saatte dersi var — boş bir zaman seçin",
       "overlap": "Çalışanın bu saatte zaten başka bir bloğu var",
       "not_found": "Bu blok zaten kaldırılmış",
-      "bad_clock": "Bu saat yok veya saat değişikliği nedeniyle tekrarlanıyor — başka bir saat seçin"
+      "bad_clock": "Bu saat yok veya saat değişikliği nedeniyle tekrarlanıyor — başka bir saat seçin",
+      "blocks_lesson": "Ders, çalışanın stüdyo zamanıyla çakışıyor (temizlik, toplantı) — başka bir saat seçin"
     }
   },
   "units": {

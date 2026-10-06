@@ -25,6 +25,7 @@ import os
 import time as _time
 import warnings
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 warnings.filterwarnings("ignore")
 
@@ -41,12 +42,20 @@ from models import (
 from schemas.schedule.reservations import ReservationCreate
 
 _TAG = "TEST-JOURNAL"
+_ZONE = "Europe/Prague"
+
+
+def _studio_now() -> datetime:
+    """«Сейчас» на стене студии: время занятий местное для студии, и сервер
+    сравнивает с ним. datetime.now() машины давал сдвиг на её часовой пояс —
+    на сервере в UTC «через 20 минут» оказывалось «два часа назад»."""
+    return datetime.now(ZoneInfo(_ZONE)).replace(tzinfo=None)
 
 
 async def _seed() -> dict:
     stamp = f"{int(_time.time())}-{os.getpid()}"
     async with async_session_maker() as db:
-        studio = Studio(name=f"{_TAG}-{stamp}", tz_iana="Europe/Prague", currency="CZK")
+        studio = Studio(name=f"{_TAG}-{stamp}", tz_iana=_ZONE, currency="CZK")
         db.add(studio)
         await db.flush()
         db.add(StudioBookingSettings(studio_id=studio.id))
@@ -72,7 +81,7 @@ async def _lesson(ids, *, starts_in: timedelta, duration_min: int = 60) -> int:
         lesson = Lesson(
             studio_id=ids["studio"], name="Йога", teacher_name="T",
             service_id=ids["service"], teacher_id=ids["user"], hall_id=ids["hall"],
-            start_time=datetime.now() + starts_in, tz_iana="Europe/Prague",
+            start_time=_studio_now() + starts_in, tz_iana=_ZONE,
             duration_min=duration_min, price=0, level="", equipment="",
             total_spots=8, status="confirmed")
         db.add(lesson)

@@ -37,7 +37,7 @@ interface GridCellProps {
   preview: PreviewSlot | null;
   previewTitle: string;
   previewRef: React.RefObject<HTMLDivElement | null>;
-  onSlotMouseDown: (e: React.MouseEvent, ti: number, ci: number, blocked: boolean) => void;
+  onSlotMouseDown: (e: React.MouseEvent, ti: number, ci: number, hour: GridHour) => void;
   /** «Время студии» открывается на правку; нет — блоки только показываются. */
   onBlockOpen?: (block: StaffScheduleBlock) => void;
 }
@@ -58,7 +58,7 @@ export const GridCell = React.memo(function GridCell({
         zIndex: 'auto',
         overflow: isTransitioning ? 'hidden' : 'visible'
       }}
-      onMouseDown={e => onSlotMouseDown(e, ti, ci, blocked)}
+      onMouseDown={e => onSlotMouseDown(e, ti, ci, hour)}
     >
       {hour.blocks.map(b => (
         <StaffBlockCard key={b.key} block={b.block} top={b.top} height={b.height} name={b.name} style={b.style} onOpen={onBlockOpen} />

@@ -1006,11 +1006,15 @@ async def _run_truncated() -> None:
     sid = ids["sid"]
     real_chat = llm.chat
     try:
+        # История пуста — язык ответа берётся из локали студии (её передаёт
+        # роутер). Без неё сработал бы язык продукта по умолчанию (английский,
+        # services/i18n): оговорка честно пришла бы по-английски, и тест
+        # проверял бы умолчание, а не пометку обрыва.
         _ScriptedLLM(_cut("Выручка за август — 4 000 EUR, и основной расход это")).install()
         async with async_session_maker() as db:
             ctx = await _ctx(db, ids["owner_id"], sid, "owner")
             result = await run_agent(ctx, db, await _settings(db, sid), [],
-                                     session_id=ids["session_id"])
+                                     session_id=ids["session_id"], studio_language="ru")
         # Текст модели сохранён целиком — обрезанный ответ лучше пустого.
         assert "4 000 EUR" in result.text
         # …но человек предупреждён, что это не весь ответ.
@@ -1021,7 +1025,7 @@ async def _run_truncated() -> None:
         async with async_session_maker() as db:
             ctx = await _ctx(db, ids["owner_id"], sid, "owner")
             plain = await run_agent(ctx, db, await _settings(db, sid), [],
-                                    session_id=ids["session_id"])
+                                    session_id=ids["session_id"], studio_language="ru")
         assert "оборван" not in plain.text
     finally:
         llm.chat = real_chat

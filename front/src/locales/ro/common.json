@@ -171,7 +171,8 @@
       "lesson_overlap": "Angajatul are o ședință la această oră — alegeți un interval liber",
       "overlap": "Angajatul are deja alt bloc la această oră",
       "not_found": "Acest bloc a fost deja eliminat",
-      "bad_clock": "Această oră nu există sau se repetă din cauza schimbării orei — alegeți alta"
+      "bad_clock": "Această oră nu există sau se repetă din cauza schimbării orei — alegeți alta",
+      "blocks_lesson": "Ședința se suprapune cu timpul de studio al angajatului (curățenie, ședință) — alegeți altă oră"
     }
   },
   "units": {

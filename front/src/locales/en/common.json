@@ -171,7 +171,8 @@
       "lesson_overlap": "The employee has a class at this time — pick a free slot",
       "overlap": "The employee already has another block at this time",
       "not_found": "This block has already been removed",
-      "bad_clock": "This time doesn't exist or repeats because of a clock change — pick another one"
+      "bad_clock": "This time doesn't exist or repeats because of a clock change — pick another one",
+      "blocks_lesson": "The class overlaps the employee's studio time (cleaning, meeting) — pick another time"
     }
   },
   "units": {

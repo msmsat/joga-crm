@@ -52,6 +52,9 @@ class _Lesson:
         # HB-22: версия интервала есть на модели и уходит в ответ
         # (expected_version при переносе) — фейк обязан её нести.
         self.version = 1
+        # Статус записи-источника при переносе (Bumpix) — поле модели,
+        # уходит в ответ _lesson_read, фейк обязан его нести.
+        self.source_status = None
 
 
 class _Service:
@@ -156,11 +159,12 @@ def test_create_denormalizes_name_from_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    # lock_studio, teacher, service, гейт рабочих часов (студия / отметка даты /
-    # недельный график тренера — графика нет, не ограничивает), студия для
+    # lock_studio, teacher, service, гейт рабочих часов (студия / время студии
+    # тренера / отметка даты / недельный график тренера — ничего нет, не
+    # ограничивает), студия для
     # снимка зоны (P1.2: None → зона не подтверждена, снимок не ставится),
     # своя цена услуги у тренера (None → берётся цена услуги), a7 conflict → []
-    db = _DB([_Studio(), _teacher_row(), _Service(id=1, name="Хатха-йога"), None, None, None, None, None, []])
+    db = _DB([_Studio(), _teacher_row(), _Service(id=1, name="Хатха-йога"), None, None, None, None, None, None, []])
     result = asyncio.run(L.create_lesson(body, _ctx(), db))
     assert result.name == "Хатха-йога"
     assert db.committed is True
@@ -173,7 +177,7 @@ def test_create_denormalizes_price_from_service():
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
     db = _DB([_Studio(), _teacher_row(), _Service(id=1, name="Хатха-йога", price=1500),
-              None, None, None, None, None, []])
+              None, None, None, None, None, None, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 1500
 
 
@@ -186,7 +190,7 @@ def test_create_takes_trainer_own_price_over_service():
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
     db = _DB([_Studio(), _teacher_row(), _Service(id=1, price=1500),
-              None, None, None, None, 2200, []])
+              None, None, None, None, None, 2200, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 2200
 
 
@@ -198,7 +202,7 @@ def test_create_trainer_own_price_of_zero_is_a_price():
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
     db = _DB([_Studio(), _teacher_row(), _Service(id=1, price=1500),
-              None, None, None, None, 0, []])
+              None, None, None, None, None, 0, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 0
 
 
@@ -206,7 +210,7 @@ def test_create_explicit_price_wins_over_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4), price=0,
     )
-    db = _DB([_Studio(), _teacher_row(), _Service(id=1, price=1500), None, None, None, None, []])
+    db = _DB([_Studio(), _teacher_row(), _Service(id=1, price=1500), None, None, None, None, None, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 0
 
 

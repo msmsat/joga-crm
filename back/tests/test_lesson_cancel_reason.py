@@ -53,6 +53,9 @@ class _Lesson:
         # HB-22: версия интервала есть на модели и уходит в ответ
         # (expected_version при переносе) — фейк обязан её нести.
         self.version = 1
+        # Статус записи-источника при переносе (Bumpix) — поле модели,
+        # уходит в ответ _lesson_read, фейк обязан его нести.
+        self.source_status = None
 
 
 class _R:
@@ -69,6 +72,9 @@ class _R:
         return self._v if isinstance(self._v, list) else [self._v]
 
     def scalar(self):
+        return self._v
+
+    def first(self):
         return self._v
 
 

@@ -86,9 +86,11 @@ class VisitHistoryTests(unittest.TestCase):
         INSERT INTO clients VALUES(1,14,'inactive','2020-01-01',NULL),(2,14,'inactive','2020-01-01',NULL);
         INSERT INTO lessons VALUES(1,14,'confirmed','completed','2026-10-04 10:00:00',60),
           (2,15,'confirmed','completed','2026-10-04 10:00:00',60),
-          (3,14,'confirmed','completed','2026-10-06 10:00:00',60);
+          (3,14,'confirmed','completed','2099-10-06 10:00:00',60);
         INSERT INTO reservations VALUES(1,1,1,'active',0),(2,2,2,'active',0),(3,2,3,'active',0);
         """)
+        # Занятие 3 — запись ВПЕРЕДИ: визиты для VIP считаются по настоящему
+        # «сейчас», и дата «на завтра» (06.10.2026) истекла вместе с днём.
         rules=SegmentRules(vip_min_visits=1)
         cond=category_condition("vip", date(2026,10,5), rules)
         sql=str(select(Client.id).where(cond).compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds":True}))

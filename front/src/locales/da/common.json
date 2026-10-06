@@ -171,7 +171,8 @@
       "lesson_overlap": "Medarbejderen har et hold på dette tidspunkt — vælg et ledigt tidsrum",
       "overlap": "Medarbejderen har allerede en anden blok på dette tidspunkt",
       "not_found": "Denne blok er allerede fjernet",
-      "bad_clock": "Dette tidspunkt findes ikke eller gentages pga. tidsomstilling — vælg et andet"
+      "bad_clock": "Dette tidspunkt findes ikke eller gentages pga. tidsomstilling — vælg et andet",
+      "blocks_lesson": "Holdet overlapper medarbejderens studietid (rengøring, møde) — vælg et andet tidspunkt"
     }
   },
   "units": {

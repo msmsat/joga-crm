@@ -999,7 +999,9 @@ if __name__ == "__main__":
 
     assert resolve_lang("cs") == "cs" and resolve_lang("de-DE") == "de"
     assert resolve_lang("pl") == "en", "языка без шаблонов ведём в английский"
-    assert resolve_lang(None) == "ru" and resolve_lang("") == "ru"
+    # Язык не задан — язык продукта по умолчанию (services/i18n.DEFAULT_LANG).
+    from services.i18n import DEFAULT_LANG
+    assert resolve_lang(None) == DEFAULT_LANG and resolve_lang("") == DEFAULT_LANG
 
     assert template_name("c1") == "vlr2_c1"
     assert event_from_template_name(template_name("o3")) == "o3"

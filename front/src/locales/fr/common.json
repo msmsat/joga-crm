@@ -171,7 +171,8 @@
       "lesson_overlap": "L’employé a un cours à cette heure — choisissez un créneau libre",
       "overlap": "L’employé a déjà un autre créneau à cette heure",
       "not_found": "Ce créneau a déjà été retiré",
-      "bad_clock": "Cette heure n’existe pas ou se répète à cause du changement d’heure — choisissez-en une autre"
+      "bad_clock": "Cette heure n’existe pas ou se répète à cause du changement d’heure — choisissez-en une autre",
+      "blocks_lesson": "Le cours chevauche le temps studio de l’employé (ménage, réunion) — choisissez une autre heure"
     }
   },
   "units": {

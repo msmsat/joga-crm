@@ -4,6 +4,7 @@ import type { StaffScheduleBlock } from '../../../../api/schedule';
 import type { Booking, JournalColumn, Trainer } from '../types';
 import { NO_HALL_COLUMN, TIMES } from '../constants';
 import { getBookingLayouts, toDateStr, type BookingLayout } from '../utils';
+import { mergeSpans, type Span } from '../components/ScheduleGrid/slotSpans';
 
 /** Период недоступности, который рисуется в этой часовой клетке. */
 export interface GridBlock {
@@ -20,8 +21,12 @@ export interface GridHour {
   /** Занятия, начинающиеся в этом часе: карточка живёт в клетке своего начала. */
   bookings: Booking[];
   blocks: GridBlock[];
-  /** Мастер недоступен — клетка не создаёт занятие, а объясняет почему. */
+  /** Мастер недоступен весь час — клетка не создаёт занятие, а объясняет почему. */
   blocked: boolean;
+  /** Недоступные минуты часа [начало, конец) от полуночи, по возрастанию.
+   *  Короткая уборка или перерыв занимают часть часа: нажатие мимо них
+   *  создаёт занятие сразу после, а не отвечает «не работает» на весь час. */
+  spans: Span[];
 }
 
 export interface GridColumnData {
@@ -33,6 +38,7 @@ export interface GridColumnData {
 
 const NO_BOOKINGS: Booking[] = [];
 const NO_BLOCKS: GridBlock[] = [];
+const NO_SPANS: Span[] = [];
 
 const dateKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -79,10 +85,16 @@ export function useGridColumns({ cols, filteredBookings, viewMode, calendarView,
 
       const hours = TIMES.map((_, ti): GridHour => {
         const hourBookings = bookings.filter(b => b.timeStart >= ti && b.timeStart < ti + 1);
-        const unavailableHere = blocks.filter(b => b.start_minute < gridStart + (ti + 1) * 60 && b.end_minute > gridStart + ti * 60);
-        const blocked = calendarView === 'week'
-          ? visibleTrainers.length > 0 && visibleTrainers.every(s => unavailableHere.some(b => b.staff_id === s.id))
-          : unavailableHere.length > 0;
+        const hourStart = gridStart + ti * 60;
+        const hourEnd = hourStart + 60;
+        const unavailableHere = blocks.filter(b => b.start_minute < hourEnd && b.end_minute > hourStart);
+        // Неделя на нескольких мастерах — дорожки делят ширину, и по месту
+        // нажатия мастера не угадать: там час закрыт, только если заняты все.
+        const spans = lanes > 1
+          ? (visibleTrainers.length > 0 && visibleTrainers.every(s => unavailableHere.some(b => b.staff_id === s.id))
+            ? [[hourStart, hourEnd] as Span] : NO_SPANS)
+          : mergeSpans(unavailableHere.map((b): Span => [Math.max(b.start_minute, hourStart), Math.min(b.end_minute, hourEnd)]));
+        const blocked = spans.some(([s, e]) => s <= hourStart && e >= hourEnd);
         const hourBlocks = blocks
           .filter(b => Math.max(b.start_minute, gridStart) < Math.min(b.end_minute, gridEnd)
             && Math.floor((Math.max(b.start_minute, gridStart) - gridStart) / 60) === ti)
@@ -103,6 +115,7 @@ export function useGridColumns({ cols, filteredBookings, viewMode, calendarView,
           bookings: hourBookings.length ? hourBookings : NO_BOOKINGS,
           blocks: hourBlocks.length ? hourBlocks : NO_BLOCKS,
           blocked,
+          spans: spans.length ? spans : NO_SPANS,
         };
       });
 

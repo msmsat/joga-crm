@@ -14,6 +14,7 @@ import re
 from services import email_layout
 from services.notification_catalog import CATALOG
 from services.notifier import EVENT_EMOJI
+from services.i18n import DEFAULT_LANG
 from services.whatsapp_templates import (
     _FOOTER,
     WA_LANGS,
@@ -160,7 +161,8 @@ def test_resolve_lang():
     assert resolve_lang("cs") == "cs" and resolve_lang("uk") == "uk"
     assert resolve_lang("de-DE") == "de", "региональный код приводим к языку"
     assert resolve_lang("pl") == "en", "язык без шаблонов — английский, а не русский"
-    assert resolve_lang(None) == "ru" and resolve_lang("") == "ru"
+    # Язык не задан — язык продукта по умолчанию (services/i18n.DEFAULT_LANG).
+    assert resolve_lang(None) == DEFAULT_LANG and resolve_lang("") == DEFAULT_LANG
 
 
 def test_payload_shape():

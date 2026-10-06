@@ -5,7 +5,8 @@ import type { StaffScheduleBlock } from '../../../../../api/schedule';
 import type { Booking, JournalColumn, Trainer } from '../../types';
 import { TIMES } from '../../constants';
 import type { DragState } from '../../hooks/useDragAndDrop';
-import { useGridColumns } from '../../hooks/useGridColumns';
+import { useGridColumns, type GridHour } from '../../hooks/useGridColumns';
+import { slotStart } from './slotSpans';
 import { ColumnHeader } from './ColumnHeader';
 import { GridCell, type EditDraft } from './GridCell';
 import type { BookingCardActions } from './BookingCard';
@@ -75,7 +76,7 @@ export const Grid: React.FC<GridProps> = ({
   useLayoutEffect(() => {
     latest.current = { canEdit, showNewForm, popupBooking, drag, wasDragging, viewMode, cols, openNewSlot, showToast };
   });
-  const onSlotMouseDown = useCallback((e: React.MouseEvent, ti: number, ci: number, blocked: boolean) => {
+  const onSlotMouseDown = useCallback((e: React.MouseEvent, ti: number, ci: number, hour: GridHour) => {
     const now = latest.current;
     if (!now.canEdit || now.showNewForm || now.popupBooking || now.drag || now.wasDragging) return;
     // Тап по карточке занятия не должен создавать новое занятие.
@@ -87,10 +88,17 @@ export const Grid: React.FC<GridProps> = ({
     // Нажатие на «Время студии» открывает его самого, а не тост «не работает».
     if ((e.target as HTMLElement).closest('.j-staff-block.is-editable')) return;
     e.stopPropagation();
-    if (blocked) { now.showToast(t('scheduleBlocks.unavailable')); return; }
+    // Минута под пальцем: перерыв или уборка часто занимают только часть
+    // часа. Нажали в них — объясняем; мимо — занятие начинается там, где
+    // свободное окно (сразу после уборки), а не в начале часа поверх неё.
+    const hourStart = (Number(TIMES[0].slice(0, 2)) + ti) * 60;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const minute = hourStart + Math.min(59, Math.max(0, Math.floor((e.clientY - rect.top) / (rect.height || 72) * 60)));
+    const start = hour.blocked ? null : slotStart(hour.spans, hourStart, minute);
+    if (start == null) { now.showToast(t('scheduleBlocks.unavailable')); return; }
     const col = now.cols[ci];
     const trainerIdx = now.viewMode === 'trainers' ? (col as Trainer).id : 0;
-    now.openNewSlot(trainerIdx, ti, ci);
+    now.openNewSlot(trainerIdx, ti + (start - hourStart) / 60, ci);
   }, [t]);
 
   const avoidHeaderAnimation = calendarView === 'week' && transitionReason === 'mode';

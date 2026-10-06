@@ -7,13 +7,18 @@ import vm from 'node:vm';
 import ts from 'typescript';
 
 const context = vm.createContext({ console });
-const source = await readFile(new URL('../src/pages/dashboard/Journal/studioTimeModel.ts', import.meta.url), 'utf8');
-const module = new vm.SourceTextModule(ts.transpileModule(source, { compilerOptions: {
-  target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext,
-} }).outputText, { context });
-await module.link(() => { throw new Error('studioTimeModel must stay free of runtime imports'); });
-await module.evaluate();
-const m = module.namespace;
+// Оба модуля — чистые: ни React, ни запросов. Любой runtime-импорт — ошибка.
+async function load(path) {
+  const source = await readFile(new URL(path, import.meta.url), 'utf8');
+  const module = new vm.SourceTextModule(ts.transpileModule(source, { compilerOptions: {
+    target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext,
+  } }).outputText, { context });
+  await module.link(() => { throw new Error(`${path} must stay free of runtime imports`); });
+  await module.evaluate();
+  return module.namespace;
+}
+const m = await load('../src/pages/dashboard/Journal/studioTimeModel.ts');
+const grid = await load('../src/pages/dashboard/Journal/components/ScheduleGrid/slotSpans.ts');
 const plain = value => JSON.parse(JSON.stringify(value));
 const draft = { staffId: 7, date: '2099-10-08', start: '10:30', duration: 45, label: '  Уборка   зала ' };
 
@@ -74,4 +79,14 @@ test('without a cell the start is the next quarter today and 09:00 on another da
   assert.equal(m.defaultStart('2099-10-09', now), '09:00');
   assert.equal(m.defaultStart('2099-10-08', new Date(2099, 9, 8, 23, 50)), '22:00');
   assert.equal(m.defaultStart('2099-10-08', new Date(2099, 9, 8, 5, 0)), '07:00');
+});
+
+test('a short block closes only its own minutes of the hour', () => {
+  const spans = grid.mergeSpans([[615, 630], [600, 615], [645, 660]]);
+  assert.deepEqual(plain(spans), [[600, 630], [645, 660]]);
+  assert.equal(grid.slotStart(spans, 600, 605), null);       // в уборку — объясняем
+  assert.equal(grid.slotStart(spans, 600, 640), 630);        // мимо — сразу после неё
+  assert.equal(grid.slotStart(spans, 600, 650), null);
+  assert.equal(grid.slotStart([], 600, 640), 600);           // свободный час — как раньше, с начала
+  assert.equal(grid.slotStart([[630, 660]], 600, 10 + 600), 600);
 });

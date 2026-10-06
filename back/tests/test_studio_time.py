@@ -169,3 +169,34 @@ def test_assistant_puts_lists_and_undoes():
         await ai_tools.UNDO["add_studio_time"]({"id": made["id"]}, ctx, db)
         assert await time_blocks.list_period(db, ctx.studio_id, day, day) == []
     run(case)
+
+
+def test_lesson_cannot_land_on_studio_time():
+    """Онлайн-запись блок вычитала всегда; теперь и групповое занятие из Журнала —
+    создание, перенос, повторяющиеся и ассистент ходят через один гейт."""
+    from services.working_hours import assert_within_working_hours
+
+    async def case(db, ctx, day, _):
+        await put(db, ctx, day, 10)
+        gate = lambda hour, minute=0, length=60: assert_within_working_hours(  # noqa: E731
+            db, ctx.studio_id, start_time=at(day, hour, minute), duration_min=length,
+            teacher_id=ctx.user.id, hall_id=None)
+        for hour, minute, length in ((10, 30, 30), (9, 30, 60), (9, 0, 180)):
+            with pytest.raises(HTTPException) as exc:
+                await gate(hour, minute, length)
+            assert exc.value.status_code == 400 and refused(exc) == "studio_time.blocks_lesson"
+        await gate(9)         # встык до уборки
+        await gate(11)        # и сразу после неё
+    run(case)
+
+
+def test_assistant_fill_skips_studio_time():
+    """fill_schedule считает свободные начала сам: без блока в занятом он
+    обещал бы слоты, которые роутер на исполнении отклонит."""
+    async def case(db, ctx, day, _):
+        await put(db, ctx, day, 12)
+        args = ai_tools.FillScheduleArgs(teacher_id=ctx.user.id, service_id=1, date_from=day, date_to=day,
+                                         time_from="10:00", time_to="15:00", duration_min=60)
+        slots = await ai_tools._free_slots(day, args, {}, ctx, db)
+        assert [s.hour for s in slots] == [10, 11, 13, 14]
+    run(case)

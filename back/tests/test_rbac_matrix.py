@@ -82,6 +82,15 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("GET", "/clients/{client_id}/notes"): ("owner", "admin", "trainer"),
     ("GET", "/clients/{client_id}/activity"): ("owner", "admin", "trainer"),
     ("GET", "/clients/{client_id}/wallet"): ("owner", "admin", "trainer"),
+    # Сводка клиента для карточки в Журнале — тот же client_scope: тренер
+    # видит сводку только своего клиента.
+    ("GET", "/clients/{client_id}/digest"): ("owner", "admin", "trainer"),
+    # Перенесённая история (Bumpix) — только чтение. Тренеру — лишь записи,
+    # где мастер он сам (reading.teacher_scope), и фото только к ним.
+    ("GET", "/clients/{client_id}/bumpix"): ("owner", "admin", "trainer"),
+    ("GET", "/clients/{client_id}/bumpix/events"): ("owner", "admin", "trainer"),
+    ("GET", "/clients/{client_id}/bumpix/media/{media_id}"): ("owner", "admin", "trainer"),
+    ("GET", "/clients/{client_id}/media/{media_id}"): ("owner", "admin", "trainer"),
 
     # ── Журнал. Роль проверяется В ТЕЛЕ ручки, а не гвардом: тренеру нужно
     #    читать свои занятия и отмечать приход, но не менять расписание.
@@ -90,6 +99,14 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("GET", "/schedule/lessons"): ("*studio",),
     ("GET", "/schedule/lessons/days"): ("*studio",),
     ("GET", "/schedule/lessons/{lesson_id}"): ("*studio",),
+    # Перерывы, выходные и «время студии» в сетке. Тренеру — только свои
+    # (фильтр в теле); ставят и правят блоки владелец и админ — эти ручки
+    # (POST/PATCH/DELETE) за require_role и в снимок не попадают.
+    ("GET", "/schedule/staff-blocks"): ("*studio",),
+    # Перенесённые записи (Bumpix) в сетке: тренеру — только свои (teacher_scope).
+    ("GET", "/schedule/bumpix-events"): ("owner", "admin", "trainer"),
+    ("GET", "/schedule/bumpix-days"): ("owner", "admin", "trainer"),
+    ("GET", "/schedule/lessons/{lesson_id}/bumpix"): ("owner", "admin", "trainer"),
     # /schedule/lessons/{id}/eligible-clients — только владелец и админ: это вся
     # клиентская база с телефонами, тренер видит лишь своих клиентов.
     ("POST", "/schedule/lessons"): ("*studio",),                       # тело: тренеру 403
@@ -103,6 +120,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("PATCH", "/schedule/reservations/{reservation_id}/confirm"): ("*studio",),  # одобрение заявки из мини-аппа
     ("POST", "/schedule/reservations/{reservation_id}/pay"): ("*studio",),     # тело: тренеру 403 — кассу он не ведёт
     ("POST", "/schedule/reservations/{reservation_id}/payment-cancel"): ("*studio",),  # тело: тренеру 403 — кассу он не ведёт
+    ("POST", "/schedule/reservations/{reservation_id}/payment-preview"): ("*studio",),  # тело: тренеру 403 — чек кассы, только чтение
 
     # ── Настройки: персональные вкладки доступны всем ролям (ТЗ 2.13)
     ("GET", "/settings/general"): ("*studio",),      # название/валюта студии — читают все, PATCH owner
@@ -127,6 +145,9 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     # вводить их заново — ровно то, ради чего они и вынесены на аккаунт.
     ("GET", "/billing/profile"): ("*user",),
     ("PUT", "/billing/profile"): ("*user",),
+
+    # ── Цены на лендинге: тот же каталог тарифов, что видит владелец при оплате.
+    ("GET", "/billing/plans/public"): ("*public",),
 
     # ── Вебхуки платёжек и публичная запись клиента
     ("POST", "/billing/webhook/stripe"): ("*public",),

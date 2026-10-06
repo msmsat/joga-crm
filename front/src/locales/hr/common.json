@@ -171,7 +171,8 @@
       "lesson_overlap": "Zaposlenik u to vrijeme ima termin — odaberite slobodan prozor",
       "overlap": "Zaposlenik u to vrijeme već ima drugi blok",
       "not_found": "Ovaj blok je već uklonjen",
-      "bad_clock": "Ovo vrijeme ne postoji ili se ponavlja zbog pomicanja sata — odaberite drugo"
+      "bad_clock": "Ovo vrijeme ne postoji ili se ponavlja zbog pomicanja sata — odaberite drugo",
+      "blocks_lesson": "Termin se preklapa s vremenom studija zaposlenika (čišćenje, sastanak) — odaberite drugo vrijeme"
     }
   },
   "units": {

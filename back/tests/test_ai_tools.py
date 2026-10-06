@@ -190,12 +190,17 @@ def test_schema_error_reaches_human():
     HTTPException — раньше он падал в generic-ветку, и на кнопке «Подтвердить»
     человек получал 400 с «попробуйте иначе» вместо причины. БД здесь не нужна:
     StaffCreate не проходит валидацию до первого обращения к сессии.
+
+    Пароль берём тот, что нарушает ДЕЙСТВУЮЩЕЕ правило (без цифры). Прежний
+    «Kirill123» отказывал правилом «слишком простой (123, qwe…)», которое
+    сняли в 2.2, — и тест упал не на доставке текста, ради которой он и есть,
+    а на том, что такой пароль теперь законен и вызов уходил в базу.
     """
     err = asyncio.run(call_tool("create_staff", {
         "name": "Кирилл", "email": "k@example.com", "access_role": "trainer",
-        "password": "Kirill123",
+        "password": "Kirillov",
     }, _ctx_stub("owner"), None))["error"]
-    assert "password" in err and "простой" in err, err
+    assert "password" in err and "цифру" in err, err
     # И сам пароль — обязательное поле схемы: необязательное модель заполняла
     # своей выдумкой, которой владелец не видит. Обязательное она спрашивает.
     assert "password" in TOOLS["create_staff"].params.model_json_schema()["required"]
