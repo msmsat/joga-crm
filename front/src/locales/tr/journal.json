@@ -520,5 +520,48 @@
     "busy": "Çalışmıyor",
     "allDay": "Tüm gün",
     "unavailable": "Çalışan bu saatte çalışmıyor"
+  },
+  "studioTime": {
+    "action": "Stüdyo zamanı",
+    "actionHint": "Derssiz bir blok: temizlik, hazırlık, toplantı",
+    "openHint": "düzenlemek için tıklayın",
+    "title": "Stüdyo zamanı",
+    "editTitle": "Stüdyo zamanını düzenle",
+    "subtitle": "Günlüğe derssiz bir zaman işaretleyin — temizlik, salon hazırlığı, toplantı",
+    "editSubtitle": "Adı, çalışanı, saati veya süreyi değiştirin",
+    "name": "Ad",
+    "namePlaceholder": "Örn. salon temizliği",
+    "presets": {
+      "cleaning": "Temizlik",
+      "prep": "Salon hazırlığı",
+      "meeting": "Toplantı",
+      "airing": "Havalandırma",
+      "maintenance": "Bakım"
+    },
+    "staff": "Çalışan",
+    "date": "Tarih",
+    "start": "Başlangıç",
+    "duration": "Süre",
+    "until": "{{time}}’e kadar",
+    "durationH": "{{h}} sa",
+    "durationM": "{{m}} dk",
+    "durationHM": "{{h}} sa {{m}} dk",
+    "previewTitle": "Günlükte böyle görünecek",
+    "previewHint": "Blok, çalışanın sütununa bir mola gibi yerleşir. Bu saatte ona kimse randevu alamaz — ne günlükte ne de çevrim içi.",
+    "create": "Günlüğe ekle",
+    "delete": "Kaldır",
+    "deleteConfirm": {
+      "title": "Stüdyo zamanı kaldırılsın mı?",
+      "message": "“{{label}}” bloğu günlükten kalkacak ve saat yeniden randevuya açılacak.",
+      "confirm": "Kaldır"
+    },
+    "toasts": {
+      "created": "Stüdyo zamanı eklendi",
+      "updated": "Stüdyo zamanı değiştirildi",
+      "deleted": "Stüdyo zamanı kaldırıldı"
+    },
+    "errors": {
+      "name": "Bloğa bir ad verin"
+    }
   }
 }

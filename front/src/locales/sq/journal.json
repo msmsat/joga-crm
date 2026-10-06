@@ -520,5 +520,48 @@
     "busy": "Nuk punon",
     "allDay": "Gjithë ditën",
     "unavailable": "Punonjësi nuk punon në këtë orar"
+  },
+  "studioTime": {
+    "action": "Koha e studios",
+    "actionHint": "Një bllok pa seancë: pastrim, përgatitje, mbledhje",
+    "openHint": "klikoni për ta ndryshuar",
+    "title": "Koha e studios",
+    "editTitle": "Ndrysho kohën e studios",
+    "subtitle": "Shënoni në ditar kohë pa seancë — pastrimin, përgatitjen e sallës, mbledhjen",
+    "editSubtitle": "Ndryshoni emrin, punonjësin, orën ose kohëzgjatjen",
+    "name": "Emri",
+    "namePlaceholder": "P.sh. pastrimi i sallës",
+    "presets": {
+      "cleaning": "Pastrim",
+      "prep": "Përgatitja e sallës",
+      "meeting": "Mbledhje",
+      "airing": "Ajrosje",
+      "maintenance": "Mirëmbajtje"
+    },
+    "staff": "Punonjësi",
+    "date": "Data",
+    "start": "Fillimi",
+    "duration": "Kohëzgjatja",
+    "until": "deri në {{time}}",
+    "durationH": "{{h}} orë",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} orë {{m}} min",
+    "previewTitle": "Kështu do të duket në ditar",
+    "previewHint": "Blloku vendoset në kolonën e punonjësit, si një pushim. Në këtë kohë askush nuk mund të rezervojë tek ai — as në ditar, as online.",
+    "create": "Shto në ditar",
+    "delete": "Hiqe",
+    "deleteConfirm": {
+      "title": "Ta heqim kohën e studios?",
+      "message": "Blloku «{{label}}» do të zhduket nga ditari dhe koha do të hapet sërish për rezervime.",
+      "confirm": "Hiqe"
+    },
+    "toasts": {
+      "created": "Koha e studios u shtua",
+      "updated": "Koha e studios u ndryshua",
+      "deleted": "Koha e studios u hoq"
+    },
+    "errors": {
+      "name": "Jepini bllokut një emër"
+    }
   }
 }

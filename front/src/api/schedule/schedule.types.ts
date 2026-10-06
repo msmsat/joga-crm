@@ -271,4 +271,24 @@ export interface StaffScheduleBlock {
   end_minute: number;
   kind: 'day_off' | 'off_hours' | 'break' | 'busy';
   label: string | null;
+  /** Есть только у занятости (`busy`): по нему «Время студии» открывается на правку. */
+  id?: number;
+}
+
+/** «Время студии» — блок в журнале без занятия (back/services/time_blocks.py).
+ *  Время местное, без зоны — тот же контракт, что у занятий. */
+export interface StudioTime {
+  id: number;
+  staff_id: number;
+  start_time: string;
+  end_time: string;
+  duration_min: number;
+  label: string | null;
+}
+
+export interface StudioTimePayload {
+  staff_id: number;
+  start_time: string;
+  duration_min: number;
+  label: string;
 }

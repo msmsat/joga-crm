@@ -166,6 +166,12 @@
       "not_a_bundle": "Un serviciu obișnuit nu poate deveni pachet. Creează un pachet nou.",
       "bundle_size": "Alege între 2 și 10 servicii individuale diferite.",
       "bundle_part_invalid": "Alege între 2 și 10 servicii individuale diferite."
+    },
+    "studio_time": {
+      "lesson_overlap": "Angajatul are o ședință la această oră — alegeți un interval liber",
+      "overlap": "Angajatul are deja alt bloc la această oră",
+      "not_found": "Acest bloc a fost deja eliminat",
+      "bad_clock": "Această oră nu există sau se repetă din cauza schimbării orei — alegeți alta"
     }
   },
   "units": {

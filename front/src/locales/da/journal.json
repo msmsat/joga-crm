@@ -520,5 +520,48 @@
     "busy": "Arbejder ikke",
     "allDay": "Hele dagen",
     "unavailable": "Medarbejderen arbejder ikke på dette tidspunkt"
+  },
+  "studioTime": {
+    "action": "Studietid",
+    "actionHint": "En blok uden hold: rengøring, klargøring, teammøde",
+    "openHint": "klik for at redigere",
+    "title": "Studietid",
+    "editTitle": "Rediger studietid",
+    "subtitle": "Markér tid uden hold i journalen — rengøring, klargøring af salen, teammøde",
+    "editSubtitle": "Skift navn, medarbejder, tidspunkt eller varighed",
+    "name": "Navn",
+    "namePlaceholder": "F.eks. rengøring af salen",
+    "presets": {
+      "cleaning": "Rengøring",
+      "prep": "Klargøring af sal",
+      "meeting": "Teammøde",
+      "airing": "Udluftning",
+      "maintenance": "Vedligeholdelse"
+    },
+    "staff": "Medarbejder",
+    "date": "Dato",
+    "start": "Start",
+    "duration": "Varighed",
+    "until": "til {{time}}",
+    "durationH": "{{h}} t",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} t {{m}} min",
+    "previewTitle": "Sådan ser det ud i journalen",
+    "previewHint": "Blokken placeres i medarbejderens kolonne som en pause. I dette tidsrum kan ingen booke hos vedkommende — hverken i journalen eller online.",
+    "create": "Sæt i journalen",
+    "delete": "Fjern",
+    "deleteConfirm": {
+      "title": "Fjern studietid?",
+      "message": "Blokken “{{label}}” forsvinder fra journalen, og tiden åbner igen for booking.",
+      "confirm": "Fjern"
+    },
+    "toasts": {
+      "created": "Studietid tilføjet",
+      "updated": "Studietid ændret",
+      "deleted": "Studietid fjernet"
+    },
+    "errors": {
+      "name": "Giv blokken et navn"
+    }
   }
 }

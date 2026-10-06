@@ -292,7 +292,9 @@
     "update_client": "Ažuriraju se podaci klijenta…",
     "update_lesson": "Ažurira se termin…",
     "update_service": "Ažurira se usluga…",
-    "update_staff": "Ažurira se član tima…"
+    "update_staff": "Ažurira se član tima…",
+    "add_studio_time": "Dodajem vrijeme studija…",
+    "remove_studio_time": "Uklanjam vrijeme studija…"
   },
   "quota": {
     "trialLow": "Ostalo je malo probnih zahtjeva.",

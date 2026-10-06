@@ -292,7 +292,9 @@
     "update_client": "Aktualizowanie danych klienta…",
     "update_lesson": "Aktualizowanie zajęć…",
     "update_service": "Aktualizowanie usługi…",
-    "update_staff": "Aktualizowanie członka zespołu…"
+    "update_staff": "Aktualizowanie członka zespołu…",
+    "add_studio_time": "Dodaję czas studia…",
+    "remove_studio_time": "Usuwam czas studia…"
   },
   "quota": {
     "trialLow": "Pozostało mało próbnych żądań.",

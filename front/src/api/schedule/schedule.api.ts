@@ -1,12 +1,20 @@
 import { client } from '../client'
 import type {
   StaffScheduleBlock, EligibleClient, Hall, Lesson, LessonCreate, LessonDaysResponse, LessonDetail, Reservation,
-  ReservationPaymentOptions, ReservationPaymentPreview,
+  ReservationPaymentOptions, ReservationPaymentPreview, StudioTime, StudioTimePayload,
 } from './schedule.types'
 
 export const scheduleApi = {
   getStaffBlocks: (dateFrom: string, dateTo: string) =>
     client.get<StaffScheduleBlock[]>(`/schedule/staff-blocks?date_from=${dateFrom}&date_to=${dateTo}`),
+
+  // «Время студии»: уборка, подготовка, планёрка — блок в колонке мастера.
+  createStudioTime: (body: StudioTimePayload) =>
+    client.post<StudioTime>('/schedule/staff-blocks', body),
+  updateStudioTime: (id: number, body: Partial<StudioTimePayload>) =>
+    client.patch<StudioTime>(`/schedule/staff-blocks/${id}`, body),
+  deleteStudioTime: (id: number) =>
+    client.delete<StudioTime>(`/schedule/staff-blocks/${id}`),
 
   getLessons: (params: { date_from: string; date_to: string; hall_id?: number }) => {
     const q = new URLSearchParams(

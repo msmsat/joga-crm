@@ -284,7 +284,9 @@
     "update_client": "Правлю данные клиента…",
     "update_lesson": "Меняю занятие…",
     "update_service": "Правлю услугу…",
-    "update_staff": "Правлю сотрудника…"
+    "update_staff": "Правлю сотрудника…",
+    "add_studio_time": "Ставлю время студии…",
+    "remove_studio_time": "Убираю время студии…"
   },
   "quota": {
     "trialLow": "Осталось мало пробных запросов.",

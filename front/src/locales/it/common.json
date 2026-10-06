@@ -166,6 +166,12 @@
       "not_a_bundle": "Un servizio normale non può diventare un pacchetto. Crea un nuovo pacchetto.",
       "bundle_size": "Scegli da 2 a 10 servizi individuali diversi.",
       "bundle_part_invalid": "Scegli da 2 a 10 servizi individuali diversi."
+    },
+    "studio_time": {
+      "lesson_overlap": "Il dipendente ha una lezione a quest’ora: scegli uno spazio libero",
+      "overlap": "Il dipendente ha già un altro blocco a quest’ora",
+      "not_found": "Questo blocco è già stato rimosso",
+      "bad_clock": "Questo orario non esiste o si ripete per il cambio dell’ora: scegline un altro"
     }
   },
   "units": {

@@ -520,5 +520,48 @@
     "busy": "Não trabalha",
     "allDay": "Todo o dia",
     "unavailable": "O funcionário não trabalha nesta hora"
+  },
+  "studioTime": {
+    "action": "Tempo do estúdio",
+    "actionHint": "Um bloco sem aula: limpeza, preparação, reunião",
+    "openHint": "clique para editar",
+    "title": "Tempo do estúdio",
+    "editTitle": "Editar tempo do estúdio",
+    "subtitle": "Marque no diário um tempo sem aula — limpeza, preparação da sala, reunião",
+    "editSubtitle": "Altere o nome, o funcionário, a hora ou a duração",
+    "name": "Nome",
+    "namePlaceholder": "Ex.: limpeza da sala",
+    "presets": {
+      "cleaning": "Limpeza",
+      "prep": "Preparação da sala",
+      "meeting": "Reunião",
+      "airing": "Arejamento",
+      "maintenance": "Manutenção"
+    },
+    "staff": "Funcionário",
+    "date": "Data",
+    "start": "Início",
+    "duration": "Duração",
+    "until": "até às {{time}}",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "É assim que vai ficar no diário",
+    "previewHint": "O bloco entra na coluna do funcionário, como uma pausa. Nesse horário ninguém poderá marcar com ele — nem no diário, nem online.",
+    "create": "Adicionar ao diário",
+    "delete": "Remover",
+    "deleteConfirm": {
+      "title": "Remover o tempo do estúdio?",
+      "message": "O bloco «{{label}}» desaparece do diário e o horário volta a ficar disponível para marcações.",
+      "confirm": "Remover"
+    },
+    "toasts": {
+      "created": "Tempo do estúdio adicionado",
+      "updated": "Tempo do estúdio alterado",
+      "deleted": "Tempo do estúdio removido"
+    },
+    "errors": {
+      "name": "Dê um nome ao bloco"
+    }
   }
 }

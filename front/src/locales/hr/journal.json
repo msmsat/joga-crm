@@ -524,5 +524,48 @@
     "busy": "Ne radi",
     "allDay": "Cijeli dan",
     "unavailable": "Zaposlenik ne radi u ovo vrijeme"
+  },
+  "studioTime": {
+    "action": "Vrijeme studija",
+    "actionHint": "Blok bez termina: čišćenje, priprema, sastanak",
+    "openHint": "kliknite za uređivanje",
+    "title": "Vrijeme studija",
+    "editTitle": "Uredi vrijeme studija",
+    "subtitle": "Označite u dnevniku vrijeme bez termina — čišćenje, pripremu dvorane, sastanak",
+    "editSubtitle": "Promijenite naziv, zaposlenika, vrijeme ili trajanje",
+    "name": "Naziv",
+    "namePlaceholder": "Npr. čišćenje dvorane",
+    "presets": {
+      "cleaning": "Čišćenje",
+      "prep": "Priprema dvorane",
+      "meeting": "Sastanak",
+      "airing": "Provjetravanje",
+      "maintenance": "Održavanje"
+    },
+    "staff": "Zaposlenik",
+    "date": "Datum",
+    "start": "Početak",
+    "duration": "Trajanje",
+    "until": "do {{time}}",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "Ovako će izgledati u dnevniku",
+    "previewHint": "Blok se postavlja u stupac zaposlenika kao pauza. U to vrijeme nitko se ne može naručiti kod njega — ni u dnevniku ni online.",
+    "create": "Dodaj u dnevnik",
+    "delete": "Ukloni",
+    "deleteConfirm": {
+      "title": "Ukloniti vrijeme studija?",
+      "message": "Blok „{{label}}” nestat će iz dnevnika, a vrijeme će se ponovno otvoriti za rezervacije.",
+      "confirm": "Ukloni"
+    },
+    "toasts": {
+      "created": "Vrijeme studija dodano",
+      "updated": "Vrijeme studija promijenjeno",
+      "deleted": "Vrijeme studija uklonjeno"
+    },
+    "errors": {
+      "name": "Imenujte blok"
+    }
   }
 }

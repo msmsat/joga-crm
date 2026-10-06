@@ -166,6 +166,12 @@
       "not_a_bundle": "En vanlig tjänst kan inte omvandlas till ett paket. Skapa ett nytt paket.",
       "bundle_size": "Välj 2–10 olika individuella tjänster.",
       "bundle_part_invalid": "Välj 2–10 olika individuella tjänster."
+    },
+    "studio_time": {
+      "lesson_overlap": "Den anställda har ett pass vid den tiden — välj en ledig tid",
+      "overlap": "Den anställda har redan ett annat block vid den tiden",
+      "not_found": "Det här blocket har redan tagits bort",
+      "bad_clock": "Den tiden finns inte eller upprepas på grund av tidsomställningen — välj en annan"
     }
   },
   "units": {

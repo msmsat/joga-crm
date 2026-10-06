@@ -37,6 +37,8 @@ type Props = {
   onPreview: (preview: { title: string; start?: number; end?: number; bufferAfter?: number }) => void;
   /** Окно начало уходить — превью в сетке гаснет вместе с ним. */
   onLeaving?: () => void;
+  /** Кнопка в шапке рядом с крестиком — «Время студии» (StudioTimeButton). */
+  headAction?: React.ReactNode;
 };
 
 /**
@@ -56,7 +58,7 @@ type Props = {
  */
 export function ResourceKeypadModal({
   trainers, teacherId: initialTeacherId, defaultTime = '', defaultDate, defaultServiceId, timeStep, clientId = null,
-  modalRef, onClose, onCreated, onDateChange, onPreview, onLeaving,
+  modalRef, onClose, onCreated, onDateChange, onPreview, onLeaving, headAction,
 }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const terms = useBusinessTerms('resource');
@@ -159,7 +161,10 @@ export function ResourceKeypadModal({
                 </div>
               </div>
             </div>
-            <button type="button" className="btn-icon" onClick={leave} disabled={saving}><Icons.X /></button>
+            <div className="kp-head-r">
+              {!saving && headAction}
+              <button type="button" className="btn-icon" onClick={leave} disabled={saving}><Icons.X /></button>
+            </div>
           </div>
 
           <div className="kp-grid">

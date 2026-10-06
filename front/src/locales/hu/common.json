@@ -166,6 +166,12 @@
       "not_a_bundle": "Egy önálló szolgáltatás nem alakítható csomaggá. Hozzon létre új csomagot.",
       "bundle_size": "Válasszon 2–10 különböző egyéni szolgáltatást.",
       "bundle_part_invalid": "Válasszon 2–10 különböző egyéni szolgáltatást."
+    },
+    "studio_time": {
+      "lesson_overlap": "A munkatársnak ekkor órája van — válasszon szabad időpontot",
+      "overlap": "A munkatársnak ekkor már van másik blokkja",
+      "not_found": "Ezt a blokkot már eltávolították",
+      "bad_clock": "Ez az időpont nem létezik vagy az óraátállítás miatt ismétlődik — válasszon másikat"
     }
   },
   "units": {

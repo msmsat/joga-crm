@@ -292,7 +292,9 @@
     "update_client": "Se actualizează datele clientului…",
     "update_lesson": "Se actualizează clasa…",
     "update_service": "Se actualizează serviciul…",
-    "update_staff": "Se actualizează membrul echipei…"
+    "update_staff": "Se actualizează membrul echipei…",
+    "add_studio_time": "Adaug timp de studio…",
+    "remove_studio_time": "Elimin timpul de studio…"
   },
   "quota": {
     "trialLow": "Au rămas puține solicitări de probă.",

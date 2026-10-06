@@ -242,3 +242,46 @@
   .j-staff-block { left: 3px; right: 3px; border-radius: 10px; }
   .j-hdr-off-tag { font-size: 8px; padding: 2px 4px; }
 }
+
+/* «Время студии» (уборка, планёрка): тот же язык, что у перерыва, — персик
+   и мягкая подложка, — но открывается на правку. Кликабелен только сам блок:
+   подложка периода по-прежнему пропускает нажатия к сетке. */
+.j-staff-block-studio {
+  --sb-surface: #FCEAE3;
+  --sb-accent: #B8684E;
+  --sb-text: #7D412E;
+  --sb-edge: #EDCDBF;
+  --sb-detail: rgba(184, 104, 78, .1);
+  background:
+    repeating-linear-gradient(135deg, transparent 0 9px, rgba(184, 104, 78, .045) 9px 10px),
+    var(--sb-surface);
+}
+:root.dark .j-staff-block-studio {
+  --sb-surface: #332820;
+  --sb-accent: #F3AF96;
+  --sb-text: #F7D0BF;
+  --sb-edge: #604638;
+  --sb-detail: rgba(243, 175, 150, .09);
+  background:
+    repeating-linear-gradient(135deg, transparent 0 9px, rgba(243, 175, 150, .05) 9px 10px),
+    var(--sb-surface);
+}
+.j-staff-block.is-editable {
+  pointer-events: auto;
+  cursor: pointer;
+  transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
+}
+.j-staff-block.is-editable:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(249, 160, 139, .55);
+}
+@media (hover: hover) {
+  .j-staff-block.is-editable:hover {
+    border-color: color-mix(in srgb, var(--sb-accent) 45%, var(--sb-edge));
+    box-shadow: 0 8px 20px -10px rgba(184, 104, 78, .45), inset 0 1px 0 rgba(255, 255, 255, .55);
+    transform: translateY(-1px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .j-staff-block.is-editable, .j-staff-block.is-editable:hover { transition: none; transform: none; }
+}

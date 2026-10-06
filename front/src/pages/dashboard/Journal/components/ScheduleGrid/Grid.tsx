@@ -40,6 +40,8 @@ interface GridProps {
   editDraft: EditDraft | null;
   /** Страницы тренеров на телефоне: точки в пустом углу над колонкой времени. */
   pages?: { count: number; index: number };
+  /** Нажатие на «Время студии» — окно правки. Только тем, кто правит журнал. */
+  onStudioTimeOpen?: (block: StaffScheduleBlock) => void;
 }
 
 export const Grid: React.FC<GridProps> = ({
@@ -47,7 +49,7 @@ export const Grid: React.FC<GridProps> = ({
   columns, viewMode, filteredBookings, staffBlocks, dayDate, visibleTrainers,
   canEdit, gestures, showNewForm, popupBooking, drag, wasDragging,
   openNewSlot, newBookingSlot, newForm, previewRef,
-  initDrag, setPopupBooking, openBookingPopup, showToast, prefetchLesson, editDraft, pages
+  initDrag, setPopupBooking, openBookingPopup, showToast, prefetchLesson, editDraft, pages, onStudioTimeOpen
 }) => {
   const { t } = useTranslation('journal');
   const weekTrainer = calendarView === 'week' ? visibleTrainers[0] : undefined;
@@ -82,6 +84,8 @@ export const Grid: React.FC<GridProps> = ({
     // и вместо занятия открывалась модалка создания. На мыши это не
     // видно: там pointerdown идёт до mousedown и drag уже выставлен.
     if ((e.target as HTMLElement).closest('.booking-card')) return;
+    // Нажатие на «Время студии» открывает его самого, а не тост «не работает».
+    if ((e.target as HTMLElement).closest('.j-staff-block.is-editable')) return;
     e.stopPropagation();
     if (blocked) { now.showToast(t('scheduleBlocks.unavailable')); return; }
     const col = now.cols[ci];
@@ -181,6 +185,7 @@ export const Grid: React.FC<GridProps> = ({
                 previewTitle={preview ? newForm.title : ''}
                 previewRef={previewRef}
                 onSlotMouseDown={onSlotMouseDown}
+                onBlockOpen={canEdit ? onStudioTimeOpen : undefined}
               />
             );
           })}

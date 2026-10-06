@@ -4,7 +4,7 @@
 // последовательность, подогнанная под курсор (Journal.css, раздел 14b).
 // Разделы открываются кнопками в шапке (WizardTabs) в любом порядке, а свайп
 // по листу листает их по очереди. Логика — useBookingWizard.
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +30,10 @@ const TITLES = ['wizard.when', 'wizard.client', 'wizard.service', 'wizard.master
 /** Касания, которые не листают разделы: ряды, что сами едут вбок, и поля ввода. */
 const NO_SWIPE = '.jf-chips, .bw-days, input, textarea, select';
 
-export function BookingWizard(props: WizardOptions) {
+export function BookingWizard({ headAction, ...props }: WizardOptions & {
+  /** Кнопка в шапке рядом с крестиком — «Время студии» из журнала. */
+  headAction?: ReactNode;
+}) {
   const { t, i18n } = useTranslation(['journal', 'common', 'clients']);
   // Закрытие (крестик, мимо, Escape, запись подтверждена) доигрывает уход
   // листа вниз, а не обрывает его в тот же кадр.
@@ -122,8 +125,11 @@ export function BookingWizard(props: WizardOptions) {
                 )}
               </div>
             </div>
-            <button type="button" className="btn-icon" onClick={onClose} disabled={w.saving}
-                    aria-label={t('common:buttons.close')}><Icons.X /></button>
+            <div className="kp-head-r">
+              {!w.saving && !creating && headAction}
+              <button type="button" className="btn-icon" onClick={onClose} disabled={w.saving}
+                      aria-label={t('common:buttons.close')}><Icons.X /></button>
+            </div>
           </div>
 
           {/* Кнопки шагов — и прогресс, и переход: сделанное светится зелёным. */}

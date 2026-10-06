@@ -289,7 +289,9 @@
     "update_client": "Ügyféladatok frissítése…",
     "update_lesson": "Óra frissítése…",
     "update_service": "Szolgáltatás frissítése…",
-    "update_staff": "Csapattag frissítése…"
+    "update_staff": "Csapattag frissítése…",
+    "add_studio_time": "Stúdióidőt adok hozzá…",
+    "remove_studio_time": "Stúdióidőt távolítok el…"
   },
   "quota": {
     "trialLow": "Kevés próbakérés maradt.",

@@ -166,6 +166,12 @@
       "not_a_bundle": "Zwykłej usługi nie można zmienić w pakiet. Utwórz nowy pakiet.",
       "bundle_size": "Wybierz od 2 do 10 różnych usług indywidualnych.",
       "bundle_part_invalid": "Wybierz od 2 do 10 różnych usług indywidualnych."
+    },
+    "studio_time": {
+      "lesson_overlap": "Pracownik ma w tym czasie zajęcia — wybierz wolne okno",
+      "overlap": "Pracownik ma już w tym czasie inny blok",
+      "not_found": "Ten blok został już usunięty",
+      "bad_clock": "Ta godzina nie istnieje lub powtarza się z powodu zmiany czasu — wybierz inną"
     }
   },
   "units": {

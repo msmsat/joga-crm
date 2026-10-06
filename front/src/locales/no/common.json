@@ -166,6 +166,12 @@
       "not_a_bundle": "En vanlig tjeneste kan ikke bli en pakke. Opprett en ny pakke.",
       "bundle_size": "Velg 2–10 forskjellige individuelle tjenester.",
       "bundle_part_invalid": "Velg 2–10 forskjellige individuelle tjenester."
+    },
+    "studio_time": {
+      "lesson_overlap": "Den ansatte har en time på dette tidspunktet — velg et ledig tidsrom",
+      "overlap": "Den ansatte har allerede en annen blokk på dette tidspunktet",
+      "not_found": "Denne blokken er allerede fjernet",
+      "bad_clock": "Dette tidspunktet finnes ikke eller gjentas på grunn av tidsomstilling — velg et annet"
     }
   },
   "units": {

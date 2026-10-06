@@ -520,5 +520,48 @@
     "busy": "Ei töissä",
     "allDay": "Koko päivä",
     "unavailable": "Työntekijä ei työskentele tähän aikaan"
+  },
+  "studioTime": {
+    "action": "Studioaika",
+    "actionHint": "Lohko ilman tuntia: siivous, valmistelu, palaveri",
+    "openHint": "muokkaa napsauttamalla",
+    "title": "Studioaika",
+    "editTitle": "Muokkaa studioaikaa",
+    "subtitle": "Merkitse päiväkirjaan aika ilman tuntia — siivous, salin valmistelu, palaveri",
+    "editSubtitle": "Vaihda nimi, työntekijä, aika tai kesto",
+    "name": "Nimi",
+    "namePlaceholder": "Esim. salin siivous",
+    "presets": {
+      "cleaning": "Siivous",
+      "prep": "Salin valmistelu",
+      "meeting": "Palaveri",
+      "airing": "Tuuletus",
+      "maintenance": "Huolto"
+    },
+    "staff": "Työntekijä",
+    "date": "Päivä",
+    "start": "Alku",
+    "duration": "Kesto",
+    "until": "klo {{time}} asti",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "Näin se näkyy päiväkirjassa",
+    "previewHint": "Lohko tulee työntekijän sarakkeeseen kuin tauko. Tähän aikaan häneltä ei voi varata — ei päiväkirjassa eikä verkossa.",
+    "create": "Lisää päiväkirjaan",
+    "delete": "Poista",
+    "deleteConfirm": {
+      "title": "Poistetaanko studioaika?",
+      "message": "Lohko ”{{label}}” katoaa päiväkirjasta, ja aika vapautuu taas varattavaksi.",
+      "confirm": "Poista"
+    },
+    "toasts": {
+      "created": "Studioaika lisätty",
+      "updated": "Studioaikaa muutettu",
+      "deleted": "Studioaika poistettu"
+    },
+    "errors": {
+      "name": "Anna lohkolle nimi"
+    }
   }
 }

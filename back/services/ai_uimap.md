@@ -395,6 +395,30 @@
   при подтверждении записи. Окно объясняет это само
   (journal:newBooking.onlyResourceServices) и даёт переход
   «Перейти к индивидуальной записи» (journal:newBooking.goToResourceBooking).
+- Поставить время студии без занятия (уборка, подготовка зала, планёрка):
+  ГДЕ: окно создания у ячейки сетки — «Новое занятие» (journal:newBooking.title)
+  или «Индивидуальная запись» (journal:resourceBooking.title); на телефоне —
+  шапка листа записи по разделам.
+  ЧТО НАЖАТЬ: персиковая кнопка «Время студии» (journal:studioTime.action) в
+  шапке окна рядом с крестиком → окно «Время студии» (journal:studioTime.title):
+  «Название» (journal:studioTime.name) — свой текст или готовый вариант
+  «Уборка» (journal:studioTime.presets.cleaning), «Планёрка»
+  (journal:studioTime.presets.meeting) и другие; «Сотрудник»
+  (journal:studioTime.staff), «Дата» (journal:studioTime.date), «Начало»
+  (journal:studioTime.start) и «Продолжительность» (journal:studioTime.duration)
+  — готовые 15 мин … 2 ч или кнопками ± по 5 минут. Сотрудник, день и время
+  уже подставлены из ячейки. Слева виден сам блок, как он встанет в колонку
+  («Так это будет в журнале», journal:studioTime.previewTitle). Затем «Поставить
+  в журнал» (journal:studioTime.create).
+  ПОСЛЕ: в колонке сотрудника появится персиковый блок с названием и временем,
+  как перерыв; на это время к сотруднику не запишут — ни в журнале, ни онлайн.
+  Ставится только в свободное окно: поверх занятия (вместе с его уборкой после
+  клиента) или другого блока сервер откажет.
+  Изменить или убрать: нажать на сам блок в сетке → то же окно «Изменить время
+  студии» (journal:studioTime.editTitle) → «Сохранить» (common:buttons.save) или
+  «Убрать» (journal:studioTime.delete) с подтверждением «Убрать время студии?»
+  (journal:studioTime.deleteConfirm.title).
+  КТО: владелец и администратор; тренер блоки видит, но не ставит и не правит.
 - Записать на индивидуальную услугу:
   ГДЕ: тулбар, рядом с кнопкой «Сегодня».
   ЧТО НАЖАТЬ: «Индивидуально» (journal:toolbar.resourceBooking) — откроется
@@ -537,7 +561,7 @@
 Чего в Журнале НЕТ: массового переноса всех занятий недели, копирования
 расписания на следующую неделю, повторяющихся занятий, продажи абонемента
 (это карточка клиента).
-<!-- модалки: NewBookingModal, ResourceBookingModal, ResourceKeypadModal, BookingWizard, PastBookingPrompt, AddClientModal, MoveBookingModal, ReservationPayModal, SourceJournalModal -->
+<!-- модалки: NewBookingModal, ResourceBookingModal, ResourceKeypadModal, StudioTimeModal, BookingWizard, PastBookingPrompt, AddClientModal, MoveBookingModal, ReservationPayModal, SourceJournalModal -->
 
 - Перенесённые записи после нового импорта открываются обычными карточками журнала.
   У занятия сохранены комментарий и фотографии; будущие записи редактируются

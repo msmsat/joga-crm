@@ -51,6 +51,8 @@ interface NewBookingModalProps {
   onTimeChange?: (time: string) => void;
   /** Окно начало уходить — превью в сетке гаснет вместе с ним. */
   onLeaving?: () => void;
+  /** Кнопка в шапке рядом с крестиком — «Время студии» (StudioTimeButton). */
+  headAction?: React.ReactNode;
 }
 
 export interface NewBookingForm {
@@ -81,6 +83,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   onDateChange,
   onTimeChange,
   onLeaving,
+  headAction,
 }) => {
   const { t } = useTranslation('journal');
   // Филиалы нужны только форме без мест — там они единственный источник
@@ -298,7 +301,10 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                 </div>
               </div>
             </div>
-            <button type="button" className="btn-icon" disabled={saving} onClick={dismiss}><Icons.X /></button>
+            <div className="kp-head-r">
+              {!saving && headAction}
+              <button type="button" className="btn-icon" disabled={saving} onClick={dismiss}><Icons.X /></button>
+            </div>
           </div>
 
           <fieldset className="kp-grid" disabled={saving} style={{ border: 0, margin: 0, minWidth: 0, pointerEvents: saving ? 'none' : undefined }}>

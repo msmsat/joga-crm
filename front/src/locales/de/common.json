@@ -166,6 +166,12 @@
       "not_a_bundle": "Eine einzelne Leistung kann nicht in ein Paket umgewandelt werden. Erstellen Sie ein neues Paket.",
       "bundle_size": "Wählen Sie 2–10 verschiedene Einzelleistungen.",
       "bundle_part_invalid": "Wählen Sie 2–10 verschiedene Einzelleistungen."
+    },
+    "studio_time": {
+      "lesson_overlap": "Der Mitarbeiter hat zu dieser Zeit einen Kurs — wählen Sie ein freies Zeitfenster",
+      "overlap": "Der Mitarbeiter hat zu dieser Zeit bereits einen anderen Block",
+      "not_found": "Dieser Block wurde bereits entfernt",
+      "bad_clock": "Diese Uhrzeit gibt es nicht oder sie wiederholt sich wegen der Zeitumstellung — wählen Sie eine andere"
     }
   },
   "units": {

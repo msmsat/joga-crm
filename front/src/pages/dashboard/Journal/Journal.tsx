@@ -41,6 +41,9 @@ import type { NewBookingForm } from './components/modals/NewBookingModal';
 import { ResourceBookingModal } from './components/modals/ResourceBookingModal';
 import { isPastSlot, nextSameTime } from './components/modals/booking-wizard/pastSlot';
 import { ResourceKeypadModal } from './components/modals/ResourceKeypadModal';
+import { StudioTimeModal } from './components/modals/StudioTimeModal';
+import { StudioTimeButton } from './components/StudioTimeButton';
+import { useStudioTime } from './hooks/useStudioTime';
 import { usePhone } from '../../../hooks/usePhone';
 import { AddClientModal } from './components/modals/AddClientModal';
 import { useToast, ConfirmModal, Button } from '../../../components/ui/index';
@@ -380,6 +383,21 @@ export default function Journal() {
   // Занятие перенесли на другой день из его карточки — журнал идёт следом,
   // не меняя вида (неделя остаётся неделей).
   const showLessonDate = React.useCallback((date: string) => showBookingDate(date, false), [showBookingDate]);
+  // «Время студии» — блок без занятия (уборка, планёрка): кнопка в окнах
+  // создания закрывает их и открывает своё окно с тем же мастером и временем.
+  const studioTime = useStudioTime({ onShowDate: showBookingDate });
+  const studioTrainers = trainers.filter(tr => tr.role !== 'Bumpix' && tr.id > 0);
+  const studioTimeFrom = (staffId: number | null | undefined, date: string, start?: number, end?: number) => {
+    const staff = studioTrainers.find(tr => tr.id === staffId) ?? studioTrainers[0];
+    if (!staff) return;
+    closeNewForm();
+    setResourceBooking(null);
+    studioTime.openAt({
+      staffId: staff.id, date,
+      start: start != null ? formatIndexToTimeStr(start) : undefined,
+      duration: start != null && end != null && end > start ? Math.round((end - start) * 60) : undefined,
+    });
+  };
   const bookingCreated = (date?: string) => {
     if (date) showBookingDate(date);
     mutations.invalidate();
@@ -1078,6 +1096,7 @@ export default function Journal() {
                   showToast={showToast}
                   prefetchLesson={prefetchLesson}
                   editDraft={isEditingBooking && popupBooking ? { bookingId: popupBooking.id, title: editForm.title, timeStart: editForm.timeStart, timeEnd: editForm.timeEnd } : null}
+                  onStudioTimeOpen={studioTime.openBlock}
                 />
               )}
             </div>
@@ -1151,6 +1170,8 @@ export default function Journal() {
           onCreated={bookingCreated}
           onDateChange={showBookingDate}
           onPreview={previewResource}
+          headAction={<StudioTimeButton onClick={() =>
+            studioTimeFrom(keypadResource.teacherId ?? newBookingSlot.trainer, keypadResource.date, newBookingSlot.timeStart)} />}
         />
       )}
       {showNewForm && newBookingSlot && !keypadResource && (
@@ -1171,6 +1192,8 @@ export default function Journal() {
           date={newBookingDate}
           onDateChange={changeNewDate}
           onTimeChange={changeNewTime}
+          headAction={<StudioTimeButton onClick={() =>
+            studioTimeFrom(newBookingSlot.trainer, newBookingDate, newBookingSlot.timeStart, newBookingSlot.timeEnd)} />}
           // Мастера и день забираем ДО закрытия формы: closeNewForm обнуляет слот.
           onResourceBooking={hasResourceServices ? (serviceId) => {
             const slot = newBookingSlot;
@@ -1202,6 +1225,21 @@ export default function Journal() {
           onClose={() => setResourceBooking(null)}
           onCreated={bookingCreated}
           onDateChange={showBookingDate}
+          headAction={canEdit && studioTrainers.length > 0 ? <StudioTimeButton onClick={() =>
+            studioTimeFrom(resourceBooking.teacherId, resourceBooking.date,
+              resourceBooking.time ? parseTimeToIndex(resourceBooking.time) : undefined)} /> : undefined}
+        />
+      )}
+
+      {studioTime.draft && (
+        <StudioTimeModal
+          key={studioTime.draft.id ?? 'new'}
+          draft={studioTime.draft}
+          trainers={studioTrainers}
+          timeStep={timeStep}
+          onClose={studioTime.close}
+          onSubmit={studioTime.submit}
+          onDelete={studioTime.remove}
         />
       )}
 

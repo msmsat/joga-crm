@@ -524,5 +524,48 @@
     "busy": "Nepracuje",
     "allDay": "Celý den",
     "unavailable": "Zaměstnanec v tuto dobu nepracuje"
+  },
+  "studioTime": {
+    "action": "Čas studia",
+    "actionHint": "Blok bez lekce: úklid, příprava, porada",
+    "openHint": "kliknutím upravíte",
+    "title": "Čas studia",
+    "editTitle": "Upravit čas studia",
+    "subtitle": "Označte v deníku čas bez lekce — úklid, přípravu sálu, poradu",
+    "editSubtitle": "Změňte název, pracovníka, čas nebo délku",
+    "name": "Název",
+    "namePlaceholder": "Např. úklid sálu",
+    "presets": {
+      "cleaning": "Úklid",
+      "prep": "Příprava sálu",
+      "meeting": "Porada",
+      "airing": "Větrání",
+      "maintenance": "Údržba"
+    },
+    "staff": "Pracovník",
+    "date": "Datum",
+    "start": "Začátek",
+    "duration": "Délka",
+    "until": "do {{time}}",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "Takhle to bude vypadat v deníku",
+    "previewHint": "Blok se objeví ve sloupci pracovníka jako přestávka. V tuto dobu se k němu nikdo neobjedná — ani v deníku, ani online.",
+    "create": "Přidat do deníku",
+    "delete": "Odebrat",
+    "deleteConfirm": {
+      "title": "Odebrat čas studia?",
+      "message": "Blok „{{label}}“ zmizí z deníku a čas se znovu otevře pro rezervace.",
+      "confirm": "Odebrat"
+    },
+    "toasts": {
+      "created": "Čas studia přidán",
+      "updated": "Čas studia upraven",
+      "deleted": "Čas studia odebrán"
+    },
+    "errors": {
+      "name": "Pojmenujte blok"
+    }
   }
 }

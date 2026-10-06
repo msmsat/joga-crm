@@ -166,6 +166,12 @@
       "not_a_bundle": "Une prestation ordinaire ne peut pas devenir un forfait. Créez un nouveau forfait.",
       "bundle_size": "Choisissez 2 à 10 prestations individuelles différentes.",
       "bundle_part_invalid": "Choisissez 2 à 10 prestations individuelles différentes."
+    },
+    "studio_time": {
+      "lesson_overlap": "L’employé a un cours à cette heure — choisissez un créneau libre",
+      "overlap": "L’employé a déjà un autre créneau à cette heure",
+      "not_found": "Ce créneau a déjà été retiré",
+      "bad_clock": "Cette heure n’existe pas ou se répète à cause du changement d’heure — choisissez-en une autre"
     }
   },
   "units": {

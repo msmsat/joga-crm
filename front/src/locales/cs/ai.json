@@ -286,7 +286,9 @@
     "update_client": "Aktualizuji údaje klienta…",
     "update_lesson": "Aktualizuji lekci…",
     "update_service": "Aktualizuji službu…",
-    "update_staff": "Aktualizuji zaměstnance…"
+    "update_staff": "Aktualizuji zaměstnance…",
+    "add_studio_time": "Přidávám čas studia…",
+    "remove_studio_time": "Odebírám čas studia…"
   },
   "quota": {
     "trialLow": "Zbývá málo zkušebních dotazů.",

@@ -286,7 +286,9 @@
     "update_client": "Kundendaten werden aktualisiert…",
     "update_lesson": "Kurs wird aktualisiert…",
     "update_service": "Leistung wird aktualisiert…",
-    "update_staff": "Teammitglied wird aktualisiert…"
+    "update_staff": "Teammitglied wird aktualisiert…",
+    "add_studio_time": "Trage Studiozeit ein…",
+    "remove_studio_time": "Entferne Studiozeit…"
   },
   "quota": {
     "trialLow": "Nur noch wenige Testanfragen übrig.",

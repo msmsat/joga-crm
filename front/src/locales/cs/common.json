@@ -166,6 +166,12 @@
       "not_a_bundle": "Běžnou službu nelze změnit na balíček. Vytvořte nový balíček.",
       "bundle_size": "Vyberte 2 až 10 různých individuálních služeb.",
       "bundle_part_invalid": "Vyberte 2 až 10 různých individuálních služeb."
+    },
+    "studio_time": {
+      "lesson_overlap": "Pracovník má v tuto dobu lekci — vyberte volný čas",
+      "overlap": "Pracovník už má v tuto dobu jiný blok",
+      "not_found": "Tento blok už byl odebrán",
+      "bad_clock": "Tento čas neexistuje nebo se opakuje kvůli změně času — vyberte jiný"
     }
   },
   "units": {

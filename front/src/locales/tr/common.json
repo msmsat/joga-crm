@@ -166,6 +166,12 @@
       "not_a_bundle": "Normal bir hizmet pakete dönüştürülemez. Yeni bir paket oluşturun.",
       "bundle_size": "2–10 farklı bireysel hizmet seçin.",
       "bundle_part_invalid": "2–10 farklı bireysel hizmet seçin."
+    },
+    "studio_time": {
+      "lesson_overlap": "Çalışanın bu saatte dersi var — boş bir zaman seçin",
+      "overlap": "Çalışanın bu saatte zaten başka bir bloğu var",
+      "not_found": "Bu blok zaten kaldırılmış",
+      "bad_clock": "Bu saat yok veya saat değişikliği nedeniyle tekrarlanıyor — başka bir saat seçin"
     }
   },
   "units": {

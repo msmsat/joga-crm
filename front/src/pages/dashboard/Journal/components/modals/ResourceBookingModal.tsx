@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton } from '../../../../../components/ui/modal';
 import { Select } from '../../../../../components/ui/index';
@@ -35,19 +35,23 @@ import { usePastBooking } from './usePastBooking';
  */
 type Props = ResourceBookingOptions & {
   defaultTime?: string;
+  /** Кнопка «Время студии» в шапке мастера записи (только телефон: на
+   *  компьютере она стоит в окне у клетки). */
+  headAction?: ReactNode;
 };
 
 export function ResourceBookingModal(props: Props) {
   const isPhone = usePhone();
+  // На компьютере «Время студии» стоит в окне у клетки — headAction тут не рисуется.
   if (!isPhone) return <ResourceSheet {...props} />;
-  const { defaultTime, teacherId = null, defaultDate, clientId, onClose, onCreated, onDateChange } = props;
+  const { defaultTime, teacherId = null, defaultDate, clientId, onClose, onCreated, onDateChange, headAction } = props;
   // Телефон: любая запись — пошаговый мастер «клиент → услуга → мастер →
   // время», и для индивидуальных услуг, и для групповых занятий.
   return (
     <BookingWizard
       defaultTeacherId={teacherId} defaultTime={defaultTime} clientId={clientId}
       defaultDate={defaultDate ?? new Date().toLocaleDateString('sv-SE')}
-      onClose={onClose} onCreated={onCreated} onDateChange={onDateChange}
+      onClose={onClose} onCreated={onCreated} onDateChange={onDateChange} headAction={headAction}
     />
   );
 }

@@ -520,5 +520,48 @@
     "busy": "Arbeitet nicht",
     "allDay": "Ganztägig",
     "unavailable": "Der Mitarbeiter arbeitet zu dieser Zeit nicht"
+  },
+  "studioTime": {
+    "action": "Studiozeit",
+    "actionHint": "Ein Block ohne Kurs: Reinigung, Vorbereitung, Teammeeting",
+    "openHint": "zum Bearbeiten klicken",
+    "title": "Studiozeit",
+    "editTitle": "Studiozeit bearbeiten",
+    "subtitle": "Markieren Sie im Journal Zeit ohne Kurs — Reinigung, Raumvorbereitung, Teammeeting",
+    "editSubtitle": "Name, Mitarbeiter, Uhrzeit oder Dauer ändern",
+    "name": "Name",
+    "namePlaceholder": "Z. B. Raumreinigung",
+    "presets": {
+      "cleaning": "Reinigung",
+      "prep": "Raumvorbereitung",
+      "meeting": "Teammeeting",
+      "airing": "Lüften",
+      "maintenance": "Wartung"
+    },
+    "staff": "Mitarbeiter",
+    "date": "Datum",
+    "start": "Beginn",
+    "duration": "Dauer",
+    "until": "bis {{time}}",
+    "durationH": "{{h}} Std.",
+    "durationM": "{{m}} Min.",
+    "durationHM": "{{h}} Std. {{m}} Min.",
+    "previewTitle": "So sieht es im Journal aus",
+    "previewHint": "Der Block erscheint in der Spalte des Mitarbeiters wie eine Pause. In dieser Zeit kann ihn niemand buchen — weder im Journal noch online.",
+    "create": "Ins Journal eintragen",
+    "delete": "Entfernen",
+    "deleteConfirm": {
+      "title": "Studiozeit entfernen?",
+      "message": "Der Block „{{label}}“ verschwindet aus dem Journal, und die Zeit ist wieder buchbar.",
+      "confirm": "Entfernen"
+    },
+    "toasts": {
+      "created": "Studiozeit hinzugefügt",
+      "updated": "Studiozeit geändert",
+      "deleted": "Studiozeit entfernt"
+    },
+    "errors": {
+      "name": "Benennen Sie den Block"
+    }
   }
 }

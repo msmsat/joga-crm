@@ -520,5 +520,48 @@
     "busy": "No trabaja",
     "allDay": "Todo el día",
     "unavailable": "El empleado no trabaja a esta hora"
+  },
+  "studioTime": {
+    "action": "Tiempo de estudio",
+    "actionHint": "Un bloque sin clase: limpieza, preparación, reunión",
+    "openHint": "haz clic para editar",
+    "title": "Tiempo de estudio",
+    "editTitle": "Editar tiempo de estudio",
+    "subtitle": "Marca en el diario un tiempo sin clase: limpieza, preparación de la sala, reunión",
+    "editSubtitle": "Cambia el nombre, el empleado, la hora o la duración",
+    "name": "Nombre",
+    "namePlaceholder": "Ej.: limpieza de la sala",
+    "presets": {
+      "cleaning": "Limpieza",
+      "prep": "Preparar la sala",
+      "meeting": "Reunión",
+      "airing": "Ventilación",
+      "maintenance": "Mantenimiento"
+    },
+    "staff": "Empleado",
+    "date": "Fecha",
+    "start": "Inicio",
+    "duration": "Duración",
+    "until": "hasta las {{time}}",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "Así se verá en el diario",
+    "previewHint": "El bloque se coloca en la columna del empleado, como un descanso. Nadie podrá reservar con él a esa hora, ni en el diario ni en línea.",
+    "create": "Añadir al diario",
+    "delete": "Quitar",
+    "deleteConfirm": {
+      "title": "¿Quitar el tiempo de estudio?",
+      "message": "El bloque «{{label}}» desaparecerá del diario y el horario volverá a estar disponible para reservas.",
+      "confirm": "Quitar"
+    },
+    "toasts": {
+      "created": "Tiempo de estudio añadido",
+      "updated": "Tiempo de estudio modificado",
+      "deleted": "Tiempo de estudio quitado"
+    },
+    "errors": {
+      "name": "Ponle nombre al bloque"
+    }
   }
 }

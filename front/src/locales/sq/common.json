@@ -166,6 +166,12 @@
       "not_a_bundle": "Një shërbim i zakonshëm nuk mund të kthehet në paketë. Krijoni një paketë të re.",
       "bundle_size": "Zgjidhni 2–10 shërbime individuale të ndryshme.",
       "bundle_part_invalid": "Zgjidhni 2–10 shërbime individuale të ndryshme."
+    },
+    "studio_time": {
+      "lesson_overlap": "Punonjësi ka seancë në këtë orë — zgjidhni një dritare të lirë",
+      "overlap": "Punonjësi ka tashmë një bllok tjetër në këtë orë",
+      "not_found": "Ky bllok është hequr tashmë",
+      "bad_clock": "Kjo orë nuk ekziston ose përsëritet për shkak të ndërrimit të orës — zgjidhni një tjetër"
     }
   },
   "units": {

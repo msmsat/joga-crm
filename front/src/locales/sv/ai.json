@@ -289,7 +289,9 @@
     "update_client": "Uppdaterar kunduppgifter…",
     "update_lesson": "Uppdaterar passet…",
     "update_service": "Uppdaterar tjänsten…",
-    "update_staff": "Uppdaterar teammedlemmen…"
+    "update_staff": "Uppdaterar teammedlemmen…",
+    "add_studio_time": "Lägger till studiotid…",
+    "remove_studio_time": "Tar bort studiotid…"
   },
   "quota": {
     "trialLow": "Få provförfrågningar återstår.",

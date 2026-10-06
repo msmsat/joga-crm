@@ -289,7 +289,9 @@
     "update_client": "Mise à jour des données client…",
     "update_lesson": "Mise à jour du cours…",
     "update_service": "Mise à jour du service…",
-    "update_staff": "Mise à jour du membre d’équipe…"
+    "update_staff": "Mise à jour du membre d’équipe…",
+    "add_studio_time": "J’ajoute le temps studio…",
+    "remove_studio_time": "Je retire le temps studio…"
   },
   "quota": {
     "trialLow": "Il reste peu de requêtes d’essai.",

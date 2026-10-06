@@ -12,6 +12,7 @@ import { BookingCard, type BookingCardActions } from './BookingCard';
 import { bufferStyle, CARD_RADIUS } from './bufferStyle';
 import { NewBookingPreview, type PreviewSlot } from './NewBookingPreview';
 import type { GridHour } from '../../hooks/useGridColumns';
+import type { StaffScheduleBlock } from '../../../../../api/schedule';
 import type { DragState } from '../../hooks/useDragAndDrop';
 import { formatIndexToTimeStr, type BookingLayout } from '../../utils';
 
@@ -37,11 +38,13 @@ interface GridCellProps {
   previewTitle: string;
   previewRef: React.RefObject<HTMLDivElement | null>;
   onSlotMouseDown: (e: React.MouseEvent, ti: number, ci: number, blocked: boolean) => void;
+  /** «Время студии» открывается на правку; нет — блоки только показываются. */
+  onBlockOpen?: (block: StaffScheduleBlock) => void;
 }
 
 export const GridCell = React.memo(function GridCell({
   ti, ci, hour, layouts, last, isTransitioning, actions, selectedId, drag, dragMarker, editDraft,
-  preview, previewTitle, previewRef, onSlotMouseDown,
+  preview, previewTitle, previewRef, onSlotMouseDown, onBlockOpen,
 }: GridCellProps) {
   const { blocked } = hour;
   return (
@@ -58,7 +61,7 @@ export const GridCell = React.memo(function GridCell({
       onMouseDown={e => onSlotMouseDown(e, ti, ci, blocked)}
     >
       {hour.blocks.map(b => (
-        <StaffBlockCard key={b.key} block={b.block} top={b.top} height={b.height} name={b.name} style={b.style} />
+        <StaffBlockCard key={b.key} block={b.block} top={b.top} height={b.height} name={b.name} style={b.style} onOpen={onBlockOpen} />
       ))}
       {/* Обертка для карточек с анимацией */}
       {/* Без z-index/transform на обертке: иначе stacking context запирает

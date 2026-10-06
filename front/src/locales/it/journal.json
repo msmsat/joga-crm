@@ -520,5 +520,48 @@
     "busy": "Non lavora",
     "allDay": "Tutto il giorno",
     "unavailable": "Il dipendente non lavora a quest’ora"
+  },
+  "studioTime": {
+    "action": "Tempo studio",
+    "actionHint": "Un blocco senza lezione: pulizie, preparazione, riunione",
+    "openHint": "clicca per modificare",
+    "title": "Tempo studio",
+    "editTitle": "Modifica tempo studio",
+    "subtitle": "Segna nel diario un tempo senza lezione — pulizie, preparazione della sala, riunione",
+    "editSubtitle": "Cambia nome, dipendente, orario o durata",
+    "name": "Nome",
+    "namePlaceholder": "Es. pulizia della sala",
+    "presets": {
+      "cleaning": "Pulizie",
+      "prep": "Preparazione sala",
+      "meeting": "Riunione",
+      "airing": "Aerazione",
+      "maintenance": "Manutenzione"
+    },
+    "staff": "Dipendente",
+    "date": "Data",
+    "start": "Inizio",
+    "duration": "Durata",
+    "until": "fino alle {{time}}",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "Ecco come apparirà nel diario",
+    "previewHint": "Il blocco va nella colonna del dipendente, come una pausa. In quell’orario nessuno potrà prenotare con lui, né nel diario né online.",
+    "create": "Aggiungi al diario",
+    "delete": "Rimuovi",
+    "deleteConfirm": {
+      "title": "Rimuovere il tempo studio?",
+      "message": "Il blocco «{{label}}» sparirà dal diario e l’orario tornerà prenotabile.",
+      "confirm": "Rimuovi"
+    },
+    "toasts": {
+      "created": "Tempo studio aggiunto",
+      "updated": "Tempo studio modificato",
+      "deleted": "Tempo studio rimosso"
+    },
+    "errors": {
+      "name": "Dai un nome al blocco"
+    }
   }
 }

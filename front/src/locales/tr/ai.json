@@ -289,7 +289,9 @@
     "update_client": "Müşteri bilgileri güncelleniyor…",
     "update_lesson": "Ders güncelleniyor…",
     "update_service": "Hizmet güncelleniyor…",
-    "update_staff": "Ekip üyesi güncelleniyor…"
+    "update_staff": "Ekip üyesi güncelleniyor…",
+    "add_studio_time": "Stüdyo zamanı ekleniyor…",
+    "remove_studio_time": "Stüdyo zamanı kaldırılıyor…"
   },
   "quota": {
     "trialLow": "Az sayıda deneme isteği kaldı.",

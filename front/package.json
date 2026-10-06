@@ -25,6 +25,7 @@
     "check:booking-wizard": "node --experimental-vm-modules scripts/check-booking-wizard.mjs",
     "check:journal-creation": "node --experimental-vm-modules scripts/check-journal-creation.mjs",
     "check:journal-week": "node --experimental-vm-modules scripts/check-journal-week.mjs",
+    "check:studio-time": "node --experimental-vm-modules scripts/check-studio-time.mjs",
     "check:staff-picker": "node --experimental-vm-modules scripts/check-staff-picker.mjs",
     "check:client-event-dates": "node --experimental-vm-modules scripts/check-client-event-dates.mjs",
     "check:lesson-compensation": "node --experimental-vm-modules scripts/check-lesson-compensation.mjs",

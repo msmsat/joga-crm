@@ -524,5 +524,48 @@
     "busy": "Nu lucrează",
     "allDay": "Toată ziua",
     "unavailable": "Angajatul nu lucrează la această oră"
+  },
+  "studioTime": {
+    "action": "Timp de studio",
+    "actionHint": "Un bloc fără ședință: curățenie, pregătire, ședință de echipă",
+    "openHint": "apăsați pentru a modifica",
+    "title": "Timp de studio",
+    "editTitle": "Modifică timpul de studio",
+    "subtitle": "Marcați în jurnal un timp fără ședință — curățenie, pregătirea sălii, ședință de echipă",
+    "editSubtitle": "Schimbați numele, angajatul, ora sau durata",
+    "name": "Nume",
+    "namePlaceholder": "De ex.: curățenia sălii",
+    "presets": {
+      "cleaning": "Curățenie",
+      "prep": "Pregătirea sălii",
+      "meeting": "Ședință de echipă",
+      "airing": "Aerisire",
+      "maintenance": "Întreținere"
+    },
+    "staff": "Angajat",
+    "date": "Data",
+    "start": "Început",
+    "duration": "Durată",
+    "until": "până la {{time}}",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "Așa va arăta în jurnal",
+    "previewHint": "Blocul apare în coloana angajatului, ca o pauză. În acest interval nimeni nu se poate programa la el — nici în jurnal, nici online.",
+    "create": "Adaugă în jurnal",
+    "delete": "Elimină",
+    "deleteConfirm": {
+      "title": "Eliminați timpul de studio?",
+      "message": "Blocul „{{label}}” dispare din jurnal, iar intervalul devine din nou disponibil pentru programări.",
+      "confirm": "Elimină"
+    },
+    "toasts": {
+      "created": "Timp de studio adăugat",
+      "updated": "Timp de studio modificat",
+      "deleted": "Timp de studio eliminat"
+    },
+    "errors": {
+      "name": "Dați un nume blocului"
+    }
   }
 }

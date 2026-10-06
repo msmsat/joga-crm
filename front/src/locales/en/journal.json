@@ -520,5 +520,48 @@
     "busy": "Not working",
     "allDay": "All day",
     "unavailable": "The employee is not working at this time"
+  },
+  "studioTime": {
+    "action": "Studio time",
+    "actionHint": "A block without a class: cleaning, setup, team meeting",
+    "openHint": "click to edit",
+    "title": "Studio time",
+    "editTitle": "Edit studio time",
+    "subtitle": "Mark time in the journal without a class — cleaning, room setup, a team meeting",
+    "editSubtitle": "Change the name, employee, time or duration",
+    "name": "Name",
+    "namePlaceholder": "E.g. Room cleaning",
+    "presets": {
+      "cleaning": "Cleaning",
+      "prep": "Room setup",
+      "meeting": "Team meeting",
+      "airing": "Airing",
+      "maintenance": "Maintenance"
+    },
+    "staff": "Employee",
+    "date": "Date",
+    "start": "Start",
+    "duration": "Duration",
+    "until": "until {{time}}",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "How it will look in the journal",
+    "previewHint": "The block goes into the employee's column, just like a break. Nobody can book them at this time — neither in the journal nor online.",
+    "create": "Add to journal",
+    "delete": "Remove",
+    "deleteConfirm": {
+      "title": "Remove studio time?",
+      "message": "The “{{label}}” block will disappear from the journal and the time will open for booking again.",
+      "confirm": "Remove"
+    },
+    "toasts": {
+      "created": "Studio time added",
+      "updated": "Studio time updated",
+      "deleted": "Studio time removed"
+    },
+    "errors": {
+      "name": "Name the block"
+    }
   }
 }

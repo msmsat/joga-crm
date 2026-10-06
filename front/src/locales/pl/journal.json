@@ -528,5 +528,48 @@
     "busy": "Nie pracuje",
     "allDay": "Cały dzień",
     "unavailable": "Pracownik nie pracuje w tych godzinach"
+  },
+  "studioTime": {
+    "action": "Czas studia",
+    "actionHint": "Blok bez zajęć: sprzątanie, przygotowanie, odprawa",
+    "openHint": "kliknij, aby edytować",
+    "title": "Czas studia",
+    "editTitle": "Edytuj czas studia",
+    "subtitle": "Zaznacz w dzienniku czas bez zajęć — sprzątanie, przygotowanie sali, odprawę",
+    "editSubtitle": "Zmień nazwę, pracownika, godzinę lub czas trwania",
+    "name": "Nazwa",
+    "namePlaceholder": "Np. sprzątanie sali",
+    "presets": {
+      "cleaning": "Sprzątanie",
+      "prep": "Przygotowanie sali",
+      "meeting": "Odprawa",
+      "airing": "Wietrzenie",
+      "maintenance": "Konserwacja"
+    },
+    "staff": "Pracownik",
+    "date": "Data",
+    "start": "Początek",
+    "duration": "Czas trwania",
+    "until": "do {{time}}",
+    "durationH": "{{h}} godz.",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} godz. {{m}} min",
+    "previewTitle": "Tak to będzie wyglądać w dzienniku",
+    "previewHint": "Blok trafi do kolumny pracownika jak przerwa. W tym czasie nikt się do niego nie zapisze — ani w dzienniku, ani online.",
+    "create": "Dodaj do dziennika",
+    "delete": "Usuń",
+    "deleteConfirm": {
+      "title": "Usunąć czas studia?",
+      "message": "Blok „{{label}}” zniknie z dziennika, a czas znów będzie dostępny do zapisów.",
+      "confirm": "Usuń"
+    },
+    "toasts": {
+      "created": "Dodano czas studia",
+      "updated": "Zmieniono czas studia",
+      "deleted": "Usunięto czas studia"
+    },
+    "errors": {
+      "name": "Nazwij blok"
+    }
   }
 }

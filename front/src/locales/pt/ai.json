@@ -289,7 +289,9 @@
     "update_client": "A atualizar dados do cliente…",
     "update_lesson": "A atualizar a aula…",
     "update_service": "A atualizar o serviço…",
-    "update_staff": "A atualizar o membro da equipa…"
+    "update_staff": "A atualizar o membro da equipa…",
+    "add_studio_time": "A adicionar tempo do estúdio…",
+    "remove_studio_time": "A remover tempo do estúdio…"
   },
   "quota": {
     "trialLow": "Restam poucos pedidos de teste.",

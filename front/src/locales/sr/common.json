@@ -166,6 +166,12 @@
       "not_a_bundle": "Obična usluga ne može da postane paket. Kreirajte novi paket.",
       "bundle_size": "Izaberite od 2 do 10 različitih individualnih usluga.",
       "bundle_part_invalid": "Izaberite od 2 do 10 različitih individualnih usluga."
+    },
+    "studio_time": {
+      "lesson_overlap": "Zaposleni u to vreme ima termin — izaberite slobodan prozor",
+      "overlap": "Zaposleni u to vreme već ima drugi blok",
+      "not_found": "Ovaj blok je već uklonjen",
+      "bad_clock": "Ovo vreme ne postoji ili se ponavlja zbog pomeranja sata — izaberite drugo"
     }
   },
   "units": {

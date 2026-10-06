@@ -1,0 +1,170 @@
+/* «Время студии»: кнопка в окнах создания и окно StudioTimeModal.
+   Цвета — токены темы; персик — только на действиях и выбранном. */
+:root { --st-left-bg: linear-gradient(170deg, #FFF7F3 0%, var(--bg) 62%); }
+:root.dark { --st-left-bg: linear-gradient(170deg, #2A221D 0%, var(--bg-card) 62%); }
+
+/* ── Кнопка в шапке окна создания ─────────────────────────────────────── */
+.st-trigger {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 34px; padding: 0 13px 0 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(249, 160, 139, .38);
+  background: linear-gradient(135deg, rgba(252, 174, 145, .16), rgba(249, 160, 139, .06));
+  color: var(--onyx);
+  font: inherit; font-size: 12px; font-weight: 750; letter-spacing: -.1px; white-space: nowrap;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+.st-trigger-icon {
+  display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, #FCAE91, #F9A08B); color: #fff;
+  box-shadow: 0 4px 10px -3px rgba(249, 160, 139, .7);
+}
+.st-trigger:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(249, 160, 139, .35); }
+.st-trigger:disabled { opacity: .5; cursor: not-allowed; }
+@media (hover: hover) {
+  .st-trigger:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: rgba(249, 160, 139, .7);
+    box-shadow: 0 8px 18px -8px rgba(249, 160, 139, .65);
+  }
+}
+/* Тесное окно (ноутбук 1366×768) и узкий лист: остаётся иконка — подпись
+   в подсказке и в aria-label. */
+@media (max-width: 1100px), (max-height: 820px) {
+  .st-trigger { height: 30px; padding: 0 10px 0 4px; font-size: 11.5px; }
+  .st-trigger-icon { width: 22px; height: 22px; }
+}
+@media (max-width: 380px) {
+  .st-trigger { padding: 0 4px; }
+  .st-trigger-label { display: none; }
+}
+
+/* ── Левая колонка: кусок журнала с блоком ────────────────────────────── */
+.st-preview { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.st-preview-kicker {
+  font-size: 10.5px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: var(--text3);
+}
+.st-preview-col {
+  position: relative;
+  --j-header-h: 0px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, .06), inset 0 0 0 1px var(--border);
+  overflow: hidden;
+  transition: height .25s cubic-bezier(.22, 1, .36, 1);
+}
+.st-preview-hour {
+  position: absolute; left: 0; right: 0; height: 0;
+  border-top: 1px dashed var(--border);
+}
+.st-preview-hour:first-child { border-top-color: transparent; }
+.st-preview-hour span {
+  position: absolute; left: 10px; top: 4px;
+  font-size: 10px; font-weight: 700; color: var(--text3); font-variant-numeric: tabular-nums;
+}
+.st-preview-lane { position: absolute; top: 0; bottom: 0; left: 52px; right: 6px; }
+.st-preview-lane .j-staff-block-time { white-space: nowrap; }
+.st-preview-who {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  padding: 10px 12px; border-radius: 12px;
+  background: var(--bg-card); box-shadow: inset 0 0 0 1px var(--border);
+}
+.st-preview-av {
+  display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 8px;
+  color: #fff; font-size: 11px; font-weight: 800;
+}
+.st-preview-name {
+  flex: 1; min-width: 0; font-size: 12.5px; font-weight: 700; color: var(--onyx);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.st-preview-range {
+  font-size: 11.5px; font-weight: 800; color: var(--peach); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.st-preview-hint { margin: 0; font-size: 12px; line-height: 1.55; color: var(--text2); }
+
+/* ── Форма ─────────────────────────────────────────────────────────────── */
+.st-form { display: flex; flex-direction: column; gap: 20px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.st-field { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.st-label {
+  font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: .6px; text-transform: uppercase;
+}
+.st-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: end; }
+/* Подпись даты у Input кита уже есть — выравниваем по ней, без своего поля. */
+.st-row > * { min-width: 0; }
+
+.st-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.st-chip {
+  height: 30px; padding: 0 12px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text2); font: inherit; font-size: 12px; font-weight: 650; white-space: nowrap;
+  cursor: pointer; transition: all .16s ease;
+}
+.st-chip.is-on {
+  border-color: rgba(249, 160, 139, .7);
+  background: rgba(249, 160, 139, .12);
+  color: var(--onyx); font-weight: 750;
+}
+@media (hover: hover) { .st-chip:hover:not(.is-on):not(:disabled) { border-color: var(--peach); color: var(--onyx); } }
+
+.st-staff { display: flex; flex-wrap: wrap; gap: 8px; max-height: 132px; overflow-y: auto; padding: 2px; margin: -2px; }
+.st-person {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 38px; padding: 0 12px 0 5px; border-radius: 11px;
+  border: 1px solid var(--border); background: var(--bg);
+  font: inherit; cursor: pointer; transition: all .16s ease; max-width: 100%;
+}
+.st-person-av {
+  display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 8px;
+  background: var(--border2); color: var(--muted); font-size: 10.5px; font-weight: 800;
+}
+.st-person-name {
+  font-size: 12.5px; font-weight: 650; color: var(--onyx);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.st-person.is-on { box-shadow: 0 4px 12px -4px rgba(0, 0, 0, .12); }
+.st-person.is-on .st-person-name { font-weight: 800; }
+
+.st-duration { display: flex; flex-direction: column; gap: 10px; }
+.st-stepper {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px; border-radius: 14px;
+  background: rgba(var(--ink), .025); border: 1.5px solid rgba(var(--ink), .07);
+}
+.st-step {
+  display: grid; place-items: center; width: 38px; height: 38px; flex-shrink: 0;
+  border-radius: 10px; border: 0; background: var(--bg-card); color: var(--onyx);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .06), inset 0 0 0 1px var(--border);
+  cursor: pointer; transition: transform .14s ease, color .14s ease;
+}
+.st-step:disabled { opacity: .35; cursor: not-allowed; }
+@media (hover: hover) { .st-step:hover:not(:disabled) { color: var(--peach); transform: translateY(-1px); } }
+.st-step-value { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; }
+.st-step-value strong {
+  font-size: 16px; font-weight: 850; color: var(--onyx); letter-spacing: -.3px; font-variant-numeric: tabular-nums;
+}
+.st-step-value span { font-size: 11.5px; font-weight: 650; color: var(--text3); font-variant-numeric: tabular-nums; }
+
+.st-delete {
+  display: inline-flex; align-items: center; gap: 7px; margin-right: auto;
+  padding: 0 14px; border-radius: 12px; border: 0; background: transparent;
+  color: var(--rose); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background .16s ease;
+}
+.st-delete:disabled { opacity: .5; cursor: not-allowed; }
+@media (hover: hover) { .st-delete:hover:not(:disabled) { background: rgba(216, 140, 154, .1); } }
+
+/* Телефон: шит снизу — поля под палец, дата и начало друг под другом. */
+@media (max-width: 767px) {
+  .st-form { gap: 18px; }
+  .st-row { grid-template-columns: 1fr; }
+  .st-chip { height: 38px; padding: 0 14px; font-size: 13px; }
+  .st-person { height: 44px; }
+  .st-step { width: 46px; height: 46px; }
+  .st-chips-tight { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -2px; padding: 0 2px; }
+  .st-chips-tight::-webkit-scrollbar { display: none; }
+  .st-delete span { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .st-trigger, .st-chip, .st-person, .st-step, .st-preview-col { transition: none; }
+}

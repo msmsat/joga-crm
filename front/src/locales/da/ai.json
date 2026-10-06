@@ -289,7 +289,9 @@
     "update_client": "Opdaterer kundeoplysninger…",
     "update_lesson": "Opdaterer holdet…",
     "update_service": "Opdaterer ydelsen…",
-    "update_staff": "Opdaterer teammedlemmet…"
+    "update_staff": "Opdaterer teammedlemmet…",
+    "add_studio_time": "Tilføjer studietid…",
+    "remove_studio_time": "Fjerner studietid…"
   },
   "quota": {
     "trialLow": "Der er få prøveforespørgsler tilbage.",

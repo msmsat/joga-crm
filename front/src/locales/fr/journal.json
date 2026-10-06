@@ -520,5 +520,48 @@
     "busy": "Ne travaille pas",
     "allDay": "Toute la journée",
     "unavailable": "Le salarié ne travaille pas à cette heure"
+  },
+  "studioTime": {
+    "action": "Temps studio",
+    "actionHint": "Un créneau sans cours : ménage, préparation, réunion",
+    "openHint": "cliquez pour modifier",
+    "title": "Temps studio",
+    "editTitle": "Modifier le temps studio",
+    "subtitle": "Marquez dans le journal un créneau sans cours — ménage, préparation de la salle, réunion",
+    "editSubtitle": "Modifiez le nom, l’employé, l’heure ou la durée",
+    "name": "Nom",
+    "namePlaceholder": "Ex. : ménage de la salle",
+    "presets": {
+      "cleaning": "Ménage",
+      "prep": "Préparation de la salle",
+      "meeting": "Réunion",
+      "airing": "Aération",
+      "maintenance": "Entretien"
+    },
+    "staff": "Employé",
+    "date": "Date",
+    "start": "Début",
+    "duration": "Durée",
+    "until": "jusqu’à {{time}}",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "Voici le rendu dans le journal",
+    "previewHint": "Le créneau se place dans la colonne de l’employé, comme une pause. Personne ne pourra réserver avec lui à ce moment-là — ni dans le journal, ni en ligne.",
+    "create": "Ajouter au journal",
+    "delete": "Retirer",
+    "deleteConfirm": {
+      "title": "Retirer le temps studio ?",
+      "message": "Le créneau « {{label}} » disparaîtra du journal et l’horaire sera de nouveau réservable.",
+      "confirm": "Retirer"
+    },
+    "toasts": {
+      "created": "Temps studio ajouté",
+      "updated": "Temps studio modifié",
+      "deleted": "Temps studio retiré"
+    },
+    "errors": {
+      "name": "Donnez un nom au créneau"
+    }
   }
 }

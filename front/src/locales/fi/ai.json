@@ -289,7 +289,9 @@
     "update_client": "Päivitetään asiakastietoja…",
     "update_lesson": "Päivitetään tuntia…",
     "update_service": "Päivitetään palvelua…",
-    "update_staff": "Päivitetään tiimin jäsentä…"
+    "update_staff": "Päivitetään tiimin jäsentä…",
+    "add_studio_time": "Lisään studioaikaa…",
+    "remove_studio_time": "Poistan studioaikaa…"
   },
   "quota": {
     "trialLow": "Kokeilupyyntöjä on jäljellä vähän.",

@@ -520,5 +520,48 @@
     "busy": "Arbetar inte",
     "allDay": "Hela dagen",
     "unavailable": "Medarbetaren arbetar inte vid denna tid"
+  },
+  "studioTime": {
+    "action": "Studiotid",
+    "actionHint": "Ett block utan pass: städning, förberedelse, möte",
+    "openHint": "klicka för att redigera",
+    "title": "Studiotid",
+    "editTitle": "Redigera studiotid",
+    "subtitle": "Markera tid utan pass i journalen — städning, förberedelse av salen, möte",
+    "editSubtitle": "Ändra namn, anställd, tid eller längd",
+    "name": "Namn",
+    "namePlaceholder": "T.ex. städning av salen",
+    "presets": {
+      "cleaning": "Städning",
+      "prep": "Förbereda salen",
+      "meeting": "Möte",
+      "airing": "Vädring",
+      "maintenance": "Underhåll"
+    },
+    "staff": "Anställd",
+    "date": "Datum",
+    "start": "Start",
+    "duration": "Längd",
+    "until": "till {{time}}",
+    "durationH": "{{h}} h",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} h {{m}} min",
+    "previewTitle": "Så här ser det ut i journalen",
+    "previewHint": "Blocket hamnar i den anställdes kolumn, som en paus. Under den tiden kan ingen boka hos hen — varken i journalen eller online.",
+    "create": "Lägg in i journalen",
+    "delete": "Ta bort",
+    "deleteConfirm": {
+      "title": "Ta bort studiotid?",
+      "message": "Blocket ”{{label}}” försvinner från journalen och tiden blir bokningsbar igen.",
+      "confirm": "Ta bort"
+    },
+    "toasts": {
+      "created": "Studiotid tillagd",
+      "updated": "Studiotid ändrad",
+      "deleted": "Studiotid borttagen"
+    },
+    "errors": {
+      "name": "Ge blocket ett namn"
+    }
   }
 }

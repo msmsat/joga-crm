@@ -284,7 +284,9 @@
     "update_client": "Updating client details…",
     "update_lesson": "Updating the class…",
     "update_service": "Updating the service…",
-    "update_staff": "Updating the team member…"
+    "update_staff": "Updating the team member…",
+    "add_studio_time": "Adding studio time…",
+    "remove_studio_time": "Removing studio time…"
   },
   "quota": {
     "trialLow": "Few trial requests remain.",

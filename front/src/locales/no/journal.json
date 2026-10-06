@@ -520,5 +520,48 @@
     "busy": "Arbeider ikke",
     "allDay": "Hele dagen",
     "unavailable": "Medarbeideren arbeider ikke på dette tidspunktet"
+  },
+  "studioTime": {
+    "action": "Studiotid",
+    "actionHint": "En blokk uten time: rengjøring, klargjøring, møte",
+    "openHint": "klikk for å redigere",
+    "title": "Studiotid",
+    "editTitle": "Rediger studiotid",
+    "subtitle": "Merk tid uten time i journalen — rengjøring, klargjøring av salen, møte",
+    "editSubtitle": "Endre navn, ansatt, tidspunkt eller varighet",
+    "name": "Navn",
+    "namePlaceholder": "F.eks. rengjøring av salen",
+    "presets": {
+      "cleaning": "Rengjøring",
+      "prep": "Klargjøring av sal",
+      "meeting": "Møte",
+      "airing": "Lufting",
+      "maintenance": "Vedlikehold"
+    },
+    "staff": "Ansatt",
+    "date": "Dato",
+    "start": "Start",
+    "duration": "Varighet",
+    "until": "til {{time}}",
+    "durationH": "{{h}} t",
+    "durationM": "{{m}} min",
+    "durationHM": "{{h}} t {{m}} min",
+    "previewTitle": "Slik ser det ut i journalen",
+    "previewHint": "Blokken legges i den ansattes kolonne, som en pause. I dette tidsrommet kan ingen bestille hos vedkommende — verken i journalen eller på nett.",
+    "create": "Legg i journalen",
+    "delete": "Fjern",
+    "deleteConfirm": {
+      "title": "Fjerne studiotid?",
+      "message": "Blokken «{{label}}» forsvinner fra journalen, og tiden blir ledig for bestilling igjen.",
+      "confirm": "Fjern"
+    },
+    "toasts": {
+      "created": "Studiotid lagt til",
+      "updated": "Studiotid endret",
+      "deleted": "Studiotid fjernet"
+    },
+    "errors": {
+      "name": "Gi blokken et navn"
+    }
   }
 }

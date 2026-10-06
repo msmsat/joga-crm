@@ -289,7 +289,9 @@
     "update_client": "Aggiornamento dei dati cliente…",
     "update_lesson": "Aggiornamento della lezione…",
     "update_service": "Aggiornamento del servizio…",
-    "update_staff": "Aggiornamento del membro del team…"
+    "update_staff": "Aggiornamento del membro del team…",
+    "add_studio_time": "Aggiungo il tempo studio…",
+    "remove_studio_time": "Rimuovo il tempo studio…"
   },
   "quota": {
     "trialLow": "Restano poche richieste di prova.",

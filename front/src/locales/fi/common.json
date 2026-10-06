@@ -166,6 +166,12 @@
       "not_a_bundle": "Tavallista palvelua ei voi muuttaa paketiksi. Luo uusi paketti.",
       "bundle_size": "Valitse 2–10 erilaista yksilöpalvelua.",
       "bundle_part_invalid": "Valitse 2–10 erilaista yksilöpalvelua."
+    },
+    "studio_time": {
+      "lesson_overlap": "Työntekijällä on tähän aikaan tunti — valitse vapaa aika",
+      "overlap": "Työntekijällä on jo toinen lohko tähän aikaan",
+      "not_found": "Tämä lohko on jo poistettu",
+      "bad_clock": "Tätä aikaa ei ole tai se toistuu kellojen siirron takia — valitse toinen"
     }
   },
   "units": {

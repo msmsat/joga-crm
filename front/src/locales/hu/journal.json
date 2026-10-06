@@ -520,5 +520,48 @@
     "busy": "Nem dolgozik",
     "allDay": "Egész nap",
     "unavailable": "Az alkalmazott ekkor nem dolgozik"
+  },
+  "studioTime": {
+    "action": "Stúdióidő",
+    "actionHint": "Óra nélküli blokk: takarítás, előkészítés, megbeszélés",
+    "openHint": "kattintson a szerkesztéshez",
+    "title": "Stúdióidő",
+    "editTitle": "Stúdióidő szerkesztése",
+    "subtitle": "Jelöljön a naplóban óra nélküli időt — takarítás, terem előkészítése, megbeszélés",
+    "editSubtitle": "Módosítsa a nevet, a munkatársat, az időpontot vagy az időtartamot",
+    "name": "Név",
+    "namePlaceholder": "Pl. terem takarítása",
+    "presets": {
+      "cleaning": "Takarítás",
+      "prep": "Terem előkészítése",
+      "meeting": "Megbeszélés",
+      "airing": "Szellőztetés",
+      "maintenance": "Karbantartás"
+    },
+    "staff": "Munkatárs",
+    "date": "Dátum",
+    "start": "Kezdés",
+    "duration": "Időtartam",
+    "until": "{{time}}-ig",
+    "durationH": "{{h}} ó",
+    "durationM": "{{m}} perc",
+    "durationHM": "{{h}} ó {{m}} perc",
+    "previewTitle": "Így fog kinézni a naplóban",
+    "previewHint": "A blokk a munkatárs oszlopába kerül, mint egy szünet. Ebben az időben senki sem foglalhat hozzá — sem a naplóban, sem online.",
+    "create": "Hozzáadás a naplóhoz",
+    "delete": "Eltávolítás",
+    "deleteConfirm": {
+      "title": "Eltávolítja a stúdióidőt?",
+      "message": "A(z) „{{label}}” blokk eltűnik a naplóból, és az idő újra foglalható lesz.",
+      "confirm": "Eltávolítás"
+    },
+    "toasts": {
+      "created": "Stúdióidő hozzáadva",
+      "updated": "Stúdióidő módosítva",
+      "deleted": "Stúdióidő eltávolítva"
+    },
+    "errors": {
+      "name": "Nevezze el a blokkot"
+    }
   }
 }
