@@ -374,7 +374,18 @@
       "message": "Objednat na {{date}} v {{time}}?",
       "own": "Vybrat jiný čas"
     },
-    "lessonDiscount": "Sleva na tuto lekci"
+    "lessonDiscount": "Sleva na tuto lekci",
+    "settle": {
+      "saved": "Sleva {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} dostane",
+      "percentOf": "{{rate}} z {{amount}}",
+      "studio": "Studiu",
+      "loss": "Studio prodělá {{amount}} — sleva je větší než jeho podíl",
+      "subscription": "Návštěva na permanentku — procento se spočítá ve Mzdách z ceny služby",
+      "ownerOnly": "Vidí jen majitel"
+    }
   },
   "payment": {
     "title": "Platba",

@@ -370,7 +370,18 @@
       "message": "Boka {{date}} kl. {{time}}?",
       "own": "Välj en annan tid"
     },
-    "lessonDiscount": "Rabatt på det här passet"
+    "lessonDiscount": "Rabatt på det här passet",
+    "settle": {
+      "saved": "Rabatt {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} får",
+      "percentOf": "{{rate}} av {{amount}}",
+      "studio": "Studion",
+      "loss": "Studion förlorar {{amount}} — rabatten överstiger dess andel",
+      "subscription": "Besök på klippkort — procenten räknas i Löner från tjänstens pris",
+      "ownerOnly": "Syns bara för ägaren"
+    }
   },
   "payment": {
     "title": "Betalning",

@@ -370,7 +370,18 @@
       "message": "Book for {{date}} at {{time}}?",
       "own": "Choose another time"
     },
-    "lessonDiscount": "Discount for this session"
+    "lessonDiscount": "Discount for this session",
+    "settle": {
+      "saved": "Discount {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} earns",
+      "percentOf": "{{rate}} of {{amount}}",
+      "studio": "Studio",
+      "loss": "The studio loses {{amount}} — the discount exceeds its share",
+      "subscription": "Membership visit — the percentage is counted in Payroll from the service price",
+      "ownerOnly": "Visible to the owner only"
+    }
   },
   "payment": {
     "title": "Payment",

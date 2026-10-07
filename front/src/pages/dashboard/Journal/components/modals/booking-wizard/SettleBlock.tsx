@@ -1,16 +1,19 @@
-// Итог индивидуальной записи: цена, своя скидка на это занятие и две отметки
-// иконками — «Оплата» (окно оплаты: способ, промокод, первое занятие, баллы,
-// приглашения) и «Посещение» (клиент пришёл). Запись создаётся неоплаченной и
-// неотмеченной; что отмечено здесь, проводится вместе с подтверждением.
-// Логика — useWizardSettle.
+// Итог индивидуальной записи: чек (цена, своя скидка на это занятие, итог —
+// SettleReceipt), сколько получит мастер (MasterEarning, только владельцу) и
+// две отметки иконками — «Оплата» (окно оплаты: способ, промокод, первое
+// занятие, баллы, приглашения) и «Посещение» (клиент пришёл). Запись создаётся
+// неоплаченной и неотмеченной; что отмечено здесь, проводится вместе с
+// подтверждением. Логика — useWizardSettle.
 import { useTranslation } from 'react-i18next';
-import { Input } from '../../../../../../components/ui/index';
 import * as Icons from '../../../../../../components/Icons';
 import { formatMoney } from '../../../../../../lib/money';
 import { useStudioCurrency } from '../../../../../../hooks/useStudioCurrency';
 import { PaySheet } from '../../lesson/PaySheet';
 import { VisitMark } from '../../lesson/VisitMarks';
 import type { BookingWizardState } from './useBookingWizard';
+import { MasterEarning } from './MasterEarning';
+import { SettleReceipt } from './SettleReceipt';
+import './settle.css';
 
 export function SettleBlock({ w }: { w: BookingWizardState }) {
   const { t } = useTranslation(['journal', 'common']);
@@ -20,7 +23,9 @@ export function SettleBlock({ w }: { w: BookingWizardState }) {
   const preview = check.preview;
   const money = (value: number) => formatMoney(value, preview?.currency ?? studioCurrency);
   const busy = w.saving || w.resource.quoting;
-  const discounted = preview != null && preview.total !== preview.base_price;
+  // Мастер записи: выбранный или тот, кого назначил сервер на «любой свободный».
+  const masterName = w.masters.find(m => m.id === w.teacherId)?.name
+    ?? w.resource.quote?.terms.domain.trainer_name ?? '';
 
   const payHint = covered ? t(`journal:payment.coveredBy.${covered}`)
     : method ? `${t(method === 'cash' ? 'journal:mark.cash' : 'journal:mark.card')}${preview ? ` · ${money(preview.total)}` : ''}`
@@ -28,29 +33,15 @@ export function SettleBlock({ w }: { w: BookingWizardState }) {
 
   return (
     <section className="bw-settle" aria-busy={check.loading}>
-      <div className="bw-settle-row">
-        <span className="bw-settle-label">{t('journal:payment.price')}</span>
-        <span className="bw-settle-value">{preview ? money(preview.base_price) : '—'}</span>
-      </div>
-      {!covered && (
-        <div className="bw-settle-discount">
-          <Input label={t('journal:wizard.lessonDiscount')} value={check.manual} onChange={check.setManual}
-                 placeholder="0" inputMode="numeric" suffix="%" disabled={busy}
-                 error={check.manualInvalid ? t('journal:payment.manualInvalid') : undefined} />
-        </div>
-      )}
+      <SettleReceipt preview={preview} money={money} manual={check.manual} setManual={check.setManual}
+                     manualInvalid={check.manualInvalid} covered={covered} busy={busy} />
       {check.failed && (
         <div className="rp-note rp-note-error" role="alert">
           {t('journal:payment.loadFailed')}{' '}
           <button type="button" className="rp-link" onClick={check.retry}>{t('common:errors.retry')}</button>
         </div>
       )}
-      {(discounted || covered) && preview && (
-        <div className="bw-settle-row is-total">
-          <span className="bw-settle-label">{covered ? t(`journal:payment.coveredBy.${covered}`) : t('journal:lessonPay.total')}</span>
-          <span className="bw-settle-value">{money(preview.total)}</span>
-        </div>
-      )}
+      {preview && masterName && <MasterEarning preview={preview} name={masterName} money={money} />}
 
       <div className="bw-settle-marks">
         <VisitMark tile icon={method === 'cash' ? <Icons.CashIcon /> : <Icons.CardIcon />}

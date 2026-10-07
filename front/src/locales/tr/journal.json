@@ -370,7 +370,18 @@
       "message": "{{date}} saat {{time}} için kayıt yapılsın mı?",
       "own": "Başka bir saat seç"
     },
-    "lessonDiscount": "Bu seansa indirim"
+    "lessonDiscount": "Bu seansa indirim",
+    "settle": {
+      "saved": "İndirim {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} alır",
+      "percentOf": "{{amount}} üzerinden {{rate}}",
+      "studio": "Stüdyo",
+      "loss": "Stüdyo {{amount}} zarar ediyor — indirim payını aşıyor",
+      "subscription": "Abonmanlı ziyaret — yüzde, Maaşlar bölümünde hizmet fiyatından hesaplanır",
+      "ownerOnly": "Yalnızca sahibi görür"
+    }
   },
   "payment": {
     "title": "Ödeme",

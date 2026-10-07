@@ -374,7 +374,18 @@
       "message": "Programați pentru {{date}} la {{time}}?",
       "own": "Alegeți altă oră"
     },
-    "lessonDiscount": "Reducere pentru această ședință"
+    "lessonDiscount": "Reducere pentru această ședință",
+    "settle": {
+      "saved": "Reducere {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} primește",
+      "percentOf": "{{rate}} din {{amount}}",
+      "studio": "Studioului",
+      "loss": "Studioul pierde {{amount}} — reducerea depășește partea sa",
+      "subscription": "Vizită cu abonament — procentul se calculează la Salarii din prețul serviciului",
+      "ownerOnly": "Vizibil doar proprietarului"
+    }
   },
   "payment": {
     "title": "Plată",

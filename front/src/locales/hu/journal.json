@@ -370,7 +370,18 @@
       "message": "Foglalás erre: {{date}}, {{time}}?",
       "own": "Másik időpont választása"
     },
-    "lessonDiscount": "Kedvezmény erre az alkalomra"
+    "lessonDiscount": "Kedvezmény erre az alkalomra",
+    "settle": {
+      "saved": "Kedvezmény {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} kap",
+      "percentOf": "{{rate}}, alap: {{amount}}",
+      "studio": "Stúdiónak",
+      "loss": "A stúdió {{amount}} veszteséget szenved — a kedvezmény nagyobb a részénél",
+      "subscription": "Bérletes látogatás — a százalékot a Bérekben a szolgáltatás árából számoljuk",
+      "ownerOnly": "Csak a tulajdonos látja"
+    }
   },
   "payment": {
     "title": "Fizetés",

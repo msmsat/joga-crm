@@ -370,7 +370,18 @@
       "message": "Réserver le {{date}} à {{time}} ?",
       "own": "Choisir une autre heure"
     },
-    "lessonDiscount": "Remise sur cette séance"
+    "lessonDiscount": "Remise sur cette séance",
+    "settle": {
+      "saved": "Remise {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} touche",
+      "percentOf": "{{rate}} de {{amount}}",
+      "studio": "Studio",
+      "loss": "Le studio perd {{amount}} : la remise dépasse sa part",
+      "subscription": "Visite avec abonnement : le pourcentage est calculé dans Salaires sur le prix du service",
+      "ownerOnly": "Visible uniquement par le propriétaire"
+    }
   },
   "payment": {
     "title": "Paiement",

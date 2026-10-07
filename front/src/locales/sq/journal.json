@@ -370,7 +370,18 @@
       "message": "Të rezervohet për {{date}} në {{time}}?",
       "own": "Zgjidh një orë tjetër"
     },
-    "lessonDiscount": "Zbritje për këtë seancë"
+    "lessonDiscount": "Zbritje për këtë seancë",
+    "settle": {
+      "saved": "Zbritje {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} merr",
+      "percentOf": "{{rate}} nga {{amount}}",
+      "studio": "Studios",
+      "loss": "Studio humb {{amount}} — zbritja e kalon pjesën e saj",
+      "subscription": "Vizitë me abonim — përqindja llogaritet te Pagat nga çmimi i shërbimit",
+      "ownerOnly": "E sheh vetëm pronari"
+    }
   },
   "payment": {
     "title": "Pagesa",

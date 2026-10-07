@@ -374,7 +374,18 @@
       "message": "Rezervirati za {{date}} u {{time}}?",
       "own": "Odaberi drugo vrijeme"
     },
-    "lessonDiscount": "Popust za ovaj termin"
+    "lessonDiscount": "Popust za ovaj termin",
+    "settle": {
+      "saved": "Popust {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} dobiva",
+      "percentOf": "{{rate}} od {{amount}}",
+      "studio": "Studiju",
+      "loss": "Studio gubi {{amount}} — popust je veći od njegovog udjela",
+      "subscription": "Posjet s pretplatom — postotak se računa u Plaćama od cijene usluge",
+      "ownerOnly": "Vidi samo vlasnik"
+    }
   },
   "payment": {
     "title": "Plaćanje",

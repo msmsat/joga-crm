@@ -370,7 +370,18 @@
       "message": "Varataanko {{date}} klo {{time}}?",
       "own": "Valitse toinen aika"
     },
-    "lessonDiscount": "Alennus tälle tunnille"
+    "lessonDiscount": "Alennus tälle tunnille",
+    "settle": {
+      "saved": "Alennus {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} saa",
+      "percentOf": "{{rate}} summasta {{amount}}",
+      "studio": "Studiolle",
+      "loss": "Studio häviää {{amount}} — alennus ylittää sen osuuden",
+      "subscription": "Sarjakorttikäynti — prosentti lasketaan Palkoissa palvelun hinnasta",
+      "ownerOnly": "Näkyy vain omistajalle"
+    }
   },
   "payment": {
     "title": "Maksu",

@@ -370,7 +370,18 @@
       "message": "Book {{date}} kl. {{time}}?",
       "own": "Vælg et andet tidspunkt"
     },
-    "lessonDiscount": "Rabat på denne time"
+    "lessonDiscount": "Rabat på denne time",
+    "settle": {
+      "saved": "Rabat {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} får",
+      "percentOf": "{{rate}} af {{amount}}",
+      "studio": "Studiet",
+      "loss": "Studiet taber {{amount}} — rabatten er større end dets andel",
+      "subscription": "Besøg på klippekort — procenten beregnes i Løn ud fra ydelsens pris",
+      "ownerOnly": "Kun synligt for ejeren"
+    }
   },
   "payment": {
     "title": "Betaling",

@@ -370,7 +370,18 @@
       "message": "Prenotare per il {{date}} alle {{time}}?",
       "own": "Scegli un altro orario"
     },
-    "lessonDiscount": "Sconto su questa lezione"
+    "lessonDiscount": "Sconto su questa lezione",
+    "settle": {
+      "saved": "Sconto {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} riceve",
+      "percentOf": "{{rate}} di {{amount}}",
+      "studio": "Studio",
+      "loss": "Lo studio perde {{amount}}: lo sconto supera la sua quota",
+      "subscription": "Visita con abbonamento: la percentuale si calcola negli Stipendi sul prezzo del servizio",
+      "ownerOnly": "Visibile solo al titolare"
+    }
   },
   "payment": {
     "title": "Pagamento",

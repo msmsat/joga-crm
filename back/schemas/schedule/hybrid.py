@@ -18,6 +18,7 @@ from typing import Annotated, Literal, Optional, Union
 from pydantic import ConfigDict, Field, model_validator
 
 from schemas._base import BaseSchema
+from schemas.schedule.lessons import LessonCompensation
 from schemas.schedule.reservations import ReferralSummary
 
 # Studio.booking_mode — управляет каталогом целиком.
@@ -248,6 +249,11 @@ class PaymentPreviewRead(HybridSchema):
     points_to_earn: int = 0
     referral: Optional[ReferralSummary] = None
     total: int
+    # Сколько получит мастер за эту запись — по его ставке в студии, тем же
+    # правилом, что карточка занятия и зарплата: процент — от того, что
+    # заплатит клиент, со скидкой. Только владельцу: условия оплаты
+    # сотрудников — его сведения, как и в Финансах.
+    compensation: Optional[LessonCompensation] = None
 
 
 class RescheduleConfirmRequest(ConfirmRequest):

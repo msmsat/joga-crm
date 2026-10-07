@@ -1,5 +1,5 @@
 /** Matches schemas/schedule/hybrid.py and services/terminology.py. */
-import type { PaymentCheckPreview } from '../schedule/schedule.types';
+import type { LessonCompensation, PaymentCheckPreview } from '../schedule/schedule.types';
 
 export type BookingMode = 'event' | 'resource';
 /** Услуга — одна механика: resource+group запрещена сервером (§6.1). */
@@ -111,4 +111,8 @@ export type PaymentDiscountKind = 'studio' | 'offer' | 'promo' | 'referral' | 'f
 export interface PaymentPreview extends PaymentCheckPreview {
   /** Чем покрыта запись, когда платить нечего. */
   covered_by: 'subscription' | 'trial' | 'free' | null;
+  /** Сколько получит мастер за эту запись — по его ставке, процент от суммы
+   *  СО скидкой (back/services/lesson_compensation). Приходит только
+   *  владельцу; остальным — null. */
+  compensation?: LessonCompensation | null;
 }

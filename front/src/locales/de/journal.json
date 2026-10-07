@@ -370,7 +370,18 @@
       "message": "Für {{date}} um {{time}} buchen?",
       "own": "Andere Zeit wählen"
     },
-    "lessonDiscount": "Rabatt für diese Stunde"
+    "lessonDiscount": "Rabatt für diese Stunde",
+    "settle": {
+      "saved": "Rabatt {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} erhält",
+      "percentOf": "{{rate}} von {{amount}}",
+      "studio": "Studio",
+      "loss": "Das Studio macht {{amount}} Verlust — der Rabatt übersteigt seinen Anteil",
+      "subscription": "Besuch mit Abo — der Anteil wird in den Gehältern vom Leistungspreis berechnet",
+      "ownerOnly": "Nur für den Inhaber sichtbar"
+    }
   },
   "payment": {
     "title": "Zahlung",

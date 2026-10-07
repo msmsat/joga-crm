@@ -370,7 +370,18 @@
       "message": "Marcar para {{date}} às {{time}}?",
       "own": "Escolher outro horário"
     },
-    "lessonDiscount": "Desconto nesta sessão"
+    "lessonDiscount": "Desconto nesta sessão",
+    "settle": {
+      "saved": "Desconto {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} recebe",
+      "percentOf": "{{rate}} de {{amount}}",
+      "studio": "Estúdio",
+      "loss": "O estúdio perde {{amount}}: o desconto excede a sua parte",
+      "subscription": "Visita com pacote: a percentagem é calculada em Salários sobre o preço do serviço",
+      "ownerOnly": "Visível apenas para o proprietário"
+    }
   },
   "payment": {
     "title": "Pagamento",
