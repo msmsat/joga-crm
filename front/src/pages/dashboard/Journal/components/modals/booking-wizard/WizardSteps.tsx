@@ -11,6 +11,7 @@ import { usePriceLabel } from '../../../../../../hooks/usePriceLabel';
 import { useDurationLabel } from '../../../../../../hooks/useDurationLabel';
 import { isTime, type BookingWizardState } from './useBookingWizard';
 import { WizardChips, WizardEmpty, WizardRow, WizardSearch } from './WizardParts';
+import { PastLessonsInline, PastLessonsToggle } from '../../pastLessons';
 import * as Icons from '../../../../../../components/Icons';
 
 type StepProps = { w: BookingWizardState; when: ReactNode };
@@ -28,6 +29,8 @@ export function ClientStep({ w, when, onCreate }: StepProps & { onCreate: () => 
   // Необязательного клиента повторное касание снимает — занятие останется без него.
   const choose = (id: number, name: string) =>
     w.clientOptional && w.client?.id === id ? w.clearClient() : w.pickClient(id, name);
+  // Прошлые занятия раскрываются под строкой — у одного клиента за раз.
+  const [historyOf, setHistoryOf] = useState<number | null>(null);
   return (
     <>
       <div className="bw-tools">
@@ -59,7 +62,10 @@ export function ClientStep({ w, when, onCreate }: StepProps & { onCreate: () => 
           <WizardRow key={c.id} active={w.client?.id === c.id}
                      avatar={getInitials(c.name, c.last_name)} color={getAvatarColor(c.id, c.avatar_color)}
                      title={`${c.name} ${c.last_name ?? ''}`.trim()} hint={c.phone ?? c.email}
-                     onClick={() => choose(c.id, `${c.name} ${c.last_name ?? ''}`.trim())} />
+                     onClick={() => choose(c.id, `${c.name} ${c.last_name ?? ''}`.trim())}
+                     side={<PastLessonsToggle open={historyOf === c.id} count={c.visit_count}
+                                              onToggle={() => setHistoryOf(id => (id === c.id ? null : c.id))} />}
+                     below={<PastLessonsInline clientId={c.id} open={historyOf === c.id} />} />
         ))}
         {list.clients.length === 0 && !w.fresh && (
           <WizardEmpty>{list.isLoading ? t('common:loading') : t('journal:resourceBooking.noClients')}</WizardEmpty>

@@ -590,5 +590,10 @@
     "errors": {
       "name": "Donnez un nom au créneau"
     }
+  },
+  "pastLessons": {
+    "title": "Cours précédents",
+    "empty": "Aucun cours pour l’instant — ce sera le premier",
+    "more": "Afficher {{n}} de plus"
   }
 }

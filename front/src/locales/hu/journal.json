@@ -590,5 +590,10 @@
     "errors": {
       "name": "Nevezze el a blokkot"
     }
+  },
+  "pastLessons": {
+    "title": "Korábbi órák",
+    "empty": "Még nem volt óra — ez lesz az első",
+    "more": "Még {{n}} megjelenítése"
   }
 }

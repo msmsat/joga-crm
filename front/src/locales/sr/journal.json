@@ -594,5 +594,10 @@
     "errors": {
       "name": "Dajte bloku naziv"
     }
+  },
+  "pastLessons": {
+    "title": "Претходни термини",
+    "empty": "Још нема термина — ово ће бити први",
+    "more": "Прикажи још {{n}}"
   }
 }

@@ -590,5 +590,10 @@
     "errors": {
       "name": "Anna lohkolle nimi"
     }
+  },
+  "pastLessons": {
+    "title": "Aiemmat tunnit",
+    "empty": "Ei vielä tunteja — tämä on ensimmäinen",
+    "more": "Näytä {{n}} lisää"
   }
 }

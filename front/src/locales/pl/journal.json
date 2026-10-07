@@ -598,5 +598,10 @@
     "errors": {
       "name": "Nazwij blok"
     }
+  },
+  "pastLessons": {
+    "title": "Poprzednie zajęcia",
+    "empty": "Jeszcze nie było zajęć — to będą pierwsze",
+    "more": "Pokaż jeszcze {{n}}"
   }
 }

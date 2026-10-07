@@ -89,7 +89,7 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
       />
       <ModalBody>
         <fieldset disabled={saving || !!past.offered} style={{ display: 'grid', gap: '12px', border: 0, padding: 0, margin: 0, minWidth: 0 }}>
-          {options.clientId == null && <ResourceClientPicker value={booking.client} disabled={saving} onChange={booking.setClient} />}
+          {options.clientId == null && <ResourceClientPicker value={booking.client} disabled={saving} onChange={booking.setClient} history />}
           <div>
             <label className="vk-label">{t('journal:resourceBooking.service')}</label>
             <Select value={serviceId ? String(serviceId) : ''} onChange={v => booking.setServiceId(Number(v))}

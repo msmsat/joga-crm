@@ -594,5 +594,10 @@
     "errors": {
       "name": "Pojmenujte blok"
     }
+  },
+  "pastLessons": {
+    "title": "Předchozí lekce",
+    "empty": "Zatím žádné lekce — tahle bude první",
+    "more": "Zobrazit dalších {{n}}"
   }
 }

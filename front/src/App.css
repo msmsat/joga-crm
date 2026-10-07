@@ -2513,6 +2513,9 @@
 .rcp-new:disabled { opacity: 0.5; cursor: default; }
 .rcp-clear { color: var(--muted); }
 .rcp-clear:hover:not(:disabled) { color: var(--onyx); }
+/* Поле клиента и кнопка его прошлых занятий справа (pastLessons) — одной строкой. */
+.rcp-field { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
+.rcp-field > :first-child { flex: 1; min-width: 0; }
 
 .vk-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
 .vk-swatch {

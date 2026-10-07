@@ -2031,6 +2031,11 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 .bw-row-title { font: 600 14.5px var(--font); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bw-row-hint { font: 500 12.5px var(--font); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bw-row-check { display: flex; color: var(--peach); flex-shrink: 0; }
+/* Своя кнопка строки (WizardRow side) — поверх правого края, перед стрелкой;
+   текст строки уступает ей место, чтобы имя не уходило под неё. */
+.bw-row-line { position: relative; }
+.bw-row.has-side .bw-row-text { margin-right: 64px; }
+.bw-row-side { position: absolute; top: 50%; right: 34px; transform: translateY(-50%); display: flex; }
 .bw-row:disabled { cursor: default; }
 /* Занятый мастер: сам приглушён, ближайшее его свободное время — нет. */
 .bw-row.muted .bw-av, .bw-row.muted .bw-row-text { opacity: 0.5; }

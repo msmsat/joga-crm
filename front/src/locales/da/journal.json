@@ -590,5 +590,10 @@
     "errors": {
       "name": "Giv blokken et navn"
     }
+  },
+  "pastLessons": {
+    "title": "Tidligere aftaler",
+    "empty": "Ingen aftaler endnu — dette bliver den første",
+    "more": "Vis {{n}} mere"
   }
 }

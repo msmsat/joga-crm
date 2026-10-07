@@ -172,7 +172,7 @@ export function ResourceKeypadModal({
               {clientId == null && (
                 <div className="kp-section">
                   <ResourceClientPicker value={booking.client} disabled={saving}
-                                        onChange={booking.setClient} labelClass="kp-section-title" />
+                                        onChange={booking.setClient} labelClass="kp-section-title" history />
                 </div>
               )}
 

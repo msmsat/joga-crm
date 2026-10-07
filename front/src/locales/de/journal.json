@@ -590,5 +590,10 @@
     "errors": {
       "name": "Benennen Sie den Block"
     }
+  },
+  "pastLessons": {
+    "title": "Bisherige Termine",
+    "empty": "Noch keine Termine – das wird der erste",
+    "more": "{{n}} weitere anzeigen"
   }
 }

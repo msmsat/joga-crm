@@ -590,5 +590,10 @@
     "errors": {
       "name": "Ge blocket ett namn"
     }
+  },
+  "pastLessons": {
+    "title": "Tidigare pass",
+    "empty": "Inga pass än — det här blir det första",
+    "more": "Visa {{n}} till"
   }
 }

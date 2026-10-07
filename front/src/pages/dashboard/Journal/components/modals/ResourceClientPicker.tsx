@@ -6,12 +6,15 @@ import { Select, type SelectOption } from '../../../../../components/ui/index';
 import { errorMessage } from '../../../../../api/errorMessage';
 import * as Icons from '../../../../../components/Icons';
 import { AddClientModal as NewClientModal } from '../../../Clients/components/modals/AddClientModal';
+import { PastLessonsButton } from '../pastLessons';
 
 /** Выбор клиента из списка с поиском и «+ Новый клиент» рядом с подписью.
  *  Кроме записи в Журнале — промокод на клиента в Лояльности: там выбор
- *  необязателен, поэтому есть `onClear` (код снова для всех). */
+ *  необязателен, поэтому есть `onClear` (код снова для всех).
+ *  `history` — справа от выбранного клиента кнопка его прошлых занятий:
+ *  нужна записи, промокоду — нет. */
 export function ResourceClientPicker({
-  value, onChange, disabled = false, labelClass = 'vk-label', label, placeholder, onClear, clearLabel,
+  value, onChange, disabled = false, labelClass = 'vk-label', label, placeholder, onClear, clearLabel, history = false,
 }: {
   value: number | null; onChange: (id: number) => void; disabled?: boolean;
   /** Клавиатурное окно журнала подписывает поля своим классом (kp-section-title). */
@@ -20,6 +23,7 @@ export function ResourceClientPicker({
   label?: string; placeholder?: string;
   /** Выбор можно снять: кнопка появляется у подписи, пока клиент выбран. */
   onClear?: () => void; clearLabel?: string;
+  history?: boolean;
 }) {
   const { t } = useTranslation(['journal', 'common', 'clients']);
   const [search, setSearch] = useState('');
@@ -57,17 +61,21 @@ export function ResourceClientPicker({
         </button>
       </span>
     </div>
-    <Select value={value == null ? '' : String(value)} options={options}
-      placeholder={placeholder ?? t('journal:resourceBooking.chooseClient')}
-      searchable searchPlaceholder={t('journal:resourceBooking.searchClient')}
-      onSearchChange={setSearch} disabled={disabled}
-      loading={query.isFetching || search.trim() !== debounced}
-      emptyText={query.isFetching || search.trim() !== debounced
-        ? t('common:loading') : t('journal:resourceBooking.noClients')}
-      onChange={id => {
-        setSelected(options.find(option => option.value === id) ?? null);
-        onChange(Number(id));
-      }} />
+    {/* Обёртка стоит всегда: появление кнопки не должно пересоздавать поле. */}
+    <div className="rcp-field">
+      <Select value={value == null ? '' : String(value)} options={options}
+        placeholder={placeholder ?? t('journal:resourceBooking.chooseClient')}
+        searchable searchPlaceholder={t('journal:resourceBooking.searchClient')}
+        onSearchChange={setSearch} disabled={disabled}
+        loading={query.isFetching || search.trim() !== debounced}
+        emptyText={query.isFetching || search.trim() !== debounced
+          ? t('common:loading') : t('journal:resourceBooking.noClients')}
+        onChange={id => {
+          setSelected(options.find(option => option.value === id) ?? null);
+          onChange(Number(id));
+        }} />
+      {history && value != null && <PastLessonsButton clientId={value} disabled={disabled} />}
+    </div>
     {/* Окно формы — порталом в body, но события React всплывают по дереву:
         без этой обёртки клик в форме закрыл бы окно записи под ней. */}
     <div onMouseDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()}>

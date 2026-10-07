@@ -590,5 +590,10 @@
     "errors": {
       "name": "Gi blokken et navn"
     }
+  },
+  "pastLessons": {
+    "title": "Tidligere økter",
+    "empty": "Ingen økter ennå — dette blir den første",
+    "more": "Vis {{n}} til"
   }
 }

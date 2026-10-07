@@ -590,5 +590,10 @@
     "errors": {
       "name": "Bloğa bir ad verin"
     }
+  },
+  "pastLessons": {
+    "title": "Geçmiş dersler",
+    "empty": "Henüz ders yok — bu ilki olacak",
+    "more": "{{n}} tane daha göster"
   }
 }

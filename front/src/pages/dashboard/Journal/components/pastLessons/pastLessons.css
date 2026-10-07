@@ -1,0 +1,208 @@
+/*
+ * Прошлые занятия клиента: кнопка у поля клиента, поповер с лентой и та же
+ * лента, раскрытая под строкой мастера записи. Тона состояний — те же, что у
+ * ленты «Событий» в карточке клиента: зелёное там и здесь значит одно и то же.
+ */
+
+.plh {
+  --plh-attended: #3D8150; --plh-attended-f: #8CC79B;
+  --plh-ongoing: #3B6FB0;  --plh-ongoing-f: #8DB3E2;
+  --plh-missed: #94661A;   --plh-missed-f: #E0B566;
+  --plh-cancelled: #B0566B; --plh-cancelled-f: #E59AAB;
+  --plh-done: var(--text2); --plh-done-f: #CBCBCB;
+  display: flex; flex-direction: column; min-height: 0;
+  font-family: var(--font);
+  /* По ширине ленты (а не экрана) решается, влезает ли подпись состояния. */
+  container-type: inline-size;
+}
+:root.dark .plh {
+  --plh-attended: #8CC79B;
+  --plh-ongoing: #8DB3E2;
+  --plh-missed: #E0B566;
+  --plh-cancelled: #E59AAB;
+  --plh-done-f: #6B6B6B;
+}
+.plh .is-attended { --tone: var(--plh-attended); --fill: var(--plh-attended-f); }
+.plh .is-ongoing { --tone: var(--plh-ongoing); --fill: var(--plh-ongoing-f); }
+.plh .is-missed { --tone: var(--plh-missed); --fill: var(--plh-missed-f); }
+.plh .is-cancelled { --tone: var(--plh-cancelled); --fill: var(--plh-cancelled-f); }
+.plh .is-done { --tone: var(--plh-done); --fill: var(--plh-done-f); }
+
+/* ── Шапка: заголовок, полоса посещаемости, легенда ── */
+.plh-head { --plh-pad: 16px; flex-shrink: 0; display: grid; gap: 10px; padding: 16px var(--plh-pad) 12px; min-width: 0; }
+.plh-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.plh-title {
+  font: 800 11px var(--font); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.plh-total { font: 700 12px var(--font); color: var(--onyx); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.plh-bar { display: flex; gap: 3px; height: 6px; }
+.plh-bar > span {
+  min-width: 6px; border-radius: 999px; background: var(--fill);
+  transform-origin: left center; animation: plh-grow 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+/* Одной строкой, а не в два этажа: не влезла — листается вбок и гаснет к краю. */
+.plh-legend {
+  display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none;
+  margin: 0 calc(var(--plh-pad) * -1); padding: 0 var(--plh-pad);
+  mask-image: linear-gradient(90deg, transparent, #000 var(--plh-pad), #000 calc(100% - 24px), transparent);
+  font: 600 11px var(--font); color: var(--muted);
+}
+.plh-legend::-webkit-scrollbar { display: none; }
+.plh-legend-item { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.plh-legend-item i { width: 6px; height: 6px; border-radius: 50%; background: var(--fill); }
+.plh-legend-item b { font-weight: 800; color: var(--onyx); font-variant-numeric: tabular-nums; }
+
+/* ── Лента ── */
+.plh-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 8px 8px; }
+.plh-month + .plh-month { margin-top: 2px; }
+.plh-month-label {
+  position: sticky; top: 0; z-index: 1;
+  padding: 8px 8px 6px; background: var(--bg-card);
+  font: 800 10.5px var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3);
+}
+.plh-row {
+  display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  padding: 6px 8px; border-radius: 12px;
+  transition: background 0.15s ease;
+  animation: plh-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 24ms);
+}
+.plh-row:hover { background: var(--bg2); }
+.plh-date {
+  width: 36px; height: 38px; border-radius: 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(var(--ink), 0.04); line-height: 1;
+}
+.plh-date b { font: 800 14px var(--font); color: var(--onyx); font-variant-numeric: tabular-nums; }
+.plh-date small {
+  margin-top: 3px; font: 700 9px var(--font); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
+}
+.plh-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.plh-name, .plh-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.plh-name { font: 700 13px var(--font); color: var(--onyx); }
+.plh-sub { font: 500 11.5px var(--font); color: var(--muted); }
+.plh-sub:empty { display: none; }
+.plh-state {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px 3px 7px; border-radius: 999px;
+  font: 700 10.5px var(--font); color: var(--tone); white-space: nowrap;
+  background: color-mix(in srgb, var(--fill) 22%, transparent);
+}
+.plh-state i { width: 6px; height: 6px; border-radius: 50%; background: var(--tone); flex-shrink: 0; }
+/* Отменённое — было в планах, но не случилось: строка тише остальных. */
+.plh-row.is-cancelled .plh-name {
+  color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(var(--ink), 0.25);
+}
+.plh-row.is-cancelled .plh-date b { color: var(--muted); }
+/* Узкая лента (телефон): подпись уезжает, состояние остаётся точкой — цвет
+   объясняет легенда над лентой. */
+@container (max-width: 300px) {
+  .plh-state { padding: 0; background: none; }
+  .plh-state i { width: 8px; height: 8px; }
+  .plh-state-label { display: none; }
+}
+
+.plh-more {
+  display: block; width: 100%; height: 34px; margin-top: 6px;
+  border: 1px dashed rgba(249, 160, 139, 0.5); border-radius: 10px; background: transparent;
+  font: 700 12px var(--font); color: var(--peach); cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.plh-more:hover { background: rgba(249, 160, 139, 0.08); border-color: var(--peach); }
+
+.plh-empty {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-radius: 12px; background: rgba(249, 160, 139, 0.08);
+  font: 600 12.5px var(--font); color: var(--onyx); line-height: 1.4;
+}
+.plh-empty-icon {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(249, 160, 139, 0.16); color: var(--peach);
+}
+.plh-error { padding: 4px 8px 8px; font: 600 12.5px var(--font); color: var(--error); }
+.plh-link {
+  border: 0; background: none; padding: 0; cursor: pointer;
+  font: inherit; color: var(--peach); text-decoration: underline;
+}
+.plh-skeleton { display: grid; gap: 8px; padding: 4px 0; }
+.plh-skeleton div {
+  height: 42px; border-radius: 12px;
+  background: linear-gradient(90deg, rgba(var(--ink), 0.035), rgba(var(--ink), 0.08), rgba(var(--ink), 0.035));
+  background-size: 200% 100%; animation: plh-shimmer 1.2s ease-in-out infinite;
+}
+
+/* ── Поповер у поля клиента (компьютер) ── */
+.plh-pop {
+  position: fixed; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+  box-shadow: 0 24px 48px -12px rgba(26, 26, 26, 0.2), 0 8px 20px -8px rgba(26, 26, 26, 0.1);
+}
+:root.dark .plh-pop { box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 8px 20px -8px rgba(0, 0, 0, 0.4); }
+.plh-pop > .plh { flex: 1; }
+
+/* Кнопка справа от поля клиента — того же роста и рамки, что и само поле. */
+.plh-btn {
+  flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-width: 46px; padding: 0 12px; box-sizing: border-box; border-radius: 12px;
+  border: 1.5px solid rgba(var(--ink), 0.09); background: rgba(var(--ink), 0.025);
+  font: 800 13px var(--font); color: var(--muted); font-variant-numeric: tabular-nums;
+  cursor: pointer; transition: color 0.18s, border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  animation: plh-pop-in 0.34s cubic-bezier(0.34, 1.4, 0.64, 1) backwards;
+}
+.plh-btn:hover:not(:disabled) { color: var(--peach); border-color: rgba(249, 160, 139, 0.55); }
+.plh-btn.is-open {
+  color: var(--peach); background: var(--bg-card);
+  border-color: var(--peach-light); box-shadow: 0 0 0 3px rgba(252, 174, 145, 0.15);
+}
+.plh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.plh-btn-icon { flex-shrink: 0; transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1); }
+/* «Отмотать назад»: значок истории делает оборот против часовой. */
+.plh-btn.is-open .plh-btn-icon { transform: rotate(-360deg); }
+.plh-btn-count { overflow: hidden; white-space: nowrap; color: var(--onyx); }
+.plh-btn:hover:not(:disabled) .plh-btn-count, .plh-btn.is-open .plh-btn-count { color: inherit; }
+
+/* ── Строка клиента в мастере записи: капсула и лента под строкой ── */
+.plh-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 30px; padding: 0 10px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--bg-card);
+  font: 800 12px var(--font); color: var(--muted); font-variant-numeric: tabular-nums;
+  cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.plh-toggle span { color: var(--onyx); }
+.plh-toggle.is-open {
+  color: var(--peach); border-color: rgba(249, 160, 139, 0.6); background: rgba(249, 160, 139, 0.1);
+}
+.plh-toggle.is-open span { color: inherit; }
+.plh-toggle svg { transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1); }
+.plh-toggle.is-open svg { transform: rotate(-360deg); }
+@media (hover: hover) {
+  .plh-toggle:hover { color: var(--peach); border-color: rgba(249, 160, 139, 0.5); }
+}
+
+.bw-row-below > .plh {
+  margin: 2px 8px 10px 58px;
+  border: 1px solid var(--border); border-radius: 14px; background: var(--bg2);
+}
+.plh.is-inline .plh-head { --plh-pad: 12px; padding: 12px var(--plh-pad) 8px; }
+.plh.is-inline .plh-body { overflow: visible; padding: 0 4px 6px; }
+.plh.is-inline .plh-month-label { position: static; background: none; padding: 6px 8px 4px; }
+.plh.is-inline .plh-row:hover { background: rgba(var(--ink), 0.03); }
+.plh.is-inline .plh-date { background: var(--bg-card); }
+.plh.is-inline .plh-empty { margin: 0 4px; }
+.plh.is-inline .plh-more { width: calc(100% - 8px); margin: 6px 4px 0; }
+
+@keyframes plh-in { from { opacity: 0; transform: translateY(4px); } }
+@keyframes plh-grow { from { transform: scaleX(0); } }
+@keyframes plh-pop-in { from { opacity: 0; transform: scale(0.6); } }
+@keyframes plh-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .plh-row, .plh-bar > span, .plh-btn, .plh-skeleton div { animation: none; }
+  .plh-btn-icon, .plh-toggle svg { transition: none; }
+}
+
+/* ── ТЕЛЕФОН (<768px): лента под строкой — во всю ширину списка ── */
+@media (max-width: 767px) {
+  .bw-row-below > .plh { margin-left: 8px; }
+}

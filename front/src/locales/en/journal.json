@@ -590,5 +590,10 @@
     "errors": {
       "name": "Name the block"
     }
+  },
+  "pastLessons": {
+    "title": "Past lessons",
+    "empty": "No lessons yet — this will be the first one",
+    "more": "Show {{n}} more"
   }
 }

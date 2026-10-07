@@ -59,7 +59,7 @@ export const isAhead = (tone: EventTone) => tone === 'upcoming' || tone === 'ong
 
 // ─── Даты ─────────────────────────────────────────────────────────────────────
 
-interface Stamp { y: number; mo: number; d: number; h?: number; mi?: number }
+export interface Stamp { y: number; mo: number; d: number; h?: number; mi?: number }
 
 /**
  * Время сервера — уже время студии. Разбираем «настенные часы» строки, не
@@ -178,7 +178,7 @@ export function buildTimeline(events: EventRecord[], locale: string, t: Translat
 }
 
 /** «Октябрь» в этом году, «Август 2025» — в прошлом: именительный падеж (standalone). */
-function monthLabel(s: Stamp, locale: string, today: Date): string {
+export function monthLabel(s: Stamp, locale: string, today: Date): string {
   const date = new Date(Date.UTC(s.y, s.mo - 1, 1));
   const name = format(locale, { month: 'long' }, 'month').format(date);
   const label = name.charAt(0).toLocaleUpperCase(locale) + name.slice(1);

@@ -590,5 +590,10 @@
     "errors": {
       "name": "Jepini bllokut një emër"
     }
+  },
+  "pastLessons": {
+    "title": "Mësimet e kaluara",
+    "empty": "Ende pa mësime — ky do të jetë i pari",
+    "more": "Shfaq edhe {{n}}"
   }
 }

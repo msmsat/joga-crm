@@ -570,6 +570,7 @@ test('the service section shows «Individual» next to the filter and toggles it
     useDurationLabel: { useDurationLabel: () => () => '' },
     './WizardParts': { WizardChips: 'chips', WizardEmpty: 'empty', WizardRow: 'row', WizardSearch: 'search' },
     '../../../../../../components/Icons': { User: 'user', Plus: 'plus', Check: 'check', Clock: 'clock' },
+    pastLessons: { PastLessonsToggle: 'history-toggle', PastLessonsInline: 'history' },
   });
   const w = { serviceList: [], serviceStates: new Map(), service: null, time: '', availability: { loading: false },
     canSolo: true, solo: false };
@@ -594,6 +595,7 @@ test('the optional client section says so, and tapping the chosen client removes
     useDurationLabel: { useDurationLabel: () => () => '' },
     './WizardParts': { WizardChips: 'chips', WizardEmpty: 'empty', WizardRow: 'row', WizardSearch: 'search' },
     '../../../../../../components/Icons': { User: 'user', Plus: 'plus', Check: 'check', Clock: 'clock' },
+    pastLessons: { PastLessonsToggle: 'history-toggle', PastLessonsInline: 'history' },
   });
   const events = [];
   const w = { clientOptional: true, client: { id: 3, name: 'Anna' }, fresh: null,
@@ -608,6 +610,37 @@ test('the optional client section says so, and tapping the chosen client removes
   nodes(tree(), 'row')[0].onClick();
   assert.deepEqual(events, ['clear', ['pick', 3]]);
   assert.equal(nodes(tree(), 'p').length, 0);
+});
+
+test('the past-lessons capsule opens the client history under the row and does not pick the client', async () => {
+  const app = await harness(`${base}WizardSteps.tsx`, {
+    useClientsList: { useClientsList: () => ({ clients: [
+      { id: 3, name: 'Anna', last_name: null, phone: null, visit_count: 12 },
+      { id: 4, name: 'Boris', last_name: null, phone: null, visit_count: 0 },
+    ], rawSearch: '', setRawSearch() {}, hasMore: false, isLoading: false }), useClientCategories: () => [] },
+    mapClient: { getAvatarColor: () => '', getInitials: () => '', nameInitials: () => '' },
+    usePriceLabel: { usePriceLabel: () => () => '' },
+    useDurationLabel: { useDurationLabel: () => () => '' },
+    './WizardParts': { WizardChips: 'chips', WizardEmpty: 'empty', WizardRow: 'row', WizardSearch: 'search' },
+    '../../../../../../components/Icons': { User: 'user', Plus: 'plus', Check: 'check', Clock: 'clock' },
+    pastLessons: { PastLessonsToggle: 'history-toggle', PastLessonsInline: 'history' },
+  });
+  const events = [];
+  const w = { clientOptional: false, client: null, fresh: null,
+    clearClient: () => events.push('clear'), pickClient: id => events.push(['pick', id]) };
+  const rows = () => nodes(app.render('ClientStep', { w, when: null, onCreate() {} }), 'row');
+  const opened = () => rows().map(row => row.below.props.open);
+  assert.deepEqual(rows().map(row => row.side.props.count), [12, 0]);
+  assert.deepEqual(opened(), [false, false]);
+  rows()[0].side.props.onToggle();
+  assert.deepEqual(opened(), [true, false]);
+  assert.equal(rows()[0].below.props.clientId, 3);
+  // Открыта история одного клиента за раз; повторное касание её сворачивает.
+  rows()[1].side.props.onToggle();
+  assert.deepEqual(opened(), [false, true]);
+  rows()[1].side.props.onToggle();
+  assert.deepEqual(opened(), [false, false]);
+  assert.deepEqual(events, []);
 });
 
 test('the client tab is ticked only when a person is actually chosen', async () => {

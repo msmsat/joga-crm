@@ -594,5 +594,10 @@
     "errors": {
       "name": "Dați un nume blocului"
     }
+  },
+  "pastLessons": {
+    "title": "Ședințe anterioare",
+    "empty": "Încă nu au fost ședințe — aceasta va fi prima",
+    "more": "Arată încă {{n}}"
   }
 }
