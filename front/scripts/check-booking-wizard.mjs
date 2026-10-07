@@ -626,8 +626,10 @@ test('the past-lessons capsule opens the client history under the row and does n
     pastLessons: { PastLessonsToggle: 'history-toggle', PastLessonsInline: 'history' },
   });
   const events = [];
-  const w = { clientOptional: false, client: null, fresh: null,
-    clearClient: () => events.push('clear'), pickClient: id => events.push(['pick', id]) };
+  const canRepeat = id => id === 2;
+  const w = { clientOptional: false, client: null, fresh: null, canRepeat,
+    clearClient: () => events.push('clear'), pickClient: id => events.push(['pick', id]),
+    repeat: (who, past) => events.push(['repeat', who, past]) };
   const rows = () => nodes(app.render('ClientStep', { w, when: null, onCreate() {} }), 'row');
   const opened = () => rows().map(row => row.below.props.open);
   assert.deepEqual(rows().map(row => row.side.props.count), [12, 0]);
@@ -641,6 +643,64 @@ test('the past-lessons capsule opens the client history under the row and does n
   rows()[1].side.props.onToggle();
   assert.deepEqual(opened(), [false, false]);
   assert.deepEqual(events, []);
+  // Нажатие на прошлое занятие — повтор для ЭТОГО клиента, с его именем.
+  assert.equal(rows()[0].below.props.canRepeat, canRepeat);
+  rows()[0].below.props.onRepeat({ serviceId: 2, teacherId: 7, time: '18:00' });
+  // Объекты собраны внутри vm — сравниваем содержимое, а не прототипы.
+  assert.equal(JSON.stringify(events), JSON.stringify([['repeat', { id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 7, time: '18:00' }]]));
+});
+
+test('repeating a past lesson fills the client, service, master and time and opens the summary', async () => {
+  const calls = [];
+  const resource = { choice: { serviceOptions: [], masterOptions: [] }, slots: [],
+    setDate() {}, setBranchId() {}, setClient: id => calls.push(['client', id]),
+    setServiceId: id => calls.push(['service', id]), setTeacherId: id => calls.push(['teacher', id]) };
+  const render = (await navigation({ useResourceBooking: { useResourceBooking: () => resource } }))({ defaultDate: '2099-05-12' });
+  assert.equal(render().canRepeat(2), true);
+  assert.equal(render().canRepeat(99), false);
+  render().repeat({ id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 7, time: '18:00' });
+  const w = render();
+  assert.deepEqual(w.client, { id: 3, name: 'Anna' });
+  assert.equal(w.service.id, 2);
+  assert.equal(w.teacherId, 7);
+  assert.equal(w.masterChosen, true);
+  assert.equal(w.time, '18:00');
+  assert.equal(w.step, 4);
+  assert.deepEqual(calls, [['client', 3], ['service', 2], ['teacher', 7]]);
+});
+
+test('repeating with a master who no longer does the service opens the master section, the time stays', async () => {
+  const resource = { choice: { serviceOptions: [], masterOptions: [] }, slots: [],
+    setDate() {}, setBranchId() {}, setClient() {}, setServiceId() {}, setTeacherId() {} };
+  const render = (await navigation({ useResourceBooking: { useResourceBooking: () => resource } }))({ defaultDate: '2099-05-12' });
+  render().repeat({ id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 8, time: '09:30' });
+  const w = render();
+  assert.equal(w.masterChosen, false);
+  assert.equal(w.teacherId, null);
+  assert.equal(w.time, '09:30');
+  assert.equal(w.step, 3);
+  // Услуги, которой этот мастер записи не знает, нет — повторять нечего.
+  render().repeat({ id: 4, name: 'Boris' }, { serviceId: 99, teacherId: null, time: '10:00' });
+  assert.equal(render().client.id, 3);
+});
+
+test('a repeated group lesson keeps its client: booked into the standing group, like from the client card', async () => {
+  const group = { id: 1, booking_mode: 'event', masters: [], duration_min: 60 };
+  const resource = { choice: { serviceOptions: [], masterOptions: [] }, slots: [],
+    setDate() {}, setBranchId() {}, setClient() {}, setServiceId() {}, setTeacherId() {} };
+  const render = (await navigation({ useResourceBooking: { useResourceBooking: () => resource } },
+    { ...MIXED, services: [group, ...MIXED.services] }))({ defaultDate: '2099-05-12' });
+  // Обычная групповая из журнала — без клиента.
+  render().pickService(group);
+  assert.equal(render().needsClient, false);
+  render().repeat({ id: 3, name: 'Anna' }, { serviceId: 1, teacherId: null, time: '18:00' });
+  const w = render();
+  assert.equal(w.needsClient, true);
+  assert.equal(w.clientOptional, false);
+  assert.equal(w.client.id, 3);
+  assert.equal(w.service.id, 1);
+  assert.equal(w.time, '18:00');
+  assert.ok(w.steps.includes(1));
 });
 
 test('the client tab is ticked only when a person is actually chosen', async () => {

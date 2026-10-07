@@ -594,6 +594,8 @@
   "pastLessons": {
     "title": "Tidligere økter",
     "empty": "Ingen økter ennå — dette blir den første",
-    "more": "Vis {{n}} til"
+    "more": "Vis {{n}} til",
+    "repeat": "Gjenta",
+    "repeatHint": "Trykk på en økt for å booke det samme igjen"
   }
 }

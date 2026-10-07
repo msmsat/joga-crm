@@ -119,6 +119,11 @@ class EventRecordOut(BaseSchema):
     paid: Optional[str] = None
     amount: Optional[str] = None
     lesson_id: Optional[int] = None
+    # Какой услугой и у кого было занятие: «Записать так же» в истории клиента
+    # (Журнал) подставляет их в новую запись. Имена выше — для показа, по ним
+    # услугу и мастера не найти: их переименовывают.
+    service_id: Optional[int] = None
+    teacher_id: Optional[int] = None
     notes: Optional[str] = None
     photos: List[str] = []
     status: Optional[str] = None

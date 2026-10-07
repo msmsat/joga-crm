@@ -594,6 +594,8 @@
   "pastLessons": {
     "title": "Lezioni precedenti",
     "empty": "Ancora nessuna lezione: questa sarà la prima",
-    "more": "Mostra altri {{n}}"
+    "more": "Mostra altri {{n}}",
+    "repeat": "Ripeti",
+    "repeatHint": "Tocca una lezione per prenotare la stessa"
   }
 }

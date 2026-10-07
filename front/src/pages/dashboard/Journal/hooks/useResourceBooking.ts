@@ -132,6 +132,19 @@ export function useResourceBooking({
   /** Цена услуги в списке: у выбранного мастера — его, у «любого» — диапазон. */
   const serviceHint = (s: ServiceRead) => priceAt(teacherId, s.id) ?? rangeOf(s);
 
+  // «Записать так же» из истории клиента. Услуга — если эта форма её
+  // записывает (индивидуальная, открыта для записи, её кто-то ведёт); мастер —
+  // если он её всё ещё ведёт, иначе «любой»: ушедший мастер не должен
+  // молча оставить запись без времени.
+  const offers = (teacher: number | null, service: number) =>
+    (links?.staff ?? EMPTY_LINKS).some(m => (teacher == null || m.teacher_id === teacher) && m.service_ids.includes(service));
+  const canRepeat = (service: number) => bookable.some(s => s.id === service) && offers(null, service);
+  const repeat = (service: number, teacher: number | null) => {
+    setServiceId(service);
+    setTeacherId(teacher != null && offers(teacher, service) ? teacher : null);
+    resetQuote();
+  };
+
   // Доступность — обычный запрос react-query: ключ содержит весь выбор, и
   // устаревший ответ прошлой услуги/даты не перезаписывает текущий список.
   const { data: availability, isFetching: slotsLoading, error: slotsError, refetch: refreshSlots } = useQuery({
@@ -244,7 +257,7 @@ export function useResourceBooking({
     choice, serviceId, branchId, teacherId, chosenService, loadingChoice,
     loadError: servicesError ?? linksError,
     refreshChoice: () => Promise.all([refreshServices(), refreshLinks()]),
-    rangeOf, priceAt, durationAt, serviceHint,
+    rangeOf, priceAt, durationAt, serviceHint, canRepeat, repeat,
     slots, reason, slotsLoading, slotsError, refreshSlots,
     quote, quoteError, quoting, saving, pick, confirm,
     firstLesson, setFirstLesson, payment,

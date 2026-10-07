@@ -73,6 +73,9 @@ export interface EventRecord {
   recorded_at?: string | null
   type: 'payment' | 'visit' | 'completed' | 'booking' | 'cancel' | 'bonus' | 'freeze'
   lesson_id?: number | null
+  /** Услуга и мастер занятия — для «Записать так же» в истории клиента. */
+  service_id?: number | null
+  teacher_id?: number | null
   notes?: string | null
   photos?: string[]
   status?: string | null

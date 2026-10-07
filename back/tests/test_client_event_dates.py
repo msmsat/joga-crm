@@ -51,6 +51,18 @@ def test_visit_keeps_studio_wall_clock(monkeypatch):
     assert event.date.startswith('2026-09-28T10:00')
 
 
+def test_visit_names_its_service_and_master_for_booking_the_same_again(monkeypatch):
+    # «Записать так же» в истории клиента ищет услугу и мастера по номерам:
+    # имена для этого не годятся — их переименовывают.
+    past = lesson()
+    past.service_id, past.teacher_id = 12, 34
+    event, = request(monkeypatch, 'visit', [[reservation(status='attended', lesson=past)]])
+    assert (event.service_id, event.teacher_id) == (12, 34)
+    # У занятия без услуги (перенесённая история) номера нет — повторять нечего.
+    event, = request(monkeypatch, 'visit', [[reservation(status='attended')]])
+    assert (event.service_id, event.teacher_id) == (None, None)
+
+
 def test_cancellation_keeps_both_action_time_and_lesson_time(monkeypatch):
     event, = request(monkeypatch, 'cancel', [[reservation(status='cancelled')]])
     assert event.occurred_at.startswith('2026-09-28T11:00')

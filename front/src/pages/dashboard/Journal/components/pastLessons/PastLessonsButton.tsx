@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'framer-motion';
 import { History } from 'lucide-react';
-import { PastLessonsList } from './PastLessonsList';
+import { PastLessonsList, type RepeatProps } from './PastLessonsList';
 import { usePastLessons } from './usePastLessons';
 import './pastLessons.css';
 
@@ -37,12 +37,12 @@ function place(anchor: DOMRect): Spot {
  * История грузится сразу, как клиент выбран: к нажатию она уже на месте, а
  * цифра на кнопке появляется без отдельного запроса.
  */
-export function PastLessonsButton({ clientId, layer = 1250, disabled = false }: {
+export function PastLessonsButton({ clientId, layer = 1250, disabled = false, canRepeat, onRepeat }: {
   clientId: number;
   /** Этаж поповера: над окном записи (210) и списками кита (1200). */
   layer?: number;
   disabled?: boolean;
-}) {
+} & RepeatProps) {
   const { t } = useTranslation(['journal']);
   const { visits, isPending } = usePastLessons(clientId);
   const [open, setOpen] = useState(false);
@@ -148,7 +148,10 @@ export function PastLessonsButton({ clientId, layer = 1250, disabled = false }: 
               onMouseDown={e => e.stopPropagation()}
               onClick={e => e.stopPropagation()}
             >
-              <PastLessonsList clientId={clientId} />
+              {/* Повторили занятие — поповер уходит: смотреть дальше нужно на
+                  форму, в которую оно легло. */}
+              <PastLessonsList clientId={clientId} canRepeat={canRepeat}
+                               onRepeat={onRepeat && (repeat => { setOpen(false); onRepeat(repeat); })} />
             </motion.div>
           )}
         </AnimatePresence>,

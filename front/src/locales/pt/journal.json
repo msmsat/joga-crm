@@ -594,6 +594,8 @@
   "pastLessons": {
     "title": "Aulas anteriores",
     "empty": "Ainda sem aulas — esta será a primeira",
-    "more": "Mostrar mais {{n}}"
+    "more": "Mostrar mais {{n}}",
+    "repeat": "Repetir",
+    "repeatHint": "Toque numa aula para marcar a mesma"
   }
 }

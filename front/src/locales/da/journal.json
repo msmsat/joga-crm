@@ -594,6 +594,8 @@
   "pastLessons": {
     "title": "Tidligere aftaler",
     "empty": "Ingen aftaler endnu — dette bliver den første",
-    "more": "Vis {{n}} mere"
+    "more": "Vis {{n}} mere",
+    "repeat": "Gentag",
+    "repeatHint": "Tryk på en aftale for at booke det samme igen"
   }
 }

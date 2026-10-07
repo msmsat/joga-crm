@@ -598,6 +598,8 @@
   "pastLessons": {
     "title": "Předchozí lekce",
     "empty": "Zatím žádné lekce — tahle bude první",
-    "more": "Zobrazit dalších {{n}}"
+    "more": "Zobrazit dalších {{n}}",
+    "repeat": "Opakovat",
+    "repeatHint": "Klepněte na lekci — zapíšeme stejně"
   }
 }

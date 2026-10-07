@@ -594,6 +594,8 @@
   "pastLessons": {
     "title": "Geçmiş dersler",
     "empty": "Henüz ders yok — bu ilki olacak",
-    "more": "{{n}} tane daha göster"
+    "more": "{{n}} tane daha göster",
+    "repeat": "Tekrarla",
+    "repeatHint": "Aynısını ayırtmak için bir derse dokunun"
   }
 }

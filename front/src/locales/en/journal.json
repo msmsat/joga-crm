@@ -594,6 +594,8 @@
   "pastLessons": {
     "title": "Past lessons",
     "empty": "No lessons yet — this will be the first one",
-    "more": "Show {{n}} more"
+    "more": "Show {{n}} more",
+    "repeat": "Repeat",
+    "repeatHint": "Pick a lesson to book the same again"
   }
 }

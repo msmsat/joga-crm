@@ -594,6 +594,8 @@
   "pastLessons": {
     "title": "Mësimet e kaluara",
     "empty": "Ende pa mësime — ky do të jetë i pari",
-    "more": "Shfaq edhe {{n}}"
+    "more": "Shfaq edhe {{n}}",
+    "repeat": "Përsërit",
+    "repeatHint": "Prekni një mësim për ta rezervuar njësoj"
   }
 }

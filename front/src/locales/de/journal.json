@@ -594,6 +594,8 @@
   "pastLessons": {
     "title": "Bisherige Termine",
     "empty": "Noch keine Termine – das wird der erste",
-    "more": "{{n}} weitere anzeigen"
+    "more": "{{n}} weitere anzeigen",
+    "repeat": "Wiederholen",
+    "repeatHint": "Termin antippen – gleich wieder buchen"
   }
 }
