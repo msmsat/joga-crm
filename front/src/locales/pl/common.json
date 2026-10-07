@@ -173,7 +173,10 @@
       "not_found": "Ten blok został już usunięty",
       "bad_clock": "Ta godzina nie istnieje lub powtarza się z powodu zmiany czasu — wybierz inną",
       "blocks_lesson": "Zajęcia nakładają się na czas studia pracownika (sprzątanie, odprawa) — wybierz inną godzinę"
-    }
+    },
+    "lesson_edit_frozen": "Zajęć nie można już zmienić — zaczynają się zbyt szybko. Teraz tylko miejsca, resztę po zakończeniu.",
+    "lesson_edit_too_soon": "Nowy termin jest zbyt bliski — wybierz późniejszy",
+    "lesson_stays_in_past": "Minione zajęcia zostają w przeszłości — muszą się skończyć przed chwilą obecną"
   },
   "units": {
     "min": "min",

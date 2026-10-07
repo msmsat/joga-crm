@@ -1,5 +1,7 @@
 """Правила времени жизненного цикла занятия (эпик V4-6, задача 1): создание не
-позднее чем за 3 часа, изменение/отмена — не позднее чем за 2 часа до начала.
+позднее чем за 3 часа, отмена — не позднее чем за 2 часа до начала. Изменение
+занятия без записанных — тоже за 2 часа; с записанными окно шире (срок отмены
+записи + 2 ч) — это и прошедшие занятия на настоящей базе в tests/test_lesson_edit.py.
 Образец фейковой сессии — tests/test_loyalty_points.py.
 
 Запуск из back/:  python -m tests.test_lesson_time_rules
@@ -55,6 +57,8 @@ class _Lesson:
         # Статус записи-источника при переносе (Bumpix) — поле модели,
         # уходит в ответ _lesson_read, фейк обязан его нести.
         self.source_status = None
+        # Отменённое и убранное из сетки — поле модели, уходит в ответ.
+        self.hidden_at = None
 
 
 class _R:
@@ -99,6 +103,9 @@ class _DB:
     async def execute(self, _q):
         return _R(self._seq.pop(0))
 
+    async def get(self, *_args, **_kwargs):
+        return None
+
 
 def _ctx(role="owner"):
     return StudioContext(user=_User(), studio_id=1, role=role)
@@ -109,7 +116,8 @@ def _expect_400(coro, message_part):
         asyncio.run(coro)
     except HTTPException as e:
         assert e.status_code == 400, f"ожидали 400, получили {e.status_code}"
-        assert message_part in e.detail, f"{message_part!r} не найдено в {e.detail!r}"
+        text = e.detail["message"] if isinstance(e.detail, dict) else e.detail
+        assert message_part in text, f"{message_part!r} не найдено в {e.detail!r}"
         return
     raise AssertionError("ожидали HTTPException(400), исключения не было")
 
@@ -141,23 +149,26 @@ def test_create_more_than_3h_ok_passes_time_check():
 # ─── 2. Изменение занятия, начинающегося раньше чем через 2 часа ────────────
 def test_update_lesson_starting_soon_rejected():
     lesson = _Lesson(start_time=datetime.now() + timedelta(minutes=90))
-    db = _DB([_Studio(), lesson])  # lock_studio, get_scoped_lesson
+    # lock_studio, get_scoped_lesson, число записанных (0 — окно в 2 ч), правила записи
+    db = _DB([_Studio(), lesson, 0, None])
     body = LessonUpdateRequest(price=100)
-    _expect_400(L.update_lesson(1, body, _ctx(), db), "2 часа")
+    _expect_400(L.update_lesson(1, body, _ctx(), db), "за 2 ч до начала")
     assert db.committed is False
 
 
 def test_update_new_start_time_within_2h_rejected():
     """Занятие ещё далеко, но новое время переноса попадает в окно <2ч."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
-    db = _DB([_Studio(), lesson])  # lock_studio, get_scoped_lesson
+    db = _DB([_Studio(), lesson, 0, None])  # lock_studio, get_scoped_lesson, записанные, правила
     body = LessonUpdateRequest(start_time=datetime.now() + timedelta(minutes=30))
-    _expect_400(L.update_lesson(1, body, _ctx(), db), "2 часа")
+    _expect_400(L.update_lesson(1, body, _ctx(), db), "за 2 ч до начала")
 
 
 def test_update_far_lesson_ok_passes_time_check():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
-    db = _DB([_Studio(), lesson, 0])  # lock_studio, get_scoped_lesson, затем _booked_count после правок
+    # lock_studio, get_scoped_lesson, записанные (нет — ни пересчёта долгов, ни
+    # рассылки), правила записи, автор правки для ленты событий
+    db = _DB([_Studio(), lesson, 0, None, []])
     body = LessonUpdateRequest(price=500)
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert result.price == 500
@@ -179,7 +190,7 @@ def test_update_cancelled_lesson_rejected():
 
 def test_update_cancelled_lesson_cancel_reason_only_ok():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), status="cancelled")
-    db = _DB([_Studio(), lesson, 0])  # lock_studio, get_scoped_lesson, затем _booked_count
+    db = _DB([_Studio(), lesson, 0, None])  # lock_studio, get_scoped_lesson, записанные, правила
     body = LessonUpdateRequest(cancel_reason="Клиент попросил перенос")
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert lesson.cancel_reason == "Клиент попросил перенос"

@@ -37,12 +37,10 @@ async def create_reservation(
     """Записать клиента на занятие. Лимит мест и запрет двойной записи —
     та же логика, что в POST /clients/{id}/booking (book_lesson).
 
-    Записывать/снимать клиентов могут только владелец и администратор (ТЗ 2.3).
-    Клиент проверяется по studio_id — чужой клиент даёт 404.
+    Записывают владелец, администратор и тренер — тренер только на своё
+    занятие (get_scoped_lesson отвечает 403 на чужое). Клиент проверяется по
+    studio_id — чужой клиент даёт 404.
     """
-    if ctx.role == "trainer":
-        raise HTTPException(status_code=403, detail="Записывать клиентов могут владелец и администратор")
-
     lesson = await get_scoped_lesson(body.lesson_id, ctx, db)
     # Отменённое занятие «уже не считается» — на него нельзя записать (как в
     # публичной брони, public.py: cancelled → 404), значит и c1/a1/t1 не шлём.
@@ -108,8 +106,9 @@ async def create_reservation(
         # его же t1 ниже (см. notifier._recipient).
         "trainer_id": lesson.teacher_id,
     })
-    # Тренеру этого занятия (t1) — только если у занятия задан teacher_id.
-    if lesson.teacher_id is not None:
+    # Тренеру этого занятия (t1) — только если у занятия задан teacher_id и
+    # записал не он сам: о своём же действии сообщать незачем.
+    if lesson.teacher_id is not None and lesson.teacher_id != ctx.user.id:
         await notify(db, ctx.studio_id, "trainer", "t1", {
             **lesson_ctx,
             "trainer_id": lesson.teacher_id,
@@ -127,11 +126,9 @@ async def cancel_reservation(
 ):
     """Снять клиента с занятия — освобождает место (booked_count уменьшится).
 
-    Снимать клиентов могут только владелец и администратор (ТЗ 2.3).
+    Снимают владелец, администратор и тренер — тренер только со своего занятия
+    (get_scoped_lesson ниже).
     """
-    if ctx.role == "trainer":
-        raise HTTPException(status_code=403, detail="Снимать клиентов могут владелец и администратор")
-
     reservation = (await db.execute(
         select(Reservation).where(Reservation.id == reservation_id)
     )).scalar_one_or_none()
@@ -184,12 +181,10 @@ async def confirm_reservation(
     Отклонение — обычное снятие с занятия (cancel): оно и место освобождает, и
     занятие на абонемент возвращает.
 
-    Подтверждают владелец и администратор — те же роли, что записывают и
-    снимают (ТЗ 2.3). Повторный вызов идемпотентен.
+    Подтверждают владелец, администратор и тренер своего занятия — те же
+    роли, что записывают и снимают; «Подтверждение тренером» в правилах
+    записи так и называется. Повторный вызов идемпотентен.
     """
-    if ctx.role == "trainer":
-        raise HTTPException(status_code=403, detail="Подтверждать записи могут владелец и администратор")
-
     reservation = (await db.execute(
         select(Reservation).where(Reservation.id == reservation_id)
     )).scalar_one_or_none()

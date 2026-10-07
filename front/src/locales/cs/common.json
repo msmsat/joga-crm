@@ -173,7 +173,10 @@
       "not_found": "Tento blok už byl odebrán",
       "bad_clock": "Tento čas neexistuje nebo se opakuje kvůli změně času — vyberte jiný",
       "blocks_lesson": "Lekce zasahuje do času studia pracovníka (úklid, porada) — vyberte jiný čas"
-    }
+    },
+    "lesson_edit_frozen": "Lekci už nelze měnit — začíná příliš brzy. Teď lze změnit počet míst, zbytek po skončení.",
+    "lesson_edit_too_soon": "Nový čas je příliš blízko — vyberte pozdější",
+    "lesson_stays_in_past": "Proběhlá lekce zůstává v minulosti — musí skončit dřív než teď"
   },
   "units": {
     "min": "min",

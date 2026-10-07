@@ -104,7 +104,7 @@
     },
     "c11": {
       "title": "Tunti siirretty",
-      "desc": "Aika, huone tai valmentaja vaihtui"
+      "desc": "Uusi aika tai sali"
     },
     "c12": {
       "title": "Bonus lisätty",
@@ -113,6 +113,10 @@
     "c13": {
       "title": "Kahville tunnin jälkeen",
       "desc": "Kuka ryhmästä lähtee kahville"
+    },
+    "c14": {
+      "title": "Muutoksia tuntiin",
+      "desc": "Ohjaaja, nimi, taso tai maksettava summa"
     },
     "t1": {
       "title": "Uusi varaus valmentajalle",

@@ -4,16 +4,32 @@
 import type { Booking } from '../../../types';
 import { MAX_TIME_INDEX, MIN_TIME_INDEX, toDateStr } from '../../../utils';
 
-/** Сервер не двигает занятие ближе двух часов к началу — ни прежнее время,
- *  ни новое (back/routers/schedule/lessons.py, MIN_CHANGE_LEAD). Окно говорит
- *  это заранее, а не ответом на «Сохранить». */
-export const CHANGE_LEAD_MIN = 120;
+/** Зеркало back/services/lesson_edit_policy.py. Занятие перестают менять за
+ *  срок отмены записи + 2 часа до начала, если на него кто-то записан (люди
+ *  должны узнать об изменении, пока ещё могут бесплатно отменить запись), и за
+ *  2 часа — если записанных нет. После окончания занятие снова можно править:
+ *  это исправление записи, без уведомлений. Окно говорит всё это заранее, а не
+ *  ответом на «Сохранить». */
+export const EMPTY_LEAD_MIN = 120;
+export const NOTICE_MARGIN_MIN = 120;
+/** Умолчание правил записи (back/services/booking_rules.BookingRules), пока
+ *  детали занятия не пришли с сервера. */
+export const DEFAULT_CANCEL_DEADLINE_MIN = 240;
 /** Шаг кнопок длительности: 55 → 60 → 65, как обычно и считают занятия. */
 export const DURATION_STEP_MIN = 5;
 export const MIN_DURATION_MIN = 5;
+/** Пределы сервера: название — 150 символов, уровень и инвентарь — 50. */
+export const MAX_NAME = 150;
+export const MAX_SHORT_TEXT = 50;
+
+/** open — меняется всё, записанным уйдёт уведомление; frozen — от последнего
+ *  момента для правки до конца занятия, меняются только места; finished —
+ *  занятие прошло, меняется всё, но молча, и время остаётся в прошлом. */
+export type EditPhase = 'open' | 'frozen' | 'finished';
 
 export interface LessonDraft {
   serviceId: number | null;
+  /** Название занятия. Едет за услугой, пока его не переписали руками. */
   title: string;
   hall: string;
   /** Строка: поле мест набирают руками, и «» между цифрами — законное состояние. */
@@ -22,9 +38,37 @@ export interface LessonDraft {
   timeEnd: number;
   date: string;
   trainer: number;
+  /** Цена строкой — по той же причине, что и места. */
+  price: string;
+  /** Цену набрали руками: смена услуги или тренера её больше не пересчитывает. */
+  priceEdited: boolean;
+  level: string;
+  equipment: string;
 }
 
-export type DraftField = 'service' | 'date' | 'time' | 'trainer' | 'hall' | 'capacity';
+export const EMPTY_DRAFT: LessonDraft = {
+  serviceId: null, title: '', hall: '', maxClients: '8', timeStart: 0, timeEnd: 0, date: '', trainer: 0,
+  price: '0', priceEdited: false, level: '', equipment: '',
+};
+
+/** Черновик из карточки — с чего начинается правка. */
+export const draftOf = (b: Booking): LessonDraft => ({
+  serviceId: b.serviceId,
+  title: b.title,
+  hall: b.hall,
+  maxClients: String(b.maxClients),
+  timeStart: b.timeStart,
+  timeEnd: b.timeEnd,
+  date: b.date ?? '',
+  trainer: b.trainer,
+  price: String(b.price),
+  priceEdited: false,
+  level: b.level ?? '',
+  equipment: b.equipment ?? '',
+});
+
+export type DraftField =
+  | 'service' | 'name' | 'date' | 'time' | 'trainer' | 'hall' | 'capacity' | 'price' | 'level' | 'equipment';
 
 const EPS = 1e-6;
 const toMin = (idx: number) => Math.round(idx * 60);
@@ -94,18 +138,36 @@ export function resize(timeStart: number, timeEnd: number, deltaMin: number): nu
 export const minutesUntil = (date: string, idx: number, now = new Date()) =>
   (startOf(date, idx).getTime() - now.getTime()) / 60000;
 
-/** Занятие уже не меняют: до начала меньше двух часов или оно прошло. */
-export const isLocked = (date: string, idx: number, now = new Date()) =>
-  minutesUntil(date, idx, now) < CHANGE_LEAD_MIN;
+/** За сколько минут до начала занятие перестают менять. */
+export const editLeadMin = (booked: number, cancelDeadlineMin: number) =>
+  booked > 0 ? Math.max(cancelDeadlineMin, 0) + NOTICE_MARGIN_MIN : EMPTY_LEAD_MIN;
+
+/** Где занятие сейчас относительно правки (см. EditPhase). */
+export function editPhase(
+  date: string, timeStart: number, timeEnd: number, leadMin: number, now = new Date(),
+): EditPhase {
+  if (minutesUntil(date, timeEnd, now) <= 0) return 'finished';
+  return minutesUntil(date, timeStart, now) < leadMin ? 'frozen' : 'open';
+}
 
 /** Самое раннее начало, которое примет сервер в этот день: индекс сетки;
  *  `null` — день доступен целиком; `Infinity` — в этот день уже не успеть. */
-export function earliestStart(date: string, now = new Date()): number | null {
-  const threshold = now.getTime() + CHANGE_LEAD_MIN * 60000;
+export function earliestStart(date: string, leadMin: number, now = new Date()): number | null {
+  const threshold = now.getTime() + leadMin * 60000;
   const dayStart = startOf(date, MIN_TIME_INDEX).getTime();
   if (dayStart >= threshold) return null;
   const idx = MIN_TIME_INDEX + (threshold - dayStart) / 3600000;
   return idx > MAX_TIME_INDEX ? Infinity : idx;
+}
+
+/** Прошедшее занятие остаётся в прошлом: самый поздний конец в этот день —
+ *  индекс «сейчас»; `null` — день прошёл целиком, ограничений нет;
+ *  `-Infinity` — день ещё не начался, прошлого в нём нет. */
+export function latestEnd(date: string, now = new Date()): number | null {
+  const dayStart = startOf(date, MIN_TIME_INDEX).getTime();
+  const idx = MIN_TIME_INDEX + (now.getTime() - dayStart) / 3600000;
+  if (idx >= MAX_TIME_INDEX) return null;
+  return idx - MIN_DURATION_MIN / 60 < MIN_TIME_INDEX ? -Infinity : idx;
 }
 
 /** Что именно поменяли — по полю. Окно метит изменённые поля и по ним решает,
@@ -113,6 +175,7 @@ export function earliestStart(date: string, now = new Date()): number | null {
 export function changesOf(original: Booking, draft: LessonDraft): DraftField[] {
   const changes: DraftField[] = [];
   if (draft.serviceId !== original.serviceId) changes.push('service');
+  if (draft.title.trim() !== original.title) changes.push('name');
   if (original.date && draft.date !== original.date) changes.push('date');
   if (toMin(draft.timeStart) !== toMin(original.timeStart) || toMin(draft.timeEnd) !== toMin(original.timeEnd)) {
     changes.push('time');
@@ -120,10 +183,17 @@ export function changesOf(original: Booking, draft: LessonDraft): DraftField[] {
   if (draft.trainer !== original.trainer) changes.push('trainer');
   if (draft.hall !== original.hall) changes.push('hall');
   if (Number(draft.maxClients) !== original.maxClients) changes.push('capacity');
+  if (Number(draft.price) !== original.price) changes.push('price');
+  if (draft.level.trim() !== (original.level ?? '')) changes.push('level');
+  if (draft.equipment.trim() !== (original.equipment ?? '')) changes.push('equipment');
   return changes;
 }
 
-/** Перенос дня, времени или зала сервер разошлёт записанным (уведомление c11,
- *  update_lesson) — окно предупреждает об этом до «Сохранить». */
+/** Места записанных не касаются — их правят в любой фазе (добавить коврик
+ *  пришедшему за десять минут). Всё остальное клиент видит. */
+export const QUIET_FIELDS: readonly DraftField[] = ['capacity'];
+
+/** Что из поменянного увидят записанные: всё, кроме мест. Цена — тоже: у
+ *  кого долг, тому сервер пересчитает сумму и скажет об этом. */
 export const notifiesClients = (changes: DraftField[]) =>
-  changes.some(field => field === 'date' || field === 'time' || field === 'hall');
+  changes.some(field => !QUIET_FIELDS.includes(field));

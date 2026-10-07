@@ -107,7 +107,7 @@
     },
     "c11": {
       "title": "Clasa a fost reprogramată",
-      "desc": "Ora, sala sau antrenorul s-a schimbat"
+      "desc": "Oră sau sală nouă"
     },
     "c12": {
       "title": "Bonus acordat",
@@ -116,6 +116,10 @@
     "c13": {
       "title": "Cafea după clasă",
       "desc": "Cine din grup merge la cafea"
+    },
+    "c14": {
+      "title": "Modificări la clasă",
+      "desc": "Antrenor, nume, nivel sau sumă de plată"
     },
     "t1": {
       "title": "Rezervare nouă la antrenor",

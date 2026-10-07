@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException
 
 import routers.schedule.lessons as L
+import services.lesson_changes as lesson_changes_module
 import services.notifier as notifier_module
 import services.notification_resolver as resolver_module
 from dependencies import StudioContext
@@ -38,7 +39,9 @@ notifier_module.send_email = _noop_send_email
 
 
 class _User:
-    id = 1
+    # Правит владелец, а не сам тренер занятия (teacher_id=1): себе о своей же
+    # правке t5 не уходит.
+    id = 99
 
 
 class _Studio:
@@ -78,6 +81,8 @@ class _Lesson:
         # Статус записи-источника при переносе (Bumpix) — поле модели,
         # уходит в ответ _lesson_read, фейк обязан его нести.
         self.source_status = None
+        # Отменённое и убранное из сетки — поле модели, уходит в ответ.
+        self.hidden_at = None
 
 
 class _StudioPrefs:
@@ -159,6 +164,9 @@ class _DB:
     async def execute(self, _q):
         return _R(self._seq.pop(0))
 
+    async def get(self, *_args, **_kwargs):
+        return None
+
 
 def _ctx(role="owner"):
     return StudioContext(user=_User(), studio_id=1, role=role)
@@ -223,31 +231,39 @@ def test_notify_returns_false_for_unknown_event_template():
 
 
 # ─── update_lesson: перенос уведомляет клиентов, clients_notified честный ───
+def _with_notify(fake, run):
+    """Клиентам пишет services/lesson_changes, тренеру (t5) — сам роутер:
+    подменяем оба места на время вызова."""
+    orig = L.notify, lesson_changes_module.notify
+    L.notify = lesson_changes_module.notify = fake
+    try:
+        return run()
+    finally:
+        L.notify, lesson_changes_module.notify = orig
+
+
+# Запросы переноса по порядку: lock_studio, get_scoped_lesson, число записанных,
+# правила записи (нет строки — умолчания), гейт рабочих часов (студия / время
+# студии / отметка даты / график тренера), студия для снимка зоны (P1.2: None —
+# зона не подтверждена), автор правки для ленты событий, записанные для
+# уведомления (только если они есть), a7: _find_schedule_conflict.
+def _move_seq(lesson, booked, clients):
+    recipients = [clients] if booked else []
+    return [_Studio(), lesson, booked, None, None, None, None, None, None, [], *recipients, []]
+
+
 def test_reschedule_with_client_sets_notified_true_when_email_enabled():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
-    db = _DB([
-        _Studio(),                   # lock_studio
-        lesson,                      # get_scoped_lesson
-        None, None, None, None,      # гейт рабочих часов: студия / время студии / отметка даты / график тренера
-        None,                        # студия для снимка зоны (P1.2): None → зона не подтверждена
-        [7],                         # select client_id (reschedule notify, c11)
-        [],                          # a7: _find_schedule_conflict → нет пересечений
-        0,                           # финальный _booked_count для ответа
-    ])
+    db = _DB(_move_seq(lesson, 1, [7]))
     calls = []
 
     async def fake_notify(db_, studio_id, role, event_id, context=None):
         calls.append((role, event_id))
         return True
 
-    orig = L.notify
-    L.notify = fake_notify
-    try:
-        body = LessonUpdateRequest(start_time=new_start)
-        result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
-    finally:
-        L.notify = orig
+    body = LessonUpdateRequest(start_time=new_start)
+    result = _with_notify(fake_notify, lambda: asyncio.run(L.update_lesson(1, body, _ctx(), db)))
     assert lesson.clients_notified is True
     assert result.clients_notified is True
     assert ("client", "c11") in calls
@@ -257,20 +273,13 @@ def test_reschedule_with_client_sets_notified_true_when_email_enabled():
 def test_reschedule_with_client_notified_false_when_channel_disabled():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
-    # None×4 — гейт рабочих часов (студия / время студии / отметка даты / график),
-    # ещё один None — студия для снимка зоны (P1.2)
-    db = _DB([_Studio(), lesson, None, None, None, None, None, [7], [], 0])
+    db = _DB(_move_seq(lesson, 1, [7]))
 
     async def fake_notify(db_, studio_id, role, event_id, context=None):
         return False  # ни один канал не доставил (например, все выключены)
 
-    orig = L.notify
-    L.notify = fake_notify
-    try:
-        body = LessonUpdateRequest(start_time=new_start)
-        result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
-    finally:
-        L.notify = orig
+    body = LessonUpdateRequest(start_time=new_start)
+    result = _with_notify(fake_notify, lambda: asyncio.run(L.update_lesson(1, body, _ctx(), db)))
     assert lesson.clients_notified is False
     assert result.clients_notified is False
 
@@ -281,22 +290,15 @@ def test_reschedule_without_clients_stays_false_no_notify_call():
     он не зависит от записанных клиентов)."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
-    # None×4 — гейт рабочих часов (студия / время студии / отметка даты / график),
-    # ещё один None — студия для снимка зоны (P1.2)
-    db = _DB([_Studio(), lesson, None, None, None, None, None, [], [], 0])
+    db = _DB(_move_seq(lesson, 0, []))
     calls = []
 
     async def fake_notify(db_, studio_id, role, event_id, context=None):
         calls.append((role, event_id))
         return True
 
-    orig = L.notify
-    L.notify = fake_notify
-    try:
-        body = LessonUpdateRequest(start_time=new_start)
-        result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
-    finally:
-        L.notify = orig
+    body = LessonUpdateRequest(start_time=new_start)
+    result = _with_notify(fake_notify, lambda: asyncio.run(L.update_lesson(1, body, _ctx(), db)))
     assert lesson.clients_notified is False
     assert ("client", "c11") not in calls
     assert ("trainer", "t5") in calls
@@ -322,9 +324,11 @@ def test_reschedule_cancelled_lesson_rejected():
 
 
 def test_non_reschedule_field_does_not_trigger_notify():
-    """price не входит в reschedule_fields — notify-блок вообще не заходит."""
+    """Цена без записанных: пересчитывать некому, сообщать некому — клиенту
+    ничего не уходит, clients_notified остаётся False."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
-    db = _DB([_Studio(), lesson, 0])  # lock_studio, get_scoped_lesson, финальный _booked_count — и всё
+    # lock_studio, get_scoped_lesson, записанные, правила, автор правки для ленты
+    db = _DB([_Studio(), lesson, 0, None, []])
     body = LessonUpdateRequest(price=777)
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert result.price == 777

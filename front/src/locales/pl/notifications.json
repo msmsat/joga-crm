@@ -107,7 +107,7 @@
     },
     "c11": {
       "title": "Zajęcia przeniesione",
-      "desc": "Zmieniono czas, salę lub trenera"
+      "desc": "Nowy czas lub sala"
     },
     "c12": {
       "title": "Bonus naliczony",
@@ -116,6 +116,10 @@
     "c13": {
       "title": "Kawa po zajęciach",
       "desc": "Kto z grupy idzie na kawę"
+    },
+    "c14": {
+      "title": "Zmiany w zajęciach",
+      "desc": "Trener, nazwa, poziom lub kwota do zapłaty"
     },
     "t1": {
       "title": "Nowa rezerwacja u trenera",

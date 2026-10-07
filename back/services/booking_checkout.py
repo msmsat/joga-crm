@@ -16,8 +16,13 @@
 """
 from fastapi import HTTPException
 
-from models import ClientPayment, Reservation
+from types import SimpleNamespace
+
+from sqlalchemy import select
+
+from models import ClientPayment, Reservation, StudioMember
 from services import booking, booking_quotes as quotes, held_codes, reservation_payment
+from services.lesson_compensation import calculate_compensation
 from services.discounts import FirstLessonDiscount
 
 
@@ -101,6 +106,34 @@ async def preview(db, actor: quotes.Actor, quote_id: str, codes) -> dict:
             manual_percent=getattr(codes, "manual_discount_percent", None),
             promo_code=_code(codes.promo_code), certificate_error=certificate_error),
     }
+
+
+async def master_earning(db, actor: quotes.Actor, quote_id: str, check: dict) -> dict | None:
+    """Сколько получит мастер за эту запись — оценка по его ставке в студии.
+
+    Правило одно с карточкой занятия и зарплатой (services/lesson_compensation):
+    процент — от того, что заплатит клиент по этому чеку, то есть СО скидкой
+    (850 по прайсу, скидка 20 % — процент от 680); почасовая ставка — от
+    длительности записи. Визит по абонементу цены не несёт — процент от него
+    неизвестен (`amount` пустой), подарок — ноль. Только чтение.
+    """
+    terms = (await quotes.read(db, quote_id, actor)).terms
+    teacher_id = terms.get("teacher_id")
+    if teacher_id is None:
+        return None
+    member = (await db.execute(select(StudioMember).where(
+        StudioMember.studio_id == actor.studio_id, StudioMember.user_id == teacher_id,
+    ))).scalar_one_or_none()
+    covered = check.get("covered_by")
+    if covered == "subscription":
+        clients = [{"by_subscription": True}]
+    elif covered:
+        clients = [{"is_trial": True}]
+    else:
+        clients = [{"payment": {key: check.get(key) or 0
+                                for key in ("total", "deposit_applied", "certificate_applied")}}]
+    lesson = SimpleNamespace(status="confirmed", duration_min=terms.get("duration_min") or 0)
+    return calculate_compensation(member, lesson, clients)
 
 
 async def discount(db, actor: quotes.Actor, booked: dict, percent: int) -> None:

@@ -173,7 +173,10 @@
       "not_found": "Det här blocket har redan tagits bort",
       "bad_clock": "Den tiden finns inte eller upprepas på grund av tidsomställningen — välj en annan",
       "blocks_lesson": "Passet krockar med den anställdas studiotid (städning, möte) — välj en annan tid"
-    }
+    },
+    "lesson_edit_frozen": "Klassen kan inte längre ändras — den börjar för snart. Nu bara platserna, resten efter att den är slut.",
+    "lesson_edit_too_soon": "Den nya tiden är för nära — välj en senare",
+    "lesson_stays_in_past": "En avslutad klass stannar i det förflutna — den måste sluta före nu"
   },
   "units": {
     "min": "min",

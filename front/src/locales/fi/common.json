@@ -173,7 +173,10 @@
       "not_found": "Tämä lohko on jo poistettu",
       "bad_clock": "Tätä aikaa ei ole tai se toistuu kellojen siirron takia — valitse toinen",
       "blocks_lesson": "Tunti osuu työntekijän studioaikaan (siivous, palaveri) — valitse toinen aika"
-    }
+    },
+    "lesson_edit_frozen": "Tuntia ei voi enää muuttaa — se alkaa liian pian. Nyt vain paikat, muu päättymisen jälkeen.",
+    "lesson_edit_too_soon": "Uusi aika on liian lähellä — valitse myöhäisempi",
+    "lesson_stays_in_past": "Pidetty tunti pysyy menneisyydessä — sen on päätyttävä ennen nykyhetkeä"
   },
   "units": {
     "min": "min",

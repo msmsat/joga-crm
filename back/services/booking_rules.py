@@ -262,7 +262,7 @@ def assert_bookable(rules: BookingRules, lesson: Lesson, now: datetime | None = 
 # собственного администратора.
 
 
-def _time_left(lesson, studio=None, now_instant: datetime | None = None,
+def time_left(lesson, studio=None, now_instant: datetime | None = None,
                now: datetime | None = None) -> timedelta:
     """Сколько времени осталось до начала занятия.
 
@@ -281,7 +281,7 @@ def lesson_finished(lesson, studio=None, now_instant: datetime | None = None,
                     now: datetime | None = None) -> bool:
     """Занятие уже закончилось: началось и его длительность истекла."""
     duration = timedelta(minutes=getattr(lesson, "duration_min", None) or 0)
-    return _time_left(lesson, studio, now_instant, now) + duration <= timedelta(0)
+    return time_left(lesson, studio, now_instant, now) + duration <= timedelta(0)
 
 
 def assert_staff_bookable(lesson, studio=None, now_instant: datetime | None = None,

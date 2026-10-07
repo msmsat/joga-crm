@@ -135,10 +135,22 @@
       "changed": "Cambiado",
       "capacityCaption": "{{booked}} inscritos, {{free}} libres",
       "hallCapacity": "{{space, capitalize}}: capacidad {{capacity}}",
-      "locked": "Esta clase ya no se puede cambiar: los cambios se permiten hasta 2 horas antes del inicio",
       "tooSoon": "La hora más temprana posible es {{time}}",
       "dayClosed": "Ya es tarde para este día — elige otro",
-      "notify": "Los clientes inscritos ({{booked}}) recibirán un aviso del cambio"
+      "notify": "Los clientes inscritos ({{booked}}) recibirán un aviso de los cambios",
+      "name": "Nombre",
+      "price": "Precio",
+      "level": "Nivel",
+      "equipment": "Material",
+      "levelPlaceholder": "Por ejemplo, principiantes",
+      "equipmentPlaceholder": "Por ejemplo, esterilla",
+      "nameRequired": "Introduce un nombre",
+      "priceInvalid": "El precio debe ser un número entero, cero o más",
+      "frozen": "La clase está bloqueada: los inscritos deben conocer los cambios {{lead}} antes del inicio. Ahora solo se pueden cambiar las plazas; lo demás, cuando termine.",
+      "frozenEmpty": "Faltan menos de {{lead}} para el inicio: ahora solo se pueden cambiar las plazas; lo demás, cuando termine.",
+      "finished": "La clase ya terminó: el cambio corrige su registro. Los clientes no recibirán aviso y sus pagos no cambian.",
+      "stayPast": "Una clase pasada sigue en el pasado: debe terminar antes de ahora",
+      "repriced": "Quien aún no ha pagado pagará el nuevo precio; lo ya pagado no cambia"
     },
     "createServiceConfirm": {
       "title": "¿Crear un servicio?",
@@ -358,7 +370,18 @@
       "message": "¿Reservar para el {{date}} a las {{time}}?",
       "own": "Elegir otra hora"
     },
-    "lessonDiscount": "Descuento para esta sesión"
+    "lessonDiscount": "Descuento para esta sesión",
+    "settle": {
+      "saved": "Descuento {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} recibe",
+      "percentOf": "{{rate}} de {{amount}}",
+      "studio": "Estudio",
+      "loss": "El estudio pierde {{amount}}: el descuento supera su parte",
+      "subscription": "Visita con bono: el porcentaje se calcula en Nóminas sobre el precio del servicio",
+      "ownerOnly": "Solo lo ve el propietario"
+    }
   },
   "payment": {
     "title": "Pago",

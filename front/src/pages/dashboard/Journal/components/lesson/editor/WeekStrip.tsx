@@ -5,15 +5,15 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../../components/Icons';
 import { formatDate, toDateStr, weekdayShort } from '../../../utils';
-import { earliestStart, shiftDays, weekOf } from './editorModel';
+import { shiftDays, weekOf } from './editorModel';
 
 interface Props {
   value: string;
   /** День занятия до правки — помечен, когда выбран другой. */
   original?: string;
-  /** Самое позднее начало, при котором занятие ещё помещается в день. День,
-   *  где до него уже не успеть по правилу двух часов, закрыт. */
-  latestStart: number;
+  /** День, куда занятие не перенести: до будущего уже не успеть предупредить
+   *  записанных, а прошедшее не уезжает из прошлого. Решает окно правки. */
+  isClosed: (date: string) => boolean;
   onChange: (date: string) => void;
 }
 
@@ -31,7 +31,7 @@ function weekTitle(week: string[], lang: string) {
   return capitalize(`${from} – ${to}`, lang);
 }
 
-export function WeekStrip({ value, original, latestStart, onChange }: Props) {
+export function WeekStrip({ value, original, isClosed, onChange }: Props) {
   const { t, i18n } = useTranslation('journal');
   const lang = i18n.language;
   // Листаемая неделя живёт отдельно от выбранного дня: заглянули вперёд — выбор
@@ -60,8 +60,7 @@ export function WeekStrip({ value, original, latestStart, onChange }: Props) {
       </div>
       <div className="le-days">
         {week.map((day, i) => {
-          const earliest = earliestStart(day);
-          const closed = earliest === Infinity || (earliest !== null && earliest > latestStart);
+          const closed = isClosed(day);
           const selected = day === value;
           const cls = ['le-day',
             selected && 'is-selected',

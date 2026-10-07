@@ -135,10 +135,22 @@
       "changed": "Ndryshuar",
       "capacityCaption": "Regjistruar {{booked}}, të lira {{free}}",
       "hallCapacity": "{{space, capitalize}}: kapaciteti {{capacity}}",
-      "locked": "Ky mësim nuk mund të ndryshohet më: ndryshimet lejohen deri 2 orë para fillimit",
       "tooSoon": "Ora më e hershme e mundshme është {{time}}",
       "dayClosed": "Për këtë ditë është vonë — zgjidhni një tjetër",
-      "notify": "Klientët e regjistruar ({{booked}}) do të njoftohen për ndryshimin"
+      "notify": "Klientët e regjistruar ({{booked}}) do të njoftohen për ndryshimet",
+      "name": "Emri",
+      "price": "Çmimi",
+      "level": "Niveli",
+      "equipment": "Pajisjet",
+      "levelPlaceholder": "Për shembull, fillestarë",
+      "equipmentPlaceholder": "Për shembull, dyshek",
+      "nameRequired": "Shkruani emrin",
+      "priceInvalid": "Çmimi duhet të jetë numër i plotë, të paktën zero",
+      "frozen": "Klasa është e kyçur: të regjistruarit duhet të mësojnë për ndryshimet {{lead}} para fillimit. Tani mund të ndryshohen vetëm vendet, pjesa tjetër pas përfundimit.",
+      "frozenEmpty": "Më pak se {{lead}} deri në fillim — tani mund të ndryshohen vetëm vendet, pjesa tjetër pas përfundimit.",
+      "finished": "Klasa ka përfunduar — ndryshimi korrigjon regjistrimin e saj. Klientët nuk do të njoftohen dhe pagesat e tyre nuk ndryshojnë.",
+      "stayPast": "Një klasë e kaluar mbetet në të kaluarën — duhet të mbarojë para tani",
+      "repriced": "Kush nuk ka paguar ende do të paguajë çmimin e ri — e paguara nuk ndryshon"
     },
     "createServiceConfirm": {
       "title": "Të krijohet një shërbim?",
@@ -358,7 +370,18 @@
       "message": "Të rezervohet për {{date}} në {{time}}?",
       "own": "Zgjidh një orë tjetër"
     },
-    "lessonDiscount": "Zbritje për këtë seancë"
+    "lessonDiscount": "Zbritje për këtë seancë",
+    "settle": {
+      "saved": "Zbritje {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} merr",
+      "percentOf": "{{rate}} nga {{amount}}",
+      "studio": "Studios",
+      "loss": "Studio humb {{amount}} — zbritja e kalon pjesën e saj",
+      "subscription": "Vizitë me abonim — përqindja llogaritet te Pagat nga çmimi i shërbimit",
+      "ownerOnly": "E sheh vetëm pronari"
+    }
   },
   "payment": {
     "title": "Pagesa",

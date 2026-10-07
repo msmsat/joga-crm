@@ -135,10 +135,22 @@
       "changed": "Modifié",
       "capacityCaption": "{{booked}} inscrits, {{free}} libres",
       "hallCapacity": "{{space, capitalize}} : capacité {{capacity}}",
-      "locked": "Ce cours ne peut plus être modifié : les changements sont possibles jusqu'à 2 heures avant le début",
       "tooSoon": "L'heure la plus proche possible est {{time}}",
       "dayClosed": "Trop tard pour ce jour — choisissez-en un autre",
-      "notify": "Les clients inscrits ({{booked}}) seront prévenus du changement"
+      "notify": "Les clients inscrits ({{booked}}) seront prévenus des changements",
+      "name": "Nom",
+      "price": "Prix",
+      "level": "Niveau",
+      "equipment": "Matériel",
+      "levelPlaceholder": "Par exemple, débutants",
+      "equipmentPlaceholder": "Par exemple, un tapis",
+      "nameRequired": "Saisissez un nom",
+      "priceInvalid": "Le prix doit être un nombre entier, zéro ou plus",
+      "frozen": "Le cours est verrouillé : les inscrits doivent être prévenus des changements {{lead}} avant le début. Seules les places peuvent changer maintenant, le reste après la fin.",
+      "frozenEmpty": "Moins de {{lead}} avant le début : seules les places peuvent changer maintenant, le reste après la fin.",
+      "finished": "Le cours est terminé : la modification corrige son historique. Les clients ne seront pas prévenus et leurs paiements restent inchangés.",
+      "stayPast": "Un cours passé reste dans le passé : il doit se terminer avant maintenant",
+      "repriced": "Ceux qui n'ont pas encore payé paieront le nouveau prix ; ce qui est payé ne change pas"
     },
     "createServiceConfirm": {
       "title": "Créer une prestation ?",
@@ -358,7 +370,18 @@
       "message": "Réserver le {{date}} à {{time}} ?",
       "own": "Choisir une autre heure"
     },
-    "lessonDiscount": "Remise sur cette séance"
+    "lessonDiscount": "Remise sur cette séance",
+    "settle": {
+      "saved": "Remise {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} touche",
+      "percentOf": "{{rate}} de {{amount}}",
+      "studio": "Studio",
+      "loss": "Le studio perd {{amount}} : la remise dépasse sa part",
+      "subscription": "Visite avec abonnement : le pourcentage est calculé dans Salaires sur le prix du service",
+      "ownerOnly": "Visible uniquement par le propriétaire"
+    }
   },
   "payment": {
     "title": "Paiement",

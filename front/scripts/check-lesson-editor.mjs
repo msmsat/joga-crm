@@ -1,6 +1,7 @@
 // Модель окна «Изменить занятие» (Journal/components/lesson/editor/editorModel.ts):
 // неделя для ленты дней, сдвиг начала без потери длительности, длительность,
-// правило сервера «не позднее чем за 2 часа» и список того, что изменилось.
+// фазы правки (зеркало back/services/lesson_edit_policy.py) и список того, что
+// изменилось.
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
@@ -84,29 +85,45 @@ test('длительность не короче минимума и не за 2
   assert.equal(min(m.resize(at(22), at(23), 5)), min(at(23)));
 });
 
-test('правило сервера: менять можно не позднее чем за 2 часа до начала', () => {
-  const now = new Date('2026-09-09T06:30:00');
-  assert.equal(m.isLocked('2026-09-09', at(8), now), true, 'до начала полтора часа');
-  assert.equal(m.isLocked('2026-09-09', at(8), new Date('2026-09-09T05:59:00')), false);
-  assert.equal(m.isLocked('2026-09-08', at(20), now), true, 'занятие уже прошло');
+test('последний момент для правки: срок отмены записи + 2 ч, без записанных — 2 ч', () => {
+  assert.equal(m.editLeadMin(3, 240), 360);
+  assert.equal(m.editLeadMin(1, 0), 120);
+  assert.equal(m.editLeadMin(0, 240), 120, 'предупреждать некого');
 });
 
-test('самое раннее новое начало — через 2 часа от текущего момента', () => {
+test('фазы занятия: можно, заморожено, прошло', () => {
+  const now = new Date('2026-09-09T06:30:00');
+  // Начало в 08:00, конец в 09:00.
+  assert.equal(m.editPhase('2026-09-09', at(8), at(9), 120, now), 'frozen', 'до начала полтора часа');
+  assert.equal(m.editPhase('2026-09-09', at(8), at(9), 120, new Date('2026-09-09T05:59:00')), 'open');
+  assert.equal(m.editPhase('2026-09-09', at(14), at(15), 360, now), 'open', 'до начала 7,5 ч при окне 6 ч');
+  assert.equal(m.editPhase('2026-09-09', at(12), at(13), 360, now), 'frozen', 'до начала 5,5 ч при окне 6 ч');
+  assert.equal(m.editPhase('2026-09-09', at(8), at(9), 120, new Date('2026-09-09T08:30:00')), 'frozen', 'идёт');
+  assert.equal(m.editPhase('2026-09-08', at(20), at(21), 360, now), 'finished', 'занятие уже прошло');
+});
+
+test('самое раннее новое начало — через окно правки от текущего момента', () => {
   const now = new Date('2026-09-09T09:10:00');
-  assert.equal(min(m.earliestStart('2026-09-09', now)), min(at(11, 10)));
-  assert.equal(m.earliestStart('2026-09-10', now), null, 'завтра доступно целиком');
-  assert.equal(m.earliestStart('2026-09-08', now), Infinity, 'вчера недоступно');
-  assert.equal(m.earliestStart('2026-09-09', new Date('2026-09-09T21:30:00')), Infinity, 'до 23:00 не успеть');
+  assert.equal(min(m.earliestStart('2026-09-09', 120, now)), min(at(11, 10)));
+  assert.equal(min(m.earliestStart('2026-09-09', 360, now)), min(at(15, 10)), 'с записанными окно шире');
+  assert.equal(m.earliestStart('2026-09-10', 120, now), null, 'завтра доступно целиком');
+  assert.equal(m.earliestStart('2026-09-08', 120, now), Infinity, 'вчера недоступно');
+  assert.equal(m.earliestStart('2026-09-09', 120, new Date('2026-09-09T21:30:00')), Infinity, 'до 23:00 не успеть');
+});
+
+test('прошедшее занятие остаётся в прошлом', () => {
+  const now = new Date('2026-09-09T12:20:00');
+  assert.equal(min(m.latestEnd('2026-09-09', now)), min(at(12, 20)), 'сегодня — конец не позже «сейчас»');
+  assert.equal(m.latestEnd('2026-09-08', now), null, 'вчера — без предела');
+  assert.equal(m.latestEnd('2026-09-10', now), -Infinity, 'завтра прошлого нет');
+  assert.equal(m.latestEnd('2026-09-09', new Date('2026-09-09T07:02:00')), -Infinity, 'день едва начался');
 });
 
 const original = {
   id: 1, serviceId: 3, title: 'Хатха', date: '2026-09-09', timeStart: at(8), timeEnd: at(8, 55),
-  trainer: 5, hall: 'The Loft', maxClients: 16,
+  trainer: 5, hall: 'The Loft', maxClients: 16, price: 500, level: '', equipment: 'Коврик',
 };
-const draftOf = patch => ({
-  serviceId: 3, title: 'Хатха', date: '2026-09-09', timeStart: at(8), timeEnd: at(8, 55),
-  trainer: 5, hall: 'The Loft', maxClients: '16', ...patch,
-});
+const draftOf = patch => ({ ...m.draftOf(original), ...patch });
 
 test('изменения считаются по каждому полю отдельно', () => {
   assert.deepEqual([...m.changesOf(original, draftOf({}))], []);
@@ -115,11 +132,25 @@ test('изменения считаются по каждому полю отд�
   assert.deepEqual([...m.changesOf(original, draftOf({ timeEnd: at(9) }))], ['time']);
   assert.deepEqual([...m.changesOf(original, draftOf({ trainer: 6, hall: 'Flow' }))], ['trainer', 'hall']);
   assert.deepEqual([...m.changesOf(original, draftOf({ serviceId: 4 }))], ['service']);
+  assert.deepEqual([...m.changesOf(original, draftOf({ title: 'Хатха для начинающих' }))], ['name']);
+  assert.deepEqual([...m.changesOf(original, draftOf({ title: ' Хатха ' }))], [], 'пробелы по краям — не правка');
+  assert.deepEqual([...m.changesOf(original, draftOf({ price: '650' }))], ['price']);
+  assert.deepEqual([...m.changesOf(original, draftOf({ level: 'Начинающие', equipment: 'Блоки' }))],
+    ['level', 'equipment']);
 });
 
-test('уведомление записанным — только при переносе дня, времени или зала', () => {
+test('черновик из карточки — та же карточка, ничего не изменено', () => {
+  const draft = m.draftOf(original);
+  assert.equal(draft.price, '500');
+  assert.equal(draft.priceEdited, false);
+  assert.deepEqual([...m.changesOf(original, draft)], []);
+});
+
+test('уведомление записанным — о всём, что они видят; места — тихие', () => {
   assert.equal(m.notifiesClients(['capacity']), false);
-  assert.equal(m.notifiesClients(['trainer', 'service']), false);
+  assert.equal(m.notifiesClients(['trainer', 'service']), true);
+  assert.equal(m.notifiesClients(['name']), true);
+  assert.equal(m.notifiesClients(['price']), true);
   assert.equal(m.notifiesClients(['time']), true);
   assert.equal(m.notifiesClients(['date']), true);
   assert.equal(m.notifiesClients(['hall']), true);

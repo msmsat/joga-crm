@@ -137,10 +137,22 @@
       "changed": "Zmieniono",
       "capacityCaption": "Zapisano {{booked}}, wolne {{free}}",
       "hallCapacity": "{{space, capitalize}}: pojemność {{capacity}}",
-      "locked": "Tych zajęć nie można już zmienić: zmiany są możliwe najpóźniej 2 godziny przed rozpoczęciem",
       "tooSoon": "Najwcześniejsza możliwa godzina to {{time}}",
       "dayClosed": "Na ten dzień jest już za późno — wybierz inny",
-      "notify": "Zapisani klienci ({{booked}}) dostaną powiadomienie o zmianie"
+      "notify": "Zapisani klienci ({{booked}}) otrzymają powiadomienie o zmianach",
+      "name": "Nazwa",
+      "price": "Cena",
+      "level": "Poziom",
+      "equipment": "Sprzęt",
+      "levelPlaceholder": "Na przykład dla początkujących",
+      "equipmentPlaceholder": "Na przykład mata",
+      "nameRequired": "Wpisz nazwę",
+      "priceInvalid": "Cena musi być liczbą całkowitą, co najmniej zero",
+      "frozen": "Zajęcia są zablokowane: zapisani muszą dowiedzieć się o zmianach {{lead}} przed rozpoczęciem. Teraz można zmienić tylko miejsca, resztę po zakończeniu.",
+      "frozenEmpty": "Do rozpoczęcia zostało mniej niż {{lead}} — teraz można zmienić tylko miejsca, resztę po zakończeniu.",
+      "finished": "Zajęcia już się odbyły — zmiana poprawi zapis o nich. Klienci nie dostaną powiadomienia, a ich płatności się nie zmienią.",
+      "stayPast": "Minione zajęcia zostają w przeszłości — muszą się skończyć przed chwilą obecną",
+      "repriced": "Kto jeszcze nie zapłacił, zapłaci nową cenę — opłacone się nie zmienia"
     },
     "createServiceConfirm": {
       "title": "Utworzyć usługę?",
@@ -366,7 +378,18 @@
       "message": "Zapisać na {{date}} o {{time}}?",
       "own": "Wybierz inną godzinę"
     },
-    "lessonDiscount": "Zniżka na te zajęcia"
+    "lessonDiscount": "Zniżka na te zajęcia",
+    "settle": {
+      "saved": "Rabat {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} otrzyma",
+      "percentOf": "{{rate}} z {{amount}}",
+      "studio": "Studiu",
+      "loss": "Studio traci {{amount}} — rabat przekracza jego udział",
+      "subscription": "Wizyta z karnetu — procent policzymy w Wynagrodzeniach od ceny usługi",
+      "ownerOnly": "Widzi tylko właściciel"
+    }
   },
   "payment": {
     "title": "Płatność",

@@ -135,10 +135,22 @@
       "changed": "Endret",
       "capacityCaption": "{{booked}} påmeldt, {{free}} ledige",
       "hallCapacity": "{{space, capitalize}} har plass til {{capacity}}",
-      "locked": "Økten kan ikke lenger endres: endringer er mulige til 2 timer før start",
       "tooSoon": "Tidligst mulig: {{time}}",
       "dayClosed": "Det er for sent for denne dagen — velg en annen",
-      "notify": "Påmeldte kunder ({{booked}}) får beskjed om endringen"
+      "notify": "Påmeldte kunder ({{booked}}) får beskjed om endringene",
+      "name": "Navn",
+      "price": "Pris",
+      "level": "Nivå",
+      "equipment": "Utstyr",
+      "levelPlaceholder": "For eksempel nybegynnere",
+      "equipmentPlaceholder": "For eksempel en matte",
+      "nameRequired": "Skriv inn et navn",
+      "priceInvalid": "Prisen må være et heltall, minst null",
+      "frozen": "Klassen er låst: påmeldte må få vite om endringer {{lead}} før start. Nå kan bare plassene endres, resten etter at den er ferdig.",
+      "frozenEmpty": "Mindre enn {{lead}} til start — nå kan bare plassene endres, resten etter at den er ferdig.",
+      "finished": "Klassen er ferdig — endringen retter registreringen. Kundene får ikke beskjed, og betalingene deres endres ikke.",
+      "stayPast": "En ferdig klasse blir i fortiden — den må slutte før nå",
+      "repriced": "De som ikke har betalt ennå, betaler den nye prisen — det betalte endres ikke"
     },
     "createServiceConfirm": {
       "title": "Opprette en tjeneste?",
@@ -358,7 +370,18 @@
       "message": "Booke {{date}} kl. {{time}}?",
       "own": "Velg et annet tidspunkt"
     },
-    "lessonDiscount": "Rabatt på denne timen"
+    "lessonDiscount": "Rabatt på denne timen",
+    "settle": {
+      "saved": "Rabatt {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} får",
+      "percentOf": "{{rate}} av {{amount}}",
+      "studio": "Studioet",
+      "loss": "Studioet taper {{amount}} — rabatten er større enn andelen",
+      "subscription": "Besøk på klippekort — prosenten beregnes i Lønn ut fra tjenestens pris",
+      "ownerOnly": "Bare synlig for eieren"
+    }
   },
   "payment": {
     "title": "Betaling",

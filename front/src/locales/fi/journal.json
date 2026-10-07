@@ -135,10 +135,22 @@
       "changed": "Muutettu",
       "capacityCaption": "{{booked}} ilmoittautunut, {{free}} vapaana",
       "hallCapacity": "{{space, capitalize}}: tilaa {{capacity}}",
-      "locked": "Tuntia ei voi enää muuttaa: muutokset ovat mahdollisia 2 tuntiin ennen alkua",
       "tooSoon": "Aikaisin mahdollinen aika on {{time}}",
       "dayClosed": "Tälle päivälle on liian myöhäistä — valitse toinen",
-      "notify": "Ilmoittautuneet asiakkaat ({{booked}}) saavat ilmoituksen muutoksesta"
+      "notify": "Ilmoittautuneet asiakkaat ({{booked}}) saavat ilmoituksen muutoksista",
+      "name": "Nimi",
+      "price": "Hinta",
+      "level": "Taso",
+      "equipment": "Välineet",
+      "levelPlaceholder": "Esimerkiksi aloittelijat",
+      "equipmentPlaceholder": "Esimerkiksi matto",
+      "nameRequired": "Anna nimi",
+      "priceInvalid": "Hinnan on oltava kokonaisluku, vähintään nolla",
+      "frozen": "Tunti on lukittu: ilmoittautuneiden on saatava tieto muutoksista {{lead}} ennen alkua. Nyt voi muuttaa vain paikkoja, muuta vasta päättymisen jälkeen.",
+      "frozenEmpty": "Alkuun on alle {{lead}} — nyt voi muuttaa vain paikkoja, muuta vasta päättymisen jälkeen.",
+      "finished": "Tunti on jo pidetty — muutos korjaa sen tiedot. Asiakkaille ei lähetetä ilmoitusta, eivätkä heidän maksunsa muutu.",
+      "stayPast": "Pidetty tunti pysyy menneisyydessä — sen on päätyttävä ennen nykyhetkeä",
+      "repriced": "Ne, jotka eivät ole vielä maksaneet, maksavat uuden hinnan — maksetut eivät muutu"
     },
     "createServiceConfirm": {
       "title": "Luodaanko palvelu?",
@@ -358,7 +370,18 @@
       "message": "Varataanko {{date}} klo {{time}}?",
       "own": "Valitse toinen aika"
     },
-    "lessonDiscount": "Alennus tälle tunnille"
+    "lessonDiscount": "Alennus tälle tunnille",
+    "settle": {
+      "saved": "Alennus {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} saa",
+      "percentOf": "{{rate}} summasta {{amount}}",
+      "studio": "Studiolle",
+      "loss": "Studio häviää {{amount}} — alennus ylittää sen osuuden",
+      "subscription": "Sarjakorttikäynti — prosentti lasketaan Palkoissa palvelun hinnasta",
+      "ownerOnly": "Näkyy vain omistajalle"
+    }
   },
   "payment": {
     "title": "Maksu",

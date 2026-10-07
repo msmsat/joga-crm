@@ -136,10 +136,22 @@
       "changed": "Modificat",
       "capacityCaption": "{{booked}} înscriși, {{free}} libere",
       "hallCapacity": "{{space, capitalize}}: capacitate {{capacity}}",
-      "locked": "Ședința nu mai poate fi modificată: modificările sunt posibile cu cel puțin 2 ore înainte de început",
       "tooSoon": "Cea mai apropiată oră posibilă este {{time}}",
       "dayClosed": "Este prea târziu pentru această zi — alegeți alta",
-      "notify": "Clienții înscriși ({{booked}}) vor primi o notificare despre modificare"
+      "notify": "Clienții înscriși ({{booked}}) vor fi anunțați despre modificări",
+      "name": "Nume",
+      "price": "Preț",
+      "level": "Nivel",
+      "equipment": "Echipament",
+      "levelPlaceholder": "De exemplu, începători",
+      "equipmentPlaceholder": "De exemplu, saltea",
+      "nameRequired": "Introduceți un nume",
+      "priceInvalid": "Prețul trebuie să fie un număr întreg, cel puțin zero",
+      "frozen": "Clasa este blocată: înscrișii trebuie să afle de modificări cu {{lead}} înainte de început. Acum se pot schimba doar locurile, restul după final.",
+      "frozenEmpty": "Mai puțin de {{lead}} până la început — acum se pot schimba doar locurile, restul după final.",
+      "finished": "Clasa s-a încheiat — modificarea corectează înregistrarea. Clienții nu vor fi anunțați, iar plățile lor nu se schimbă.",
+      "stayPast": "O clasă trecută rămâne în trecut — trebuie să se termine înainte de acum",
+      "repriced": "Cine nu a plătit încă va plăti noul preț — ce s-a plătit nu se schimbă"
     },
     "createServiceConfirm": {
       "title": "Creați un serviciu?",
@@ -362,7 +374,18 @@
       "message": "Programați pentru {{date}} la {{time}}?",
       "own": "Alegeți altă oră"
     },
-    "lessonDiscount": "Reducere pentru această ședință"
+    "lessonDiscount": "Reducere pentru această ședință",
+    "settle": {
+      "saved": "Reducere {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} primește",
+      "percentOf": "{{rate}} din {{amount}}",
+      "studio": "Studioului",
+      "loss": "Studioul pierde {{amount}} — reducerea depășește partea sa",
+      "subscription": "Vizită cu abonament — procentul se calculează la Salarii din prețul serviciului",
+      "ownerOnly": "Vizibil doar proprietarului"
+    }
   },
   "payment": {
     "title": "Plată",

@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleApi } from '../../../../api/schedule';
 import { hybridApi } from '../../../../api/booking/hybrid.api';
 import type { BookingRead, CrmRescheduleQuoteRequest } from '../../../../api/booking/hybrid.types';
-import type { LessonCreate, ReservationPaymentOptions } from '../../../../api/schedule/schedule.types';
+import type { LessonCreate, LessonUpdate, ReservationPaymentOptions } from '../../../../api/schedule/schedule.types';
 import { queryKeys } from '../../../../api/queryKeys';
 import type { Booking } from '../types';
 import { indexToDateTime } from '../utils';
@@ -58,13 +58,13 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
 
   // ── Перенос / растяжение / правка из попапа: один PATCH-путь ──
   const updateMut = useMutation({
-    mutationFn: ({ next, payload }: { prev: Booking; next: Booking; payload: Partial<LessonCreate> }) =>
+    mutationFn: ({ next, payload }: { prev: Booking; next: Booking; payload: LessonUpdate }) =>
       scheduleApi.updateLesson(next.id, payload),
     onMutate: ({ prev, next }) => patchCache(list => list.map(b => (b.id === prev.id ? next : b))),
     onError: (_err, _vars, ctx) => rollback(ctx),
     onSettled: () => invalidate(),
   });
-  const updateLesson = async (prev: Booking, next: Booking, payload: Partial<LessonCreate>): Promise<MutationResult> => {
+  const updateLesson = async (prev: Booking, next: Booking, payload: LessonUpdate): Promise<MutationResult> => {
     await updateMut.mutateAsync({ prev, next, payload });
     return { prev, next };
   };

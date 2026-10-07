@@ -136,10 +136,22 @@
       "changed": "Změněno",
       "capacityCaption": "Zapsáno {{booked}}, volno {{free}}",
       "hallCapacity": "{{space, capitalize}} pojme {{capacity}}",
-      "locked": "Lekci už nelze změnit: měnit ji lze nejpozději 2 hodiny před začátkem",
       "tooSoon": "Nejbližší čas pro přesun je {{time}}",
       "dayClosed": "Na tento den už je pozdě — vyberte jiný",
-      "notify": "Zapsaní klienti ({{booked}}) dostanou oznámení o změně"
+      "notify": "Přihlášení klienti ({{booked}}) dostanou oznámení o změnách",
+      "name": "Název",
+      "price": "Cena",
+      "level": "Úroveň",
+      "equipment": "Vybavení",
+      "levelPlaceholder": "Například pro začátečníky",
+      "equipmentPlaceholder": "Například podložka",
+      "nameRequired": "Zadejte název",
+      "priceInvalid": "Cena musí být celé číslo, nejméně nula",
+      "frozen": "Lekci už nelze měnit: přihlášení se musí o změnách dozvědět {{lead}} před začátkem. Teď lze změnit jen počet míst, zbytek až po skončení.",
+      "frozenEmpty": "Do začátku zbývá méně než {{lead}} — teď lze změnit jen počet míst, zbytek až po skončení.",
+      "finished": "Lekce už proběhla — úprava opraví záznam o ní. Klientům nic nepřijde a jejich platby se nezmění.",
+      "stayPast": "Proběhlá lekce zůstává v minulosti — musí skončit dřív než teď",
+      "repriced": "Kdo ještě nezaplatil, zaplatí novou cenu — zaplacené se nemění"
     },
     "createServiceConfirm": {
       "title": "Vytvořit službu?",
@@ -362,7 +374,18 @@
       "message": "Objednat na {{date}} v {{time}}?",
       "own": "Vybrat jiný čas"
     },
-    "lessonDiscount": "Sleva na tuto lekci"
+    "lessonDiscount": "Sleva na tuto lekci",
+    "settle": {
+      "saved": "Sleva {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} dostane",
+      "percentOf": "{{rate}} z {{amount}}",
+      "studio": "Studiu",
+      "loss": "Studio prodělá {{amount}} — sleva je větší než jeho podíl",
+      "subscription": "Návštěva na permanentku — procento se spočítá ve Mzdách z ceny služby",
+      "ownerOnly": "Vidí jen majitel"
+    }
   },
   "payment": {
     "title": "Platba",

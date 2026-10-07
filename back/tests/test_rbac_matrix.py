@@ -92,9 +92,9 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("GET", "/clients/{client_id}/bumpix/media/{media_id}"): ("owner", "admin", "trainer"),
     ("GET", "/clients/{client_id}/media/{media_id}"): ("owner", "admin", "trainer"),
 
-    # ── Журнал. Роль проверяется В ТЕЛЕ ручки, а не гвардом: тренеру нужно
-    #    читать свои занятия и отмечать приход, но не менять расписание.
-    #    Скоуп «своё занятие» — dependencies.get_scoped_lesson.
+    # ── Журнал. Роль проверяется В ТЕЛЕ ручки, а не гвардом: тренер читает и
+    #    меняет СВОИ занятия и их клиентов, но не создаёт и не отменяет занятия
+    #    и не ведёт кассу. Скоуп «своё занятие» — dependencies.get_scoped_lesson.
     ("GET", "/schedule/halls"): ("*studio",),
     ("GET", "/schedule/lessons"): ("*studio",),
     ("GET", "/schedule/lessons/days"): ("*studio",),
@@ -108,17 +108,19 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("GET", "/schedule/bumpix-events"): ("owner", "admin", "trainer"),
     ("GET", "/schedule/bumpix-days"): ("owner", "admin", "trainer"),
     ("GET", "/schedule/lessons/{lesson_id}/bumpix"): ("owner", "admin", "trainer"),
-    # /schedule/lessons/{id}/eligible-clients — только владелец и админ: это вся
-    # клиентская база с телефонами, тренер видит лишь своих клиентов.
+    # Кого записать на занятие: тренеру — на своё (get_scoped_lesson) и без
+    # телефонов: в Клиентах он видит только своих, контакты остальных запись
+    # на занятие ему не выдаёт.
+    ("GET", "/schedule/lessons/{lesson_id}/eligible-clients"): ("*studio",),
     ("POST", "/schedule/lessons"): ("*studio",),                       # тело: тренеру 403
-    ("PATCH", "/schedule/lessons/{lesson_id}"): ("*studio",),          # тело: тренеру 403
+    ("PATCH", "/schedule/lessons/{lesson_id}"): ("*studio",),          # тренер меняет СВОЁ (services/lesson_edit_policy)
     ("DELETE", "/schedule/lessons/{lesson_id}"): ("*studio",),         # тело: тренеру 403
     ("PATCH", "/schedule/lessons/{lesson_id}/cancel"): ("*studio",),   # тело: тренеру 403
-    ("POST", "/schedule/reservations"): ("*studio",),                  # тело: тренеру 403
-    ("PATCH", "/schedule/reservations/{reservation_id}/cancel"): ("*studio",),  # тело: тренеру 403
+    ("POST", "/schedule/reservations"): ("*studio",),                  # тренер записывает на СВОЁ
+    ("PATCH", "/schedule/reservations/{reservation_id}/cancel"): ("*studio",),  # тренер снимает со СВОЕГО
     ("PATCH", "/schedule/reservations/{reservation_id}/attend"): ("*studio",),  # тренер отмечает приход на СВОЁМ
     ("PATCH", "/schedule/reservations/{reservation_id}/attendance"): ("*studio",),  # пришёл/не пришёл на СВОЁМ; снять автозачисление тренеру 403
-    ("PATCH", "/schedule/reservations/{reservation_id}/confirm"): ("*studio",),  # одобрение заявки из мини-аппа
+    ("PATCH", "/schedule/reservations/{reservation_id}/confirm"): ("*studio",),  # одобрение заявки из мини-аппа, тренер — на СВОЁМ
     ("POST", "/schedule/reservations/{reservation_id}/pay"): ("*studio",),     # тело: тренеру 403 — кассу он не ведёт
     ("POST", "/schedule/reservations/{reservation_id}/payment-cancel"): ("*studio",),  # тело: тренеру 403 — кассу он не ведёт
     ("POST", "/schedule/reservations/{reservation_id}/payment-preview"): ("*studio",),  # тело: тренеру 403 — чек кассы, только чтение

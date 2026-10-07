@@ -56,6 +56,8 @@ class _Lesson:
         # Статус записи-источника при переносе (Bumpix) — поле модели,
         # уходит в ответ _lesson_read, фейк обязан его нести.
         self.source_status = None
+        # Отменённое и убранное из сетки — поле модели, уходит в ответ.
+        self.hidden_at = None
 
 
 class _R:
@@ -129,7 +131,7 @@ def test_update_cancel_reason_only_bypasses_time_rule():
     """Занятие уже в прошлом/отменено — обычный PATCH был бы заблокирован (задача 1),
     но правка только cancel_reason разрешена явно (задача 1, п.4 + задача 2, п.3)."""
     lesson = _Lesson(start_time=datetime.now() - timedelta(hours=5), status="cancelled")
-    db = _DB([_Studio(), lesson, 0])  # lock_studio, get_scoped_lesson, затем _booked_count
+    db = _DB([_Studio(), lesson, 0, None])  # lock_studio, get_scoped_lesson, записанные, правила записи
     body = LessonUpdateRequest(cancel_reason="Причина уточнена постфактум")
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert lesson.cancel_reason == "Причина уточнена постфактум"
@@ -141,24 +143,25 @@ def test_update_cancel_reason_plus_other_field_still_blocked_when_soon():
     """Если среди присланных полей есть что-то, кроме cancel_reason, — правило
     времени применяется как обычно (guard не должен пропускать лишнее)."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(minutes=30))
-    db = _DB([_Studio(), lesson])  # lock_studio, get_scoped_lesson
+    db = _DB([_Studio(), lesson, 0, None])  # lock_studio, get_scoped_lesson, записанные, правила
     body = LessonUpdateRequest(cancel_reason="x", price=100)
     try:
         asyncio.run(L.update_lesson(1, body, _ctx(), db))
         raise AssertionError("ожидали HTTPException(400)")
     except HTTPException as e:
         assert e.status_code == 400
-        assert "2 часа" in e.detail
+        assert e.detail["code"] == "lesson_edit_frozen"
+        assert "2 ч" in e.detail["message"]
 
 
 # ─── Заметка о занятии живёт по тому же правилу, что и причина отмены ──────
 def test_update_notes_bypasses_time_rule():
     """Заметку о занятии пишут ЧАЩЕ ВСЕГО после него («пришла с травмой»,
     «просила сменить коврик»). Окно «не позднее чем за 2 часа» запретило бы
-    ровно этот случай, поэтому notes/photos стоят в _FREE_FIELDS рядом с
-    cancel_reason."""
+    ровно этот случай, поэтому notes/photos — тихие поля
+    (services/lesson_edit_policy.QUIET_FIELDS) рядом с cancel_reason."""
     lesson = _Lesson(start_time=datetime.now() - timedelta(hours=3))
-    db = _DB([_Studio(), lesson, 0])
+    db = _DB([_Studio(), lesson, 0, None])
     body = LessonUpdateRequest(notes="Ира ушла раньше", photos=["/static/notes/" + "a" * 32 + ".jpg"])
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert lesson.notes == "Ира ушла раньше"
@@ -170,14 +173,15 @@ def test_update_notes_plus_move_still_blocked_when_soon():
     """Заметка не должна становиться лазейкой для переноса: как только рядом
     появляется поле, которое занятие ДВИГАЕТ, правило времени возвращается."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(minutes=30))
-    db = _DB([_Studio(), lesson])
+    db = _DB([_Studio(), lesson, 0, None])
     body = LessonUpdateRequest(notes="x", start_time=datetime.now() + timedelta(days=1))
     try:
         asyncio.run(L.update_lesson(1, body, _ctx(), db))
         raise AssertionError("ожидали HTTPException(400)")
     except HTTPException as e:
         assert e.status_code == 400
-        assert "2 часа" in e.detail
+        assert e.detail["code"] == "lesson_edit_frozen"
+        assert "2 ч" in e.detail["message"]
 
 
 def test_note_photo_must_come_from_upload():

@@ -173,7 +173,10 @@
       "not_found": "Dieser Block wurde bereits entfernt",
       "bad_clock": "Diese Uhrzeit gibt es nicht oder sie wiederholt sich wegen der Zeitumstellung — wählen Sie eine andere",
       "blocks_lesson": "Der Kurs überschneidet sich mit der Studiozeit des Mitarbeiters (Reinigung, Meeting) — wählen Sie eine andere Zeit"
-    }
+    },
+    "lesson_edit_frozen": "Der Kurs lässt sich nicht mehr ändern — er beginnt zu bald. Jetzt nur die Plätze, alles andere nach dem Ende.",
+    "lesson_edit_too_soon": "Die neue Zeit ist zu nah — wählen Sie eine spätere",
+    "lesson_stays_in_past": "Ein vergangener Kurs bleibt in der Vergangenheit — er muss vor jetzt enden"
   },
   "units": {
     "min": "Min.",

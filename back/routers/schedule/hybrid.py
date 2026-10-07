@@ -123,7 +123,12 @@ async def payment_preview(request: Request, quote_id: str, body: PaymentPreviewR
     каждый применённый код.
     """
     actor = await _quote_actor(db, ctx, quote_id)
-    return await booking_checkout.preview(db, actor, quote_id, body)
+    check = await booking_checkout.preview(db, actor, quote_id, body)
+    if ctx.role == "owner":
+        # Заработок мастера — по его ставке: условия оплаты сотрудников видит
+        # только владелец, как в Финансах и в карточке занятия.
+        check["compensation"] = await booking_checkout.master_earning(db, actor, quote_id, check)
+    return check
 
 
 @router.post("/bookings", response_model=BookingRead)

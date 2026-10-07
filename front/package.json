@@ -31,6 +31,7 @@
     "check:lesson-compensation": "node --experimental-vm-modules scripts/check-lesson-compensation.mjs",
     "check:lesson-funding": "node --experimental-vm-modules scripts/check-lesson-funding.mjs",
     "check:lesson-editor": "node --experimental-vm-modules scripts/check-lesson-editor.mjs",
+    "check:booking-settle": "node --experimental-vm-modules scripts/check-booking-settle.mjs",
     "check:service-duration": "node --experimental-vm-modules scripts/check-service-duration.mjs",
     "check:scenes": "node scripts/check-scenes.mjs",
     "check:staff-hours": "node scripts/check-staff-hours.mjs",

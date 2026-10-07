@@ -135,10 +135,22 @@
       "changed": "Ændret",
       "capacityCaption": "{{booked}} tilmeldt, {{free}} ledige",
       "hallCapacity": "{{space, capitalize}} har plads til {{capacity}}",
-      "locked": "Holdet kan ikke længere ændres: ændringer er mulige indtil 2 timer før start",
       "tooSoon": "Tidligst muligt: {{time}}",
       "dayClosed": "Det er for sent for denne dag — vælg en anden",
-      "notify": "Tilmeldte kunder ({{booked}}) får besked om ændringen"
+      "notify": "Tilmeldte kunder ({{booked}}) får besked om ændringerne",
+      "name": "Navn",
+      "price": "Pris",
+      "level": "Niveau",
+      "equipment": "Udstyr",
+      "levelPlaceholder": "For eksempel begyndere",
+      "equipmentPlaceholder": "For eksempel en måtte",
+      "nameRequired": "Angiv et navn",
+      "priceInvalid": "Prisen skal være et helt tal, mindst nul",
+      "frozen": "Klassen er låst: tilmeldte skal høre om ændringer {{lead}} før start. Nu kan kun pladserne ændres, resten efter afslutning.",
+      "frozenEmpty": "Mindre end {{lead}} til start — nu kan kun pladserne ændres, resten efter afslutning.",
+      "finished": "Klassen er afsluttet — ændringen retter registreringen. Kunderne får ingen besked, og deres betalinger ændres ikke.",
+      "stayPast": "En afsluttet klasse forbliver i fortiden — den skal slutte før nu",
+      "repriced": "Den, der ikke har betalt endnu, betaler den nye pris — det betalte ændres ikke"
     },
     "createServiceConfirm": {
       "title": "Opret en ydelse?",
@@ -358,7 +370,18 @@
       "message": "Book {{date}} kl. {{time}}?",
       "own": "Vælg et andet tidspunkt"
     },
-    "lessonDiscount": "Rabat på denne time"
+    "lessonDiscount": "Rabat på denne time",
+    "settle": {
+      "saved": "Rabat {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} får",
+      "percentOf": "{{rate}} af {{amount}}",
+      "studio": "Studiet",
+      "loss": "Studiet taber {{amount}} — rabatten er større end dets andel",
+      "subscription": "Besøg på klippekort — procenten beregnes i Løn ud fra ydelsens pris",
+      "ownerOnly": "Kun synligt for ejeren"
+    }
   },
   "payment": {
     "title": "Betaling",

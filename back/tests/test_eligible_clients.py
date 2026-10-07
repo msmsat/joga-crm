@@ -107,7 +107,8 @@ async def _seed(*, price=PRICE, trial=False, percent=100) -> dict:
         for key, name, active in (("anna", "Анна", True), ("boris", "Борис", True),
                                   ("vera", "Вера", True), ("gleb", "Глеб", True),
                                   ("dina", "Дина", False), ("egor", "Егор", True)):
-            people[key] = Client(studio_id=studio.id, name=name, is_active=active)
+            people[key] = Client(studio_id=studio.id, name=name, is_active=active,
+                                 phone=f"+42077700{len(people):04d}")
         db.add_all(people.values())
         await db.flush()
 
@@ -181,17 +182,19 @@ def _http(ids, role):
     return AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
 
 
-def test_trainer_gets_no_client_base_even_for_own_lesson():
-    """Список — вся база студии с телефонами, а тренер видит только своих
-    клиентов и записывать не может. Его собственное занятие (в посеве он его
-    и ведёт) ничего не меняет."""
+def test_trainer_books_on_own_lesson_but_gets_no_phone_numbers():
+    """Тренер записывает клиентов на своё занятие (в посеве он его и ведёт), и
+    выбирать ему есть из кого. Но список — вся база студии, а в Клиентах он
+    видит только своих: контактов остальных запись на занятие ему не выдаёт."""
     async def scenario(ids):
         async with _http(ids, "trainer") as http:
-            refused = await http.get(f"/schedule/lessons/{ids['lesson']}/eligible-clients")
-        assert refused.status_code == 403, refused.text
+            listed = await http.get(f"/schedule/lessons/{ids['lesson']}/eligible-clients")
+        assert listed.status_code == 200 and len(listed.json()) == 4, listed.text
+        assert all(row["phone"] is None for row in listed.json())
         async with _http(ids, "admin") as http:
             listed = await http.get(f"/schedule/lessons/{ids['lesson']}/eligible-clients")
         assert listed.status_code == 200 and len(listed.json()) == 4, listed.text
+        assert all(row["phone"] for row in listed.json())
     _run(scenario)
 
 

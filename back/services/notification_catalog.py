@@ -78,6 +78,7 @@ CATALOG: dict[str, EventSpec] = {
     "c2":  EventSpec("client",  "operational", _ET),   # напоминание за 24ч/2ч — срочное
     "c3":  EventSpec("client",  "critical",    _ET),   # занятие отменено — срочное
     "c11": EventSpec("client",  "critical",    _ET),   # занятие перенесено — срочное
+    "c14": EventSpec("client",  "critical",    _ET),   # изменилось занятие (тренер, название…) — срочное
     "c5":  EventSpec("client",  "optional",    _ET),   # осталось 1-2 занятия — действие: продлить
     "c6":  EventSpec("client",  "operational", _ET),   # абонемент закончился — действие: продлить
     "c7":  EventSpec("client",  "optional",    _ET),   # день рождения — личное

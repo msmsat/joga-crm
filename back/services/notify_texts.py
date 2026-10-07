@@ -1,4 +1,4 @@
-"""Тексты уведомлений (письмо и Telegram) — все 40 событий каталога на всех
+"""Тексты уведомлений (письмо и Telegram) — все 41 событие каталога на всех
 пяти языках продукта: ru, en, uk, cs, de.
 
 Почему отдельным модулем. Раньше они жили внутри `notifier._render` f-строками
@@ -117,6 +117,29 @@ FACT_LABELS: dict[str, dict[str, str]] = {
     "price": {"ru": "Стоимость", "en": "Price", "uk": "Вартість",
               "cs": "Cena", "de": "Preis"},
 }
+
+# Строки «что поменялось» в уведомлении об изменении занятия (c14) и в ленте
+# событий студии: «Тренер: Анна → Мария». Ключи — поля services/lesson_changes.
+# Подпись короткая по той же причине, что и FACT_LABELS: письмо раскладывает
+# такие строки в карточку деталей.
+CHANGE_LABELS: dict[str, dict[str, str]] = {
+    "name": {"ru": "Название", "en": "Name", "uk": "Назва", "cs": "Název", "de": "Name"},
+    "start": {"ru": "Время", "en": "Time", "uk": "Час", "cs": "Čas", "de": "Zeit"},
+    "duration": {"ru": "Длительность", "en": "Duration", "uk": "Тривалість",
+                 "cs": "Délka", "de": "Dauer"},
+    "teacher": FACT_LABELS["trainer_name"],
+    "hall": FACT_LABELS["hall_name"],
+    "level": {"ru": "Уровень", "en": "Level", "uk": "Рівень", "cs": "Úroveň", "de": "Niveau"},
+    "equipment": {"ru": "Инвентарь", "en": "Equipment", "uk": "Інвентар",
+                  "cs": "Vybavení", "de": "Ausrüstung"},
+    # Сумма ЭТОГО клиента (его неоплаченный долг), а не цена в прайсе: тому, кто
+    # пришёл по абонементу или уже заплатил, новая цена ничего не меняет.
+    "due": {"ru": "К оплате", "en": "To pay", "uk": "До сплати", "cs": "K úhradě", "de": "Zu zahlen"},
+    # Только для ленты событий студии — клиентам цену и места не пишем.
+    "price": {"ru": "Цена", "en": "Price", "uk": "Ціна", "cs": "Cena", "de": "Preis"},
+    "spots": {"ru": "Мест", "en": "Spots", "uk": "Місць", "cs": "Míst", "de": "Plätze"},
+}
+MINUTES = {"ru": "{n} мин", "en": "{n} min", "uk": "{n} хв", "cs": "{n} min", "de": "{n} Min"}
 
 
 # ─── ТЕКСТЫ СОБЫТИЙ ───────────────────────────────────────────────────────────
@@ -297,6 +320,27 @@ TEXTS: dict[str, dict[str, tuple[str, str]]] = {
         "de": ("Kurs verschoben",
                "„{lesson}“ wurde verschoben. Neue Zeit: {when}.\n"
                "Ihre Buchung bleibt bestehen — sagen Sie ab, falls die Zeit nicht passt."),
+    },
+    # c14 — изменилось то, что клиент видит, кроме одного лишь переноса (его
+    # говорит c11): название, тренер, уровень, инвентарь, его сумма к оплате —
+    # и время вместе с ними. {changes} — строки «Поле: было → стало», по одной
+    # на изменение (notifier.change_lines); {paren} — время занятия уже новое.
+    "c14": {
+        "ru": ("Изменения в занятии",
+               "В занятии «{lesson}»{paren} есть изменения:\n{changes}\n"
+               "Запись сохранена — если вам что-то не подходит, отмените её."),
+        "en": ("Class updated",
+               "There are changes to “{lesson}”{paren}:\n{changes}\n"
+               "Your booking is kept — cancel it if something doesn't work for you."),
+        "uk": ("Зміни в занятті",
+               "У занятті «{lesson}»{paren} є зміни:\n{changes}\n"
+               "Запис збережено — якщо вам щось не підходить, скасуйте його."),
+        "cs": ("Změny v lekci",
+               "V lekci „{lesson}“{paren} došlo ke změnám:\n{changes}\n"
+               "Rezervace zůstává — pokud vám něco nevyhovuje, zrušte ji."),
+        "de": ("Änderungen am Kurs",
+               "Beim Kurs „{lesson}“{paren} gibt es Änderungen:\n{changes}\n"
+               "Ihre Buchung bleibt bestehen — sagen Sie ab, falls etwas nicht passt."),
     },
     "t6": {
         "ru": ("Выплачена зарплата",
@@ -782,14 +826,15 @@ if __name__ == "__main__":
             assert _subject and _text, f"{_eid}/{_lang}: пустой текст"
             assert "{{" not in _text and "}}" not in _text, f"{_eid}/{_lang}: двойная скобка"
 
-    for _table in (WORDS, ROLE_WORDS, RESOURCE_WORDS, FACT_LABELS):
+    for _table in (WORDS, ROLE_WORDS, RESOURCE_WORDS, FACT_LABELS, CHANGE_LABELS):
         for _key, _by_lang in _table.items():
             assert set(_by_lang) == set(LANGS), f"{_key}: языки {sorted(_by_lang)}"
-    for _phrase in (LEFT_HOURS, LEFT_SOON, PREV_REVENUE, BDAY_NAMED, BDAY_PLAIN, SPOTS):
+    for _phrase in (LEFT_HOURS, LEFT_SOON, PREV_REVENUE, BDAY_NAMED, BDAY_PLAIN, SPOTS, MINUTES):
         assert set(_phrase) == set(LANGS), _phrase
 
     # Подписи «Деталей» письма — короткие: длинные ломают вёрстку карточки.
     assert max(len(v) for m in FACT_LABELS.values() for v in m.values()) <= 20
+    assert max(len(v) for m in CHANGE_LABELS.values() for v in m.values()) <= 20
 
     assert pick(TEXTS["c1"], "cs")[0] == "Rezervace potvrzena"
     assert pick(TEXTS["c1"], "pl")[0] == "Booking confirmed", "язык без перевода — английский"

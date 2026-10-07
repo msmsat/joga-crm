@@ -101,7 +101,7 @@
     },
     "c11": {
       "title": "Aula remarcada",
-      "desc": "Mudança de hora, sala ou treinador"
+      "desc": "Novo horário ou sala"
     },
     "c12": {
       "title": "Bónus creditado",
@@ -110,6 +110,10 @@
     "c13": {
       "title": "Café depois da aula",
       "desc": "Quem do grupo vai tomar café"
+    },
+    "c14": {
+      "title": "Alterações na aula",
+      "desc": "Treinador, nome, nível ou valor a pagar"
     },
     "t1": {
       "title": "Nova reserva com o treinador",

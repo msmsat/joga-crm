@@ -135,10 +135,22 @@
       "changed": "Ändrat",
       "capacityCaption": "{{booked}} anmälda, {{free}} lediga",
       "hallCapacity": "{{space, capitalize}} rymmer {{capacity}}",
-      "locked": "Passet kan inte längre ändras: ändringar går att göra fram till 2 timmar före start",
       "tooSoon": "Tidigast möjligt: {{time}}",
       "dayClosed": "Det är för sent för den här dagen — välj en annan",
-      "notify": "Anmälda kunder ({{booked}}) får besked om ändringen"
+      "notify": "Anmälda kunder ({{booked}}) får besked om ändringarna",
+      "name": "Namn",
+      "price": "Pris",
+      "level": "Nivå",
+      "equipment": "Utrustning",
+      "levelPlaceholder": "Till exempel nybörjare",
+      "equipmentPlaceholder": "Till exempel en matta",
+      "nameRequired": "Ange ett namn",
+      "priceInvalid": "Priset måste vara ett heltal, minst noll",
+      "frozen": "Klassen är låst: anmälda måste få veta om ändringar {{lead}} före start. Nu kan bara platserna ändras, resten efter att den är slut.",
+      "frozenEmpty": "Mindre än {{lead}} kvar till start — nu kan bara platserna ändras, resten efter att den är slut.",
+      "finished": "Klassen är över — ändringen rättar registreringen. Kunderna meddelas inte och deras betalningar ändras inte.",
+      "stayPast": "En avslutad klass stannar i det förflutna — den måste sluta före nu",
+      "repriced": "Den som inte har betalat än betalar det nya priset — det betalda ändras inte"
     },
     "createServiceConfirm": {
       "title": "Skapa en tjänst?",
@@ -358,7 +370,18 @@
       "message": "Boka {{date}} kl. {{time}}?",
       "own": "Välj en annan tid"
     },
-    "lessonDiscount": "Rabatt på det här passet"
+    "lessonDiscount": "Rabatt på det här passet",
+    "settle": {
+      "saved": "Rabatt {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} får",
+      "percentOf": "{{rate}} av {{amount}}",
+      "studio": "Studion",
+      "loss": "Studion förlorar {{amount}} — rabatten överstiger dess andel",
+      "subscription": "Besök på klippkort — procenten räknas i Löner från tjänstens pris",
+      "ownerOnly": "Syns bara för ägaren"
+    }
   },
   "payment": {
     "title": "Betalning",

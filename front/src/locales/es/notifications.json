@@ -101,7 +101,7 @@
     },
     "c11": {
       "title": "Clase reprogramada",
-      "desc": "Cambio de hora, sala o entrenador"
+      "desc": "Nueva hora o sala"
     },
     "c12": {
       "title": "Bonos acreditados",
@@ -110,6 +110,10 @@
     "c13": {
       "title": "Café después de clase",
       "desc": "Quién del grupo va a tomar café"
+    },
+    "c14": {
+      "title": "Cambios en la clase",
+      "desc": "Entrenador, nombre, nivel o importe a pagar"
     },
     "t1": {
       "title": "Nueva reserva con el entrenador",

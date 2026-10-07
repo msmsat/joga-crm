@@ -173,7 +173,10 @@
       "not_found": "Bu blok zaten kaldırılmış",
       "bad_clock": "Bu saat yok veya saat değişikliği nedeniyle tekrarlanıyor — başka bir saat seçin",
       "blocks_lesson": "Ders, çalışanın stüdyo zamanıyla çakışıyor (temizlik, toplantı) — başka bir saat seçin"
-    }
+    },
+    "lesson_edit_frozen": "Ders artık değiştirilemez — çok yakında başlıyor. Şimdi yalnızca yer sayısı, gerisi bitince.",
+    "lesson_edit_too_soon": "Yeni saat çok yakın — daha geç bir saat seçin",
+    "lesson_stays_in_past": "Geçmiş ders geçmişte kalır — şu andan önce bitmeli"
   },
   "units": {
     "min": "dk",

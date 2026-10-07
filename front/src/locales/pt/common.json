@@ -173,7 +173,10 @@
       "not_found": "Este bloco já foi removido",
       "bad_clock": "Esta hora não existe ou repete-se devido à mudança de hora — escolha outra",
       "blocks_lesson": "A aula coincide com o tempo do estúdio do funcionário (limpeza, reunião) — escolha outra hora"
-    }
+    },
+    "lesson_edit_frozen": "A aula já não pode ser alterada: começa demasiado cedo. Agora só as vagas; o resto depois do fim.",
+    "lesson_edit_too_soon": "O novo horário está demasiado próximo: escolha um mais tarde",
+    "lesson_stays_in_past": "Uma aula passada fica no passado: tem de terminar antes de agora"
   },
   "units": {
     "min": "min",

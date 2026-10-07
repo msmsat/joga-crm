@@ -7,8 +7,9 @@ from sqlalchemy.future import select
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Lesson, Operation, SalaryPayment, StudioMember, User
+from models import ClientPayment, Lesson, Operation, Reservation, SalaryPayment, StudioMember, User
 from schemas.finances.salary import SalaryPayRequest, SalaryRead, SalaryRow
+from services.lesson_compensation import is_individual, lesson_revenue
 from services.members import full_name
 from services.notifier import notify
 
@@ -18,25 +19,61 @@ router = APIRouter()
 _PAID_STATUSES = ("confirmed", "pending")
 
 
+async def _booked_clients(lesson_ids: list[int], db: AsyncSession) -> dict[int, list[dict]]:
+    """Живые брони занятий — с тем, что по ним заплачено или должно быть
+    заплачено. Те же поля, что у записанных в карточке занятия
+    (routers/schedule/lessons.get_lesson): правило «сколько принесла бронь»
+    одно (services/lesson_compensation.paid_value). Одним запросом на всех."""
+    if not lesson_ids:
+        return {}
+    rows = (await db.execute(
+        select(
+            Reservation.lesson_id, Reservation.payment_breakdown, Reservation.subscription_id,
+            Reservation.is_trial, ClientPayment.status, ClientPayment.amount,
+        )
+        .outerjoin(ClientPayment, ClientPayment.id == Reservation.debt_payment_id)
+        .where(Reservation.lesson_id.in_(lesson_ids), Reservation.status != "cancelled")
+    )).all()
+    clients: dict[int, list[dict]] = {}
+    for lesson_id, breakdown, subscription_id, is_trial, debt_status, debt_amount in rows:
+        clients.setdefault(lesson_id, []).append({
+            "payment": breakdown,
+            "debt": debt_amount if debt_status == "pending" else 0,
+            "paid_amount": debt_amount if debt_status == "success" else 0,
+            "by_subscription": subscription_id is not None,
+            "is_trial": is_trial,
+        })
+    return clients
+
+
 async def _sessions_and_hours(
     user_id: int, studio_id: int, period_start: date, period_end: date, db: AsyncSession
 ) -> tuple[int, float, int]:
-    """(число занятий, отработанные часы, суммарная выручка занятий в копейках) за период."""
-    row = (await db.execute(
-        select(
-            func.count(Lesson.id),
-            func.coalesce(func.sum(Lesson.duration_min), 0),
-            func.coalesce(func.sum(Lesson.price), 0),
-        ).where(
+    """(число занятий, отработанные часы, выручка занятий) за период.
+
+    Выручка — база процента мастера. У индивидуального занятия это то, что
+    заплатил клиент, СО скидкой (850 по прайсу, скидка 20% — 680, и процент
+    мастера считается от 680): services/lesson_compensation.lesson_revenue.
+    У группового — цена занятия, как и раньше.
+    """
+    lessons = (await db.execute(
+        select(Lesson.id, Lesson.duration_min, Lesson.price, Lesson.booking_mode, Lesson.total_spots)
+        .where(
             Lesson.studio_id == studio_id,
             Lesson.teacher_id == user_id,
             Lesson.status.in_(_PAID_STATUSES),
             func.date(Lesson.start_time) >= period_start,
             func.date(Lesson.start_time) <= period_end,
         )
-    )).one()
-    sessions, minutes, revenue = row
-    return int(sessions), int(minutes) / 60, int(revenue)
+    )).all()
+    clients = await _booked_clients([lesson.id for lesson in lessons if is_individual(lesson)], db)
+    minutes = sum(lesson.duration_min or 0 for lesson in lessons)
+    revenue = sum(
+        lesson_revenue(lesson.price, clients.get(lesson.id, [])) if is_individual(lesson)
+        else (lesson.price or 0)
+        for lesson in lessons
+    )
+    return len(lessons), minutes / 60, int(round(revenue))
 
 
 def _compute_amount(rate: float | None, rate_type: str | None, hours: float, revenue: int) -> int:

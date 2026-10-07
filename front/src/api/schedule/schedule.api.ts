@@ -1,6 +1,6 @@
 import { client } from '../client'
 import type {
-  StaffScheduleBlock, EligibleClient, Hall, Lesson, LessonCreate, LessonDaysResponse, LessonDetail, Reservation,
+  StaffScheduleBlock, EligibleClient, Hall, Lesson, LessonCreate, LessonDaysResponse, LessonDetail, LessonUpdate, Reservation,
   ReservationPaymentOptions, ReservationPaymentPreview, StudioTime, StudioTimePayload,
 } from './schedule.types'
 
@@ -42,7 +42,7 @@ export const scheduleApi = {
   createLesson: (payload: LessonCreate) =>
     client.post<Lesson>('/schedule/lessons', payload),
 
-  updateLesson: (id: number, payload: Partial<LessonCreate>) =>
+  updateLesson: (id: number, payload: LessonUpdate) =>
     client.patch<Lesson>(`/schedule/lessons/${id}`, payload),
 
   cancelLesson: (id: number, reason?: string) =>

@@ -135,10 +135,22 @@
       "changed": "Geändert",
       "capacityCaption": "{{booked}} angemeldet, {{free}} frei",
       "hallCapacity": "{{space, capitalize}} fasst {{capacity}}",
-      "locked": "Dieser Kurs kann nicht mehr geändert werden: Änderungen sind bis 2 Stunden vor Beginn möglich",
       "tooSoon": "Frühestens möglich: {{time}}",
       "dayClosed": "Für diesen Tag ist es zu spät — wählen Sie einen anderen",
-      "notify": "Angemeldete Kunden ({{booked}}) werden über die Änderung benachrichtigt"
+      "notify": "Angemeldete Kunden ({{booked}}) werden über die Änderungen benachrichtigt",
+      "name": "Name",
+      "price": "Preis",
+      "level": "Niveau",
+      "equipment": "Ausrüstung",
+      "levelPlaceholder": "Zum Beispiel für Anfänger",
+      "equipmentPlaceholder": "Zum Beispiel eine Matte",
+      "nameRequired": "Namen eingeben",
+      "priceInvalid": "Der Preis muss eine ganze Zahl ab null sein",
+      "frozen": "Der Kurs ist gesperrt: Angemeldete müssen {{lead}} vor Beginn von Änderungen erfahren. Jetzt lassen sich nur die Plätze ändern, alles andere nach dem Ende.",
+      "frozenEmpty": "Bis zum Beginn bleiben weniger als {{lead}} — jetzt lassen sich nur die Plätze ändern, alles andere nach dem Ende.",
+      "finished": "Der Kurs ist vorbei — die Änderung korrigiert den Eintrag. Kunden werden nicht benachrichtigt, ihre Zahlungen bleiben unverändert.",
+      "stayPast": "Ein vergangener Kurs bleibt in der Vergangenheit — er muss vor jetzt enden",
+      "repriced": "Wer noch nicht bezahlt hat, zahlt den neuen Preis — bereits Bezahltes bleibt unverändert"
     },
     "createServiceConfirm": {
       "title": "Leistung erstellen?",
@@ -358,7 +370,18 @@
       "message": "Für {{date}} um {{time}} buchen?",
       "own": "Andere Zeit wählen"
     },
-    "lessonDiscount": "Rabatt für diese Stunde"
+    "lessonDiscount": "Rabatt für diese Stunde",
+    "settle": {
+      "saved": "Rabatt {{amount}}"
+    },
+    "earnings": {
+      "title": "{{name}} erhält",
+      "percentOf": "{{rate}} von {{amount}}",
+      "studio": "Studio",
+      "loss": "Das Studio macht {{amount}} Verlust — der Rabatt übersteigt seinen Anteil",
+      "subscription": "Besuch mit Abo — der Anteil wird in den Gehältern vom Leistungspreis berechnet",
+      "ownerOnly": "Nur für den Inhaber sichtbar"
+    }
   },
   "payment": {
     "title": "Zahlung",

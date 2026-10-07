@@ -173,7 +173,10 @@
       "not_found": "Questo blocco è già stato rimosso",
       "bad_clock": "Questo orario non esiste o si ripete per il cambio dell’ora: scegline un altro",
       "blocks_lesson": "La lezione si sovrappone al tempo studio del dipendente (pulizie, riunione): scegli un altro orario"
-    }
+    },
+    "lesson_edit_frozen": "La lezione non si può più modificare: inizia troppo presto. Ora solo i posti, il resto dopo la fine.",
+    "lesson_edit_too_soon": "Il nuovo orario è troppo vicino: scegline uno più tardi",
+    "lesson_stays_in_past": "Una lezione passata resta nel passato: deve finire prima di adesso"
   },
   "units": {
     "min": "min",

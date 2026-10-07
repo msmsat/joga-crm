@@ -1,0 +1,144 @@
+/* Итог записи: чек со скидкой (SettleReceipt) и заработок мастера
+   (MasterEarning). Поверхности — карточки кита: радиус 16, мягкая тень, без
+   разделительных линий; персик — только акцент: бейдж скидки, доля мастера,
+   аватар. Числа моноширинными цифрами — пересчёт не дёргает строку. */
+
+/* ── Чек ───────────────────────────────────────────────────────── */
+.bw-receipt {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 18px 18px 16px; border-radius: 16px;
+  background: var(--bg-card);
+  box-shadow: 0 8px 24px -4px rgba(26,26,26,0.04), inset 0 0 0 1px var(--border);
+}
+/* Скидка есть — в углу чека разгорается тёплое сияние. */
+.bw-receipt::before {
+  content: ''; position: absolute; top: -60%; right: -25%; width: 70%; height: 160%;
+  background: radial-gradient(closest-side, var(--peach-glow), transparent);
+  opacity: 0; transition: opacity 0.5s ease; pointer-events: none;
+}
+.bw-receipt.has-discount::before { opacity: 1; }
+
+.bw-receipt-row { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.bw-receipt-label {
+  font: 700 11px var(--font); letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3);
+}
+.bw-receipt-price { display: inline-flex; align-items: center; gap: 10px; }
+.bw-receipt-base, .bw-receipt-was { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bw-receipt-base { font: 800 20px var(--font); color: var(--onyx); }
+.bw-receipt-was {
+  font: 700 16px var(--font); color: var(--muted);
+  text-decoration: line-through; text-decoration-color: var(--rose); text-decoration-thickness: 2px;
+}
+.bw-receipt-badge {
+  padding: 5px 10px; border-radius: 999px;
+  font: 800 12px var(--font); color: #fff; font-variant-numeric: tabular-nums; white-space: nowrap;
+  background: linear-gradient(135deg, var(--peach-light), var(--peach));
+  box-shadow: 0 8px 18px -8px rgba(249,160,139,0.95);
+  animation: bw-pop-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.35) backwards;
+}
+.bw-receipt-discount { position: relative; }
+
+.bw-receipt-total { position: relative; display: flex; flex-direction: column; gap: 10px; animation: bw-rise 0.35s ease backwards; }
+.bw-receipt-now {
+  font: 800 30px/1 var(--font); letter-spacing: -0.6px; color: var(--onyx);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+/* Итог со скидкой — в тёплом переливе: от цифры к персику. */
+.bw-receipt.has-discount .bw-receipt-now {
+  background: linear-gradient(120deg, var(--onyx) 45%, var(--peach));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.bw-receipt-bar, .bw-earn-bar {
+  display: flex; gap: 3px; height: 10px; border-radius: 999px; overflow: hidden;
+  background: rgba(var(--ink), 0.05);
+}
+.bw-receipt-paid, .bw-earn-master {
+  border-radius: 999px; background: linear-gradient(90deg, var(--peach-light), var(--peach));
+  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* Срезанная скидкой часть — штриховкой: цены как будто отрезали кусок. */
+.bw-receipt-cut {
+  border-radius: 999px;
+  background: repeating-linear-gradient(-45deg, rgba(216,140,154,0.55) 0 4px, rgba(216,140,154,0.16) 4px 8px);
+  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bw-receipt-legend { display: flex; justify-content: flex-end; }
+.bw-receipt-saved { font: 700 12.5px var(--font); color: var(--rose); font-variant-numeric: tabular-nums; }
+
+/* ── Заработок мастера ─────────────────────────────────────────── */
+.bw-earn {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 18px; border-radius: 16px;
+  background: linear-gradient(155deg, rgba(249,160,139,0.13), rgba(249,160,139,0.02) 60%), var(--bg-card);
+  box-shadow: 0 10px 28px -10px rgba(249,160,139,0.35), inset 0 0 0 1px rgba(249,160,139,0.24);
+  animation: bw-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+/* Один проход блика при появлении карточки — и больше она не мельтешит. */
+.bw-earn::after {
+  content: ''; position: absolute; top: 0; left: -60%; width: 45%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.32), transparent);
+  transform: skewX(-18deg); pointer-events: none;
+  animation: bw-sheen 1.6s ease-in-out 0.5s 1 both;
+}
+.bw-earn-head { display: flex; align-items: center; gap: 12px; }
+.bw-earn-avatar {
+  width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px;
+  display: grid; place-items: center;
+  font: 800 18px var(--font); color: #fff;
+  background: linear-gradient(135deg, var(--peach-light), var(--peach));
+  box-shadow: 0 10px 20px -10px rgba(249,160,139,0.95);
+}
+.bw-earn-who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.bw-earn-title {
+  font: 700 14px var(--font); color: var(--onyx);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.bw-earn-formula { font: 600 12.5px var(--font); color: var(--muted); font-variant-numeric: tabular-nums; }
+.bw-earn-amount {
+  font: 800 26px/1 var(--font); letter-spacing: -0.5px; color: var(--onyx);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.bw-earn-studio {
+  border-radius: 999px; background: rgba(var(--ink), 0.14);
+  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bw-earn-legend {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px; margin-top: 9px;
+  font: 700 12px var(--font); color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.bw-earn-dot { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; vertical-align: 1px; }
+.bw-earn-dot.is-master { background: var(--peach); }
+.bw-earn-dot.is-studio { background: rgba(var(--ink), 0.24); }
+.bw-earn-note { margin: 0; font: 600 12.5px/1.5 var(--font); color: var(--muted); }
+.bw-earn-loss {
+  margin: 0; padding: 10px 12px; border-radius: 12px;
+  background: rgba(216,140,154,0.12); color: var(--rose); font: 700 12.5px/1.45 var(--font);
+}
+.bw-earn-private { display: inline-flex; align-items: center; gap: 6px; font: 600 11px var(--font); color: var(--text3); }
+.bw-earn-private svg { width: 12px; height: 12px; }
+
+/* Пока чек пересчитывается — цифры приглушены, а не скачут. */
+.bw-settle[aria-busy="true"] .bw-receipt-now,
+.bw-settle[aria-busy="true"] .bw-earn-amount { opacity: 0.5; transition: opacity 0.2s; }
+
+@keyframes bw-pop-in { from { opacity: 0; transform: scale(0.6); } }
+@keyframes bw-rise { from { opacity: 0; transform: translateY(8px); } }
+@keyframes bw-sheen { from { left: -60%; } to { left: 130%; } }
+
+:root.dark .bw-earn::after { background: linear-gradient(100deg, transparent, rgba(255,255,255,0.10), transparent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bw-receipt-badge, .bw-receipt-total, .bw-earn, .bw-earn::after { animation: none; }
+  .bw-receipt-paid, .bw-receipt-cut, .bw-earn-master, .bw-earn-studio, .bw-receipt::before { transition: none; }
+  .bw-earn::after { display: none; }
+}
+
+/* ── ТЕЛЕФОН: последним блоком (см. CLAUDE.md, «Адаптив») ───────── */
+@media (max-width: 767px) {
+  .bw-receipt, .bw-earn { padding: 16px; }
+  .bw-receipt-now { font-size: 26px; }
+  .bw-earn-amount { font-size: 22px; }
+  .bw-earn-avatar { width: 40px; height: 40px; border-radius: 12px; font-size: 16px; }
+}

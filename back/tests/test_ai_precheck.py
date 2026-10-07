@@ -45,6 +45,9 @@ class _DB:
     async def execute(self, _q):
         return _R(self._seq.pop(0))
 
+    async def get(self, *_args, **_kwargs):
+        return None             # студия без подтверждённой зоны — стенные часы
+
 
 class _Hours:
     def __init__(self, day, open_time="09:00", close_time="18:00", is_open=True):
@@ -174,8 +177,11 @@ def test_create_lesson_precheck_repeats_the_routers_own_verdict():
 
 # ─── update_lesson: поздно и отменённое ──────────────────────────────────────
 class _Got:
-    def __init__(self, start_time, status="confirmed", name="Хатха"):
+    """Ответ get_lesson: то, по чему правило правки решает (services/lesson_edit_policy)."""
+    def __init__(self, start_time, status="confirmed", name="Хатха", booked_count=0):
         self.start_time, self.status, self.name = start_time, status, name
+        self.id, self.duration_min, self.tz_iana = 1, 60, None
+        self.booked_count, self.cancel_deadline_min = booked_count, 240
 
 
 def _with_lesson(lesson, args):
@@ -194,13 +200,21 @@ def _with_lesson(lesson, args):
 def test_update_lesson_precheck_refuses_cancelled_and_late():
     soon = datetime.now() + timedelta(minutes=30)
     later = datetime.now() + timedelta(days=2)
-    assert "отменено" in _with_lesson(_Got(later, status="cancelled"), {"lesson_id": 1})
-    assert "2 часа" in _with_lesson(_Got(soon), {"lesson_id": 1})
+    assert "отменено" in _with_lesson(_Got(later, status="cancelled"), {"lesson_id": 1, "price": 1})
+    assert "за 2 ч до начала" in _with_lesson(_Got(soon), {"lesson_id": 1, "price": 1})
     # Занятие живое и не сегодня — молчим.
-    assert _with_lesson(_Got(later), {"lesson_id": 1}) is None
+    assert _with_lesson(_Got(later), {"lesson_id": 1, "price": 1}) is None
     # Переносить в ближайшие два часа тоже нельзя.
-    assert "2 часа" in _with_lesson(
+    assert "за 2 ч до начала" in _with_lesson(
         _Got(later), {"lesson_id": 1, "start_time": soon.isoformat()})
+    # С записанными окно шире: срок отмены записи (4 ч) и ещё 2 ч.
+    in_five_hours = datetime.now() + timedelta(hours=5)
+    assert "6 ч" in _with_lesson(_Got(in_five_hours, booked_count=3), {"lesson_id": 1, "price": 1})
+    # Прошедшее занятие исправляют — молча, но в будущее оно не уезжает.
+    past = datetime.now() - timedelta(days=1)
+    assert _with_lesson(_Got(past, booked_count=3), {"lesson_id": 1, "teacher_id": 2}) is None
+    assert "в прошлом" in _with_lesson(
+        _Got(past, booked_count=3), {"lesson_id": 1, "start_time": later.isoformat()})
 
 
 # ─── clear_schedule: сколько исчезнет — числом и до клика ────────────────────

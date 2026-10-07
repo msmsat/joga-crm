@@ -101,7 +101,7 @@
     },
     "c11": {
       "title": "Cours reprogrammé",
-      "desc": "Changement d'horaire, de salle ou de coach"
+      "desc": "Nouvel horaire ou nouvelle salle"
     },
     "c12": {
       "title": "Bonus crédité",
@@ -110,6 +110,10 @@
     "c13": {
       "title": "Café après le cours",
       "desc": "Qui du groupe va prendre un café"
+    },
+    "c14": {
+      "title": "Cours modifié",
+      "desc": "Coach, nom, niveau ou montant à payer"
     },
     "t1": {
       "title": "Nouvelle réservation avec le coach",

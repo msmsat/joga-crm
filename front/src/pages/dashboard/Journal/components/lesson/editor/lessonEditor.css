@@ -26,8 +26,11 @@
   margin: 0; padding: 0; border: 0; min-width: 0;
   animation: fade-in 0.2s ease;
 }
-.le:disabled .le-col { opacity: 0.55; }
 .le-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+/* Группа полей, которую замораживает фаза занятия (заморожено — меняются
+   только места). Сбрасываем рамку и отступы fieldset, оставляя раскладку колонки. */
+.le-lock { margin: 0; padding: 0; border: 0; }
+.le-lock:disabled { opacity: 0.55; }
 .le-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .le-label {
   display: flex; align-items: center; gap: 7px;
@@ -185,6 +188,9 @@ input.le-cap-input.is-invalid { box-shadow: 0 0 0 1.5px rgba(216,140,154,0.7); }
 }
 .le-notice { grid-column: 1 / -1; padding: 12px 14px; border-radius: 12px; background: rgba(var(--ink), 0.05); color: var(--onyx); }
 .le-notice svg { flex-shrink: 0; margin-top: 1px; color: var(--muted); }
+/* Занятие прошло: правка — исправление записи, не запрет. */
+.le-notice.is-past { background: rgba(249,160,139,0.10); }
+.le-notice.is-past svg { color: var(--peach); }
 /* Последствие — в подвале над кнопками: его читают в момент «Сохранить». */
 .le-consequence { flex: 1 0 100%; color: var(--muted); }
 .le-consequence svg { flex-shrink: 0; margin-top: 3px; color: var(--peach); }
