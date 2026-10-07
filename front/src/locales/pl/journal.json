@@ -411,7 +411,22 @@
       "unconfigured": "Płaca nieustawiona",
       "unavailable": "Brak danych o przychodzie",
       "hourly": "{{rate}}/godz.",
-      "estimate": "Szacunek według aktualnych warunków. Nie potwierdza wypłaty."
+      "estimate": "Szacunek według aktualnych warunków. Nie potwierdza wypłaty.",
+      "salaryHint": "Zajęcia nie są opłacane osobno",
+      "setRate": "Procent ustawia się w karcie pracownika",
+      "of": "{{rate}}% z {{base}}",
+      "perClient": "{{rate}}% z ceny {{price}} — od każdego klienta",
+      "state": {
+        "paid": "Opłacone",
+        "partial": "Opłacone częściowo",
+        "due": "Czeka na płatność",
+        "estimated": "Płatność nieodnotowana"
+      },
+      "split": {
+        "paid": "{{amount}} z opłaconego",
+        "pending": "{{amount}} oczekiwane"
+      },
+      "unknown": "Nieuwzględnione wizyty z karnetu bez ceny: {{number}}"
     },
     "today": "Dziś",
     "minutes": "{{value}} min",

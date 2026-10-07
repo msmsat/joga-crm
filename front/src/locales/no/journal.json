@@ -403,7 +403,22 @@
       "unconfigured": "Lønn ikke konfigurert",
       "unavailable": "Inntekt ukjent",
       "hourly": "{{rate}}/t",
-      "estimate": "Beregnet etter gjeldende vilkår. Bekrefter ikke utbetaling."
+      "estimate": "Beregnet etter gjeldende vilkår. Bekrefter ikke utbetaling.",
+      "salaryHint": "Timer betales ikke separat",
+      "setRate": "Satsen angis på ansattkortet",
+      "of": "{{rate}} % av {{base}}",
+      "perClient": "{{rate}} % av prisen {{price}} — per kunde",
+      "state": {
+        "paid": "Betalt",
+        "partial": "Delvis betalt",
+        "due": "Venter på betaling",
+        "estimated": "Betaling ikke registrert"
+      },
+      "split": {
+        "paid": "{{amount}} av det betalte",
+        "pending": "{{amount}} forventet"
+      },
+      "unknown": "Klippekortbesøk uten pris ikke medregnet: {{number}}"
     },
     "today": "I dag",
     "minutes": "{{value}} min",

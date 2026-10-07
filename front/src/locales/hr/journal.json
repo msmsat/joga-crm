@@ -407,7 +407,22 @@
       "unconfigured": "Naknada nije postavljena",
       "unavailable": "Prihod nije poznat",
       "hourly": "{{rate}}/h",
-      "estimate": "Izračun prema trenutačnim uvjetima. Ne potvrđuje isplatu."
+      "estimate": "Izračun prema trenutačnim uvjetima. Ne potvrđuje isplatu.",
+      "salaryHint": "Termini se ne plaćaju zasebno",
+      "setRate": "Postotak se postavlja u kartici zaposlenika",
+      "of": "{{rate}} % od {{base}}",
+      "perClient": "{{rate}} % od cijene {{price}} — po klijentu",
+      "state": {
+        "paid": "Plaćeno",
+        "partial": "Djelomično plaćeno",
+        "due": "Čeka plaćanje",
+        "estimated": "Plaćanje nije zabilježeno"
+      },
+      "split": {
+        "paid": "{{amount}} od plaćenog",
+        "pending": "{{amount}} očekuje se"
+      },
+      "unknown": "Neuračunati posjeti po pretplati bez cijene: {{number}}"
     },
     "today": "Danas",
     "minutes": "{{value}} min",

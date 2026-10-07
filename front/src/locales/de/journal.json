@@ -403,7 +403,22 @@
       "unconfigured": "Vergütung nicht festgelegt",
       "unavailable": "Ertrag unbekannt",
       "hourly": "{{rate}}/Std.",
-      "estimate": "Berechnung zu aktuellen Konditionen. Keine Zahlungsbestätigung."
+      "estimate": "Berechnung zu aktuellen Konditionen. Keine Zahlungsbestätigung.",
+      "salaryHint": "Termine werden nicht einzeln vergütet",
+      "setRate": "Der Satz wird im Mitarbeiterprofil festgelegt",
+      "of": "{{rate}} % von {{base}}",
+      "perClient": "{{rate}} % vom Preis {{price}} — pro Kunde",
+      "state": {
+        "paid": "Bezahlt",
+        "partial": "Teilweise bezahlt",
+        "due": "Zahlung ausstehend",
+        "estimated": "Zahlung nicht erfasst"
+      },
+      "split": {
+        "paid": "{{amount}} aus Bezahltem",
+        "pending": "{{amount}} erwartet"
+      },
+      "unknown": "Abo-Besuche ohne Preis nicht berücksichtigt: {{number}}"
     },
     "today": "Heute",
     "minutes": "{{value}} Min.",

@@ -403,7 +403,22 @@
       "unconfigured": "Palkkaa ei ole määritetty",
       "unavailable": "Tuloista ei ole tietoa",
       "hourly": "{{rate}}/h",
-      "estimate": "Arvio nykyisten ehtojen mukaan. Ei vahvista maksua."
+      "estimate": "Arvio nykyisten ehtojen mukaan. Ei vahvista maksua.",
+      "salaryHint": "Tunteja ei makseta erikseen",
+      "setRate": "Prosentti asetetaan työntekijän kortilla",
+      "of": "{{rate}} % summasta {{base}}",
+      "perClient": "{{rate}} % hinnasta {{price}} — asiakasta kohden",
+      "state": {
+        "paid": "Maksettu",
+        "partial": "Osittain maksettu",
+        "due": "Odottaa maksua",
+        "estimated": "Maksua ei merkitty"
+      },
+      "split": {
+        "paid": "{{amount}} maksetusta",
+        "pending": "{{amount}} odotetaan"
+      },
+      "unknown": "Hinnattomia sarjakorttikäyntejä ei laskettu: {{number}}"
     },
     "today": "Tänään",
     "minutes": "{{value}} min",

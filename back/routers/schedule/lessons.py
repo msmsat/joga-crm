@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import async_session_maker, get_db
 from dependencies import get_scoped_lesson, get_studio_context, require_role, StudioContext
 from services import lesson_time, studio_time
-from services.lesson_compensation import calculate_compensation
+from services.lesson_compensation import calculate_compensation, membership_visit_values
 from models import (
     Client, ClientPayment, ClientSubscription, Hall, Lesson, Reservation, Service, Studio, StudioBranch,
     StudioMember, User,
@@ -296,14 +296,18 @@ async def get_lesson(
         .order_by(Reservation.spot_number)
     )).mappings().all()
 
-    # Salary terms retain the same owner-only access as the Finance payroll.
+    # Условия оплаты: владелец видит их на любом занятии (как зарплаты в
+    # Финансах), остальные — только на своём, сколько получат сами. Чужая ставка
+    # администратору не показывается.
     compensation = None
-    if ctx.role == "owner":
+    if ctx.role == "owner" or (lesson.teacher_id is not None and lesson.teacher_id == ctx.user.id):
         member = (await db.execute(select(StudioMember).where(
             StudioMember.studio_id == ctx.studio_id,
             StudioMember.user_id == lesson.teacher_id,
         ))).scalar_one_or_none()
-        compensation = calculate_compensation(member, lesson, clients)
+        visits = await membership_visit_values(
+            db, [c["reservation_id"] for c in clients if c["by_subscription"]])
+        compensation = calculate_compensation(member, lesson, clients, visits)
 
     return LessonDetail.model_validate({
         **lesson_data, "booked_count": booked_count, "booked_clients": list(clients),

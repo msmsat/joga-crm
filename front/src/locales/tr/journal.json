@@ -403,7 +403,22 @@
       "unconfigured": "Ücret ayarlanmamış",
       "unavailable": "Kazanç bilgisi yok",
       "hourly": "{{rate}}/sa",
-      "estimate": "Mevcut koşullara göre tahmin. Ödeme onayı değildir."
+      "estimate": "Mevcut koşullara göre tahmin. Ödeme onayı değildir.",
+      "salaryHint": "Seanslar ayrıca ödenmez",
+      "setRate": "Oran çalışan kartında ayarlanır",
+      "of": "{{base}} üzerinden %{{rate}}",
+      "perClient": "{{price}} fiyat üzerinden %{{rate}} — müşteri başına",
+      "state": {
+        "paid": "Ödendi",
+        "partial": "Kısmen ödendi",
+        "due": "Ödeme bekleniyor",
+        "estimated": "Ödeme kaydedilmedi"
+      },
+      "split": {
+        "paid": "Ödenenden {{amount}}",
+        "pending": "Beklenen {{amount}}"
+      },
+      "unknown": "Fiyatı olmayan paket ziyaretleri hesaba katılmadı: {{number}}"
     },
     "today": "Bugün",
     "minutes": "{{value}} dk",

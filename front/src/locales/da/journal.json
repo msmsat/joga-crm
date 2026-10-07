@@ -403,7 +403,22 @@
       "unconfigured": "Løn ikke indstillet",
       "unavailable": "Indtjening ukendt",
       "hourly": "{{rate}}/t",
-      "estimate": "Beregnet efter aktuelle vilkår. Bekræfter ikke udbetaling."
+      "estimate": "Beregnet efter aktuelle vilkår. Bekræfter ikke udbetaling.",
+      "salaryHint": "Timer betales ikke separat",
+      "setRate": "Satsen angives på medarbejderkortet",
+      "of": "{{rate}} % af {{base}}",
+      "perClient": "{{rate}} % af prisen {{price}} — pr. kunde",
+      "state": {
+        "paid": "Betalt",
+        "partial": "Delvist betalt",
+        "due": "Afventer betaling",
+        "estimated": "Betaling ikke registreret"
+      },
+      "split": {
+        "paid": "{{amount}} af det betalte",
+        "pending": "{{amount}} forventet"
+      },
+      "unknown": "Klippekortbesøg uden pris ikke medregnet: {{number}}"
     },
     "today": "I dag",
     "minutes": "{{value}} min",

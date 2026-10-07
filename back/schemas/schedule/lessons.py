@@ -163,11 +163,23 @@ class LessonLocation(BaseSchema):
 
 
 class LessonCompensation(BaseSchema):
+    """Расчёт мастеру за занятие (services/lesson_compensation): процент — от
+    того, что клиенты заплатили, а не от прайса."""
     kind: Literal["owner", "percent", "hourly", "salary", "unconfigured"]
+    # Доля мастера со всей базы (оплачено + ждёт оплаты + оплата не отмечена).
     amount: Optional[float] = None
     base_amount: Optional[float] = None
     rate: Optional[float] = None
     duration_min: int
+    # Из чего сложена база: деньги прошли / открытый долг / об оплате ничего
+    # не известно (импорт, абонемент без найденной продажи) — по цене записи.
+    paid_base: Optional[float] = None
+    due_base: Optional[float] = None
+    estimated_base: Optional[float] = None
+    # Доля мастера с уже оплаченного.
+    paid_amount: Optional[float] = None
+    # Визиты по абонементу, стоимость которых определить нечем: в базу не вошли.
+    unknown_count: int = 0
 
 
 class LessonDetail(LessonRead):

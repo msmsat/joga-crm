@@ -148,12 +148,24 @@ export interface LessonLocation {
   city: string | null
 }
 
+/** Расчёт мастеру за занятие: процент — от того, что клиенты заплатили, а не
+ *  от прайса (back/services/lesson_compensation.py). */
 export interface LessonCompensation {
   kind: 'owner' | 'percent' | 'hourly' | 'salary' | 'unconfigured'
+  /** Доля мастера со всей базы; null — считать не от чего. */
   amount: number | null
   base_amount: number | null
   rate: number | null
   duration_min: number
+  /** Из чего сложена база: деньги прошли / открытый долг / об оплате ничего не
+   *  известно (перенос из прошлой системы) — тогда по цене записи. */
+  paid_base?: number | null
+  due_base?: number | null
+  estimated_base?: number | null
+  /** Доля мастера с уже оплаченного. */
+  paid_amount?: number | null
+  /** Визиты по абонементу без цены: в базу не вошли. */
+  unknown_count?: number
 }
 
 export interface LessonDetail extends Lesson {
