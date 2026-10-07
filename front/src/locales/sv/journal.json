@@ -595,7 +595,10 @@
     "title": "Tidigare pass",
     "empty": "Inga pass än — det här blir det första",
     "more": "Visa {{n}} till",
-    "repeat": "Upprepa",
-    "repeatHint": "Tryck på ett pass för att boka samma igen"
+    "repeatHint": "Tryck på ett pass för att se kvittot och boka samma igen",
+    "useThis": "Boka samma",
+    "saved": "Sparat {{amount}}",
+    "cantRepeat": "Det här formuläret kan inte boka tjänsten",
+    "noPrice": "Ingen prisinformation"
   }
 }

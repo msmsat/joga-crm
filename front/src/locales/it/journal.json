@@ -595,7 +595,10 @@
     "title": "Lezioni precedenti",
     "empty": "Ancora nessuna lezione: questa sarà la prima",
     "more": "Mostra altri {{n}}",
-    "repeat": "Ripeti",
-    "repeatHint": "Tocca una lezione per prenotare la stessa"
+    "repeatHint": "Tocca una lezione per vedere la ricevuta e prenotare uguale",
+    "useThis": "Prenota uguale",
+    "saved": "Risparmio {{amount}}",
+    "cantRepeat": "Questo modulo non prenota questo servizio",
+    "noPrice": "Nessuna informazione sul prezzo"
   }
 }

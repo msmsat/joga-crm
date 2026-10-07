@@ -595,7 +595,10 @@
     "title": "Clases anteriores",
     "empty": "Aún no hay clases: esta será la primera",
     "more": "Mostrar {{n}} más",
-    "repeat": "Repetir",
-    "repeatHint": "Toca una clase para reservar lo mismo"
+    "repeatHint": "Toca una clase para ver el recibo y reservar igual",
+    "useThis": "Reservar igual",
+    "saved": "Ahorro {{amount}}",
+    "cantRepeat": "Este formulario no reserva este servicio",
+    "noPrice": "Sin información de precio"
   }
 }

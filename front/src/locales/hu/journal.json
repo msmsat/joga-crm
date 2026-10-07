@@ -595,7 +595,10 @@
     "title": "Korábbi órák",
     "empty": "Még nem volt óra — ez lesz az első",
     "more": "Még {{n}} megjelenítése",
-    "repeat": "Ismétlés",
-    "repeatHint": "Koppintson egy órára, és ugyanígy foglaljuk"
+    "repeatHint": "Koppintson egy órára a nyugtáért és az újrafoglalásért",
+    "useThis": "Ugyanígy foglal",
+    "saved": "Megtakarítás {{amount}}",
+    "cantRepeat": "Ez az űrlap nem foglalja ezt a szolgáltatást",
+    "noPrice": "Nincs áradat"
   }
 }

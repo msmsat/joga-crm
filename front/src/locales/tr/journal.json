@@ -595,7 +595,10 @@
     "title": "Geçmiş dersler",
     "empty": "Henüz ders yok — bu ilki olacak",
     "more": "{{n}} tane daha göster",
-    "repeat": "Tekrarla",
-    "repeatHint": "Aynısını ayırtmak için bir derse dokunun"
+    "repeatHint": "Fişi görmek ve aynısını ayırtmak için bir derse dokunun",
+    "useThis": "Aynısını ayırt",
+    "saved": "Kazanç {{amount}}",
+    "cantRepeat": "Bu form bu hizmeti ayırtamaz",
+    "noPrice": "Fiyat bilgisi yok"
   }
 }

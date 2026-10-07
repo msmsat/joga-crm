@@ -599,7 +599,10 @@
     "title": "Předchozí lekce",
     "empty": "Zatím žádné lekce — tahle bude první",
     "more": "Zobrazit dalších {{n}}",
-    "repeat": "Opakovat",
-    "repeatHint": "Klepněte na lekci — zapíšeme stejně"
+    "repeatHint": "Klepněte na lekci — ukážeme účtenku a zapíšeme stejně",
+    "useThis": "Zapsat stejně",
+    "saved": "Ušetřeno {{amount}}",
+    "cantRepeat": "Tento formulář tuto službu nezapíše",
+    "noPrice": "Bez informace o ceně"
   }
 }

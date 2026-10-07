@@ -595,7 +595,10 @@
     "title": "Bisherige Termine",
     "empty": "Noch keine Termine – das wird der erste",
     "more": "{{n}} weitere anzeigen",
-    "repeat": "Wiederholen",
-    "repeatHint": "Termin antippen – gleich wieder buchen"
+    "repeatHint": "Termin antippen – Beleg ansehen und gleich wieder buchen",
+    "useThis": "Genauso buchen",
+    "saved": "Gespart {{amount}}",
+    "cantRepeat": "Dieses Formular bucht diese Leistung nicht",
+    "noPrice": "Keine Preisangabe"
   }
 }

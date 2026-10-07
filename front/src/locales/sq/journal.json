@@ -595,7 +595,10 @@
     "title": "Mësimet e kaluara",
     "empty": "Ende pa mësime — ky do të jetë i pari",
     "more": "Shfaq edhe {{n}}",
-    "repeat": "Përsërit",
-    "repeatHint": "Prekni një mësim për ta rezervuar njësoj"
+    "repeatHint": "Prekni një mësim për faturën dhe rezervim njësoj",
+    "useThis": "Rezervo njësoj",
+    "saved": "Kursim {{amount}}",
+    "cantRepeat": "Ky formular nuk e rezervon këtë shërbim",
+    "noPrice": "Pa të dhëna për çmimin"
   }
 }

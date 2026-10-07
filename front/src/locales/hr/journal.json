@@ -599,7 +599,10 @@
     "title": "Prošli termini",
     "empty": "Još nema termina — ovo će biti prvi",
     "more": "Prikaži još {{n}}",
-    "repeat": "Ponovi",
-    "repeatHint": "Dodirnite termin — zakazat ćemo isto"
+    "repeatHint": "Dodirnite termin — prikazat ćemo račun i zakazati isto",
+    "useThis": "Zakaži isto",
+    "saved": "Ušteda {{amount}}",
+    "cantRepeat": "Ovaj obrazac ne zakazuje ovu uslugu",
+    "noPrice": "Nema podataka o cijeni"
   }
 }

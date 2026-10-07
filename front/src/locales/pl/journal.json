@@ -603,7 +603,10 @@
     "title": "Poprzednie zajęcia",
     "empty": "Jeszcze nie było zajęć — to będą pierwsze",
     "more": "Pokaż jeszcze {{n}}",
-    "repeat": "Powtórz",
-    "repeatHint": "Kliknij zajęcia — zapiszemy tak samo"
+    "repeatHint": "Kliknij zajęcia — pokażemy rachunek i zapiszemy tak samo",
+    "useThis": "Zapisz tak samo",
+    "saved": "Oszczędność {{amount}}",
+    "cantRepeat": "Ten formularz nie zapisuje tej usługi",
+    "noPrice": "Brak informacji o cenie"
   }
 }

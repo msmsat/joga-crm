@@ -595,7 +595,10 @@
     "title": "Aulas anteriores",
     "empty": "Ainda sem aulas — esta será a primeira",
     "more": "Mostrar mais {{n}}",
-    "repeat": "Repetir",
-    "repeatHint": "Toque numa aula para marcar a mesma"
+    "repeatHint": "Toque numa aula para ver o recibo e marcar igual",
+    "useThis": "Marcar igual",
+    "saved": "Poupança {{amount}}",
+    "cantRepeat": "Este formulário não marca este serviço",
+    "noPrice": "Sem informação de preço"
   }
 }

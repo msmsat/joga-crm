@@ -50,3 +50,51 @@ export function priceView(f: EventFunding, paymentStatus?: EventRecord['payment_
     percent: own && own.base > 0 ? Math.round((own.base - own.price) / own.base * 100) : null,
   };
 }
+
+/** Строка чека: стоимость, скидка или средство оплаты (баллы, депозит, сертификат). */
+export interface ReceiptLine {
+  key: string; label: string; amount: number; gain: boolean;
+  percent?: number | null; promo?: string | null; points?: number;
+}
+
+export interface Receipt {
+  lines: ReceiptLine[];
+  /** Цена клиента; null — закрыто абонементом. */
+  total: number | null;
+  /** На сколько скидки снизили прайс. */
+  saved: number;
+  subscriptionName: string | null;
+  bySubscription: boolean;
+  settled: Settled;
+  method: string | null;
+}
+
+/**
+ * Чек прошлого занятия — те же строки, что чек записанного в карточке занятия
+ * (LessonBill): прайс, каждая скидка, средства оплаты, итог и чем закрыто.
+ * label — вид строки (price, discount kind, points, deposit, certificate);
+ * подписи называет компонент.
+ */
+export function receiptOf(f: EventFunding): Receipt {
+  const funding = fundingOfVisit(f);
+  const parts = fundingParts(funding);
+  const own = discountedPrice(funding);
+  const settled: Settled = parts.debt > 0 ? { kind: 'debt', amount: parts.debt }
+    : parts.paid ? { kind: 'paid', amount: parts.paid.amount } : null;
+  if (parts.bySubscription) {
+    return { lines: [], total: null, saved: 0, subscriptionName: parts.subscriptionName, bySubscription: true, settled: null, method: null };
+  }
+  const base = own?.base ?? parts.base;
+  const total = own?.price ?? parts.base;
+  const lines: ReceiptLine[] = [{ key: 'price', label: 'price', amount: base, gain: false }];
+  for (const d of parts.discounts) {
+    lines.push({ key: `d-${d.kind}`, label: d.kind, amount: d.amount, gain: true, percent: d.percent, promo: d.promoCode });
+  }
+  if (parts.points) lines.push({ key: 'pts', label: 'points', amount: parts.points.amount, gain: true, points: parts.points.points });
+  if (parts.deposit > 0) lines.push({ key: 'dep', label: 'deposit', amount: parts.deposit, gain: true });
+  if (parts.certificate) lines.push({ key: 'cert', label: 'certificate', amount: parts.certificate.amount, gain: true, promo: parts.certificate.code });
+  return {
+    lines, total, saved: Math.max(0, base - total), subscriptionName: null, bySubscription: false,
+    settled, method: parts.paid?.method ?? null,
+  };
+}

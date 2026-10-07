@@ -595,7 +595,10 @@
     "title": "Aiemmat tunnit",
     "empty": "Ei vielä tunteja — tämä on ensimmäinen",
     "more": "Näytä {{n}} lisää",
-    "repeat": "Toista",
-    "repeatHint": "Napauta tuntia, niin varaamme saman uudelleen"
+    "repeatHint": "Napauta tuntia, niin näet kuitin ja voit varata saman",
+    "useThis": "Varaa samoin",
+    "saved": "Säästö {{amount}}",
+    "cantRepeat": "Tällä lomakkeella ei voi varata tätä palvelua",
+    "noPrice": "Ei hintatietoja"
   }
 }

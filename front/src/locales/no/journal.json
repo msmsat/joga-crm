@@ -595,7 +595,10 @@
     "title": "Tidligere økter",
     "empty": "Ingen økter ennå — dette blir den første",
     "more": "Vis {{n}} til",
-    "repeat": "Gjenta",
-    "repeatHint": "Trykk på en økt for å booke det samme igjen"
+    "repeatHint": "Trykk på en økt for å se kvitteringen og booke det samme",
+    "useThis": "Book det samme",
+    "saved": "Spart {{amount}}",
+    "cantRepeat": "Dette skjemaet kan ikke booke denne tjenesten",
+    "noPrice": "Ingen prisinformasjon"
   }
 }

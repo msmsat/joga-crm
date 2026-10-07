@@ -10,6 +10,9 @@
   --plh-missed: #94661A;   --plh-missed-f: #E0B566;
   --plh-cancelled: #B0566B; --plh-cancelled-f: #E59AAB;
   --plh-done: var(--text2); --plh-done-f: #CBCBCB;
+  /* Подложка ленты (под вырезы чека) и бумага чека — свои у поповера и строки мастера. */
+  --plh-surface: var(--bg-card);
+  --plh-paper: rgba(249, 160, 139, 0.06);
   display: flex; flex-direction: column; min-height: 0;
   font-family: var(--font);
   /* По ширине ленты (а не экрана) решается, влезает ли подпись состояния. */
@@ -97,36 +100,82 @@
 }
 .plh-row.is-cancelled .plh-date b { color: var(--muted); }
 
-/* Занятие можно повторить — строка становится кнопкой. Реагирует на наведение
-   только она: строка для чтения не должна притворяться нажимаемой. */
+/* Строка — кнопка: нажатие раскрывает чек занятия под ней. */
 button.plh-row {
   width: 100%; margin: 0; border: 0; background: transparent;
   font: inherit; color: inherit; text-align: left; cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
 }
-.plh-row.is-pickable { transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease; }
-.plh-row.is-pickable:hover { background: rgba(249, 160, 139, 0.1); }
-.plh-row.is-pickable:active { background: rgba(249, 160, 139, 0.16); transform: scale(0.985); }
-.plh-row.is-pickable:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--peach-glow), inset 0 0 0 1px rgba(249, 160, 139, 0.6); }
-/* Справа — стопка: состояние и под ним цена. При наведении на их месте
-   проступает «Повторить». */
+button.plh-row:hover { background: rgba(var(--ink), 0.035); }
+button.plh-row:active { transform: scale(0.985); }
+button.plh-row:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--peach-glow), inset 0 0 0 1px rgba(249, 160, 139, 0.6); }
+.plh-row.is-pickable:hover { background: rgba(249, 160, 139, 0.08); }
+.plh-item.is-open > .plh-row { background: rgba(249, 160, 139, 0.12); border-radius: 12px 12px 4px 4px; }
+/* Справа — стопка: состояние и под ним цена. */
 .plh-side { position: relative; display: inline-flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.plh-side > :not(.plh-repeat) { transition: opacity 0.15s ease; }
-.plh-repeat {
-  position: absolute; top: 50%; right: 0;
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 9px 3px 7px; border-radius: 999px;
-  background: var(--peach); color: #fff; box-shadow: 0 4px 10px -4px rgba(249, 160, 139, 0.7);
-  font: 800 10.5px var(--font); white-space: nowrap; pointer-events: none;
-  opacity: 0; transform: translateY(-50%) scale(0.9);
-  transition: opacity 0.15s ease, transform 0.15s ease;
+
+/* ── Чек занятия: «билет» с вырезами по бокам линии отрыва ── */
+.plh-receipt-wrap { overflow: hidden; }
+.plh-receipt {
+  position: relative; margin: 0 0 8px; padding: 14px 14px 12px;
+  border-radius: 4px 4px 14px 14px;
+  background: var(--plh-paper);
+  box-shadow: inset 0 0 0 1px rgba(249, 160, 139, 0.22);
 }
-@media (hover: hover) {
-  .plh-row.is-pickable:hover .plh-side > :not(.plh-repeat),
-  .plh-row.is-pickable:focus-visible .plh-side > :not(.plh-repeat) { opacity: 0; }
-  .plh-row.is-pickable:hover .plh-repeat, .plh-row.is-pickable:focus-visible .plh-repeat {
-    opacity: 1; transform: translateY(-50%) scale(1);
-  }
+.plh-receipt-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.plh-receipt-lines li {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  font: 600 12px var(--font); color: var(--text2);
 }
+.plh-receipt-lines li span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.plh-receipt-lines li b { flex-shrink: 0; font-weight: 800; color: var(--onyx); font-variant-numeric: tabular-nums; }
+.plh-receipt-lines li.is-gain b { color: #C9694F; }
+:root.dark .plh-receipt-lines li.is-gain b { color: var(--peach-light); }
+/* Линия отрыва: пунктир и два полукруглых выреза цветом подложки ленты. */
+.plh-receipt-cut {
+  position: relative; height: 1px; margin: 12px -14px;
+  background-image: linear-gradient(90deg, rgba(var(--ink), 0.18) 50%, transparent 50%);
+  background-size: 8px 1px; background-position: 14px 0; background-repeat: repeat-x;
+}
+.plh-receipt-cut::before, .plh-receipt-cut::after {
+  content: ''; position: absolute; top: -7px; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--plh-surface); box-shadow: inset 0 0 0 1px rgba(249, 160, 139, 0.22);
+}
+.plh-receipt-cut::before { left: -7px; clip-path: inset(0 0 0 50%); }
+.plh-receipt-cut::after { right: -7px; clip-path: inset(0 50% 0 0); }
+.plh-receipt-total { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.plh-receipt-eyebrow {
+  display: block; margin-bottom: 2px;
+  font: 800 10px var(--font); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3);
+}
+.plh-receipt-amount {
+  display: block; font: 800 24px/1.1 var(--font); letter-spacing: -0.03em;
+  color: var(--onyx); font-variant-numeric: tabular-nums;
+}
+.plh-receipt-amount.is-debt { color: var(--plh-cancelled); }
+.plh-receipt-saved {
+  display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+  padding: 5px 10px 5px 8px; border-radius: 999px;
+  background: linear-gradient(135deg, rgba(252, 174, 145, 0.24), rgba(249, 160, 139, 0.14));
+  box-shadow: inset 0 0 0 1px rgba(249, 160, 139, 0.35);
+  font: 800 11.5px var(--font); color: #C9694F; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+:root.dark .plh-receipt-saved { color: var(--peach-light); }
+.plh-receipt-status {
+  display: flex; align-items: center; gap: 6px; margin-top: 10px;
+  font: 700 11.5px var(--font); color: var(--muted);
+}
+.plh-receipt-status.is-paid { color: var(--plh-attended); }
+.plh-receipt-status.is-debt { color: var(--plh-cancelled); }
+.plh-receipt-status.is-sub { color: var(--plh-ongoing); }
+.plh-receipt-status.is-free { color: #C9694F; }
+:root.dark .plh-receipt-status.is-free { color: var(--peach-light); }
+.plh-receipt-note { margin: 0; font: 600 12px/1.45 var(--font); color: var(--muted); }
+.plh-receipt-status + .plh-receipt-note, .plh-receipt-total + .plh-receipt-note { margin-top: 10px; }
+.plh-receipt-note + .plh-receipt-note { margin-top: 6px; }
+.plh-receipt-actions { display: flex; gap: 8px; margin-top: 14px; }
+.plh-receipt-actions > :last-child { flex: 1; }
+
 /* Во что обошлось занятие: значок, прайс зачёркнут, цена клиента — жирно,
    скидка — персиковой капсулой процента. Не оплачено — итог розовым. */
 .plh-price {
@@ -246,6 +295,7 @@ button.plh-row {
 .plh.is-inline .plh-body { overflow: visible; padding: 0 4px 6px; }
 .plh.is-inline .plh-month-label { position: static; background: none; padding: 6px 8px 4px; }
 .plh.is-inline .plh-date { background: var(--bg-card); }
+.plh.is-inline { --plh-surface: var(--bg2); --plh-paper: var(--bg-card); }
 .plh.is-inline .plh-empty { margin: 0 4px; }
 .plh.is-inline .plh-more { width: calc(100% - 8px); margin: 6px 4px 0; }
 
@@ -255,7 +305,7 @@ button.plh-row {
 @keyframes plh-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 @media (prefers-reduced-motion: reduce) {
   .plh-row, .plh-bar > span, .plh-btn, .plh-skeleton div { animation: none; }
-  .plh-row.is-pickable, .plh-side > *, .plh-repeat { transition: none; }
+  button.plh-row { transition: none; }
   .plh-btn-icon, .plh-toggle svg { transition: none; }
 }
 

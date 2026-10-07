@@ -595,7 +595,10 @@
     "title": "Cours précédents",
     "empty": "Aucun cours pour l’instant — ce sera le premier",
     "more": "Afficher {{n}} de plus",
-    "repeat": "Répéter",
-    "repeatHint": "Touchez un cours pour réserver le même"
+    "repeatHint": "Touchez un cours pour voir le reçu et réserver pareil",
+    "useThis": "Réserver pareil",
+    "saved": "Économie {{amount}}",
+    "cantRepeat": "Ce formulaire ne réserve pas ce service",
+    "noPrice": "Aucune information de prix"
   }
 }

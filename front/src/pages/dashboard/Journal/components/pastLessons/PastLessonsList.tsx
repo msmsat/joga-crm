@@ -8,6 +8,7 @@ import {
   PAST_TONES, lessonTime, repeatOf, usePastLessons, type PastLesson, type PastTone, type RepeatOf,
 } from './usePastLessons';
 import { PastLessonPrice } from './PastLessonPrice';
+import { PastLessonReceipt } from './PastLessonReceipt';
 import './pastLessons.css';
 
 /** Сколько строк сразу и сколько добавляет «Показать ещё»: в поповере место
@@ -43,6 +44,8 @@ export function PastLessonsList({ clientId, inline = false, canRepeat, onRepeat 
   const { lessons, counts, visits, isPending, error, refetch } = usePastLessons(clientId);
   const step = inline ? STEP.inline : STEP.popover;
   const [limit, setLimit] = useState(step);
+  /** Раскрытый чек — у одного занятия за раз. */
+  const [openKey, setOpenKey] = useState<string | null>(null);
 
   const months = useMemo(() => {
     const today = new Date();
@@ -119,7 +122,9 @@ export function PastLessonsList({ clientId, inline = false, canRepeat, onRepeat 
             <div className="plh-month-label">{month.label}</div>
             {month.items.map((lesson, i) => (
               <LessonRow key={lesson.key} lesson={lesson} index={i} weekday={weekday}
-                         repeat={repeatable(lesson)} onRepeat={onRepeat} />
+                         open={openKey === lesson.key}
+                         onToggle={() => setOpenKey(key => (key === lesson.key ? null : lesson.key))}
+                         repeat={repeatable(lesson)} canOffer={onRepeat != null} onRepeat={onRepeat} />
             ))}
           </section>
         ))}
@@ -133,48 +138,44 @@ export function PastLessonsList({ clientId, inline = false, canRepeat, onRepeat 
   );
 }
 
-/** Одно прошлое занятие: справа состояние и под ним цена со скидкой. Можно
- *  повторить — строка становится кнопкой: при наведении на месте состояния и
- *  цены проступает «Повторить». */
-function LessonRow({ lesson, index, weekday, repeat, onRepeat }: {
-  lesson: PastLesson; index: number; weekday: Intl.DateTimeFormat;
-  repeat: RepeatOf | null; onRepeat?: (repeat: RepeatOf) => void;
+/** Одно прошлое занятие: справа состояние и под ним цена со скидкой. Нажатие
+ *  раскрывает под строкой его чек, а уже в чеке — «Записать так же»: повтор
+ *  только после подтверждения. */
+function LessonRow({ lesson, index, weekday, open, onToggle, repeat, canOffer, onRepeat }: {
+  lesson: PastLesson; index: number; weekday: Intl.DateTimeFormat; open: boolean; onToggle: () => void;
+  repeat: RepeatOf | null; canOffer: boolean; onRepeat?: (repeat: RepeatOf) => void;
 }) {
   const { t } = useTranslation(['journal', 'clients']);
   const { event, tone, at } = lesson;
   const name = event.subject || event.title;
   const time = lessonTime(at);
   const label = toneLabel(tone, t);
-  const style = { ['--i' as string]: Math.min(index, 8) };
-  const body = (
-    <>
-      <span className="plh-date">
-        <b>{at.d}</b>
-        <small>{weekday.format(new Date(Date.UTC(at.y, at.mo - 1, at.d)))}</small>
-      </span>
-      <span className="plh-main">
-        <span className="plh-name">{name}</span>
-        <span className="plh-sub">{[time, event.trainer].filter(Boolean).join(' · ')}</span>
-      </span>
-      <span className="plh-side">
-        <span className="plh-state" title={label}><i /><span className="plh-state-label">{label}</span></span>
-        {/* Отменённое ничего не стоило — цене там не место. */}
-        {tone !== 'cancelled' && event.funding && (
-          <PastLessonPrice funding={event.funding} paymentStatus={event.payment_status} />
-        )}
-        {repeat && (
-          <span className="plh-repeat" aria-hidden="true"><Repeat size={11} strokeWidth={2.6} />{t('journal:pastLessons.repeat')}</span>
-        )}
-      </span>
-    </>
-  );
-  if (!repeat || !onRepeat) return <div className={`plh-row is-${tone}`} style={style}>{body}</div>;
   return (
-    <button type="button" className={`plh-row is-${tone} is-pickable`} style={style}
-            aria-label={`${t('journal:pastLessons.repeat')}: ${[name, time].filter(Boolean).join(', ')}`}
-            onClick={() => onRepeat(repeat)}>
-      {body}
-    </button>
+    <div className={`plh-item${open ? ' is-open' : ''}`} style={{ ['--i' as string]: Math.min(index, 8) }}>
+      <button type="button" className={`plh-row is-${tone}${repeat ? ' is-pickable' : ''}`} aria-expanded={open} onClick={onToggle}>
+        <span className="plh-date">
+          <b>{at.d}</b>
+          <small>{weekday.format(new Date(Date.UTC(at.y, at.mo - 1, at.d)))}</small>
+        </span>
+        <span className="plh-main">
+          <span className="plh-name">{name}</span>
+          <span className="plh-sub">{[time, event.trainer].filter(Boolean).join(' · ')}</span>
+        </span>
+        <span className="plh-side">
+          <span className="plh-state" title={label}><i /><span className="plh-state-label">{label}</span></span>
+          {/* Отменённое ничего не стоило — цене там не место. */}
+          {tone !== 'cancelled' && event.funding && (
+            <PastLessonPrice funding={event.funding} paymentStatus={event.payment_status} />
+          )}
+        </span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <PastLessonReceipt key="receipt" event={event} repeat={repeat} canOffer={canOffer}
+                             onRepeat={onRepeat} onClose={onToggle} />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 

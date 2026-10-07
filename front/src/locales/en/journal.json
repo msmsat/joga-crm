@@ -595,7 +595,10 @@
     "title": "Past lessons",
     "empty": "No lessons yet — this will be the first one",
     "more": "Show {{n}} more",
-    "repeat": "Repeat",
-    "repeatHint": "Pick a lesson to book the same again"
+    "repeatHint": "Tap a lesson to see its receipt and book it again",
+    "useThis": "Book the same",
+    "saved": "Saved {{amount}}",
+    "cantRepeat": "This form can't book this service",
+    "noPrice": "No price information"
   }
 }

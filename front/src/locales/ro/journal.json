@@ -599,7 +599,10 @@
     "title": "Ședințe anterioare",
     "empty": "Încă nu au fost ședințe — aceasta va fi prima",
     "more": "Arată încă {{n}}",
-    "repeat": "Repetă",
-    "repeatHint": "Atingeți o ședință pentru a programa la fel"
+    "repeatHint": "Atingeți o ședință pentru chitanță și programare la fel",
+    "useThis": "Programează la fel",
+    "saved": "Economie {{amount}}",
+    "cantRepeat": "Acest formular nu programează acest serviciu",
+    "noPrice": "Fără informații despre preț"
   }
 }
