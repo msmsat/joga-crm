@@ -16,12 +16,15 @@ export function resolveImageUrl(path: string | null | undefined): string | undef
 export class ApiError extends Error {
   status: number
   code?: string   // detail-код с бэкенда (limit_exceeded, subscription_expired и т.п.)
+  /** Поля detail-объекта рядом с кодом: у кого из сотрудников отказ и т.п. */
+  detail?: Record<string, unknown>
 
-  constructor(status: number, message: string, code?: string) {
+  constructor(status: number, message: string, code?: string, detail?: Record<string, unknown>) {
     super(message)
     this.name = 'ApiError'
     this.status = status
     this.code = code
+    this.detail = detail
   }
 }
 
@@ -52,6 +55,15 @@ function isBookingRefusal(data: unknown): boolean {
   if (!detail || typeof detail !== 'object' || !('message_key' in detail)) return false
   const key = (detail as { message_key: unknown }).message_key
   return typeof key === 'string' && key.startsWith('booking.errors.')
+}
+
+// detail-объект целиком ({code, message, …}), если бэкенд прислал объект.
+function detailObject(data: unknown): Record<string, unknown> | undefined {
+  if (data && typeof data === 'object' && 'detail' in data) {
+    const detail = (data as { detail: unknown }).detail
+    if (detail && typeof detail === 'object' && !Array.isArray(detail)) return detail as Record<string, unknown>
+  }
+  return undefined
 }
 
 // Код из detail-объекта {code, message}, если бэкенд его прислал.
@@ -170,7 +182,7 @@ async function request<T>(method: string, path: string, options: RequestOptions 
   const data: unknown = await res.json()
 
   if (!res.ok) {
-    throw new ApiError(res.status, normalizeError(data), detailCode(data))
+    throw new ApiError(res.status, normalizeError(data), detailCode(data), detailObject(data))
   }
 
   return data as T

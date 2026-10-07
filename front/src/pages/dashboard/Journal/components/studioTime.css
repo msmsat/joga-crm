@@ -1,49 +1,148 @@
-/* «Время студии»: кнопка в окнах создания и окно StudioTimeModal.
-   Цвета — токены темы; персик — только на действиях и выбранном. */
-:root { --st-left-bg: linear-gradient(170deg, #FFF7F3 0%, var(--bg) 62%); }
-:root.dark { --st-left-bg: linear-gradient(170deg, #2A221D 0%, var(--bg-card) 62%); }
+/* «Время студии»: переключатель в окнах создания и окно StudioTimeModal.
+   Цвета — токены темы; персик — только на действиях и выбранном.
+   --st-ink — персик, который читается текстом на светлом (тот же, что у
+   перерыва в сетке, StaffBlockCard.css): чистый #F9A08B на белом бледен. */
+:root {
+  --st-left-bg: linear-gradient(172deg, #FFF3EC 0%, #FEF8F4 44%, var(--bg) 100%);
+  --st-when-bg: #FAF7F4;
+  --st-day-bg: var(--bg-card);
+  --st-grad: linear-gradient(150deg, #FCAE91 0%, #F9A08B 100%);
+  --st-ink: #B8684E;
+  --st-ease: cubic-bezier(.22, 1, .36, 1);
+}
+:root.dark {
+  --st-left-bg: linear-gradient(172deg, #2B211C 0%, #221D1A 44%, var(--bg-card) 100%);
+  --st-when-bg: rgba(255, 255, 255, .028);
+  --st-day-bg: rgba(255, 255, 255, .035);
+  --st-ink: #F3AF96;
+}
 
-/* ── Кнопка в шапке окна создания ─────────────────────────────────────── */
-.st-trigger {
-  display: inline-flex; align-items: center; gap: 7px;
-  height: 34px; padding: 0 13px 0 6px;
+/* ── Переключатель «Занятие | Время студии» в шапке окна создания ─────────── */
+.st-mode {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: stretch;
+  height: 36px;
+  padding: 3px;
   border-radius: 999px;
-  border: 1px solid rgba(249, 160, 139, .38);
-  background: linear-gradient(135deg, rgba(252, 174, 145, .16), rgba(249, 160, 139, .06));
+  background: rgba(var(--ink), .045);
+  box-shadow: inset 0 0 0 1px rgba(var(--ink), .06);
+}
+/* Белая подложка под активным сегментом; на нажатии едет на «Время студии»
+   и становится персиковой — окно меняется, когда она доехала. */
+.st-mode-thumb {
+  position: absolute;
+  z-index: -1;
+  top: 3px;
+  bottom: 3px;
+  left: var(--st-thumb-x, 3px);
+  width: var(--st-thumb-w, 0px);
+  border-radius: 999px;
+  background: var(--bg-card);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 6px 14px -6px rgba(0, 0, 0, .16);
+}
+.st-mode.is-going .st-mode-thumb {
+  background: var(--st-grad);
+  box-shadow: 0 8px 18px -8px rgba(249, 160, 139, .9);
+  transition: left .2s var(--st-ease), width .2s var(--st-ease), background .2s ease, box-shadow .2s ease;
+}
+.st-mode-current {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 13px;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: -.1px;
   color: var(--onyx);
-  font: inherit; font-size: 12px; font-weight: 750; letter-spacing: -.1px; white-space: nowrap;
+  white-space: nowrap;
+  transition: color .2s ease;
+}
+.st-mode-studio {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 13px 0 4px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text2);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -.1px;
+  white-space: nowrap;
   cursor: pointer;
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+  transition: color .2s ease, background .2s ease;
 }
-.st-trigger-icon {
-  display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
-  background: linear-gradient(135deg, #FCAE91, #F9A08B); color: #fff;
-  box-shadow: 0 4px 10px -3px rgba(249, 160, 139, .7);
+.st-mode-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--st-grad);
+  box-shadow: 0 4px 10px -3px rgba(249, 160, 139, .75);
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), background .2s ease, box-shadow .2s ease;
 }
-.st-trigger:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(249, 160, 139, .35); }
-.st-trigger:disabled { opacity: .5; cursor: not-allowed; }
+.st-mode-studio:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(249, 160, 139, .35); }
+.st-mode-studio:disabled { opacity: .5; cursor: not-allowed; }
 @media (hover: hover) {
-  .st-trigger:hover:not(:disabled) {
-    transform: translateY(-1px);
-    border-color: rgba(249, 160, 139, .7);
-    box-shadow: 0 8px 18px -8px rgba(249, 160, 139, .65);
-  }
+  .st-mode:not(.is-going) .st-mode-studio:hover:not(:disabled) { color: var(--onyx); background: rgba(249, 160, 139, .1); }
+  .st-mode:not(.is-going) .st-mode-studio:hover:not(:disabled) .st-mode-icon { transform: rotate(-14deg) scale(1.08); }
 }
-/* Тесное окно (ноутбук 1366×768) и узкий лист: остаётся иконка — подпись
-   в подсказке и в aria-label. */
+.st-mode.is-going .st-mode-current { color: var(--text3); }
+.st-mode.is-going .st-mode-studio { color: #fff; }
+.st-mode.is-going .st-mode-icon { background: rgba(255, 255, 255, .26); box-shadow: none; }
+
+/* Тесное окно (ноутбук 1366×768, низкий экран): ниже и плотнее. */
 @media (max-width: 1100px), (max-height: 820px) {
-  .st-trigger { height: 30px; padding: 0 10px 0 4px; font-size: 11.5px; }
-  .st-trigger-icon { width: 22px; height: 22px; }
+  .st-mode { height: 32px; }
+  .st-mode-current { padding: 0 11px; font-size: 11.5px; }
+  .st-mode-studio { padding: 0 11px 0 3px; font-size: 11.5px; }
+  .st-mode-icon { flex-basis: 22px; width: 22px; height: 22px; }
+}
+/* Телефон: одна кнопка — два сегмента рядом с заголовком листа не влезают. */
+@media (max-width: 767px) {
+  .st-mode {
+    height: 34px;
+    padding: 0;
+    background: linear-gradient(135deg, rgba(252, 174, 145, .18), rgba(249, 160, 139, .06));
+    box-shadow: inset 0 0 0 1px rgba(249, 160, 139, .4);
+  }
+  .st-mode-current, .st-mode-thumb { display: none; }
+  .st-mode-studio { padding: 0 12px 0 5px; color: var(--onyx); }
 }
 @media (max-width: 380px) {
-  .st-trigger { padding: 0 4px; }
-  .st-trigger-label { display: none; }
+  .st-mode-studio { padding: 0 5px; }
+  .st-mode-label { display: none; }
 }
 
-/* ── Левая колонка: кусок журнала с блоком ────────────────────────────── */
-.st-preview { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+/* ── Левая колонка: когда — крупно, кусок журнала с блоком, кто, заметка ── */
+.st-preview { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .st-preview-kicker {
   font-size: 10.5px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: var(--text3);
+}
+.st-preview-when { display: flex; flex-direction: column; min-width: 0; margin-top: -4px; }
+.st-preview-weekday { font-size: 12.5px; font-weight: 700; color: var(--text2); }
+.st-preview-date {
+  margin-top: 2px;
+  font-size: 27px; font-weight: 850; letter-spacing: -.9px; line-height: 1.12; color: var(--onyx);
+  overflow-wrap: anywhere;
+}
+.st-preview-range {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 9px; margin-top: 9px;
+  font-size: 15px; font-weight: 800; letter-spacing: -.2px; color: var(--st-ink); font-variant-numeric: tabular-nums;
+}
+.st-preview-range sup, .st-times-total em, .st-clock-opt sup {
+  margin-left: 2px; font-size: 10px; font-weight: 800; font-style: normal; color: var(--st-ink); vertical-align: super;
+}
+.st-preview-range em {
+  padding: 3px 9px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 750; font-style: normal; letter-spacing: 0; color: var(--text2);
+  background: rgba(var(--ink), .055);
 }
 .st-preview-col {
   position: relative;
@@ -52,7 +151,7 @@
   background: var(--bg-card);
   box-shadow: 0 8px 24px -4px rgba(0, 0, 0, .06), inset 0 0 0 1px var(--border);
   overflow: hidden;
-  transition: height .25s cubic-bezier(.22, 1, .36, 1);
+  transition: height .3s var(--st-ease);
 }
 .st-preview-hour {
   position: absolute; left: 0; right: 0; height: 0;
@@ -64,87 +163,371 @@
   font-size: 10px; font-weight: 700; color: var(--text3); font-variant-numeric: tabular-nums;
 }
 .st-preview-lane { position: absolute; top: 0; bottom: 0; left: 52px; right: 6px; }
+.st-preview-lane .j-staff-block-period { transition: top .3s var(--st-ease), height .3s var(--st-ease); }
 .st-preview-lane .j-staff-block-time { white-space: nowrap; }
 .st-preview-who {
   display: flex; align-items: center; gap: 10px; min-width: 0;
-  padding: 10px 12px; border-radius: 12px;
+  padding: 9px 12px 9px 9px; border-radius: 13px;
   background: var(--bg-card); box-shadow: inset 0 0 0 1px var(--border);
 }
 .st-preview-av {
-  display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 8px;
+  display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 9px;
   color: #fff; font-size: 11px; font-weight: 800;
 }
+.st-preview-avs { display: flex; flex: none; }
+.st-preview-who.is-many .st-preview-av {
+  flex-basis: 26px; width: 26px; height: 26px; border-radius: 50%; font-size: 9.5px;
+  box-shadow: 0 0 0 2px var(--bg-card);
+}
+.st-preview-who.is-many .st-preview-av + .st-preview-av { margin-left: -7px; }
+.st-preview-av-more { background: var(--border2); color: var(--text2); }
+.st-preview-who.is-many .st-preview-name { font-size: 12px; font-weight: 650; white-space: normal;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .st-preview-name {
   flex: 1; min-width: 0; font-size: 12.5px; font-weight: 700; color: var(--onyx);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.st-preview-range {
-  font-size: 11.5px; font-weight: 800; color: var(--peach); font-variant-numeric: tabular-nums; white-space: nowrap;
+.st-preview-note {
+  display: flex; align-items: flex-start; gap: 9px; min-width: 0;
+  margin-top: -8px; padding: 10px 12px; border-radius: 13px;
+  background: rgba(249, 160, 139, .09); color: var(--st-ink);
 }
-.st-preview-hint { margin: 0; font-size: 12px; line-height: 1.55; color: var(--text2); }
+.st-preview-note > svg { flex: none; margin-top: 1px; }
+.st-preview-note p {
+  flex: 1; min-width: 0; margin: 0;
+  font-size: 12px; line-height: 1.5; color: var(--text2); white-space: pre-line;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.st-preview-photos {
+  display: inline-flex; align-items: center; gap: 3px; flex: none;
+  font-size: 11px; font-weight: 800; font-variant-numeric: tabular-nums;
+}
+.st-preview-hint { margin: 0; font-size: 12px; line-height: 1.55; color: var(--text3); }
 
 /* ── Форма ─────────────────────────────────────────────────────────────── */
-.st-form { display: flex; flex-direction: column; gap: 20px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.st-form { display: flex; flex-direction: column; gap: 22px; border: 0; padding: 0; margin: 0; min-width: 0; }
 .st-field { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+/* Подпись поля — та же, что у Input кита. */
 .st-label {
   font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: .6px; text-transform: uppercase;
 }
-.st-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: end; }
-/* Подпись даты у Input кита уже есть — выравниваем по ней, без своего поля. */
-.st-row > * { min-width: 0; }
 
 .st-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .st-chip {
-  height: 30px; padding: 0 12px; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 30px; padding: 0 11px 0 9px; border-radius: 999px;
   border: 1px solid var(--border); background: var(--bg);
   color: var(--text2); font: inherit; font-size: 12px; font-weight: 650; white-space: nowrap;
-  cursor: pointer; transition: all .16s ease;
+  cursor: pointer; transition: border-color .16s ease, background .16s ease, color .16s ease;
 }
+.st-chip svg { flex: none; color: var(--text3); transition: color .16s ease; }
+.st-chip-time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .st-chip.is-on {
   border-color: rgba(249, 160, 139, .7);
-  background: rgba(249, 160, 139, .12);
+  background: rgba(249, 160, 139, .13);
   color: var(--onyx); font-weight: 750;
 }
-@media (hover: hover) { .st-chip:hover:not(.is-on):not(:disabled) { border-color: var(--peach); color: var(--onyx); } }
+.st-chip.is-on svg { color: var(--peach); }
+.st-chip:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(249, 160, 139, .3); }
+@media (hover: hover) {
+  .st-chip:hover:not(.is-on):not(:disabled) { border-color: var(--peach); color: var(--onyx); }
+  .st-chip:hover:not(.is-on):not(:disabled) svg { color: var(--peach); }
+}
 
-.st-staff { display: flex; flex-wrap: wrap; gap: 8px; max-height: 132px; overflow-y: auto; padding: 2px; margin: -2px; }
+/* ── «Когда»: лента дней, начало → конец, длительность ────────────────────── */
+.st-when {
+  display: flex; flex-direction: column; gap: 16px; min-width: 0;
+  padding: 16px 16px 15px; border-radius: 18px;
+  background: var(--st-when-bg);
+  box-shadow: inset 0 0 0 1px rgba(var(--ink), .05);
+}
+.st-days { display: flex; flex-direction: column; gap: 11px; min-width: 0; }
+.st-days-head { display: flex; align-items: center; gap: 10px; min-height: 28px; }
+.st-days-month {
+  font-size: 13px; font-weight: 800; letter-spacing: -.2px; color: var(--onyx); white-space: nowrap;
+}
+.st-days-nav { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.st-days-btn {
+  display: grid; place-items: center; width: 30px; height: 30px; padding: 0;
+  border: 0; border-radius: 10px; background: transparent; color: var(--text2);
+  cursor: pointer; transition: background .16s ease, color .16s ease;
+}
+.st-days-btn:focus-visible, .st-days-today:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(249, 160, 139, .3); }
+.st-days-today {
+  height: 28px; margin-right: 4px; padding: 0 11px; border: 0; border-radius: 999px;
+  background: rgba(249, 160, 139, .13); color: var(--st-ink);
+  font: inherit; font-size: 11.5px; font-weight: 750; white-space: nowrap; cursor: pointer;
+  animation: st-fade-in .22s ease;
+}
+.st-days-pick { position: relative; display: grid; }
+/* Невидимое поле даты под кнопкой календаря: showPicker() раскрывает его
+   системный календарь прямо у кнопки. */
+.st-days-pick input {
+  position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0;
+  opacity: 0; pointer-events: none;
+}
+@media (hover: hover) {
+  .st-days-btn:hover { background: rgba(var(--ink), .06); color: var(--onyx); }
+  .st-days-today:hover { background: rgba(249, 160, 139, .2); }
+}
+
+/* Лента выходит под края карточки и гаснет у них: видно, что она листается. */
+.st-days-strip {
+  --st-fade: 30px;
+  position: relative;
+  display: flex; align-items: center; gap: 6px;
+  margin: 0 -16px; padding: 4px 16px 8px;
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity; scroll-padding-inline: 16px;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--st-fade), #000 calc(100% - var(--st-fade)), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 var(--st-fade), #000 calc(100% - var(--st-fade)), transparent 100%);
+}
+.st-days-strip::-webkit-scrollbar, .st-staff::-webkit-scrollbar { display: none; }
+.st-days-strip[data-at-start], .st-staff[data-at-start] {
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - var(--st-fade)), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - var(--st-fade)), transparent 100%);
+}
+.st-days-strip[data-at-end], .st-staff[data-at-end] {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--st-fade), #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 var(--st-fade), #000 100%);
+}
+.st-days-strip[data-at-start][data-at-end], .st-staff[data-at-start][data-at-end] { -webkit-mask-image: none; mask-image: none; }
+
+.st-day {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  width: 46px; height: 60px; padding: 0;
+  border-radius: 15px; border: 1px solid rgba(var(--ink), .07);
+  background: var(--st-day-bg);
+  font: inherit; cursor: pointer;
+  scroll-snap-align: center;
+  transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s var(--st-ease), opacity .2s ease;
+}
+.st-day-wd { font-size: 10.5px; font-weight: 700; line-height: 1; color: var(--text3); text-transform: lowercase; }
+.st-day-n {
+  font-size: 17px; font-weight: 800; line-height: 1; letter-spacing: -.4px;
+  color: var(--onyx); font-variant-numeric: tabular-nums;
+}
+.st-day.is-weekend .st-day-wd { color: var(--st-ink); }
+.st-day.is-past { opacity: .42; }
+.st-day.is-today::after {
+  content: ''; position: absolute; bottom: 6px; left: 50%;
+  width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--peach);
+}
+.st-day.is-on {
+  opacity: 1;
+  border-color: transparent;
+  background: var(--st-grad);
+  box-shadow: 0 12px 22px -12px rgba(249, 160, 139, 1), inset 0 1px 0 rgba(255, 255, 255, .35);
+  animation: st-pop .34s cubic-bezier(.34, 1.56, .64, 1);
+}
+.st-day.is-on .st-day-wd, .st-day.is-on .st-day-n { color: #fff; }
+.st-day.is-on .st-day-wd { opacity: .85; }
+.st-day.is-on.is-today::after { background: #fff; }
+.st-day:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(249, 160, 139, .35); }
+@media (hover: hover) {
+  .st-day:hover:not(.is-on) { border-color: rgba(249, 160, 139, .6); transform: translateY(-2px); opacity: 1; }
+}
+/* Граница месяца — его имя вертикально между днями. */
+.st-days-sep {
+  flex: none; align-self: stretch;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 1px;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font-size: 10px; font-weight: 800; letter-spacing: .4px; text-transform: lowercase; color: var(--st-ink);
+}
+
+.st-times { display: flex; align-items: flex-end; gap: 10px; min-width: 0; }
+.st-time-col { display: flex; flex-direction: column; gap: 8px; flex: 0 1 136px; min-width: 0; }
+.st-times-arrow { flex: none; display: grid; place-items: center; height: 46px; color: var(--text3); }
+.st-times-total {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+  margin-left: auto; min-width: 0; text-align: right;
+}
+.st-times-total strong {
+  display: flex; align-items: center; height: 46px;
+  font-size: 19px; font-weight: 850; letter-spacing: -.5px; color: var(--onyx); white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Поле времени: набрать или выбрать. */
+.st-clock {
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+  height: 46px; padding: 0 6px 0 13px; box-sizing: border-box;
+  border-radius: 13px; border: 1.5px solid rgba(var(--ink), .09);
+  background: var(--bg-card); color: var(--text3);
+  cursor: text;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.st-clock > svg { flex: none; }
+.st-clock input {
+  flex: 1; width: 100%; min-width: 0; padding: 0;
+  border: 0; outline: 0; background: transparent;
+  font: inherit; font-size: 17px; font-weight: 800; letter-spacing: -.3px;
+  color: var(--onyx); font-variant-numeric: tabular-nums;
+}
+.st-clock:focus-within, .st-clock.is-open {
+  border-color: #FCAE91;
+  box-shadow: 0 0 0 3px rgba(252, 174, 145, .16);
+  color: var(--peach);
+}
+.st-clock-caret {
+  display: grid; place-items: center; flex: none; width: 26px; height: 26px; padding: 0;
+  border: 0; border-radius: 8px; background: transparent; color: var(--text3); cursor: pointer;
+  transition: transform .2s var(--st-ease), background .16s ease;
+}
+.st-clock.is-open .st-clock-caret { transform: rotate(180deg); }
+@media (hover: hover) { .st-clock-caret:hover { background: rgba(var(--ink), .06); } }
+.st-clock.is-shake-a { animation: st-shake-a .34s ease; }
+.st-clock.is-shake-b { animation: st-shake-b .34s ease; }
+/* Системное поле времени телефона под наш вид. */
+.st-clock.is-native input { appearance: none; -webkit-appearance: none; min-height: 40px; }
+.st-clock.is-native input::-webkit-date-and-time-value { text-align: left; }
+/* Свой значок слева уже есть — системный справа был бы вторым. Выбор времени
+   на телефоне открывается нажатием по самому полю. */
+.st-clock.is-native input::-webkit-calendar-picker-indicator { display: none; }
+.st-clock.is-native { padding-right: 13px; }
+
+.st-clock-panel {
+  position: fixed; z-index: 1200;
+  display: flex; flex-direction: column; gap: 1px;
+  padding: 6px; box-sizing: border-box;
+  border-radius: 14px; background: var(--bg-card);
+  box-shadow: 0 22px 44px -14px rgba(0, 0, 0, .26), 0 0 0 1px rgba(var(--ink), .07);
+  overflow-y: auto; overscroll-behavior: contain;
+  animation: st-drop .16s var(--st-ease);
+}
+.st-clock-opt {
+  display: flex; align-items: center; gap: 12px; flex: none;
+  width: 100%; height: 34px; padding: 0 10px;
+  border: 0; border-radius: 9px; background: transparent;
+  font: inherit; font-size: 13px; color: var(--onyx); text-align: left; cursor: pointer;
+}
+.st-clock-opt strong { font-weight: 750; font-variant-numeric: tabular-nums; }
+.st-clock-opt span { margin-left: auto; font-size: 11.5px; font-weight: 650; color: var(--text3); white-space: nowrap; }
+.st-clock-opt.is-on { background: rgba(249, 160, 139, .15); color: var(--st-ink); }
+.st-clock-opt.is-on span { color: var(--st-ink); opacity: .75; }
+@media (hover: hover) { .st-clock-opt:hover:not(.is-on) { background: rgba(var(--ink), .045); } }
+
+/* ── Сотрудник: ряд одной строкой, листается вбок ─────────────────────────── */
+.st-staff {
+  --st-fade: 26px;
+  display: flex; gap: 8px;
+  margin: -3px -3px -5px; padding: 3px 3px 5px;
+  overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--st-fade), #000 calc(100% - var(--st-fade)), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 var(--st-fade), #000 calc(100% - var(--st-fade)), transparent 100%);
+}
 .st-person {
+  flex: 0 0 auto;
   display: inline-flex; align-items: center; gap: 8px;
-  height: 38px; padding: 0 12px 0 5px; border-radius: 11px;
+  height: 40px; padding: 0 13px 0 5px; border-radius: 12px;
   border: 1px solid var(--border); background: var(--bg);
-  font: inherit; cursor: pointer; transition: all .16s ease; max-width: 100%;
+  font: inherit; cursor: pointer;
+  transition: border-color .16s ease, background .16s ease, box-shadow .16s ease;
 }
 .st-person-av {
-  display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 8px;
+  display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 9px;
   background: var(--border2); color: var(--muted); font-size: 10.5px; font-weight: 800;
+  transition: background .16s ease, color .16s ease;
 }
-.st-person-name {
-  font-size: 12.5px; font-weight: 650; color: var(--onyx);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.st-person.is-on { box-shadow: 0 4px 12px -4px rgba(0, 0, 0, .12); }
+.st-person-name { font-size: 12.5px; font-weight: 650; color: var(--onyx); white-space: nowrap; }
+.st-person.is-on { box-shadow: 0 6px 14px -6px rgba(0, 0, 0, .16); }
 .st-person.is-on .st-person-name { font-weight: 800; }
+.st-person:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(249, 160, 139, .3); }
+@media (hover: hover) { .st-person:hover:not(.is-on) { border-color: rgba(249, 160, 139, .6); } }
 
-.st-duration { display: flex; flex-direction: column; gap: 10px; }
-.st-stepper {
-  display: flex; align-items: center; gap: 10px;
-  padding: 6px; border-radius: 14px;
-  background: rgba(var(--ink), .025); border: 1.5px solid rgba(var(--ink), .07);
+/* ── Кого касается: отметки галочкой, «Все сотрудники» ──────────────────── */
+.st-who-head { display: flex; align-items: center; gap: 10px; min-height: 28px; }
+.st-who-count {
+  font-size: 11.5px; font-weight: 750; color: var(--text3); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.st-step {
-  display: grid; place-items: center; width: 38px; height: 38px; flex-shrink: 0;
-  border-radius: 10px; border: 0; background: var(--bg-card); color: var(--onyx);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .06), inset 0 0 0 1px var(--border);
-  cursor: pointer; transition: transform .14s ease, color .14s ease;
+.st-who-all {
+  display: inline-flex; align-items: center; gap: 7px; margin-left: auto;
+  height: 28px; padding: 0 11px 0 7px; border: 0; border-radius: 999px;
+  background: rgba(var(--ink), .05); color: var(--text2);
+  font: inherit; font-size: 11.5px; font-weight: 750; white-space: nowrap; cursor: pointer;
+  transition: background .16s ease, color .16s ease;
 }
-.st-step:disabled { opacity: .35; cursor: not-allowed; }
-@media (hover: hover) { .st-step:hover:not(:disabled) { color: var(--peach); transform: translateY(-1px); } }
-.st-step-value { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; }
-.st-step-value strong {
-  font-size: 16px; font-weight: 850; color: var(--onyx); letter-spacing: -.3px; font-variant-numeric: tabular-nums;
+.st-who-all.is-on { background: rgba(249, 160, 139, .15); color: var(--st-ink); }
+.st-who-all:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(249, 160, 139, .3); }
+@media (hover: hover) { .st-who-all:hover:not(.is-on) { background: rgba(var(--ink), .08); color: var(--onyx); } }
+.st-tick {
+  display: grid; place-items: center; width: 16px; height: 16px; border-radius: 5px;
+  border: 1.5px solid rgba(var(--ink), .22); background: var(--bg-card); color: #fff;
+  transition: background .16s ease, border-color .16s ease;
 }
-.st-step-value span { font-size: 11.5px; font-weight: 650; color: var(--text3); font-variant-numeric: tabular-nums; }
+.st-who-all.is-on .st-tick { border-color: transparent; background: var(--st-grad); }
+/* Несколько отметок — все люди на виду, переносом; ряд-лента только на телефоне. */
+.st-staff.st-staff-many {
+  flex-wrap: wrap; overflow: visible; margin: 0; padding: 0;
+  -webkit-mask-image: none; mask-image: none;
+}
+.st-person-av svg { display: block; }
+.st-person-off {
+  display: grid; place-items: center; flex: none; width: 18px; height: 18px; margin: 0 -4px 0 -2px;
+  border-radius: 6px; background: rgba(249, 160, 139, .18); color: var(--st-ink);
+}
 
+/* ── Вне рабочего времени ─────────────────────────────────────────────── */
+.st-off {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 11px 13px; border-radius: 13px;
+  background: var(--bg-card);
+  box-shadow: inset 0 0 0 1px rgba(249, 160, 139, .45), 0 6px 16px -10px rgba(249, 160, 139, .7);
+  animation: st-drop .2s var(--st-ease);
+}
+.st-off-icon {
+  display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 9px;
+  background: var(--st-grad); color: #fff;
+}
+.st-off-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.st-off-copy strong { font-size: 12.5px; font-weight: 800; color: var(--onyx); }
+.st-off-copy span { font-size: 12px; font-weight: 650; color: var(--st-ink); line-height: 1.45; }
+.st-off-copy em { font-size: 11.5px; font-style: normal; color: var(--text3); line-height: 1.45; }
+
+/* ── Карточка «что сделать» ───────────────────────────────────────────── */
+.st-view { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+/* Когда — крупно в превью слева; строкой здесь — только там, где превью нет. */
+.st-view-when { display: none; flex-wrap: wrap; gap: 8px 16px; }
+.st-view-when > span {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 14px; font-weight: 750; color: var(--onyx); font-variant-numeric: tabular-nums;
+}
+.st-view-when svg { color: var(--peach); flex: none; }
+.st-view-when em, .st-view-when sup {
+  font-style: normal; font-size: 11.5px; font-weight: 750; color: var(--text2);
+}
+.st-view-when em { padding: 3px 9px; border-radius: 999px; background: rgba(var(--ink), .055); }
+@media (max-width: 920px) { .st-view-when { display: flex; } }
+.st-view-people { display: flex; flex-wrap: wrap; gap: 8px; }
+.st-view-person {
+  display: inline-flex; align-items: center; gap: 9px;
+  height: 40px; padding: 0 14px 0 6px; border-radius: 12px;
+  background: var(--bg); box-shadow: inset 0 0 0 1px var(--border);
+  font-size: 12.5px; font-weight: 700; color: var(--onyx); white-space: nowrap;
+}
+.st-view-more { padding: 0 14px; color: var(--text2); }
+.st-view-note {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 15px 16px; border-radius: 15px;
+  background: var(--st-when-bg); box-shadow: inset 0 0 0 1px rgba(var(--ink), .05);
+}
+.st-view-note > svg { flex: none; margin-top: 2px; color: var(--peach); }
+.st-view-note p {
+  margin: 0; min-width: 0; font-size: 14px; line-height: 1.6; color: var(--onyx);
+  white-space: pre-line; overflow-wrap: anywhere;
+}
+.st-view-empty { margin: 0; font-size: 13px; color: var(--text3); }
+
+/* ── Заметка ───────────────────────────────────────────────────────────── */
+.st-note { gap: 0; }
+
+/* ── Подвал ────────────────────────────────────────────────────────────── */
+.st-back { display: inline-flex; align-items: center; gap: 7px; }
 .st-delete {
   display: inline-flex; align-items: center; gap: 7px; margin-right: auto;
   padding: 0 14px; border-radius: 12px; border: 0; background: transparent;
@@ -154,17 +537,72 @@
 .st-delete:disabled { opacity: .5; cursor: not-allowed; }
 @media (hover: hover) { .st-delete:hover:not(:disabled) { background: rgba(216, 140, 154, .1); } }
 
-/* Телефон: шит снизу — поля под палец, дата и начало друг под другом. */
+@keyframes st-pop {
+  0% { transform: scale(.9); }
+  60% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes st-drop { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes st-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes st-shake-a { 0%, 100% { transform: none; } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+@keyframes st-shake-b { 0%, 100% { transform: none; } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+
+/* Низкий экран (ноутбук 1280×720 со 150 %): окно отдаёт высоту форме. */
+@media (max-height: 820px) {
+  .st-form { gap: 18px; }
+  .st-when { gap: 13px; padding: 13px 14px 13px; }
+  .st-days-strip { margin: 0 -14px; padding: 3px 14px 6px; scroll-padding-inline: 14px; }
+  .st-day { height: 54px; width: 44px; border-radius: 14px; }
+  .st-day-n { font-size: 16px; }
+  .st-clock { height: 42px; }
+  .st-times-arrow, .st-times-total strong { height: 42px; }
+  .st-preview { gap: 15px; }
+  .st-preview-date { font-size: 24px; }
+}
+
+/* Совсем низкий экран (окно браузера ~600 px): «Когда» плотнее, чтобы под
+   ним было видно и поле заметки — иначе о ней не догадаться. */
+@media (max-height: 700px) {
+  .st-form { gap: 15px; }
+  .st-field { gap: 8px; }
+  .st-when { gap: 11px; padding: 11px 14px 12px; }
+  .st-days { gap: 8px; }
+  .st-day { height: 50px; gap: 3px; }
+  .st-day-n { font-size: 15px; }
+  .st-clock { height: 40px; }
+  .st-times-arrow, .st-times-total strong { height: 40px; }
+  .st-time-col, .st-times-total { gap: 6px; }
+  .st-chip { height: 28px; }
+}
+
+/* Телефон: шит снизу — поля под палец, «Когда» во всю ширину. */
 @media (max-width: 767px) {
   .st-form { gap: 18px; }
-  .st-row { grid-template-columns: 1fr; }
-  .st-chip { height: 38px; padding: 0 14px; font-size: 13px; }
+  .st-when { margin: 0 -4px; padding: 14px; }
+  .st-days-strip { margin: 0 -14px; padding: 3px 14px 6px; scroll-padding-inline: 14px; }
+  .st-days-month { display: none; }
+  .st-times { flex-wrap: wrap; gap: 8px 10px; }
+  .st-time-col { flex: 1 1 0; }
+  .st-times-total {
+    order: 3; flex: 1 0 100%; flex-direction: row; align-items: baseline; justify-content: space-between;
+    margin: 0; text-align: left;
+  }
+  .st-times-total strong { height: auto; font-size: 16px; }
+  .st-chip { height: 38px; padding: 0 14px 0 12px; font-size: 13px; }
   .st-person { height: 44px; }
-  .st-step { width: 46px; height: 46px; }
-  .st-chips-tight { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -2px; padding: 0 2px; }
-  .st-chips-tight::-webkit-scrollbar { display: none; }
+  .st-staff.st-staff-many {
+    flex-wrap: nowrap; overflow-x: auto; margin: -3px -18px -5px; padding: 3px 18px 5px;
+  }
+  .st-staff.st-staff-many .st-person { flex: none; }
+  /* Ряды чипов листаются вбок, а не переносятся в три этажа. */
+  .st-chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -18px; padding: 0 18px; }
+  .st-chips::-webkit-scrollbar { display: none; }
+  .st-chip { flex: none; }
+  .st-when .st-chips { margin: 0 -14px; padding: 0 14px; }
   .st-delete span { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .st-trigger, .st-chip, .st-person, .st-step, .st-preview-col { transition: none; }
+  .st-mode-thumb, .st-mode-icon, .st-chip, .st-person, .st-day, .st-clock, .st-clock-caret,
+  .st-preview-col, .st-preview-lane .j-staff-block-period { transition: none !important; }
+  .st-day.is-on, .st-clock-panel, .st-clock.is-shake-a, .st-clock.is-shake-b, .st-days-today { animation: none; }
 }

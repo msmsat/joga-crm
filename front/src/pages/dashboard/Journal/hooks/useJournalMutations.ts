@@ -120,8 +120,9 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     patchCache(list => list.map(b => (b.id === booking.id ? { ...b, status: 'cancelled' as const, clients: 0 } : b)));
   const commitDeferredCancel = (lessonId: number) => scheduleApi.cancelLesson(lessonId);
 
-  // ── Удалить отменённое занятие навсегда: карточка уходит из сетки сразу,
-  // отказ сервера возвращает её на место.
+  // ── Убрать отменённое занятие из журнала: карточка уходит из сетки сразу,
+  // отказ сервера возвращает её на место. Сервер занятие не стирает, а
+  // помечает hidden_at — следующая загрузка сетки его просто пропустит.
   const purgeMut = useMutation({
     mutationFn: (booking: Booking) => scheduleApi.deleteLesson(booking.id),
     onMutate: (booking: Booking) => patchCache(list => list.filter(b => b.id !== booking.id)),

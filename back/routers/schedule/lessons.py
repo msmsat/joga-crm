@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
@@ -40,7 +40,7 @@ _FREE_FIELDS = {"cancel_reason", "notes", "photos"}
 _LESSON_FIELDS = (
     "id", "name", "teacher_name", "teacher_id", "hall_id", "start_time",
     "duration_min", "price", "level", "equipment", "total_spots",
-    "service_id", "status", "cancel_reason", "clients_notified",
+    "service_id", "status", "cancel_reason", "hidden_at", "clients_notified",
     # Заметка студии о занятии и снимки к ней (для своих, клиенту не уходят).
     "notes", "photos", "source_status",
     # HB-04: branch_id/booking_mode/tz_iana — уже есть на модели (HB-02), но
@@ -117,6 +117,10 @@ async def list_lessons(
             Lesson.hall_id, Lesson.start_time, Lesson.duration_min, Lesson.price,
             Lesson.level, Lesson.equipment, Lesson.total_spots, Lesson.service_id,
             Lesson.status, Lesson.cancel_reason, Lesson.clients_notified,
+            # Убранные из журнала отменённые занятия отдаём тоже, с отметкой:
+            # сетка их пропускает, а отчёты (Команда, Обзор) по этому же списку
+            # считают отмены — для них занятие никуда не делось.
+            Lesson.hidden_at,
             # HB-04/HB-22: перечень колонок здесь СВОЙ, отдельный от
             # `_LESSON_FIELDS`, и молча добирает недостающее дефолтами схемы.
             # Без этих четырёх журнал получал `booking_mode='event'` и
@@ -947,15 +951,22 @@ async def delete_lesson(
     db: AsyncSession = Depends(get_db),
     background_tasks: BackgroundTasks = None,
 ):
-    """Настоящее удаление занятия. Путей два: откат только что созданного
-    (undo, V4-3; очистка расписания ассистентом) и «Удалить навсегда» у
-    ОТМЕНЁННОГО занятия в Журнале — оно больше не нужно даже как след в сетке.
+    """Убрать занятие из Журнала. Путей два, и результат у них разный.
 
-    Не подменяет cancel: отмена уведомляет записанных и оставляет занятие в
-    базе, а удаление не уведомляет никого — поэтому занятие с активными
-    записями удалить нельзя, сперва его отменяют. Отменённые брони уходят
-    вместе с занятием; деньги клиентов (ClientPayment) на занятие не ссылаются
-    и остаются в Финансах.
+    Живое занятие без записей — откат только что созданного (undo, V4-3) или
+    очистка расписания ассистентом — удаляется по-настоящему: истории у него
+    нет, а в базе оно продолжало бы занимать время мастера.
+
+    ОТМЕНЁННОЕ занятие («Удалить из журнала» в его попапе) из базы не стирается:
+    на него ссылаются отменённые брони, и по ним история клиента, отчёты и
+    ассистент знают, что занятие было и его отменили. Оно получает отметку
+    `hidden_at`, и сетка Журнала его больше не рисует. Повторный вызов ничего
+    не меняет.
+
+    Не подменяет cancel: отмена уведомляет записанных, а этот вызов не
+    уведомляет никого — поэтому занятие с активными записями убрать нельзя,
+    сперва его отменяют. Деньги клиентов (ClientPayment) на занятие не
+    ссылаются и остаются в Финансах при любом исходе.
     """
     await lock_studio(db, ctx.studio_id)
     if ctx.role == "trainer":
@@ -968,13 +979,24 @@ async def delete_lesson(
             detail="На занятие записаны клиенты — сначала снимите их или отмените занятие",
         )
 
+    if lesson.status == "cancelled":
+        if lesson.hidden_at is None:
+            lesson.hidden_at = datetime.now(timezone.utc).replace(tzinfo=None)
+            await db.commit()
+        if lesson.gcal_event_id:
+            # Событие обычно уже сняла сама отмена. Если та не дошла до Google,
+            # снимает его тот же push: у отменённого занятия он удаляет событие
+            # и обнуляет gcal_event_id — строка-то на месте.
+            _schedule_gcal_push(background_tasks, ctx.studio_id, lesson.id)
+        return
+
     event_id = lesson.gcal_event_id
     await db.delete(lesson)
     await db.commit()
     if event_id and background_tasks is not None:
-        # У отменённого занятия событие обычно уже сняла сама отмена. Но если та
-        # не дошла до Google или её фоновая задача ещё в пути, событие осталось бы
-        # в календаре навсегда: push_lesson ищет занятие по id, а его больше нет.
+        # Созданное занятие уже успело уехать в Google. push_lesson ищет занятие
+        # по id, а строки больше нет — событие осталось бы в календаре навсегда,
+        # поэтому снимаем его по сохранённому id.
         background_tasks.add_task(_gcal_drop_task, ctx.studio_id, event_id)
 
 

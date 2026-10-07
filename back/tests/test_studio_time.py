@@ -137,6 +137,135 @@ def test_delete_and_foreign_studio():
     run(case)
 
 
+def test_note_and_photos_travel_to_the_journal_and_back():
+    """Заметка и снимки «времени студии»: ставятся, едут в сетку вместе с блоком
+    (окно правки открывается полным, без второго запроса), правятся и снимаются."""
+    photo = "/static/notes/" + "a" * 32 + ".jpg"
+
+    async def case(db, ctx, day, _):
+        made = await create_studio_time(StudioTimeCreate(
+            staff_id=ctx.user.id, start_time=at(day, 10), duration_min=30, label="Уборка",
+            notes="  Протереть коврики\nПроверить колонку  ", photos=[photo]), ctx, db)
+        assert (made["notes"], made["photos"]) == ("Протереть коврики\nПроверить колонку", [photo])
+        busy = [b for b in await staff_blocks(day, day, ctx, db) if b["kind"] == "busy"]
+        assert busy[0]["notes"] == made["notes"] and busy[0]["photos"] == [photo]
+        # Перенос заметку не трогает: None — «не менять».
+        moved = await update_studio_time(made["id"], StudioTimeUpdate(start_time=at(day, 11)), ctx, db)
+        assert (moved["notes"], moved["photos"]) == (made["notes"], [photo])
+        # Пустые значения — «убрать»; пустой блок едет в сетку без лишних полей.
+        cleared = await update_studio_time(made["id"], StudioTimeUpdate(notes="   ", photos=[]), ctx, db)
+        assert (cleared["notes"], cleared["photos"]) == ("", [])
+        busy = [b for b in await staff_blocks(day, day, ctx, db) if b["kind"] == "busy"]
+        assert "notes" not in busy[0] and "photos" not in busy[0]
+        # Ассистент тоже пишет заметку, если человек её сказал.
+        args = ai_tools.StudioTimeArgs(staff_id=ctx.user.id, start_time=at(day, 14), duration_min=15,
+                                       label="Проветривание", notes="Открыть окна в зале")
+        said = (await ai_tools.add_studio_time(ctx, db, args))["studio_time"]
+        assert said["notes"] == "Открыть окна в зале"
+    run(case)
+
+
+def test_photos_are_only_paths_from_the_upload():
+    base = {"staff_id": 1, "start_time": "2030-01-10T10:00:00", "duration_min": 30, "label": "Уборка"}
+    with pytest.raises(ValidationError):
+        StudioTimeCreate(**base, photos=["https://tracker.example/pixel.png"])
+    with pytest.raises(ValidationError):
+        StudioTimeUpdate(photos=["javascript:alert(1)"])
+    with pytest.raises(ValidationError):
+        StudioTimeCreate(**base, notes="x" * 2001)
+    with pytest.raises(ValidationError):
+        StudioTimeCreate(**base, photos=["/static/notes/" + f"{i:032x}" + ".png" for i in range(11)])
+
+
+async def teammate(db, ctx, name="Оля", hours=("09:00", "21:00")):
+    user = User(email=f"studio-time-{name}-{time.time_ns()}@test.local", hashed_password="x", name=name)
+    db.add(user); await db.flush()
+    db.add(StudioMember(studio_id=ctx.studio_id, user_id=user.id, role="trainer", status="active", name=name))
+    if hours:
+        for dow in range(7):
+            db.add(StaffWorkingHours(studio_id=ctx.studio_id, user_id=user.id, day_of_week=dow,
+                                     is_open=True, open_time=hours[0], close_time=hours[1]))
+    await db.commit()
+    return user.id
+
+
+def test_one_block_for_the_whole_team():
+    """«Планёрка всем»: один блок на нескольких сотрудников — в колонке у каждого,
+    правится и убирается целиком; тренер видит, с кем она."""
+    async def case(db, ctx, day, _):
+        olya, dima = await teammate(db, ctx, "Оля"), await teammate(db, ctx, "Дима")
+        team = [ctx.user.id, olya, dima]
+        made = await create_studio_time(StudioTimeCreate(staff_ids=team, start_time=at(day, 9), duration_min=30,
+                                                         label="Планёрка"), ctx, db)
+        assert made["staff_ids"] == team and len(made["ids"]) == 3 and made["outside_hours"] == []
+        busy = [b for b in await staff_blocks(day, day, ctx, db) if b["kind"] == "busy"]
+        assert sorted(b["staff_id"] for b in busy) == sorted(team)
+        assert all(b["staff_ids"] == team for b in busy)
+        # Тренеру сетка отдаёт только его колонку, но с кем планёрка — видно.
+        mine = SimpleNamespace(studio_id=ctx.studio_id, user=SimpleNamespace(id=olya), role="trainer")
+        own = [b for b in await staff_blocks(day, day, mine, db) if b["kind"] == "busy"]
+        assert [b["staff_id"] for b in own] == [olya] and own[0]["staff_ids"] == team
+        # С кем — с именами: список команды тренеру не отдаётся.
+        assert [m["name"] for m in own[0]["team"]] == ["T", "Оля", "Дима"]
+        # Правка с любого из блоков двигает всю группу; снятый — уходит, новый — встаёт.
+        anya = await teammate(db, ctx, "Аня")
+        moved = await update_studio_time(busy[-1]["id"], StudioTimeUpdate(
+            staff_ids=[ctx.user.id, olya, anya], start_time=at(day, 10)), ctx, db)
+        assert moved["staff_ids"] == [ctx.user.id, olya, anya] and moved["start_time"] == at(day, 10)
+        busy = [b for b in await staff_blocks(day, day, ctx, db) if b["kind"] == "busy"]
+        assert sorted(b["staff_id"] for b in busy) == sorted([ctx.user.id, olya, anya])
+        assert {b["start_minute"] for b in busy} == {600}
+        # Освободившийся интервал перешёл к новому сотруднику, а не пересоздан.
+        assert sorted(moved["ids"]) == sorted(made["ids"])
+        removed = await delete_studio_time(moved["ids"][1], ctx, db)
+        assert sorted(removed["staff_ids"]) == sorted([ctx.user.id, olya, anya])
+        assert not [b for b in await staff_blocks(day, day, ctx, db) if b["kind"] == "busy"]
+    run(case)
+
+
+def test_team_block_refuses_whole_and_names_who():
+    async def case(db, ctx, day, _):
+        olya = await teammate(db, ctx, "Оля")
+        await lesson(db, ctx, day, 12)
+        with pytest.raises(HTTPException) as exc:
+            await create_studio_time(StudioTimeCreate(staff_ids=[olya, ctx.user.id], start_time=at(day, 12),
+                                                      duration_min=30, label="Планёрка"), ctx, db)
+        assert refused(exc) == "studio_time.lesson_overlap" and exc.value.detail["staff_id"] == ctx.user.id
+        # Отказ у одного — не встаёт ни у кого.
+        assert not [b for b in await staff_blocks(day, day, ctx, db) if b["kind"] == "busy"]
+    run(case)
+
+
+def test_outside_working_hours_is_allowed_but_named():
+    async def case(db, ctx, day, _):
+        olya = await teammate(db, ctx, "Оля", hours=("12:00", "18:00"))
+        free = await teammate(db, ctx, "Без графика", hours=None)
+        made = await create_studio_time(StudioTimeCreate(staff_ids=[ctx.user.id, olya, free], start_time=at(day, 10),
+                                                         duration_min=60, label="Уборка"), ctx, db)
+        # 10:00 — рабочее время у первого (09–21), до смены у Оли (12–18); без графика — всегда на месте.
+        assert made["outside_hours"] == [{"staff_id": olya, "kind": "off_hours"}]
+        early = await update_studio_time(made["id"], StudioTimeUpdate(start_time=at(day, 7)), ctx, db)
+        assert {o["staff_id"] for o in early["outside_hours"]} == {ctx.user.id, olya}
+        late = await update_studio_time(made["id"], StudioTimeUpdate(start_time=at(day, 12)), ctx, db)
+        assert late["outside_hours"] == []
+        # Часы без занятостей — то, по чему окно предупреждает заранее.
+        hours = await staff_blocks(day, day, ctx, db, hours_only=True)
+        assert not [b for b in hours if b["kind"] == "busy"]
+        assert any(b["staff_id"] == olya and b["kind"] == "off_hours" and b["start_minute"] == 0 for b in hours)
+    run(case)
+
+
+def test_team_schema_merges_the_old_single_form():
+    base = {"start_time": "2030-01-10T10:00:00", "duration_min": 30, "label": "Уборка"}
+    assert StudioTimeCreate(**base, staff_id=3, staff_ids=[5, 3]).staff_ids == [3, 5]
+    assert StudioTimeUpdate(staff_id=4).staff_ids == [4]
+    assert StudioTimeUpdate(label="x").staff_ids is None
+    with pytest.raises(ValidationError):
+        StudioTimeCreate(**base)
+    with pytest.raises(ValidationError):
+        StudioTimeCreate(**base, staff_ids=[])
+
+
 def test_daylight_saving_gap_is_refused():
     async def case(db, ctx, _day, __):
         # 29.03.2026 в Праге часы прыгают с 02:00 на 03:00 — 02:30 не наступает.
@@ -161,10 +290,15 @@ def test_schema_guards():
 
 def test_assistant_puts_lists_and_undoes():
     async def case(db, ctx, day, _):
-        args = ai_tools.StudioTimeArgs(staff_id=ctx.user.id, start_time=at(day, 9), duration_min=45, label="Планёрка")
+        olya = await teammate(db, ctx, "Оля")
+        args = ai_tools.StudioTimeArgs(staff_id=ctx.user.id, also_staff_ids=[olya], start_time=at(day, 9),
+                                       duration_min=45, label="Планёрка")
         made = (await ai_tools.add_studio_time(ctx, db, args))["studio_time"]
+        assert made["staff_ids"] == [ctx.user.id, olya]
+        # Блок на двоих — одной строкой: ассистент снимает его целиком.
         listed = await time_blocks.list_period(db, ctx.studio_id, day, day)
-        assert [(b["id"], b["label"]) for b in listed] == [(made["id"], "Планёрка")]
+        assert [(b["id"], b["label"], b["staff_ids"]) for b in listed] == [(made["id"], "Планёрка", [ctx.user.id, olya])]
+        assert [b["id"] for b in await time_blocks.list_period(db, ctx.studio_id, day, day, staff_id=olya)] == [made["id"]]
         # Кнопка «Вернуть» у карточки ассистента снимает поставленный блок.
         await ai_tools.UNDO["add_studio_time"]({"id": made["id"]}, ctx, db)
         assert await time_blocks.list_period(db, ctx.studio_id, day, day) == []

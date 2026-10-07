@@ -41,7 +41,7 @@ interface GridProps {
   editDraft: EditDraft | null;
   /** Страницы тренеров на телефоне: точки в пустом углу над колонкой времени. */
   pages?: { count: number; index: number };
-  /** Нажатие на «Время студии» — окно правки. Только тем, кто правит журнал. */
+  /** Нажатие на «Время студии» — карточка «что сделать» всем ролям; править из неё может владелец. */
   onStudioTimeOpen?: (block: StaffScheduleBlock) => void;
 }
 
@@ -86,7 +86,7 @@ export const Grid: React.FC<GridProps> = ({
     // видно: там pointerdown идёт до mousedown и drag уже выставлен.
     if ((e.target as HTMLElement).closest('.booking-card')) return;
     // Нажатие на «Время студии» открывает его самого, а не тост «не работает».
-    if ((e.target as HTMLElement).closest('.j-staff-block.is-editable')) return;
+    if ((e.target as HTMLElement).closest('.j-staff-block.is-openable')) return;
     e.stopPropagation();
     // Минута под пальцем: перерыв или уборка часто занимают только часть
     // часа. Нажали в них — объясняем; мимо — занятие начинается там, где
@@ -193,7 +193,7 @@ export const Grid: React.FC<GridProps> = ({
                 previewTitle={preview ? newForm.title : ''}
                 previewRef={previewRef}
                 onSlotMouseDown={onSlotMouseDown}
-                onBlockOpen={canEdit ? onStudioTimeOpen : undefined}
+                onBlockOpen={onStudioTimeOpen}
               />
             );
           })}

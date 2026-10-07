@@ -3,7 +3,7 @@ from typing import Optional
 
 from sqlalchemy import (
     CheckConstraint, DateTime, Index, Integer, String, Boolean, Date, ForeignKey, JSON,
-    UniqueConstraint,
+    Text, UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -85,6 +85,7 @@ class StaffBusyInterval(Base):
     __table_args__ = (
         CheckConstraint("end_time > start_time", name="check_staff_busy_interval_positive"),
         Index("ix_staff_busy_interval_studio_user_start", "studio_id", "user_id", "start_time"),
+        Index("ix_staff_busy_interval_group", "studio_id", "group_key"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
@@ -96,3 +97,12 @@ class StaffBusyInterval(Base):
     end_time: Mapped[datetime] = mapped_column(DateTime(timezone=False))
     tz_iana: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     reason: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    # Заметка «времени студии» (что сделать, что подготовить) и снимки к ней —
+    # те же пути /static/notes/, что у заметки занятия (Lesson.notes/photos).
+    # Своя, внутренняя: клиенту не показывается нигде.
+    notes: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    photos: Mapped[list] = mapped_column(JSON, default=list, server_default="[]", nullable=False)
+    # Один блок «времени студии» на нескольких сотрудников (планёрка всей
+    # команде) — интервал на каждого с общим ключом: правятся и убираются
+    # вместе (services/time_blocks). Нет ключа — группа из одного интервала.
+    group_key: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)

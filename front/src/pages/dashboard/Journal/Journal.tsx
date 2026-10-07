@@ -383,20 +383,33 @@ export default function Journal() {
   // Занятие перенесли на другой день из его карточки — журнал идёт следом,
   // не меняя вида (неделя остаётся неделей).
   const showLessonDate = React.useCallback((date: string) => showBookingDate(date, false), [showBookingDate]);
-  // «Время студии» — блок без занятия (уборка, планёрка): кнопка в окнах
+  // «Время студии» — блок без занятия (уборка, планёрка): переключатель в окнах
   // создания закрывает их и открывает своё окно с тем же мастером и временем.
-  const studioTime = useStudioTime({ onShowDate: showBookingDate });
+  // Ставит и правит его только владелец; остальные открывают блок карточкой.
   const studioTrainers = trainers.filter(tr => tr.role !== 'Bumpix' && tr.id > 0);
+  const canManageStudioTime = getUserRoleFromToken() === 'owner' && studioTrainers.length > 0;
+  const studioTime = useStudioTime({
+    onShowDate: showBookingDate,
+    staffName: id => studioTrainers.find(tr => tr.id === id)?.name,
+  });
   const studioTimeFrom = (staffId: number | null | undefined, date: string, start?: number, end?: number) => {
     const staff = studioTrainers.find(tr => tr.id === staffId) ?? studioTrainers[0];
     if (!staff) return;
+    // «Назад» в окне «Времени студии» возвращает это же окно создания: тот же
+    // слот, день, услугу и место. Снимок — до закрытия: closeNewForm его обнуляет.
+    const slot = newBookingSlot, form = newForm, day = newBookingDate, keypad = keypadResource, resource = resourceBooking;
+    const back = () => {
+      if (resource) { setResourceBooking(resource); return; }
+      if (!slot) return;
+      setNewBookingDate(day); setNewBookingSlot(slot); setNewForm(form); setKeypadResource(keypad); setShowNewForm(true);
+    };
     closeNewForm();
     setResourceBooking(null);
     studioTime.openAt({
       staffId: staff.id, date,
       start: start != null ? formatIndexToTimeStr(start) : undefined,
       duration: start != null && end != null && end > start ? Math.round((end - start) * 60) : undefined,
-    });
+    }, back);
   };
   const bookingCreated = (date?: string) => {
     if (date) showBookingDate(date);
@@ -718,7 +731,7 @@ export default function Journal() {
   // на сервер не ходит вовсе. Осознанно НЕ кладём в общий undo-стек (задача 3):
   // до коммита операция обратима через сам undo-тост, после коммита — необратима.
   const deferredCancelRef = useRef<Map<number, DeferredCancel>>(new Map());
-  // Отмены, ушедшие на сервер и ещё не ответившие: «Удалить навсегда» ждёт их.
+  // Отмены, ушедшие на сервер и ещё не ответившие: «Удалить из журнала» ждёт их.
   const cancelCommitsRef = useRef<Map<number, Promise<boolean>>>(new Map());
 
   // Отдаёт, принял ли сервер отмену; отмены не было вовсе — true.
@@ -785,7 +798,7 @@ export default function Journal() {
     });
   }, [mutations, toast, runDeferredCancel, t]);
 
-  // «Удалить навсегда» таймера не ждёт: отмена уходит на сервер сейчас, а тост
+  // «Удалить из журнала» таймера не ждёт: отмена уходит на сервер сейчас, а тост
   // уходит вместе с ней — его «Отменить» после коммита уже ничего не вернёт.
   const settleCancelNow = React.useCallback((lessonId: number) => {
     deferredCancelRef.current.get(lessonId)?.settleToast?.();
@@ -1170,8 +1183,8 @@ export default function Journal() {
           onCreated={bookingCreated}
           onDateChange={showBookingDate}
           onPreview={previewResource}
-          headAction={<StudioTimeButton onClick={() =>
-            studioTimeFrom(keypadResource.teacherId ?? newBookingSlot.trainer, keypadResource.date, newBookingSlot.timeStart)} />}
+          headAction={canManageStudioTime ? <StudioTimeButton current={t('studioTime.modeBooking')} onClick={() =>
+            studioTimeFrom(keypadResource.teacherId ?? newBookingSlot.trainer, keypadResource.date, newBookingSlot.timeStart)} /> : undefined}
         />
       )}
       {showNewForm && newBookingSlot && !keypadResource && (
@@ -1192,8 +1205,8 @@ export default function Journal() {
           date={newBookingDate}
           onDateChange={changeNewDate}
           onTimeChange={changeNewTime}
-          headAction={<StudioTimeButton onClick={() =>
-            studioTimeFrom(newBookingSlot.trainer, newBookingDate, newBookingSlot.timeStart, newBookingSlot.timeEnd)} />}
+          headAction={canManageStudioTime ? <StudioTimeButton current={t('studioTime.modeLesson')} onClick={() =>
+            studioTimeFrom(newBookingSlot.trainer, newBookingDate, newBookingSlot.timeStart, newBookingSlot.timeEnd)} /> : undefined}
           // Мастера и день забираем ДО закрытия формы: closeNewForm обнуляет слот.
           onResourceBooking={hasResourceServices ? (serviceId) => {
             const slot = newBookingSlot;
@@ -1225,7 +1238,7 @@ export default function Journal() {
           onClose={() => setResourceBooking(null)}
           onCreated={bookingCreated}
           onDateChange={showBookingDate}
-          headAction={canEdit && studioTrainers.length > 0 ? <StudioTimeButton onClick={() =>
+          headAction={canManageStudioTime ? <StudioTimeButton current={t('studioTime.modeBooking')} onClick={() =>
             studioTimeFrom(resourceBooking.teacherId, resourceBooking.date,
               resourceBooking.time ? parseTimeToIndex(resourceBooking.time) : undefined)} /> : undefined}
         />
@@ -1235,9 +1248,12 @@ export default function Journal() {
         <StudioTimeModal
           key={studioTime.draft.id ?? 'new'}
           draft={studioTime.draft}
+          mode={studioTime.mode}
+          canManage={canManageStudioTime}
           trainers={studioTrainers}
           timeStep={timeStep}
           onClose={studioTime.close}
+          onBack={studioTime.back}
           onSubmit={studioTime.submit}
           onDelete={studioTime.remove}
         />

@@ -1001,12 +1001,19 @@ class StudioTimeArgs(BaseModel):
     Длительность без умолчания намеренно: «уборка» бывает и на 15 минут, и на
     два часа, и выдуманный час закрыл бы мастеру запись, о которой не просили.
     Не назвал человек — окно подтверждения спросит само.
+
+    «Планёрка всем» — ОДИН вызов: staff_id — первый сотрудник, also_staff_ids —
+    остальные. Блок встанет всем одним, и правится и снимается целиком.
     """
     staff_id: int
+    also_staff_ids: Optional[list[int]] = Field(
+        None, description="Ещё сотрудники, которых касается тот же блок («всем» — id всей команды кроме staff_id)")
     start_time: LocalDateTime
     duration_min: int = Field(ge=5, le=12 * 60, description="Сколько минут занимает блок")
     label: str = Field(min_length=1, max_length=80,
                        description="Название блока словами человека: «Уборка», «Планёрка»")
+    notes: str = Field("", max_length=2000,
+                       description="Заметка к блоку — что сделать или подготовить, если человек это сказал")
 
 
 class StudioTimeIdArgs(BaseModel):
@@ -2456,8 +2463,14 @@ async def fill_schedule(ctx: StudioContext, db: AsyncSession, args: FillSchedule
 async def _clear_counts(
     args: "ClearScheduleArgs", ctx: StudioContext, db: AsyncSession,
 ) -> tuple[list[Lesson], int]:
-    """Занятия периода и сколько из них с живыми записями. Один запрос на счёт."""
-    lessons = await _busy_lessons(args.teacher_id, args.date_from, args.date_to, ctx, db)
+    """Занятия периода и сколько из них с живыми записями. Один запрос на счёт.
+
+    Отменённые, уже убранные из Журнала, не в счёт: в сетке их нет, и «удалю
+    5 занятий» на пустую неделю было бы неправдой."""
+    lessons = [
+        l for l in await _busy_lessons(args.teacher_id, args.date_from, args.date_to, ctx, db)
+        if l.hidden_at is None
+    ]
     if not lessons:
         return [], 0
     booked = set((await db.execute(
@@ -3077,8 +3090,8 @@ async def set_staff_day(ctx: StudioContext, db: AsyncSession, args: StaffDayArgs
 
 
 @tool(
-    mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/staff-blocks",
-    summary="Время студии «{label}»: сотрудник {staff_id}, {start_time}, {duration_min} мин",
+    mutating=True, roles=("owner",), endpoint="POST /schedule/staff-blocks",
+    summary="Время студии «{label}»: сотрудник {staff_id}, а также {also_staff_ids}, {start_time}, {duration_min} мин",
     effect="Блок встанет в колонку сотрудника в Журнале, как перерыв: на это время "
            "к нему не запишут ни в журнале, ни онлайн.",
 )
@@ -3088,26 +3101,29 @@ async def add_studio_time(ctx: StudioContext, db: AsyncSession, args: StudioTime
     перерыв и закрывает это время для записи.
 
     Ставится только в свободное окно: занятие или другой блок в это время —
-    отказ сервера; предложи соседнее свободное время, а не ставь поверх.
+    отказ сервера (detail.staff_id — у кого); предложи соседнее свободное время,
+    а не ставь поверх. Вне рабочих часов ставить можно: ответ outside_hours
+    называет, у кого блок попал на выходной, нерабочее время или перерыв, —
+    скажи об этом человеку. Ставит только владелец.
     Перерыв КАЖДЫЙ день (обед по графику) — это часы сотрудника
     (set_staff_schedule), а не блок на одну дату."""
     block = await _r_create_studio_time(
-        payload=StudioTimeCreate(staff_id=args.staff_id, start_time=args.start_time,
-                                 duration_min=args.duration_min, label=args.label),
+        payload=StudioTimeCreate(staff_id=args.staff_id, staff_ids=args.also_staff_ids, start_time=args.start_time,
+                                 duration_min=args.duration_min, label=args.label, notes=args.notes),
         ctx=ctx, db=db,
     )
     return {"studio_time": _dump(StudioTimeRead.model_validate(block))}
 
 
 @tool(
-    mutating=True, roles=("owner", "admin"), endpoint="DELETE /schedule/staff-blocks/{block_id}",
+    mutating=True, roles=("owner",), endpoint="DELETE /schedule/staff-blocks/{block_id}",
     summary="Убрать время студии {block_id}",
     effect="Блок исчезнет из Журнала, и время снова откроется для записи.",
 )
 async def remove_studio_time(ctx: StudioContext, db: AsyncSession, args: StudioTimeIdArgs) -> dict:
-    """Убрать «время студии» (уборку, планёрку) из Журнала. id блока — из
-    get_schedule за этот день, поле studio_time. Перенести блок — убрать и
-    поставить заново через add_studio_time."""
+    """Убрать «время студии» (уборку, планёрку) из Журнала — у всех, кого блок
+    касается (staff_ids). id блока — из get_schedule за этот день, поле
+    studio_time. Перенести блок — убрать и поставить заново через add_studio_time."""
     removed = await _r_delete_studio_time(block_id=args.block_id, ctx=ctx, db=db)
     return {"removed": _dump(StudioTimeRead.model_validate(removed))}
 
@@ -4015,6 +4031,7 @@ _RESOLVERS = {
 # это справочник»: weekdays тоже список чисел, и по имени их не различить, а
 # перепутать значит написать в карточку «услуга понедельник».
 _LIST_RESOLVERS = {
+    "also_staff_ids": ("сотрудника", _resolve_staff),
     "alternate_with": ("услугу", _resolve_service),
     "service_ids": ("услугу", _resolve_service),
     "bundle_service_ids": ("услугу", _resolve_service),

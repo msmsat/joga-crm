@@ -35,6 +35,9 @@ export interface Lesson {
   status: 'confirmed' | 'pending' | 'cancelled'
   level: string | null
   cancel_reason: string | null
+  /** Отменённое занятие убрано из сетки Журнала («Удалить из журнала»). Само
+   *  оно и брони на него остаются — отчёты по-прежнему считают его отменой. */
+  hidden_at: string | null
   /** Заметка студии о занятии и снимки к ней. Клиенту не уходят никуда. */
   notes: string
   photos: string[]
@@ -273,6 +276,19 @@ export interface StaffScheduleBlock {
   label: string | null;
   /** Есть только у занятости (`busy`): по нему «Время студии» открывается на правку. */
   id?: number;
+  /** Заметка и снимки «времени студии» — приходят, только когда они есть. */
+  notes?: string;
+  photos?: string[];
+  /** Кого касается блок, если он на нескольких сотрудниках (планёрка всем). */
+  staff_ids?: number[];
+  /** Те же люди с именами и цветами — тренеру список всей команды не отдаётся. */
+  team?: StudioTimeMember[];
+}
+
+export interface StudioTimeMember {
+  id: number;
+  name: string;
+  color: string | null;
 }
 
 /** «Время студии» — блок в журнале без занятия (back/services/time_blocks.py).
@@ -284,11 +300,28 @@ export interface StudioTime {
   end_time: string;
   duration_min: number;
   label: string | null;
+  notes: string;
+  photos: string[];
+  /** Кого касается блок и его интервалы по сотрудникам (id — первого). */
+  staff_ids: number[];
+  ids: number[];
+  /** Кого блок застал вне рабочих часов: поставлен, но об этом предупреждают. */
+  outside_hours: StudioTimeOutside[];
+}
+
+export interface StudioTimeOutside {
+  staff_id: number;
+  kind: 'day_off' | 'off_hours' | 'break';
 }
 
 export interface StudioTimePayload {
-  staff_id: number;
+  /** Кого касается блок: один сотрудник или вся команда. */
+  staff_ids: number[];
   start_time: string;
   duration_min: number;
   label: string;
+  /** Что сделать или подготовить; "" — заметки нет. */
+  notes: string;
+  /** Пути из POST /studio/upload-note-photo (/static/notes/…). */
+  photos: string[];
 }

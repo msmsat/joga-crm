@@ -63,7 +63,8 @@ interface BookingPopupProps {
   onSave: (prev: Booking, next: Booking) => Promise<boolean> | void;
   /** Корзина в подвале: ОТМЕНЯЕТ занятие (с уведомлением записанным). */
   deleteBooking: (id: number) => void;
-  /** «Удалить навсегда» у уже отменённого занятия — оно уходит и из сетки. */
+  /** «Удалить из журнала» у уже отменённого занятия: оно уходит из сетки,
+   *  история записей остаётся. */
   purgeLesson: (booking: Booking) => Promise<boolean>;
   onAddClients:(clientIds: number[]) => void | Promise<void>;
   showToast: (msg: string) => void;

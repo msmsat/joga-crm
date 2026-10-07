@@ -20,12 +20,14 @@ async function load(path) {
 const m = await load('../src/pages/dashboard/Journal/studioTimeModel.ts');
 const grid = await load('../src/pages/dashboard/Journal/components/ScheduleGrid/slotSpans.ts');
 const plain = value => JSON.parse(JSON.stringify(value));
-const draft = { staffId: 7, date: '2099-10-08', start: '10:30', duration: 45, label: '  Уборка   зала ' };
+const draft = { staffIds: [7], date: '2099-10-08', start: '10:30', duration: 45, label: '  Уборка   зала ', notes: '', photos: [] };
+const photo = `/static/notes/${'a'.repeat(32)}.jpg`;
 
 test('a new block sends everything with a clean local time and label', () => {
   assert.deepEqual(plain(m.toPayload(draft)), {
-    staff_id: 7, start_time: '2099-10-08T10:30:00', duration_min: 45, label: 'Уборка зала',
+    staff_ids: [7], start_time: '2099-10-08T10:30:00', duration_min: 45, label: 'Уборка зала', notes: '', photos: [],
   });
+  assert.deepEqual(plain(m.toPayload({ ...draft, notes: '  Протереть коврики \n', photos: [photo] })).notes, 'Протереть коврики');
 });
 
 test('editing sends only what changed: an untouched split block is never cut', () => {
@@ -33,12 +35,30 @@ test('editing sends only what changed: an untouched split block is never cut', (
   assert.deepEqual(plain(m.toPayload({ ...initial }, initial)), {});
   assert.deepEqual(plain(m.toPayload({ ...initial, label: 'Планёрка' }, initial)), { label: 'Планёрка' });
   assert.deepEqual(plain(m.toPayload({ ...initial, start: '11:00' }, initial)), { start_time: '2099-10-08T11:00:00' });
-  assert.deepEqual(plain(m.toPayload({ ...initial, staffId: 9, duration: 60 }, initial)), { staff_id: 9, duration_min: 60 });
+  assert.deepEqual(plain(m.toPayload({ ...initial, staffIds: [9], duration: 60 }, initial)), { staff_ids: [9], duration_min: 60 });
+  // Состав — тот же в любом порядке; новый человек — весь состав целиком.
+  const team = { ...initial, staffIds: [7, 9] };
+  assert.deepEqual(plain(m.toPayload({ ...team, staffIds: [9, 7] }, team)), {});
+  assert.deepEqual(plain(m.toPayload({ ...team, staffIds: [9, 7, 4] }, team)), { staff_ids: [9, 7, 4] });
+  // Заметка и снимки — тоже только когда поменялись; пробелы по краям не правка.
+  assert.deepEqual(plain(m.toPayload({ ...initial, notes: ' ' }, initial)), {});
+  assert.deepEqual(plain(m.toPayload({ ...initial, notes: 'Швабра' }, initial)), { notes: 'Швабра' });
+  assert.deepEqual(plain(m.toPayload({ ...initial, photos: [photo] }, initial)), { photos: [photo] });
+  const withPhoto = { ...initial, photos: [photo] };
+  assert.deepEqual(plain(m.toPayload({ ...withPhoto, photos: [] }, withPhoto)), { photos: [] });
+  assert.deepEqual(plain(m.toPayload({ ...withPhoto, photos: [photo] }, withPhoto)), {});
 });
 
 test('the grid block opens as a draft with its id and real length', () => {
   const block = { id: 3, staff_id: 7, date: '2099-10-08', start_minute: 630, end_minute: 675, kind: 'busy', label: 'Уборка' };
-  assert.deepEqual(plain(m.draftFromBlock(block)), { id: 3, staffId: 7, date: '2099-10-08', start: '10:30', duration: 45, label: 'Уборка' });
+  assert.deepEqual(plain(m.draftFromBlock(block)), {
+    id: 3, staffIds: [7], date: '2099-10-08', start: '10:30', duration: 45, label: 'Уборка', notes: '', photos: [],
+  });
+  // Сетка присылает заметку и снимки, только когда они есть, — окно открывается полным.
+  assert.deepEqual(plain(m.draftFromBlock({ ...block, notes: 'Швабра', photos: [photo] })).photos, [photo]);
+  assert.equal(m.draftFromBlock({ ...block, notes: 'Швабра' }).notes, 'Швабра');
+  // Блок на команду открывается всем составом, с какой колонки ни нажми.
+  assert.deepEqual(plain(m.draftFromBlock({ ...block, staff_id: 9, staff_ids: [7, 9] }).staffIds), [7, 9]);
 });
 
 test('validation mirrors the server schema', () => {
@@ -47,7 +67,9 @@ test('validation mirrors the server schema', () => {
   assert.equal(m.draftErrors({ ...draft, label: 'x'.repeat(81) }).label, true);
   assert.equal(m.draftErrors({ ...draft, duration: 4 }).duration, true);
   assert.equal(m.draftErrors({ ...draft, duration: 721 }).duration, true);
-  assert.equal(m.draftErrors({ ...draft, staffId: 0 }).staff, true);
+  assert.equal(m.draftErrors({ ...draft, staffIds: [] }).staff, true);
+  assert.equal(m.draftErrors({ ...draft, notes: 'x'.repeat(2001) }).notes, true);
+  assert.equal(m.draftErrors({ ...draft, photos: Array(11).fill(photo) }).photos, true);
 });
 
 test('duration is stepped, clamped and labelled', () => {
@@ -89,4 +111,54 @@ test('a short block closes only its own minutes of the hour', () => {
   assert.equal(grid.slotStart(spans, 600, 650), null);
   assert.equal(grid.slotStart([], 600, 640), 600);           // свободный час — как раньше, с начала
   assert.equal(grid.slotStart([[630, 660]], 600, 10 + 600), 600);
+});
+
+test('time is typed however it is convenient', () => {
+  for (const [typed, clock] of [['9', '09:00'], ['930', '09:30'], ['0930', '09:30'], ['9:30', '09:30'], ['9.30', '09:30'],
+    ['9 30', '09:30'], ['21:5', '21:05'], ['1545', '15:45'], [' 7 ', '07:00'], ['23:59', '23:59'], ['0', '00:00']]) {
+    assert.equal(m.parseClock(typed), clock, typed);
+  }
+  for (const typed of ['', '24', '2400', '9:75', '12345', 'abc', '9:30:00', '9:3:0']) assert.equal(m.parseClock(typed), null, typed);
+});
+
+test('the end time sets the length, across midnight too', () => {
+  assert.equal(m.durationBetween('10:00', '11:30'), 90);
+  assert.equal(m.durationBetween('23:30', '00:15'), 45);
+  assert.equal(m.durationBetween('10:00', '10:00'), 0);
+  const ends = m.endOptions(15, '10:00', 60);
+  assert.deepEqual(plain(ends[0]), { duration: 15, time: '10:15', nextDay: false });
+  assert.deepEqual(plain(ends.at(-1)), { duration: 720, time: '22:00', nextDay: false });
+  assert.ok(m.endOptions(15, '10:00', 50).some(end => end.duration === 50 && end.time === '10:50'));
+  assert.equal(m.endOptions(15, '22:00', 60).find(end => end.duration === 180).nextDay, true);
+});
+
+test('the day strip is one row around today and the chosen day', () => {
+  const days = m.dayRange(['2099-10-08', '2099-10-10'], 2, 3);
+  assert.deepEqual(plain(days), ['2099-10-06', '2099-10-07', '2099-10-08', '2099-10-09', '2099-10-10', '2099-10-11', '2099-10-12', '2099-10-13']);
+  // Через смену месяца и перевод часов — без пропусков и повторов.
+  const autumn = m.dayRange(['2099-10-24'], 0, 10);
+  assert.equal(new Set(autumn).size, autumn.length);
+  assert.deepEqual(plain(autumn.slice(6, 9)), ['2099-10-30', '2099-10-31', '2099-11-01']);
+  assert.deepEqual(plain(m.dayRange(['nope'])), []);
+});
+
+test('outside working hours is named per person, the next day too', () => {
+  const hours = [
+    { staff_id: 7, date: '2099-10-08', start_minute: 0, end_minute: 540, kind: 'off_hours', label: null },
+    { staff_id: 7, date: '2099-10-08', start_minute: 780, end_minute: 840, kind: 'break', label: null },
+    { staff_id: 7, date: '2099-10-08', start_minute: 1260, end_minute: 1440, kind: 'off_hours', label: null },
+    { staff_id: 9, date: '2099-10-08', start_minute: 0, end_minute: 1440, kind: 'day_off', label: null },
+    { staff_id: 7, date: '2099-10-09', start_minute: 0, end_minute: 1440, kind: 'day_off', label: null },
+  ];
+  const at = (start, duration, staffIds = [7]) => plain(m.outsideHours(hours, { ...draft, staffIds, start, duration }));
+  assert.deepEqual(at('10:00', 60), []);                                     // рабочее время
+  assert.deepEqual(at('08:30', 60), [{ staff_id: 7, kind: 'off_hours' }]);   // до начала смены
+  assert.deepEqual(at('13:30', 15), [{ staff_id: 7, kind: 'break' }]);       // на перерыве
+  assert.deepEqual(at('09:00', 240), []);                                    // встык к перерыву — не на нём
+  assert.deepEqual(at('09:00', 270), [{ staff_id: 7, kind: 'break' }]);      // задевает перерыв
+  assert.deepEqual(at('10:00', 60, [7, 9, 11]), [{ staff_id: 9, kind: 'day_off' }]); // у 11 графика нет — на месте
+  assert.deepEqual(at('20:00', 60), []);
+  assert.deepEqual(at('20:30', 60), [{ staff_id: 7, kind: 'off_hours' }]);
+  // За полночь — в следующий день, а там выходной: он весомее нерабочего часа.
+  assert.deepEqual(at('23:30', 60), [{ staff_id: 7, kind: 'day_off' }]);
 });

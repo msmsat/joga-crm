@@ -205,8 +205,9 @@ def test_update_lesson_precheck_refuses_cancelled_and_late():
 
 # ─── clear_schedule: сколько исчезнет — числом и до клика ────────────────────
 class _Row:
-    def __init__(self, id, start_time, name="Хатха"):
+    def __init__(self, id, start_time, name="Хатха", hidden_at=None):
         self.id, self.start_time, self.name = id, start_time, name
+        self.hidden_at = hidden_at
 
 
 def _clear_args(days=7):
@@ -226,6 +227,18 @@ def test_clear_schedule_warns_with_the_count_before_the_click():
     # Без числа «удалить расписание» подтверждают не глядя.
     assert said and "3 занятий" in said[0], said
     assert "1 из них с записанными клиентами" in said[0], said
+
+
+def test_clear_schedule_does_not_count_lessons_already_taken_off_the_journal():
+    # Отменённое занятие, убранное из Журнала, лежит в базе ради истории. В сетке
+    # его нет — «удалю 3 занятия» про неделю, где видно два, было бы неправдой.
+    when = datetime.now() + timedelta(days=1)
+    rows = [_Row(1, when), _Row(2, when + timedelta(hours=1), hidden_at=datetime.now()),
+            _Row(3, when + timedelta(hours=2))]
+    said = _run(T._clear_warnings(_clear_args(), _ctx(), _DB([rows, []])))
+    assert said and "2 занятий" in said[0], said
+    only_hidden = _DB([[_Row(1, when, hidden_at=datetime.now())]])
+    assert "Удалять нечего" in _run(T._clear_precheck(_clear_args(), _ctx(), only_hidden))
 
 
 def test_clear_schedule_refuses_when_there_is_nothing_to_take():

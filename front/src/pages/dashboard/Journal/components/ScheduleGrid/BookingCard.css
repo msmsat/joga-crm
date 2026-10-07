@@ -659,7 +659,7 @@
 @container jcard (width < 50px) and (height >= 64px) { .jc-title { -webkit-line-clamp: 5; } }
 @container jcard (width < 50px) and (height >= 96px) { .jc-title { -webkit-line-clamp: 8; } }
 
-/* Занятие удалили навсегда: карточка не пропадает рывком, а растворяется на
+/* Занятие убрали из журнала: карточка не пропадает рывком, а растворяется на
    месте. Атрибут ставит прямо в DOM useLessonPurge и убирает занятие из кэша,
    когда анимация доиграла. */
 .booking-card[data-vanishing] {

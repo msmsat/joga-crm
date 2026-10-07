@@ -1,13 +1,15 @@
-"""«Удалить навсегда» у отменённого занятия в Журнале.
+"""«Удалить из журнала» у отменённого занятия.
 
-Отмена оставляет занятие в сетке серым следом; удаление навсегда убирает и
-его. Проверяется то, на чём держится доверие к этой кнопке:
-  * отменённое занятие уходит вместе со своими отменёнными бронями, а деньги
-    клиента (ClientPayment) на занятие не ссылаются и остаются в Финансах;
-  * занятие с живой записью удалить нельзя — его сперва отменяют, и записанным
+Отмена оставляет занятие в сетке серым следом; кнопка убирает и его — но
+только из сетки. Проверяется то, на чём держится доверие к этой кнопке:
+  * отменённое занятие остаётся в базе вместе со своими отменёнными бронями:
+    по ним история клиента, отчёты и ассистент знают, что оно было. Сетке
+    оно приходит с отметкой hidden_at, деньги клиента остаются в Финансах;
+  * занятие с живой записью убрать нельзя — его сперва отменяют, и записанным
     уходит уведомление;
-  * событие в Google Calendar снимается вместе с занятием: push_lesson ищет
-    занятие по id, а строки уже нет.
+  * событие в Google Calendar снимается: у убранного занятия — тем же push,
+    что и у отменённого, у удалённого живого — по сохранённому id, потому что
+    строки уже нет.
 
 Реальная БД, HTTP через ASGI — как tests/test_hybrid_crm_api.py.
 
@@ -33,7 +35,23 @@ async def _booked(ids):
     return made["lesson_id"], made["reservation_id"]
 
 
-def test_cancelled_lesson_goes_with_its_bookings_and_the_money_stays():
+async def _cancelled(ids, reservation_id, **lesson_values):
+    """Снять единственную бронь — индивидуальное занятие отменяется вместе с ней."""
+    async with async_session_maker() as db:
+        await booking.cancel(db, studio_id=ids["studio"], reservation_id=reservation_id,
+                             actor="test", enforce_policy=False)
+        if lesson_values:
+            await db.execute(update(Lesson).where(
+                Lesson.id == (await db.get(Reservation, reservation_id)).lesson_id,
+            ).values(**lesson_values))
+        await db.commit()
+
+
+def _day():
+    return {"date_from": resource.START.date().isoformat(), "date_to": resource.START.date().isoformat()}
+
+
+def test_cancelled_lesson_leaves_the_journal_but_keeps_its_history():
     async def run():
         ids = await resource.seed()
         try:
@@ -42,33 +60,35 @@ def test_cancelled_lesson_goes_with_its_bookings_and_the_money_stays():
                 payment = ClientPayment(client_id=ids["client"], amount=900, description="Haircut",
                                         status="success", action_type="lesson", item_key="lesson")
                 db.add(payment)
-                await booking.cancel(db, studio_id=ids["studio"], reservation_id=reservation_id,
-                                     actor="test", enforce_policy=False)
                 await db.commit()
                 payment_id = payment.id
-                assert (await db.get(Lesson, lesson_id)).status == "cancelled"
+            await _cancelled(ids, reservation_id)
 
             async with crm._client(crm._app(ids)) as http:
                 gone = await http.delete(f"/schedule/lessons/{lesson_id}")
                 assert gone.status_code == 204, gone.text
-                listed = await http.get("/schedule/lessons", params={
-                    "date_from": resource.START.date().isoformat(),
-                    "date_to": resource.START.date().isoformat(),
-                })
+                listed = await http.get("/schedule/lessons", params=_day())
                 assert listed.status_code == 200, listed.text
-                assert lesson_id not in [row["id"] for row in listed.json()]
+                # Список отдаёт его с отметкой: сетка пропускает, отчёты считают отмену.
+                row = next(r for r in listed.json() if r["id"] == lesson_id)
+                assert row["status"] == "cancelled" and row["hidden_at"] is not None, row
+                # Повторное нажатие (второй админ, двойной клик) ничего не ломает.
+                again = await http.delete(f"/schedule/lessons/{lesson_id}")
+                assert again.status_code == 204, again.text
 
             async with async_session_maker() as db:
-                assert await db.get(Lesson, lesson_id) is None
-                assert (await db.execute(
-                    select(Reservation.id).where(Reservation.lesson_id == lesson_id))).all() == []
+                lesson = await db.get(Lesson, lesson_id)
+                assert lesson is not None and lesson.status == "cancelled"
+                assert lesson.hidden_at is not None
+                assert (await db.execute(select(Reservation.status).where(
+                    Reservation.lesson_id == lesson_id))).scalars().all() == ["cancelled"]
                 assert await db.get(ClientPayment, payment_id) is not None
         finally:
             await resource.cleanup(ids)
     asyncio.run(run())
 
 
-def test_lesson_with_a_live_booking_is_cancelled_first_not_deleted():
+def test_lesson_with_a_live_booking_is_cancelled_first_not_hidden():
     async def run():
         ids = await resource.seed()
         try:
@@ -77,14 +97,41 @@ def test_lesson_with_a_live_booking_is_cancelled_first_not_deleted():
                 refused = await http.delete(f"/schedule/lessons/{lesson_id}")
                 assert refused.status_code == 409, refused.text
             async with async_session_maker() as db:
-                assert await db.get(Lesson, lesson_id) is not None
+                lesson = await db.get(Lesson, lesson_id)
+                assert lesson is not None and lesson.hidden_at is None
                 assert (await db.get(Reservation, reservation_id)).status != "cancelled"
         finally:
             await resource.cleanup(ids)
     asyncio.run(run())
 
 
-def test_deleted_lesson_takes_its_google_event_along(monkeypatch):
+def test_hidden_lesson_takes_its_google_event_along(monkeypatch):
+    pushed = []
+
+    async def fake_push(_db, studio_id, lesson_id):
+        pushed.append((studio_id, lesson_id))
+        return True
+
+    monkeypatch.setattr(gcal, "push_lesson", fake_push)
+
+    async def run():
+        ids = await resource.seed()
+        try:
+            lesson_id, reservation_id = await _booked(ids)
+            # Отмена не дошла до Google — событие всё ещё висит в календаре.
+            await _cancelled(ids, reservation_id, gcal_event_id="evt-1")
+            pushed.clear()
+            async with crm._client(crm._app(ids)) as http:
+                gone = await http.delete(f"/schedule/lessons/{lesson_id}")
+                assert gone.status_code == 204, gone.text
+            # Строка на месте — push у отменённого занятия сам снимает событие.
+            assert pushed == [(ids["studio"], lesson_id)]
+        finally:
+            await resource.cleanup(ids)
+    asyncio.run(run())
+
+
+def test_deleted_live_lesson_takes_its_google_event_along(monkeypatch):
     dropped = []
 
     async def fake_drop(_db, studio_id, event_id):
@@ -97,15 +144,14 @@ def test_deleted_lesson_takes_its_google_event_along(monkeypatch):
         ids = await resource.seed()
         try:
             lesson_id, reservation_id = await _booked(ids)
-            async with async_session_maker() as db:
-                await booking.cancel(db, studio_id=ids["studio"], reservation_id=reservation_id,
-                                     actor="test", enforce_policy=False)
-                # Отмена не дошла до Google — событие всё ещё висит в календаре.
-                await db.execute(update(Lesson).where(Lesson.id == lesson_id).values(gcal_event_id="evt-1"))
-                await db.commit()
+            # Живое занятие без записей — так выглядит откат только что созданного
+            # и то, что стирает очистка расписания ассистентом.
+            await _cancelled(ids, reservation_id, status="confirmed", gcal_event_id="evt-1")
             async with crm._client(crm._app(ids)) as http:
                 gone = await http.delete(f"/schedule/lessons/{lesson_id}")
                 assert gone.status_code == 204, gone.text
+            async with async_session_maker() as db:
+                assert await db.get(Lesson, lesson_id) is None
             assert dropped == [(ids["studio"], "evt-1")]
         finally:
             await resource.cleanup(ids)

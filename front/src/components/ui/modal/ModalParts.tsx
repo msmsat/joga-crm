@@ -4,8 +4,12 @@ import { useModalClose } from './ModalShell';
 export function ModalHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   const close = useModalClose();
   return (
+    // flexWrap: 'nowrap' инлайном — против общего правила телефона в App.css,
+    // которое разрешает перенос всем инлайновым flex-рядам: с длинным
+    // подзаголовком крестик уезжал под текст, к левому краю шита. Его место —
+    // всегда сверху справа.
     <div style={{
-      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+      display: 'flex', flexWrap: 'nowrap', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px',
       padding: 'var(--vm-head-pad, 22px 24px 16px)', borderBottom: '1px solid var(--border, #F0EDE8)', flexShrink: 0,
     }}>
       {/* minWidth: 0 — длинный заголовок обязан переноситься, а не выталкивать

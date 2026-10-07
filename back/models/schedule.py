@@ -87,6 +87,10 @@ class Lesson(Base):
     service_id: Mapped[Optional[int]] = mapped_column(ForeignKey("services.id", ondelete="SET NULL"), nullable=True, index=True)
     status: Mapped[str] = mapped_column(String(20), default="confirmed")
     cancel_reason: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    # Отменённое занятие убрали из сетки Журнала («Удалить из журнала»). Строку
+    # не стираем: на неё ссылаются отменённые брони, и по ним история клиента,
+    # отчёты и ассистент знают, что занятие было и его отменили. UTC без зоны.
+    hidden_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     # Заметка студии о занятии: что принести, к чему готовиться, что случилось.
     # Клиенту не показывается нигде — это запись для своих, как заметка в
     # карточке клиента (ClientNote), и фото в ней те же: пути /static/notes/.

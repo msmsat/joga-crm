@@ -100,8 +100,9 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("GET", "/schedule/lessons/days"): ("*studio",),
     ("GET", "/schedule/lessons/{lesson_id}"): ("*studio",),
     # Перерывы, выходные и «время студии» в сетке. Тренеру — только свои
-    # (фильтр в теле); ставят и правят блоки владелец и админ — эти ручки
-    # (POST/PATCH/DELETE) за require_role и в снимок не попадают.
+    # (фильтр в теле), админ и тренер открывают блок карточкой «что сделать»;
+    # ставит, правит и убирает его только владелец — POST/PATCH/DELETE за
+    # require_role("owner") и в снимок не попадают.
     ("GET", "/schedule/staff-blocks"): ("*studio",),
     # Перенесённые записи (Bumpix) в сетке: тренеру — только свои (teacher_scope).
     ("GET", "/schedule/bumpix-events"): ("owner", "admin", "trainer"),

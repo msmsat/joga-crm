@@ -7,6 +7,10 @@ import type {
 export const scheduleApi = {
   getStaffBlocks: (dateFrom: string, dateTo: string) =>
     client.get<StaffScheduleBlock[]>(`/schedule/staff-blocks?date_from=${dateFrom}&date_to=${dateTo}`),
+  // Только часы — выходные, нерабочее время, перерывы, без занятостей: по ним
+  // окно «Время студии» предупреждает о блоке вне рабочего времени.
+  getStaffHours: (dateFrom: string, dateTo: string) =>
+    client.get<StaffScheduleBlock[]>(`/schedule/staff-blocks?date_from=${dateFrom}&date_to=${dateTo}&hours_only=true`),
 
   // «Время студии»: уборка, подготовка, планёрка — блок в колонке мастера.
   createStudioTime: (body: StudioTimePayload) =>
@@ -44,8 +48,9 @@ export const scheduleApi = {
   cancelLesson: (id: number, reason?: string) =>
     client.patch<void>(`/schedule/lessons/${id}/cancel`, reason ? { reason } : {}),
 
-  // Настоящее удаление: undo только что созданного занятия (V4-3) и «Удалить
-  // навсегда» у отменённого. Занятие с записанными клиентами сервер не удалит (409).
+  // Undo только что созданного занятия (V4-3) — настоящее удаление. «Удалить из
+  // журнала» у отменённого — только из сетки: сервер ставит hidden_at, брони и
+  // история остаются. Занятие с записанными клиентами сервер не тронет (409).
   deleteLesson: (id: number) =>
     client.delete<void>(`/schedule/lessons/${id}`),
 

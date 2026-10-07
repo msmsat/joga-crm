@@ -65,7 +65,8 @@ export async function fetchBookings(
 ) {
   const lessons = await scheduleApi.getLessons({ date_from: dateFrom, date_to: dateTo });
   const colorByTeacher = new Map(staff.map(s => [s.id, staffColor(s)]));
-  return lessons.map(l => lessonToBooking(l, halls, colorByTeacher));
+  // Отменённое, убранное из журнала, сервер отдаёт ради отчётов — сетке его не рисуем.
+  return lessons.filter(l => !l.hidden_at).map(l => lessonToBooking(l, halls, colorByTeacher));
 }
 
 // Реальные данные журнала: тренеры (Сотрудники), залы, занятия за видимый диапазон.

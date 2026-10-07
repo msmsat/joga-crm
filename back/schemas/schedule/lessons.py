@@ -34,6 +34,9 @@ class LessonRead(BaseSchema):
     client_name: Optional[str] = None
     client_color: Optional[str] = None
     cancel_reason: Optional[str] = None
+    # Отменённое занятие убрано из сетки Журнала — само оно и брони на него
+    # остаются в истории. Сетка такие не рисует, отчёты по-прежнему считают.
+    hidden_at: Optional[datetime] = None
     # Внутренняя заметка студии о занятии и снимки к ней. Клиенту не уходят
     # ни одним каналом — ни в мини-приложение, ни в напоминания.
     notes: str = ""

@@ -266,22 +266,45 @@
     repeating-linear-gradient(135deg, transparent 0 9px, rgba(243, 175, 150, .05) 9px 10px),
     var(--sb-surface);
 }
-.j-staff-block.is-editable {
+.j-staff-block.is-openable {
   pointer-events: auto;
   cursor: pointer;
   transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
 }
-.j-staff-block.is-editable:focus-visible {
+.j-staff-block.is-openable:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(249, 160, 139, .55);
 }
 @media (hover: hover) {
-  .j-staff-block.is-editable:hover {
+  .j-staff-block.is-openable:hover {
     border-color: color-mix(in srgb, var(--sb-accent) 45%, var(--sb-edge));
     box-shadow: 0 8px 20px -10px rgba(184, 104, 78, .45), inset 0 1px 0 rgba(255, 255, 255, .55);
     transform: translateY(-1px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .j-staff-block.is-editable, .j-staff-block.is-editable:hover { transition: none; transform: none; }
+  .j-staff-block.is-openable, .j-staff-block.is-openable:hover { transition: none; transform: none; }
+}
+
+/* У «времени студии» есть заметка или снимки — вместо точки справа значок
+   заметки (сам текст — в подсказке, остальное — в окне правки). */
+.j-staff-block-note {
+  flex: 0 0 20px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  border-radius: 7px;
+  color: var(--sb-accent);
+  background: var(--sb-detail);
+}
+.j-staff-block.is-short .j-staff-block-note { flex-basis: 16px; width: 16px; height: 16px; border-radius: 5px; }
+.j-staff-block.is-short .j-staff-block-note svg { width: 10px; height: 10px; }
+.j-staff-block.is-tiny .j-staff-block-note { display: none; }
+@container staff-block (min-width: 260px) {
+  .j-staff-block-note { margin-left: 0; }
+}
+@container staff-block (max-width: 120px) {
+  .j-staff-block-note { display: none; }
 }
