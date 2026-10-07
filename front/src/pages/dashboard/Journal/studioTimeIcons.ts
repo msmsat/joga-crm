@@ -3,7 +3,7 @@
 // кнопку в окнах создания, чипы названий, поле названия и блок в сетке:
 // человек узнаёт «Уборку» в журнале по тому же значку, что выбирал в окне.
 import { CalendarClock, ClipboardCheck, SprayCan, Users, Wind, Wrench, type LucideIcon } from 'lucide-react';
-import { LABEL_PRESETS, cleanLabel, type LabelPreset } from './studioTimeModel';
+import { LABEL_PRESETS, cleanLabel, presetByWords, type LabelPreset } from './studioTimeModel';
 
 export const STUDIO_TIME_ICON: LucideIcon = CalendarClock;
 
@@ -15,12 +15,15 @@ export const PRESET_ICONS: Record<LabelPreset, LucideIcon> = {
   maintenance: Wrench,
 };
 
-/** Какое готовое название у блока — по его подписи; null — своё. `preset`
- *  переводит ключ на язык интерфейса: «Уборку», поставленную по-русски,
- *  чешский интерфейс узнает только как своё название — и покажет общий значок.
+/** Какое готовое название у блока — по его подписи; null — своё. Сначала
+ *  точное совпадение с готовым названием на языке интерфейса (`preset`
+ *  переводит ключ), потом слова на пяти языках (`presetByWords`): «Уборку»,
+ *  поставленную по-русски, чешский интерфейс тоже узнает, а «Ремонт
+ *  кондиционера» получит ключ, а не общий значок.
  *  Ключ, а не сам значок: компонент из вызова функции в рендере линтер
  *  (react-hooks/static-components) справедливо считает созданным заново. */
 export function studioTimePreset(label: string, preset: (key: LabelPreset) => string): LabelPreset | null {
   const name = cleanLabel(label).toLocaleLowerCase();
-  return (name && LABEL_PRESETS.find(item => preset(item).toLocaleLowerCase() === name)) || null;
+  if (!name) return null;
+  return LABEL_PRESETS.find(item => preset(item).toLocaleLowerCase() === name) ?? presetByWords(name);
 }

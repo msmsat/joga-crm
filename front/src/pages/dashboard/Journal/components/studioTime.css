@@ -457,10 +457,11 @@
 @media (hover: hover) { .st-who-all:hover:not(.is-on) { background: rgba(var(--ink), .08); color: var(--onyx); } }
 .st-tick {
   display: grid; place-items: center; width: 16px; height: 16px; border-radius: 5px;
-  border: 1.5px solid rgba(var(--ink), .22); background: var(--bg-card); color: #fff;
+  border: 1.5px solid rgba(var(--ink), .22); background: var(--bg-card);
   transition: background .16s ease, border-color .16s ease;
 }
-.st-who-all.is-on .st-tick { border-color: transparent; background: var(--st-grad); }
+/* Белая галочка — только на заливке: пустой квадрат её не рисует. */
+.st-who-all.is-on .st-tick { border-color: transparent; background: var(--st-grad); color: #fff; }
 /* Несколько отметок — все люди на виду, переносом; ряд-лента только на телефоне. */
 .st-staff.st-staff-many {
   flex-wrap: wrap; overflow: visible; margin: 0; padding: 0;

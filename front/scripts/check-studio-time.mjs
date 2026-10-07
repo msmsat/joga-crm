@@ -162,3 +162,47 @@ test('outside working hours is named per person, the next day too', () => {
   // За полночь — в следующий день, а там выходной: он весомее нерабочего часа.
   assert.deepEqual(at('23:30', 60), [{ staff_id: 7, kind: 'day_off' }]);
 });
+
+test('an own label is recognised by its words in five languages', () => {
+  assert.equal(m.presetByWords('Уборка после ремонта'), 'cleaning');
+  assert.equal(m.presetByWords('Прибирання'), 'cleaning');
+  assert.equal(m.presetByWords('Generalreinigung'), 'cleaning');
+  assert.equal(m.presetByWords('Porada týmu'), 'meeting');
+  assert.equal(m.presetByWords('Team sync'), 'meeting');
+  assert.equal(m.presetByWords('Lüften'), 'airing');
+  assert.equal(m.presetByWords('Ремонт кондиционера'), 'maintenance');
+  assert.equal(m.presetByWords('Set up the hall'), 'prep');
+  assert.equal(m.presetByWords('Фотосессия'), null);
+  assert.equal(m.presetByWords('   '), null);
+});
+
+// Цвет блока и палитра мастеров живут в трёх файлах. Разойдутся — мастер снова
+// сможет надеть цвет «времени студии», а перерыв — совпасть с занятием.
+const read = path => readFile(new URL(path, import.meta.url), 'utf8');
+const hexes = text => [...text.matchAll(/#[0-9A-Fa-f]{6}/g)].map(match => match[0].toUpperCase());
+
+test('the staff palette is the same on the server and in the card picker', async () => {
+  const server = await read('../../back/services/staff_colors.py');
+  const front = await read('../src/lib/staffColors.ts');
+  const from = server.indexOf('STAFF_PALETTE = (');
+  const serverPalette = hexes(server.slice(from, server.indexOf(')', from)));
+  const frontPalette = hexes(front.slice(front.indexOf('STAFF_PALETTE = ['), front.indexOf('] as const')));
+  assert.ok(serverPalette.length >= 6, serverPalette);
+  assert.deepEqual(frontPalette, serverPalette);
+});
+
+test('journal block accents in CSS are the colours the server keeps off staff', async () => {
+  const server = await read('../../back/services/staff_colors.py');
+  const css = await read('../src/pages/dashboard/Journal/components/ScheduleGrid/StaffBlockCard.css');
+  const from = server.indexOf('BLOCK_COLORS = {');
+  const reserved = hexes(server.slice(from, server.indexOf('}', from)));
+  const accent = selector => {
+    const at = css.indexOf(`${selector} {`);
+    assert.ok(at >= 0, selector);
+    return css.slice(at, css.indexOf('}', at)).match(/--sb-accent:\s*(#[0-9A-Fa-f]{6})/)[1].toUpperCase();
+  };
+  for (const selector of ['.j-staff-block-break', ':root.dark .j-staff-block-break', '.j-staff-block-day_off',
+    ':root.dark .j-staff-block-day_off', '.j-staff-block-studio', ':root.dark .j-staff-block-studio']) {
+    assert.ok(reserved.includes(accent(selector)), `${selector} ${accent(selector)} is not in BLOCK_COLORS`);
+  }
+});

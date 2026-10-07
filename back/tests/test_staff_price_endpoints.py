@@ -369,6 +369,9 @@ def test_inline_terms_touch_only_their_own_service():
 
 def test_inline_terms_null_returns_to_catalogue():
     async def scenario(ids):
+        # Услуга назначена мастеру — иначе ручка отказывает
+        # (test_inline_terms_refuse_unassigned_service).
+        await _save(ids, _body(ids))
         await _set_terms(ids, ids["haircut"], price=450, duration_min=40)
         await _set_terms(ids, ids["haircut"], price=None, duration_min=None)
         row = (await _services(ids))[ids["haircut"]]
