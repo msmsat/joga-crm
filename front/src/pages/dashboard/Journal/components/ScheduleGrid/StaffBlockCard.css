@@ -156,7 +156,11 @@
 .j-staff-block.is-short .j-staff-block-icon { flex-basis: 23px; width: 23px; height: 23px; border-radius: 7px; }
 .j-staff-block.is-short .j-staff-block-icon svg { width: 13px; height: 13px; }
 .j-staff-block.is-short .j-staff-block-name, .j-staff-block.is-short .j-staff-block-mark { display: none; }
-.j-staff-block.is-tiny .j-staff-block-caption { padding: 2px 7px; }
+.j-staff-block.is-tiny .j-staff-block-caption { padding: 0 7px; height: 100%; }
+/* Четверть часа — 14–20px: подпись в одну строку ростом с сам блок, иначе
+   она вылезала за нижний край и обрезалась. */
+.j-staff-block.is-tiny .j-staff-block-copy strong,
+.j-staff-block.is-tiny .j-staff-block-time { line-height: 1; }
 .j-staff-block.is-tiny .j-staff-block-copy { flex-direction: row; align-items: center; gap: 6px; }
 .j-staff-block.is-tiny .j-staff-block-icon { display: none; }
 
@@ -188,6 +192,7 @@
   .j-staff-block .j-staff-block-art { display: none; }
   .j-staff-block-day_off .j-staff-block-caption { padding: 10px 7px; gap: 7px; }
   .j-staff-block.is-short .j-staff-block-caption { padding: 4px 5px; }
+  .j-staff-block.is-tiny .j-staff-block-caption { padding: 0 5px; }
   .j-staff-block.is-short .j-staff-block-copy strong { white-space: nowrap; }
 }
 @container staff-block (max-width: 64px) {
@@ -243,28 +248,37 @@
   .j-hdr-off-tag { font-size: 8px; padding: 2px 4px; }
 }
 
-/* «Время студии» (уборка, планёрка): тот же язык, что у перерыва, — персик
-   и мягкая подложка, — но открывается на правку. Кликабелен только сам блок:
-   подложка периода по-прежнему пропускает нажатия к сетке. */
+/* «Время студии» (уборка, планёрка, проветривание): свой цвет — аква. Его
+   нет в палитре мастеров и сервер его мастеру не выдаст
+   (back/services/staff_colors.py, BLOCK_COLORS — меняешь акцент здесь, меняй
+   и там). Перерыв и выходной своих цветов не меняют.
+   Кликабелен только сам блок: подложка периода пропускает нажатия к сетке. */
 .j-staff-block-studio {
-  --sb-surface: #FCEAE3;
-  --sb-accent: #B8684E;
-  --sb-text: #7D412E;
-  --sb-edge: #EDCDBF;
-  --sb-detail: rgba(184, 104, 78, .1);
+  --sb-surface: #E6F6F5;
+  --sb-accent: #1D9CA3;
+  --sb-text: #155E63;
+  --sb-edge: #B9E3E1;
+  --sb-detail: rgba(29, 156, 163, .1);
+  --sb-chip: linear-gradient(140deg, #45C7C8 0%, #1D9CA3 100%);
+  --sb-glow: rgba(29, 156, 163, .45);
   background:
-    repeating-linear-gradient(135deg, transparent 0 9px, rgba(184, 104, 78, .045) 9px 10px),
-    var(--sb-surface);
+    radial-gradient(130% 85% at 100% 0%, rgba(99, 210, 211, .30), transparent 62%),
+    linear-gradient(168deg, #F0FBFA 0%, var(--sb-surface) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 6px 16px -12px var(--sb-glow);
+  animation: j-studio-in .32s cubic-bezier(.22, 1, .36, 1) backwards;
 }
 :root.dark .j-staff-block-studio {
-  --sb-surface: #332820;
-  --sb-accent: #F3AF96;
-  --sb-text: #F7D0BF;
-  --sb-edge: #604638;
-  --sb-detail: rgba(243, 175, 150, .09);
+  --sb-surface: #142627;
+  --sb-accent: #63D2D3;
+  --sb-text: #BDEDEC;
+  --sb-edge: #2A4C4E;
+  --sb-detail: rgba(99, 210, 211, .1);
+  --sb-chip: linear-gradient(140deg, #3FB8BA 0%, #18858B 100%);
+  --sb-glow: rgba(99, 210, 211, .3);
   background:
-    repeating-linear-gradient(135deg, transparent 0 9px, rgba(243, 175, 150, .05) 9px 10px),
-    var(--sb-surface);
+    radial-gradient(130% 85% at 100% 0%, rgba(99, 210, 211, .13), transparent 62%),
+    linear-gradient(168deg, #193132 0%, var(--sb-surface) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), 0 6px 16px -12px var(--sb-glow);
 }
 .j-staff-block.is-openable {
   pointer-events: auto;
@@ -273,15 +287,18 @@
 }
 .j-staff-block.is-openable:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(249, 160, 139, .55);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--sb-glow, rgba(249, 160, 139, .55));
 }
 @media (hover: hover) {
   .j-staff-block.is-openable:hover {
     border-color: color-mix(in srgb, var(--sb-accent) 45%, var(--sb-edge));
-    box-shadow: 0 8px 20px -10px rgba(184, 104, 78, .45), inset 0 1px 0 rgba(255, 255, 255, .55);
+    box-shadow: 0 10px 22px -10px var(--sb-glow, rgba(184, 104, 78, .45)), inset 0 1px 0 rgba(255, 255, 255, .55);
     transform: translateY(-1px);
   }
+  .j-staff-block.is-editable:hover .j-staff-block-edit { opacity: 1; transform: none; }
+  .j-staff-block.is-editable:hover .j-staff-block-icon { transform: rotate(-6deg) scale(1.04); }
 }
+.j-staff-block-studio .j-staff-block-icon { transition: transform .22s cubic-bezier(.22, 1, .36, 1); }
 @media (prefers-reduced-motion: reduce) {
   .j-staff-block.is-openable, .j-staff-block.is-openable:hover { transition: none; transform: none; }
 }

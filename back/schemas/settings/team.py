@@ -4,6 +4,7 @@ from pydantic import EmailStr, Field, field_validator
 from schemas._base import BaseSchema, NormEmail, OptPhone
 from schemas.auth.requests import validate_strong_password
 from schemas.staff.staff import StaffWorkingHoursItem
+from services.staff_colors import assert_free_color
 
 
 # Потолок индивидуальной цены. Колонка `user_services.price` — Integer (до
@@ -89,6 +90,13 @@ class StaffUpdate(BaseSchema):
     # Цвет в журнале. None — не менять: так карточку правят старые клиенты и
     # ассистент. Снять цвет нельзя — у каждого мастера он должен быть.
     color: Optional[str] = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")
+
+    # Цвета перерыва, выходного и «времени студии» мастеру не выдаются: его
+    # занятия в журнале выглядели бы блоком без занятия.
+    @field_validator("color")
+    @classmethod
+    def _free_color(cls, v: Optional[str]) -> Optional[str]:
+        return assert_free_color(v)
 
 
 class StaffMessageRequest(BaseSchema):

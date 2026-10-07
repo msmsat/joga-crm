@@ -8,7 +8,9 @@
 1. новый сотрудник получает цвет, которого в студии ещё нет;
 2. палитра кончилась — повтор уходит на самый редкий цвет, а не на первый;
 3. правка карточки без `color` (старые клиенты, ассистент) цвет не стирает;
-4. явная правка и ассистент цвет меняют, мусор вместо цвета не принимается.
+4. явная правка и ассистент цвет меняют, мусор вместо цвета не принимается;
+5. цвета блоков журнала (перерыв, выходной, время студии) мастеру не
+   выдаются, не принимаются, а у кого есть — меняются при запуске.
 
 Реальная БД, ручная чистка. Запуск из back/:
     python -m pytest tests/test_staff_colors.py -q
@@ -26,7 +28,8 @@ from models import Studio, StudioMember, User
 from routers.staff import profiles
 from schemas.settings.team import StaffCreate, StaffUpdate
 from services import ai_tools
-from services.members import STAFF_PALETTE, pick_member_color
+from services.members import STAFF_PALETTE, pick_member_color, repair_member_colors
+from services.staff_colors import BLOCK_COLORS, RETIRED_COLORS, reserved_color
 
 warnings.filterwarnings("ignore")
 
@@ -208,3 +211,82 @@ def test_malformed_colour_is_rejected(bad):
         _body(color=bad)
     with pytest.raises(ValidationError):
         ai_tools.UpdateStaffArgs(staff_id=1, color=bad)
+
+
+# ── Цвета блоков журнала мастеру не выдаются ─────────────────────────────────
+# Перерыв, выходной и «время студии» стоят в той же сетке, что занятия. Мастер
+# в их цвете делает своё занятие похожим на блок без занятия, поэтому:
+# палитра их не содержит, правка их не принимает, а у кого такой уже есть —
+# тому цвет меняет запуск сервера и первое чтение команды.
+
+def test_palette_never_contains_a_journal_block_colour():
+    assert len(set(STAFF_PALETTE)) == len(STAFF_PALETTE)
+    assert [c for c in STAFF_PALETTE if reserved_color(c)] == []
+    for accents in BLOCK_COLORS.values():
+        for accent in accents:
+            assert reserved_color(accent), accent
+    # Ушедшие из палитры ради блоков — запретны, в любом регистре.
+    for color in RETIRED_COLORS:
+        assert reserved_color(color.lower()), color
+
+
+@pytest.mark.parametrize("taken", ["#F9A08B", "#c4553d", "#D0678F", "#3AA39B", "#1D9CA3", "#B8684E"])
+def test_block_colour_is_rejected_on_edit_and_by_the_assistant(taken):
+    with pytest.raises(ValidationError, match="блоками журнала"):
+        _body(color=taken)
+    with pytest.raises(ValidationError, match="блоками журнала"):
+        ai_tools.UpdateStaffArgs(staff_id=1, color=taken)
+
+
+async def _add_member(ids: dict, i: int, color: str | None, role: str = "trainer") -> int:
+    async with async_session_maker() as db:
+        user = User(email=f"staff-color-old-{i}@velora-test.com", hashed_password="x", name="O")
+        db.add(user)
+        await db.flush()
+        db.add(StudioMember(user_id=user.id, studio_id=ids["sid"], role=role,
+                            status="active", name=f"O{i}", color=color))
+        await db.commit()
+        return user.id
+
+
+async def _drop_members(user_ids: list[int]) -> None:
+    async with async_session_maker() as db:
+        await db.execute(delete(StudioMember).where(StudioMember.user_id.in_(user_ids)))
+        await db.execute(delete(User).where(User.id.in_(user_ids)))
+        await db.commit()
+
+
+def test_startup_moves_members_off_block_colours_to_free_ones():
+    """Мастер, получивший персик, малину или бирюзу до того, как их отдали
+    блокам, при запуске сервера получает свободный цвет своей студии; чужие
+    цвета и уже правильные не трогаются, повторный запуск ничего не меняет."""
+    async def scenario(ids):
+        old = [await _add_member(ids, 0, "#F9A08B"), await _add_member(ids, 1, "#3aa39b")]
+        try:
+            assert await repair_member_colors(async_session_maker) >= 2
+            colors = [await _color(ids, uid) for uid in old]
+            assert [reserved_color(c) for c in colors] == [None, None], colors
+            # Владелец и Ирина уже носят первые два цвета — новые идут дальше.
+            assert colors == list(STAFF_PALETTE[2:4]), colors
+            assert await _color(ids, ids["owner"]) == STAFF_PALETTE[0]
+            assert await _color(ids, ids["trainer"]) == STAFF_PALETTE[1]
+
+            assert await repair_member_colors(async_session_maker) == 0
+            assert [await _color(ids, uid) for uid in old] == colors
+        finally:
+            await _drop_members(old)
+    _run(scenario)
+
+
+def test_reading_the_team_also_recolours_a_block_colour():
+    """Второй рубеж: цвет блока, оказавшийся в базе после запуска (ручная
+    вставка, старый клиент), меняет первое же чтение команды."""
+    async def scenario(ids):
+        old = [await _add_member(ids, 2, "#D0678F")]
+        try:
+            async with async_session_maker() as db:
+                await profiles.list_staff(ctx=await _ctx(ids, db), db=db, offset=0, limit=40)
+            assert await _color(ids, old[0]) == STAFF_PALETTE[2]
+        finally:
+            await _drop_members(old)
+    _run(scenario)
