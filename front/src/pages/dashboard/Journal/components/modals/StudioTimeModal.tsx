@@ -17,6 +17,7 @@ import {
 } from '../../../../../components/ui/index';
 import type { Trainer } from '../../types';
 import { StudioTimePreview } from '../StudioTimePreview';
+import { STUDIO_TIME_ICONS } from '../studioTimeIcons';
 import {
   DURATION_PRESETS, DURATION_STEP, LABEL_PRESETS, MAX_DURATION, MAX_LABEL, MIN_DURATION,
   clampDuration, cleanLabel, draftErrors, durationParts, endOf, isValid, startOptions, toPayload,
@@ -51,7 +52,7 @@ export function StudioTimeModal({ draft: initial, trainers, timeStep, onClose, o
   const changed = !editing || Object.keys(payload).length > 0;
   const ready = isValid(draft) && changed && !saving;
   const trainer = trainers.find(item => item.id === draft.staffId);
-  const presets = LABEL_PRESETS.map(key => t(`journal:studioTime.presets.${key}`));
+  const presets = LABEL_PRESETS.map(key => ({ key, label: t(`journal:studioTime.presets.${key}`) }));
   const times = useMemo(() => startOptions(timeStep, draft.start), [timeStep, draft.start]);
   const until = endOf(draft.start, draft.duration);
   const duration = (minutes: number) => {
@@ -93,13 +94,17 @@ export function StudioTimeModal({ draft: initial, trainers, timeStep, onClose, o
                 autoFocus={!editing}
               />
               <div className="st-chips" role="list">
-                {presets.map(preset => (
-                  <button key={preset} type="button" role="listitem"
-                          className={`st-chip${cleanLabel(draft.label) === preset ? ' is-on' : ''}`}
-                          onClick={() => set({ label: preset })}>
-                    {preset}
-                  </button>
-                ))}
+                {presets.map(({ key, label }) => {
+                  const Icon = STUDIO_TIME_ICONS[key];
+                  return (
+                    <button key={key} type="button" role="listitem"
+                            className={`st-chip st-chip-icon${cleanLabel(draft.label) === label ? ' is-on' : ''}`}
+                            onClick={() => set({ label })}>
+                      <Icon size={14} strokeWidth={1.9} aria-hidden />
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

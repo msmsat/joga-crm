@@ -21,6 +21,7 @@ from services.attendance import start_attendance_loop
 from services.billing_tax_documents import start_tax_document_loop
 from services.recurring_schedule import start_recurring_schedule_loop
 from services.subscription_freeze import start_subscription_freeze_loop
+from services.members import repair_member_colors
 
 from routers.auth import router as auth_router
 from routers.studio import router as studio_router, onboarding_router as studio_onboarding_router
@@ -62,6 +63,16 @@ logging.basicConfig(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await ensure_database_schema(engine)
+    # Мастер в цвете перерыва, выходного или «времени студии» делает журнал
+    # нечитаемым — такие цвета меняются на свободные (services/staff_colors.py).
+    # Сбой здесь не должен мешать серверу подняться: тогда починит первое
+    # чтение команды (fill_missing_colors в GET /staff/).
+    try:
+        recolored = await repair_member_colors(async_session_maker)
+        if recolored:
+            logging.getLogger(__name__).info("staff colors: recolored %d member(s) off journal block colors", recolored)
+    except Exception:
+        logging.getLogger(__name__).exception("staff colors: startup repair failed")
     # Фоновый исполнитель умных сценариев лояльности (V5-4, задача 2).
     task = start_scenario_loop(async_session_maker)
     # Ежедневные уведомления: дни рождения, отчёты дня/недели, тариф (N-4, задача 6).

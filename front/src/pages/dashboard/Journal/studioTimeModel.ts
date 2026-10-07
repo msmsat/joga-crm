@@ -116,3 +116,27 @@ export function defaultStart(date: string, now = new Date()) {
   const next = Math.ceil((now.getHours() * 60 + now.getMinutes() + 1) / 15) * 15;
   return fromMinutes(Math.min(22 * 60, Math.max(7 * 60, next)));
 }
+
+export type StudioTimeKind = typeof LABEL_PRESETS[number] | 'custom';
+
+/** Слова, по которым своё название узнаётся как готовое — на пяти языках
+ *  исходящих текстов (ru, en, uk, cs, de). «Уборка зала», «Generalreinigung»,
+ *  «Porada týmu» получают иконку своего вида, а не общую. Порядок значим:
+ *  «уборка после ремонта» — уборка. */
+const KIND_WORDS: [StudioTimeKind, RegExp][] = [
+  ['cleaning', /убор|прибир|чист|мыть|мойк|clean|tidy|wash|úklid|uklid|čišt|myt|reinig|putz|sauber/i],
+  ['airing', /провет|провітр|воздух|air|vent|větr|lüft/i],
+  ['meeting', /планёр|планер|собран|встреч|нарад|летуч|meet|brief|sync|stand-?up|porad|schůz|besprech|teambesp/i],
+  ['maintenance', /обслуж|ремонт|почин|чинит|техн|repair|maint|fix|servis|oprav|údrž|wartung|repar/i],
+  ['prep', /подгот|підгот|расстав|prep|set ?up|příprav|vorbereit|aufbau/i],
+];
+
+/** Вид блока по его названию: сначала точное совпадение с готовым названием
+ *  на языке интерфейса (`presets` — ключ → подпись), потом слова. */
+export function labelKind(label: string, presets: Partial<Record<StudioTimeKind, string>> = {}): StudioTimeKind {
+  const clean = cleanLabel(label).toLowerCase();
+  if (!clean) return 'custom';
+  const exact = LABEL_PRESETS.find(key => presets[key] && cleanLabel(presets[key]!).toLowerCase() === clean);
+  if (exact) return exact;
+  return KIND_WORDS.find(([, words]) => words.test(clean))?.[0] ?? 'custom';
+}

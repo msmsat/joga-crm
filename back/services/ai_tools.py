@@ -172,6 +172,7 @@ from schemas.staff.staff import StaffDayOverrideRequest
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
 from services import service_pricing, studio_time, time_blocks
 from services.members import STAFF_PALETTE
+from services.staff_colors import assert_free_color
 from services.contacts import normalize, normalized_column
 from services.working_hours import assert_within_working_hours
 from services.llm import TIER_FAST, TIER_SMART
@@ -925,7 +926,13 @@ class UpdateStaffArgs(BaseModel):
                           "изменённую: чего в списке нет, то возвращается к Каталогу")
     color: Optional[str] = Field(
         None, pattern=r"^#[0-9A-Fa-f]{6}$",
-        description="Цвет сотрудника в журнале, #RRGGBB. Палитра студии: " + ", ".join(STAFF_PALETTE))
+        description="Цвет сотрудника в журнале, #RRGGBB, только из палитры: " + ", ".join(STAFF_PALETTE)
+                    + ". Цвета перерыва, выходного и времени студии сотруднику не выдаются")
+
+    @field_validator("color")
+    @classmethod
+    def _free_color(cls, v: Optional[str]) -> Optional[str]:
+        return assert_free_color(v)
 
 
 class WorkBreak(BaseModel):

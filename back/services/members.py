@@ -17,6 +17,10 @@ from sqlalchemy.future import select
 
 from models import Service, Studio, StudioMember, user_services
 from services.i18n import resolve
+# Палитра цветов сотрудников и цвета блоков журнала, которые мастеру носить
+# нельзя, — services/staff_colors.py (там же — почему). STAFF_PALETTE отсюда
+# импортируют онбординг и ассистент.
+from services.staff_colors import STAFF_PALETTE, reserved_color  # noqa: F401
 
 
 def full_name(member: StudioMember) -> str:
@@ -89,26 +93,6 @@ async def member_names(
     return {uid: " ".join(filter(None, (name, last_name))) for uid, name, last_name in rows}
 
 
-# Палитра цветов сотрудников. Порядок значим: первые цвета достаются первым
-# сотрудникам, поэтому соседние в списке — самые непохожие друг на друга. Тон
-# средний: цвет служит и заливкой, и текстом карточки занятия, на светлой и на
-# тёмной теме. Копия для выбора в карточке — front/src/lib/staffColors.ts.
-STAFF_PALETTE = (
-    "#F9A08B",  # персик
-    "#4A80C4",  # синий
-    "#5BAB72",  # зелёный
-    "#7B6CD4",  # фиолетовый
-    "#E0A030",  # янтарь
-    "#3AA39B",  # бирюза
-    "#D0678F",  # малина
-    "#8B6F5A",  # какао
-    "#B062C0",  # орхидея
-    "#8FA53A",  # олива
-    "#C4553D",  # кирпич
-    "#5E7389",  # сланец
-)
-
-
 # Кто получает свободный цвет первым, когда раздаём сразу нескольким: мастерам
 # различаться в журнале важнее всего, администратор там колонки не имеет.
 _COLOR_ROLE_ORDER = {"trainer": 0, "owner": 1}
@@ -139,24 +123,53 @@ async def pick_member_color(db: AsyncSession, studio_id: int) -> str:
 
 
 def fill_missing_colors(members: Iterable[StudioMember]) -> bool:
-    """Выдать цвет тем участникам студии, у кого его нет. True — кому-то выдали.
+    """Выдать цвет тем участникам студии, у кого его нет или у кого цвет блока
+    журнала (перерыв, выходной, время студии — `staff_colors.reserved_color`).
+    True — кому-то выдали.
 
     Передавать нужно ВСЮ команду студии: занятые цвета считаются по ней, и
     иначе новый цвет совпал бы с чужим. Раздаются по одному, с учётом только что
     выданных, — поэтому несколько «бесцветных» разом тоже получают разные цвета.
     Пустым цвет остаётся у строк, заведённых в обход роутеров (сиды, ручные
     вставки в базу), — чинится при первом же чтении команды, без миграции.
+    Запретный — у тех, кто носил его до того, как цвет отдали блоку: их чинит
+    ещё и запуск сервера (`repair_member_colors`).
     """
     members = list(members)
     counts = _color_counts(m.color for m in members)
     missing = sorted(
-        (m for m in members if not m.color),
+        (m for m in members if not m.color or reserved_color(m.color)),
         key=lambda m: (_COLOR_ROLE_ORDER.get(m.role, 2), m.id),
     )
     for member in missing:
         member.color = _rarest(counts)
         counts[member.color.upper()] += 1
     return bool(missing)
+
+
+async def repair_member_colors(session_maker) -> int:
+    """При запуске сервера: сменить цвет всем, кто ходит в цвете блока журнала.
+
+    Один проход по всем студиям, где такой мастер есть; новый цвет — свободный
+    в ЕГО студии (`fill_missing_colors` по всей её команде). Возвращает, скольким
+    сменили. Повторный запуск ничего не трогает.
+    """
+    async with session_maker() as db:
+        rows = (await db.execute(
+            select(StudioMember.studio_id, StudioMember.color).where(StudioMember.color.is_not(None))
+        )).all()
+        studios = sorted({sid for sid, color in rows if reserved_color(color)})
+        changed = 0
+        for studio_id in studios:
+            team = (await db.execute(
+                select(StudioMember).where(StudioMember.studio_id == studio_id)
+            )).scalars().all()
+            before = {m.id: m.color for m in team}
+            fill_missing_colors(team)
+            changed += sum(1 for m in team if before[m.id] != m.color)
+        if changed:
+            await db.commit()
+        return changed
 
 
 async def user_lang(db: AsyncSession, user) -> str:

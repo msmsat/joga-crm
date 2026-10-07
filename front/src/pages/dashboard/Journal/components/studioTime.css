@@ -1,7 +1,8 @@
 /* «Время студии»: кнопка в окнах создания и окно StudioTimeModal.
-   Цвета — токены темы; персик — только на действиях и выбранном. */
-:root { --st-left-bg: linear-gradient(170deg, #FFF7F3 0%, var(--bg) 62%); }
-:root.dark { --st-left-bg: linear-gradient(170deg, #2A221D 0%, var(--bg-card) 62%); }
+   Цвета — токены темы; персик — только на действиях и выбранном, аква —
+   цвет самого блока (StaffBlockCard.css), им подписано то, что встанет в сетку. */
+:root { --st-left-bg: linear-gradient(170deg, #EAF8F7 0%, var(--bg) 62%); --st-aqua: #1D9CA3; }
+:root.dark { --st-left-bg: linear-gradient(170deg, #172A2B 0%, var(--bg-card) 62%); --st-aqua: #63D2D3; }
 
 /* ── Кнопка в шапке окна создания ─────────────────────────────────────── */
 .st-trigger {
@@ -79,7 +80,7 @@
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .st-preview-range {
-  font-size: 11.5px; font-weight: 800; color: var(--peach); font-variant-numeric: tabular-nums; white-space: nowrap;
+  font-size: 11.5px; font-weight: 800; color: var(--st-aqua); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .st-preview-hint { margin: 0; font-size: 12px; line-height: 1.55; color: var(--text2); }
 
@@ -100,6 +101,8 @@
   color: var(--text2); font: inherit; font-size: 12px; font-weight: 650; white-space: nowrap;
   cursor: pointer; transition: all .16s ease;
 }
+.st-chip-icon { display: inline-flex; align-items: center; gap: 6px; padding-left: 10px; }
+.st-chip-icon svg { color: var(--st-aqua); flex-shrink: 0; }
 .st-chip.is-on {
   border-color: rgba(249, 160, 139, .7);
   background: rgba(249, 160, 139, .12);

@@ -90,3 +90,46 @@ test('a short block closes only its own minutes of the hour', () => {
   assert.equal(grid.slotStart([], 600, 640), 600);           // свободный час — как раньше, с начала
   assert.equal(grid.slotStart([[630, 660]], 600, 10 + 600), 600);
 });
+
+test('a block label maps to its kind: exact preset first, then words in five languages', () => {
+  const presets = { cleaning: 'Уборка', prep: 'Подготовка зала', meeting: 'Планёрка', airing: 'Проветривание', maintenance: 'Обслуживание' };
+  assert.equal(m.labelKind('  подготовка   ЗАЛА ', presets), 'prep');
+  assert.equal(m.labelKind('Уборка после ремонта', presets), 'cleaning');
+  assert.equal(m.labelKind('Generalreinigung'), 'cleaning');
+  assert.equal(m.labelKind('Porada týmu'), 'meeting');
+  assert.equal(m.labelKind('Team sync'), 'meeting');
+  assert.equal(m.labelKind('Lüften'), 'airing');
+  assert.equal(m.labelKind('Ремонт кондиционера'), 'maintenance');
+  assert.equal(m.labelKind('Set up the hall'), 'prep');
+  assert.equal(m.labelKind('Фотосессия'), 'custom');
+  assert.equal(m.labelKind(''), 'custom');
+});
+
+// Цвет блока и палитра мастеров живут в трёх файлах. Разойдутся — мастер снова
+// сможет надеть цвет «времени студии», а перерыв — совпасть с занятием.
+const read = path => readFile(new URL(path, import.meta.url), 'utf8');
+const hexes = text => [...text.matchAll(/#[0-9A-Fa-f]{6}/g)].map(match => match[0].toUpperCase());
+
+test('the staff palette is the same on the server and in the card picker', async () => {
+  const server = await read('../../back/services/staff_colors.py');
+  const front = await read('../src/lib/staffColors.ts');
+  const serverPalette = hexes(server.slice(server.indexOf('STAFF_PALETTE = ('), server.indexOf(')', server.indexOf('STAFF_PALETTE = ('))));
+  const frontPalette = hexes(front.slice(front.indexOf('STAFF_PALETTE = ['), front.indexOf('] as const')));
+  assert.ok(serverPalette.length >= 6, serverPalette);
+  assert.deepEqual(frontPalette, serverPalette);
+});
+
+test('journal block accents in CSS are the colours the server keeps off staff', async () => {
+  const server = await read('../../back/services/staff_colors.py');
+  const css = await read('../src/pages/dashboard/Journal/components/ScheduleGrid/StaffBlockCard.css');
+  const reserved = hexes(server.slice(server.indexOf('BLOCK_COLORS = {'), server.indexOf('}', server.indexOf('BLOCK_COLORS = {'))));
+  const accent = selector => {
+    const at = css.indexOf(`${selector} {`);
+    assert.ok(at >= 0, selector);
+    return css.slice(at, css.indexOf('}', at)).match(/--sb-accent:\s*(#[0-9A-Fa-f]{6})/)[1].toUpperCase();
+  };
+  for (const selector of ['.j-staff-block-break', ':root.dark .j-staff-block-break', '.j-staff-block-day_off',
+    ':root.dark .j-staff-block-day_off', '.j-staff-block-studio', ':root.dark .j-staff-block-studio']) {
+    assert.ok(reserved.includes(accent(selector)), `${selector} ${accent(selector)} is not in BLOCK_COLORS`);
+  }
+});
