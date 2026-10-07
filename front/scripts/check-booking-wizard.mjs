@@ -645,12 +645,12 @@ test('the past-lessons capsule opens the client history under the row and does n
   assert.deepEqual(events, []);
   // Нажатие на прошлое занятие — повтор для ЭТОГО клиента, с его именем.
   assert.equal(rows()[0].below.props.canRepeat, canRepeat);
-  rows()[0].below.props.onRepeat({ serviceId: 2, teacherId: 7, time: '18:00' });
+  rows()[0].below.props.onRepeat({ serviceId: 2, teacherId: 7 });
   // Объекты собраны внутри vm — сравниваем содержимое, а не прототипы.
-  assert.equal(JSON.stringify(events), JSON.stringify([['repeat', { id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 7, time: '18:00' }]]));
+  assert.equal(JSON.stringify(events), JSON.stringify([['repeat', { id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 7 }]]));
 });
 
-test('repeating a past lesson fills the client, service, master and time and opens the summary', async () => {
+test('repeating a past lesson takes the client, service and master but leaves the time to the person', async () => {
   const calls = [];
   const resource = { choice: { serviceOptions: [], masterOptions: [] }, slots: [],
     setDate() {}, setBranchId() {}, setClient: id => calls.push(['client', id]),
@@ -658,29 +658,35 @@ test('repeating a past lesson fills the client, service, master and time and ope
   const render = (await navigation({ useResourceBooking: { useResourceBooking: () => resource } }))({ defaultDate: '2099-05-12' });
   assert.equal(render().canRepeat(2), true);
   assert.equal(render().canRepeat(99), false);
-  render().repeat({ id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 7, time: '18:00' });
+  render().repeat({ id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 7 });
   const w = render();
   assert.deepEqual(w.client, { id: 3, name: 'Anna' });
   assert.equal(w.service.id, 2);
   assert.equal(w.teacherId, 7);
   assert.equal(w.masterChosen, true);
-  assert.equal(w.time, '18:00');
-  assert.equal(w.step, 4);
+  // Время не названо — его выбирает человек: открыт раздел «Время».
+  assert.equal(w.time, '');
+  assert.equal(w.step, 0);
   assert.deepEqual(calls, [['client', 3], ['service', 2], ['teacher', 7]]);
+  // Время уже названо (тап по клетке) — оно остаётся, и запись готова к итогу.
+  const fromCell = (await navigation({ useResourceBooking: { useResourceBooking: () => resource } }))({ defaultDate: '2099-05-12', defaultTime: '19:00' });
+  fromCell().repeat({ id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 7 });
+  assert.equal(fromCell().time, '19:00');
+  assert.equal(fromCell().step, 4);
 });
 
 test('repeating with a master who no longer does the service opens the master section, the time stays', async () => {
   const resource = { choice: { serviceOptions: [], masterOptions: [] }, slots: [],
     setDate() {}, setBranchId() {}, setClient() {}, setServiceId() {}, setTeacherId() {} };
-  const render = (await navigation({ useResourceBooking: { useResourceBooking: () => resource } }))({ defaultDate: '2099-05-12' });
-  render().repeat({ id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 8, time: '09:30' });
+  const render = (await navigation({ useResourceBooking: { useResourceBooking: () => resource } }))({ defaultDate: '2099-05-12', defaultTime: '09:30' });
+  render().repeat({ id: 3, name: 'Anna' }, { serviceId: 2, teacherId: 8 });
   const w = render();
   assert.equal(w.masterChosen, false);
   assert.equal(w.teacherId, null);
   assert.equal(w.time, '09:30');
   assert.equal(w.step, 3);
   // Услуги, которой этот мастер записи не знает, нет — повторять нечего.
-  render().repeat({ id: 4, name: 'Boris' }, { serviceId: 99, teacherId: null, time: '10:00' });
+  render().repeat({ id: 4, name: 'Boris' }, { serviceId: 99, teacherId: null });
   assert.equal(render().client.id, 3);
 });
 
@@ -693,13 +699,13 @@ test('a repeated group lesson keeps its client: booked into the standing group, 
   // Обычная групповая из журнала — без клиента.
   render().pickService(group);
   assert.equal(render().needsClient, false);
-  render().repeat({ id: 3, name: 'Anna' }, { serviceId: 1, teacherId: null, time: '18:00' });
+  render().repeat({ id: 3, name: 'Anna' }, { serviceId: 1, teacherId: null });
   const w = render();
   assert.equal(w.needsClient, true);
   assert.equal(w.clientOptional, false);
   assert.equal(w.client.id, 3);
   assert.equal(w.service.id, 1);
-  assert.equal(w.time, '18:00');
+  assert.equal(w.time, '');
   assert.ok(w.steps.includes(1));
 });
 

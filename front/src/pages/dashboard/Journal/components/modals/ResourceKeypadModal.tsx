@@ -80,13 +80,9 @@ export function ResourceKeypadModal({
   }, defaultDate, defaultTime);
   const [notes, setNotes] = useState('');
   const notePhotos = useNotePhotos();
-  // «Записать так же» из истории клиента: его услуга, мастер и время дня — в
-  // выбранный день. Прошедшее время спросит то же окно, что и ручной ввод;
-  // условия под свободное время возьмутся сами (эффект ниже).
-  const repeat = (r: RepeatOf) => {
-    booking.repeat(r.serviceId, r.teacherId);
-    if (r.time && !past.ask(booking.date, r.time)) setTypedTime(r.time);
-  };
+  // «Записать так же» из истории клиента: его услуга и мастер. Время остаётся
+  // тем, что выбрано здесь (клетка или ввод), — его называет человек.
+  const repeat = (r: RepeatOf) => booking.repeat(r.serviceId, r.teacherId);
   // Свободные начала сервер считает по длительности услуги и её буферам:
   // 30-минутная стрижка встаёт в любой свободный получас, а не только в час.
   const free = slots.map(s => s.local_start.slice(11, 16));

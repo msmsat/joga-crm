@@ -68,12 +68,9 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
   }, options.defaultDate, defaultTime);
   const { choice, serviceId, branchId, teacherId, chosenService, loadingChoice, quote, quoting, saving, slots, reason } = booking;
   const shown = new Set(listedTimes(slots.map(slot => slot.local_start.slice(11, 16)), 15));
-  // «Записать так же» из истории клиента: услуга, мастер и время дня — в
-  // выбранный день; время подсвечивается в списке свободного, как названное.
-  const repeat = (r: RepeatOf) => {
-    booking.repeat(r.serviceId, r.teacherId);
-    if (r.time && !past.ask(booking.date, r.time)) setWantedTime(r.time);
-  };
+  // «Записать так же» из истории клиента: услуга и мастер; время выбирают
+  // в списке свободного, как обычно.
+  const repeat = (r: RepeatOf) => booking.repeat(r.serviceId, r.teacherId);
   // Время записи — днём недели и числом, как на проверке мастера записи и в
   // переносе («пн, 28 сентября, 09:00»), а не строкой ISO. Полдень — чтобы
   // перевод часов не сдвинул день.

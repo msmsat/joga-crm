@@ -350,13 +350,14 @@ export function useBookingWizard(o: WizardOptions) {
   /** Услугу прошлого занятия можно повторить, если её записывает этот мастер. */
   const canRepeat = (serviceId: number) => serviceList.some(s => s.id === serviceId);
   /**
-   * «Записать так же» из истории клиента: этот клиент, услуга того занятия,
-   * его мастер (если он её всё ещё ведёт) и время дня — в выбранный день.
-   * Дальше — итог, а если мастера или времени не хватает, их раздел. Групповое
+   * «Записать так же» из истории клиента: этот клиент, услуга того занятия и
+   * его мастер (если он её всё ещё ведёт). Время не переносится — его выбирает
+   * человек: не названо — открывается раздел «Время», названо (тап по клетке)
+   * — остаётся. Дальше итог, а если мастера не хватает — его раздел. Групповое
    * занятие ведёт себя как запись из карточки клиента: человек встаёт в уже
    * стоящую группу в это время, иначе для него ставится новое занятие.
    */
-  const repeat = (who: { id: number; name: string }, past: { serviceId: number; teacherId: number | null; time: string | null }) => {
+  const repeat = (who: { id: number; name: string }, past: { serviceId: number; teacherId: number | null }) => {
     const s = serviceList.find(item => item.id === past.serviceId);
     if (!s) return;
     const keep = past.teacherId != null && (s.booking_mode === 'resource'
@@ -374,18 +375,11 @@ export function useBookingWizard(o: WizardOptions) {
     setTeacherState(master);
     setMasterChosen(keep);
     resource.setTeacherId(master);
-    // Время того занятия уже прошло сегодня — спрашивает то же окно, что и
-    // тап по прошедшей клетке («тот же час впереди или своё время»).
-    const wanted = past.time != null && isTime(past.time) ? past.time : null;
-    const gone = wanted != null && isPastSlot(date, wanted);
-    const at = wanted != null && !gone ? wanted : time;
-    if (gone) setPastAsk(nextSameTime(wanted));
-    else if (at !== time) { setTimeState(at); o.onDateChange?.(date); }
     if (s.booking_mode === 'resource') {
-      const branch = availability.branchFor(s.id, master, at);
+      const branch = availability.branchFor(s.id, master, time);
       if (branch != null) resource.setBranchId(branch);
     }
-    goTo(!isTime(at) && !gone ? TIME_STEP : !keep ? MASTER_STEP : SUMMARY_STEP);
+    goTo(!isTime(time) ? TIME_STEP : !keep ? MASTER_STEP : SUMMARY_STEP);
   };
 
   // ── Выбранный мастер в названное время ────────────────────────────────────

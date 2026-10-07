@@ -17,13 +17,12 @@ export interface PastLesson {
   at: Stamp;
 }
 
-/** Что берёт новая запись из прошлого занятия по «Записать так же». */
+/** Что берёт новая запись из прошлого занятия по «Записать так же»: услугу и мастера. */
 export interface RepeatOf {
   serviceId: number;
   /** Мастер того занятия; ведёт ли он услугу сейчас — решает форма. */
   teacherId: number | null;
-  /** Время дня «ЧЧ:ММ» — день остаётся тем, что выбран в форме. */
-  time: string | null;
+  // Времени здесь нет намеренно: его выбирает человек, а не прошлое занятие.
 }
 
 /** Время дня занятия «ЧЧ:ММ»; в данных его нет — null. */
@@ -34,7 +33,6 @@ export const lessonTime = (at: Stamp) => at.h === undefined
 export const repeatOf = (lesson: PastLesson): RepeatOf | null => lesson.event.service_id == null ? null : {
   serviceId: lesson.event.service_id,
   teacherId: lesson.event.teacher_id ?? null,
-  time: lessonTime(lesson.at),
 };
 
 const isPast = (tone: string): tone is PastTone => (PAST_TONES as readonly string[]).includes(tone);
