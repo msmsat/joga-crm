@@ -173,7 +173,10 @@
       "not_found": "Acest bloc a fost deja eliminat",
       "bad_clock": "Această oră nu există sau se repetă din cauza schimbării orei — alegeți alta",
       "blocks_lesson": "Ședința se suprapune cu timpul de studio al angajatului (curățenie, ședință) — alegeți altă oră"
-    }
+    },
+    "lesson_edit_frozen": "Clasa nu mai poate fi modificată — începe prea curând. Acum doar locurile, restul după final.",
+    "lesson_edit_too_soon": "Noua oră este prea aproape — alegeți una mai târzie",
+    "lesson_stays_in_past": "O clasă trecută rămâne în trecut — trebuie să se termine înainte de acum"
   },
   "units": {
     "min": "min",

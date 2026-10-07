@@ -33,6 +33,7 @@ export const EVENT_META: Record<string, EventMeta> = {
   c11: { icon: Icon.Clock,         color: '#9B8EC4' },
   c12: { icon: Icon.Star,          color: '#5BAB72' },
   c13: { icon: Icon.Coffee,        color: '#e08060' },
+  c14: { icon: Icon.Refresh,       color: '#9B8EC4' },
   t1:  { icon: Icon.Calendar,      color: '#F9A08B' },
   t2:  { icon: Icon.UserX,         color: '#D88C9A' },
   t3:  { icon: Icon.AlertTriangle, color: '#f0c040' },

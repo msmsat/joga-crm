@@ -34,6 +34,7 @@ export interface Lesson {
   client_color?: string | null
   status: 'confirmed' | 'pending' | 'cancelled'
   level: string | null
+  equipment: string | null
   cancel_reason: string | null
   /** Отменённое занятие убрано из сетки Журнала («Удалить из журнала»). Само
    *  оно и брони на него остаются — отчёты по-прежнему считают его отменой. */
@@ -71,6 +72,12 @@ export interface LessonCreate {
   equipment?: string | null
   notes?: string
   photos?: string[]
+}
+
+/** Тело правки занятия (PATCH /schedule/lessons/{id}): присланное меняется,
+ *  остальное остаётся. `name` — своё название; без него оно едет за услугой. */
+export interface LessonUpdate extends Partial<LessonCreate> {
+  name?: string
 }
 
 // Записанный на занятие клиент (для попапа занятия)
@@ -158,9 +165,11 @@ export interface LessonCompensation {
 
 export interface LessonDetail extends Lesson {
   compensation: LessonCompensation | null
-  equipment: string | null
   booked_clients: BookedClient[]
   location: LessonLocation | null
+  /** Срок отмены записи по правилам студии, минуты. По нему окно правки знает
+   *  заранее, когда занятие перестают менять (back/services/lesson_edit_policy). */
+  cancel_deadline_min: number
 }
 
 /** Чем, кроме денег, закрывается долг за занятие у стойки. */

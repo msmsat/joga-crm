@@ -104,7 +104,7 @@
     },
     "c11": {
       "title": "Klassen har flyttats",
-      "desc": "Tid, sal eller tränare ändrades"
+      "desc": "Ny tid eller sal"
     },
     "c12": {
       "title": "Bonus tillagd",
@@ -113,6 +113,10 @@
     "c13": {
       "title": "Kaffe efter klassen",
       "desc": "Vem i gruppen som går på kaffe"
+    },
+    "c14": {
+      "title": "Ändringar i klassen",
+      "desc": "Tränare, namn, nivå eller belopp att betala"
     },
     "t1": {
       "title": "Ny bokning hos tränare",

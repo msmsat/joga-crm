@@ -101,7 +101,7 @@
     },
     "c11": {
       "title": "Kurs verlegt",
-      "desc": "Zeit, Raum oder Trainer geändert"
+      "desc": "Neue Zeit oder neuer Raum"
     },
     "c12": {
       "title": "Bonus gutgeschrieben",
@@ -110,6 +110,10 @@
     "c13": {
       "title": "Kaffee nach dem Kurs",
       "desc": "Wer aus der Gruppe auf einen Kaffee geht"
+    },
+    "c14": {
+      "title": "Änderungen am Kurs",
+      "desc": "Trainer, Name, Niveau oder offener Betrag"
     },
     "t1": {
       "title": "Neue Buchung beim Trainer",

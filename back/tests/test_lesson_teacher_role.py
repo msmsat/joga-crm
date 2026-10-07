@@ -47,6 +47,11 @@ class _Lesson:
         self.duration_min = 60
         self.total_spots = 8
         self.service_id = 1
+        # Снимок «до» правки (services/lesson_changes.state_of) читает и их.
+        self.price = 0
+        self.level = ""
+        self.equipment = ""
+        self.tz_iana = None
 
 
 class _R:
@@ -146,7 +151,9 @@ def test_create_on_trainer_passes_role_check():
 
 
 def test_update_teacher_to_owner_without_services_rejected():
-    db = _DB([_Studio(), _Lesson(), _row("owner", False)])  # lock_studio, get_scoped_lesson, проверка
+    # lock_studio, get_scoped_lesson, число записанных, правила записи (нет строки —
+    # умолчания), проверка мастера
+    db = _DB([_Studio(), _Lesson(), 0, None, _row("owner", False)])
     _expect_400(L.update_lesson(1, LessonUpdateRequest(teacher_id=2), _ctx(), db), "не мастер")
     assert db.committed is False
 

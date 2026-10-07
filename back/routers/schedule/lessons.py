@@ -7,7 +7,7 @@ from sqlalchemy import case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import async_session_maker, get_db
-from dependencies import get_scoped_lesson, get_studio_context, require_role, StudioContext
+from dependencies import get_scoped_lesson, get_studio_context, StudioContext
 from services import lesson_time, studio_time
 from services.lesson_compensation import calculate_compensation
 from models import (
@@ -21,20 +21,25 @@ from schemas.schedule.lessons import (
 from services import gcal
 from services.booking_access import eligible_subscriptions, trial_eligible
 from services.booking_rules import load_rules
-from services.members import full_name, is_specialist_clause
+from services.members import full_name, is_specialist_clause, member_name
 from services.notifier import lesson_context, notify
-from services import booking, schedule_guard, service_pricing
+from services import booking, lesson_changes, lesson_edit_policy, schedule_guard, service_pricing
 from services.working_hours import assert_within_working_hours
 from services.schedule_guard import lock_studio
 
 logger = logging.getLogger(__name__)
 
 MIN_CREATE_LEAD = timedelta(hours=3)
+# Предел ОТМЕНЫ занятия студией. Когда занятие можно менять — своё правило с
+# фазами и сроком отмены записи: services/lesson_edit_policy.
 MIN_CHANGE_LEAD = timedelta(hours=2)
 
-# Поля, которые занятие НЕ двигают: их правят и у отменённого, и за минуту до
-# начала, и через неделю после. Всё остальное подчиняется окну MIN_CHANGE_LEAD.
-_FREE_FIELDS = {"cancel_reason", "notes", "photos"}
+# Что правится и у отменённого занятия: о нём пишут и после отмены.
+_CANCELLED_FIELDS = {"cancel_reason", "notes", "photos"}
+# Явный null у этих полей значит «убрать» (зал, филиал, причину отмены). У
+# остальных null — дыра в форме, а не просьба стереть название или время:
+# такие значения не применяются вовсе.
+_NULLABLE_FIELDS = {"cancel_reason", "hall_id", "branch_id"}
 
 
 _LESSON_FIELDS = (
@@ -309,6 +314,7 @@ async def get_lesson(
         **lesson_data, "booked_count": booked_count, "booked_clients": list(clients),
         "compensation": compensation,
         "location": await _lesson_location(db, lesson),
+        "cancel_deadline_min": (await load_rules(db, ctx.studio_id)).cancellation_deadline_min,
     })
 
 
@@ -336,12 +342,11 @@ async def _lesson_location(db: AsyncSession, lesson: Lesson) -> dict:
 @router.get("/lessons/{lesson_id}/eligible-clients", response_model=List[EligibleClient])
 async def get_eligible_clients(
     lesson_id: int,
-    # Только владелец и администратор. Список — вся клиентская база студии с
-    # телефонами, а тренер видит лишь своих клиентов (routers/clients/_scope)
-    # и записывать никого не может (POST /schedule/reservations отвечает ему
-    # 403). Открытый тренеру, этот список выдавал бы ему базу целиком через
-    # любое своё занятие.
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    # Тренер записывает клиентов на СВОЁ занятие (get_scoped_lesson ниже), и
+    # выбирать ему есть из кого — но базу с телефонами он не получает: в
+    # Клиентах он видит только своих (routers/clients/_scope), и запись на
+    # занятие не повод выдать ему контакты всех остальных. Ему — имена.
+    ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
 ):
     """Клиенты студии, которых администратор может записать на это занятие, и
@@ -360,7 +365,7 @@ async def get_eligible_clients(
     (`booking.client_price`), а считать их на каждого — запросы на каждого.
     Долг с точной суммой появляется в строке записанного.
 
-    Не своя студия — 404 (get_scoped_lesson), тренер — 403 (require_role).
+    Не своя студия — 404, чужое занятие тренера — 403 (get_scoped_lesson).
     Уже записанные на это занятие (кроме отменённых) в список не попадают.
     """
     lesson = await get_scoped_lesson(lesson_id, ctx, db)
@@ -389,6 +394,7 @@ async def get_eligible_clients(
     rules = await load_rules(db, ctx.studio_id)
     trial = await trial_eligible(db, ids, rules, service_id=lesson.service_id)
 
+    contacts = ctx.role != "trainer"
     eligible = []
     for client in clients:
         sub = subscriptions.get(client.id)
@@ -404,7 +410,7 @@ async def get_eligible_clients(
             id=client.id,
             name=client.name,
             last_name=client.last_name,
-            phone=client.phone,
+            phone=client.phone if contacts else None,
             avatar_color=client.avatar_color,
             funding=funding,
             classes_left=sub.total_classes - sub.used_classes if sub is not None else None,
@@ -739,39 +745,43 @@ async def update_lesson(
     db: AsyncSession = Depends(get_db),
     background_tasks: BackgroundTasks = None,
 ):
-    """Изменить/перенести/растянуть занятие. Меняются только присланные поля.
-    Расписание меняют только владелец и администратор (ТЗ 2.3)."""
-    if ctx.role == "trainer":
-        raise HTTPException(status_code=403, detail="Расписание меняют владелец и администратор")
+    """Изменить занятие — любое поле, в том числе у прошедшего. Меняются только
+    присланные поля.
 
+    Кто: владелец, администратор и тренер — тренер только своё занятие
+    (get_scoped_lesson отвечает ему 403 на чужое). Каждая правка ложится
+    строкой в ленту событий студии: кто, что, было → стало.
+
+    Когда и что из этого следует — services/lesson_edit_policy:
+      до последнего момента для правки (срок отмены записи + 2 ч; у занятия без
+      записанных — 2 ч) меняется всё, записанные получают c11/c14, а их
+      неоплаченные долги идут за новой ценой;
+      от него до конца занятия — только заметка, фото и число мест;
+      после окончания — снова всё, но без уведомлений и без пересчёта денег:
+      это исправление записи о том, что было.
+    """
     # HB-06: замок студии ПЕРВЫМ — до чтения самого занятия, поэтому его не
     # нужно перечитывать отдельно после захвата (первый SELECT уже видит
     # актуальное состояние).
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     lesson = await get_scoped_lesson(lesson_id, ctx, db)
-    fields = body.model_dump(exclude_unset=True)
+    fields = {
+        key: value for key, value in body.model_dump(exclude_unset=True).items()
+        if value is not None or key in _NULLABLE_FIELDS
+    }
 
-    # Отменённое занятие нельзя менять — кроме причины отмены (задача 9,
-    # инфо-вид отменённого занятия): она правится и после отмены.
-    if lesson.status == "cancelled" and set(fields.keys()) - _FREE_FIELDS:
+    # Отменённое занятие нельзя менять — кроме причины отмены и заметки (задача
+    # 9, инфо-вид отменённого занятия): о нём пишут и после отмены.
+    if lesson.status == "cancelled" and set(fields.keys()) - _CANCELLED_FIELDS:
         raise HTTPException(status_code=400, detail="Занятие отменено, изменить его нельзя")
 
-    # Правка полей, которые занятие не двигают, — правило времени не применяется:
-    # заметку о занятии чаще всего и пишут ПОСЛЕ него («пришла с травмой»,
-    # «просила сменить коврик»), а окно в два часа запретило бы ровно это.
-    if set(fields.keys()) - _FREE_FIELDS:
-        now = datetime.now()
-        if lesson.start_time < now + MIN_CHANGE_LEAD:
-            raise HTTPException(
-                status_code=400,
-                detail="Изменять занятие можно не позднее чем за 2 часа до начала",
-            )
-        new_start = fields.get("start_time")
-        if new_start is not None and new_start < now + MIN_CHANGE_LEAD:
-            raise HTTPException(
-                status_code=400,
-                detail="Изменять занятие можно не позднее чем за 2 часа до начала",
-            )
+    booked = await _booked_count(lesson_id, db)
+    rules = await load_rules(db, ctx.studio_id)
+    phase = lesson_edit_policy.check(
+        lesson, fields, booked=booked,
+        cancel_deadline_min=rules.cancellation_deadline_min, studio=studio,
+    )
+    finished = phase is lesson_edit_policy.Phase.FINISHED
 
     if "duration_min" in fields and fields["duration_min"] <= 0:
         raise HTTPException(status_code=400, detail="Конец занятия должен быть позже начала")
@@ -780,7 +790,6 @@ async def update_lesson(
         spots = fields["total_spots"]
         if not 1 <= spots <= 50:
             raise HTTPException(status_code=400, detail="Число мест должно быть от 1 до 50")
-        booked = await _booked_count(lesson_id, db)
         if spots < booked:
             raise HTTPException(
                 status_code=400,
@@ -804,6 +813,9 @@ async def update_lesson(
                 "params": {"service_id": service.id},
             })
 
+    # Снимок «до» — раньше любого присваивания: по нему считается, что
+    # поменялось, и кому об этом сказать.
+    before = await lesson_changes.state_of(db, lesson)
     old_teacher_id = lesson.teacher_id
 
     if "teacher_id" in fields:
@@ -813,7 +825,9 @@ async def update_lesson(
     teacher_changed = "teacher_id" in fields and fields["teacher_id"] != old_teacher_id
 
     if service is not None:
-        lesson.name = service.name
+        # Своё название, присланное тем же запросом, главнее названия услуги.
+        if "name" not in fields:
+            lesson.name = service.name
         # Услугу поменяли — цена едет за ней, если её не прислали явно. Теперь
         # «за ней» означает «за ней У ЭТОГО ТРЕНЕРА»: тренера могли сменить тем
         # же запросом, и цена обязана считаться по итоговому, а не по прежнему.
@@ -827,10 +841,10 @@ async def update_lesson(
         #
         # Но ТОЛЬКО пока на занятие никто не записан. Люди записывались на
         # названную сумму, и продукт не вправе переписать её задним числом —
-        # такую цену владелец правит руками, видя, что именно он меняет.
+        # такую цену правят руками, видя, что именно меняют.
         priced_service = (
             await db.get(Service, lesson.service_id) if lesson.service_id else None)
-        if priced_service is not None and await _booked_count(lesson_id, db) == 0:
+        if priced_service is not None and booked == 0:
             lesson.price = await service_pricing.price_for(
                 db, priced_service, fields["teacher_id"])
 
@@ -893,55 +907,62 @@ async def update_lesson(
         # действовавшей при создании.
         lesson.tz_iana = await _pin_timezone(db, ctx.studio_id, fields["start_time"])
 
-    reschedule_fields = {"start_time", "duration_min", "hall_id"}
-    is_reschedule = reschedule_fields & fields.keys()
-
     for key, value in fields.items():
         setattr(lesson, key, value)
+
+    live = lesson.status != "cancelled"
+    # Цена поменялась ДО занятия — неоплаченные долги записанных идут за ней
+    # (их и предупредят ниже). После занятия деньги уже проведены: правка цены
+    # исправляет отчёты и зарплату, а не чужие платежи задним числом.
+    dues = {}
+    if live and not finished and booked and lesson.price != before.price:
+        dues = await lesson_changes.reprice_debts(db, ctx.studio_id, lesson.id)
+    changes = lesson_changes.diff(before, await lesson_changes.state_of(db, lesson))
+    if changes:
+        await lesson_changes.log_change(
+            db, ctx.studio_id, lesson, changes,
+            actor_name=await member_name(db, ctx.studio_id, ctx.user.id), finished=finished,
+        )
 
     await db.commit()
     await db.refresh(lesson)
 
-    if is_reschedule and lesson.status != "cancelled":
-        # Отменённое занятие «уже не считается» — правки применяем, но никого не
-        # уведомляем (ни клиента c11, ни тренера t5, ни админа a7).
-        # Перенос времени/зала/длительности — уведомляем записанных клиентов (c11).
-        # Образец сбора client_id — cancel_lesson. Второй короткий commit только
-        # clients_notified: notify идёт после основного commit (подводный камень задачи 3).
-        booked_client_ids = (await db.execute(
-            select(Reservation.client_id).where(
-                Reservation.lesson_id == lesson_id, Reservation.status != "cancelled"
-            )
-        )).scalars().all()
-        lesson_ctx = await lesson_context(db, lesson)
-        results = [
-            await notify(db, ctx.studio_id, "client", "c11", {
-                **lesson_ctx, "client_id": client_id,
-            })
-            for client_id in booked_client_ids
-        ]
-        lesson.clients_notified = any(results)
+    # Отменённое занятие «уже не считается», прошедшее — уже состоялось: правки
+    # применяем, но никого не уведомляем (ни клиента, ни тренера t5, ни админа a7).
+    changed = {change["field"] for change in changes}
+    if live and not finished and changes:
+        if booked:
+            sent = await lesson_changes.notify_booked(db, ctx.studio_id, lesson, changes, dues)
+            if sent is not None:
+                lesson.clients_notified = sent
 
-        # t5: тренеру(ам) занятия — зеркало c11, но не клиентам, а тренеру;
-        # если тренер сменился вместе с переносом, уведомляем и старого, и
-        # нового (N-9, задача 6).
-        for trainer_id in {tid for tid in (old_teacher_id, lesson.teacher_id) if tid is not None}:
-            await notify(db, ctx.studio_id, "trainer", "t5", {
-                "trainer_id": trainer_id,
-                "lesson_name": lesson.name,
-                "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
-            })
+        if changed & lesson_changes.MOVE_FIELDS:
+            # t5: тренеру(ам) занятия — зеркало c11, но не клиентам, а тренеру;
+            # если тренер сменился вместе с переносом, уведомляем и старого, и
+            # нового (N-9, задача 6). Себе о своей же правке — незачем.
+            for trainer_id in {tid for tid in (old_teacher_id, lesson.teacher_id) if tid is not None}:
+                if trainer_id == ctx.user.id:
+                    continue
+                await notify(db, ctx.studio_id, "trainer", "t5", {
+                    "trainer_id": trainer_id,
+                    "lesson_name": lesson.name,
+                    "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
+                })
 
-        if not studio.strict_schedule_enabled:
-            # a7: перенос мог столкнуть занятие с другим по тому же тренеру/залу
-            # (легаси-сценарий — под strict конфликт уже отклонён выше).
-            await _notify_schedule_conflict(db, ctx.studio_id, lesson)
+            if not studio.strict_schedule_enabled:
+                # a7: перенос мог столкнуть занятие с другим по тому же тренеру/залу
+                # (легаси-сценарий — под strict конфликт уже отклонён выше).
+                await _notify_schedule_conflict(db, ctx.studio_id, lesson)
 
         await db.commit()
         await db.refresh(lesson)
+
+    if live and changed - {"price", "spots"}:
+        # Календарь Google — запись студии о расписании: исправленное после
+        # занятия в нём тоже должно стать правдой.
         _schedule_gcal_push(background_tasks, ctx.studio_id, lesson.id)
 
-    return _lesson_read(lesson, await _booked_count(lesson_id, db))
+    return _lesson_read(lesson, booked)
 
 
 @router.delete("/lessons/{lesson_id}", status_code=status.HTTP_204_NO_CONTENT)

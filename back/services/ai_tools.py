@@ -95,7 +95,6 @@ from routers.loyalty.packages import (
 from routers.loyalty.promocodes import create_promocode as _r_create_promocode
 from routers.loyalty.segments import list_segments as _r_list_segments
 from routers.schedule.lessons import (
-    MIN_CHANGE_LEAD,
     MIN_CREATE_LEAD,
     create_lesson as _r_create_lesson,
     delete_lesson as _r_delete_lesson,
@@ -170,7 +169,7 @@ from schemas.settings.team import (
 from schemas.staff.staff import StaffProfileResponse, StaffWorkingHoursItem
 from schemas.staff.staff import StaffDayOverrideRequest
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
-from services import service_pricing, studio_time, time_blocks
+from services import lesson_edit_policy, service_pricing, studio_time, time_blocks
 from services.members import STAFF_PALETTE
 from services.contacts import normalize, normalized_column
 from services.working_hours import assert_within_working_hours
@@ -662,12 +661,18 @@ class UpdateLessonArgs(BaseModel):
     service_id: Optional[int] = Field(
         None, description="Новая услуга, если меняют её. Цена поедет за услугой, "
                           "если price не назвали отдельно")
+    name: Optional[str] = Field(
+        None, max_length=150,
+        description="Своё название занятия («Хатха для начинающих»), если его меняют. "
+                    "Без него название едет за услугой")
     teacher_id: Optional[int] = None
     hall_id: Optional[int] = None
     start_time: Optional[LocalDateTime] = Field(None, description="Новое начало, если занятие переносят")
     duration_min: Optional[int] = None
     total_spots: Optional[int] = None
-    price: Optional[int] = None
+    price: Optional[int] = Field(None, ge=0)
+    level: Optional[str] = Field(None, max_length=50, description="Уровень группы, если его меняют")
+    equipment: Optional[str] = Field(None, max_length=50, description="Инвентарь, если его меняют")
 
 
 def _hhmm(value: object) -> str | None:
@@ -1982,11 +1987,12 @@ async def create_lesson(ctx: StudioContext, db: AsyncSession, args: CreateLesson
 
 
 async def _update_lesson_precheck(args: dict, ctx: StudioContext, db: AsyncSession) -> str | None:
-    """Отказы правки занятия, видимые чтением: отменённое и «поздно менять».
+    """Отказы правки занятия, видимые чтением: отменённое и «сейчас менять
+    нельзя» — тем же правилом, что у роутера (services/lesson_edit_policy).
 
-    Правило времени тут не формальность: «поменяй на этой неделе» половиной
-    попадает во вчера, и без этой проверки человек читал бы «Готово: 1 из 3»
-    после того, как уже нажал.
+    Правило времени тут не формальность: «поменяй на этой неделе» частью
+    попадает в занятия, которые уже нельзя менять, и без этой проверки
+    человек читал бы «Готово: 1 из 3» после того, как уже нажал.
     """
     lesson_id = args.get("lesson_id")
     if not isinstance(lesson_id, int) or lesson_id < 0:
@@ -1995,32 +2001,40 @@ async def _update_lesson_precheck(args: dict, ctx: StudioContext, db: AsyncSessi
         lesson = await _r_get_lesson(lesson_id=lesson_id, ctx=ctx, db=db)
     except HTTPException:
         return None                 # «занятия нет» скажет resolve_entities — своими словами
+    label = f"{lesson.name} {lesson.start_time.strftime('%d.%m %H:%M')}"
     if lesson.status == "cancelled":
-        return f"Занятие {lesson.name} {lesson.start_time.strftime('%d.%m %H:%M')} отменено — изменить его нельзя"
-    now = datetime.now()
-    if lesson.start_time < now + MIN_CHANGE_LEAD:
-        return (f"{lesson.name} {lesson.start_time.strftime('%d.%m %H:%M')} — менять занятие можно "
-                f"не позднее чем за 2 часа до начала. Это уже поздно: поставь новое на будущую дату.")
-    new_start = args.get("start_time")
-    if isinstance(new_start, str):
+        return f"Занятие {label} отменено — изменить его нельзя"
+    fields = {key: value for key, value in args.items() if key != "lesson_id" and value is not None}
+    if isinstance(fields.get("start_time"), str):
         try:
-            new_start = _naive(datetime.fromisoformat(new_start))
+            fields["start_time"] = _naive(datetime.fromisoformat(fields["start_time"]))
         except ValueError:
-            new_start = None
-    if isinstance(new_start, datetime) and new_start < now + MIN_CHANGE_LEAD:
-        return "Новое время уже ближе двух часов — занятие переносят не позднее чем за 2 часа до начала"
+            fields.pop("start_time")    # формат разберёт проверка аргументов
+    try:
+        lesson_edit_policy.check(
+            lesson, fields, booked=lesson.booked_count,
+            cancel_deadline_min=lesson.cancel_deadline_min,
+            studio=await db.get(Studio, ctx.studio_id),
+        )
+    except HTTPException as exc:
+        return f"{label} — {_error_text(exc.detail)}"
     return None
 
 
 @tool(
     mutating=True, roles=("owner", "admin"), endpoint="PATCH /schedule/lessons/{lesson_id}",
     precheck=_update_lesson_precheck,
-    summary="Изменить занятие {lesson_id}: услуга {service_id}, тренер {teacher_id}, зал {hall_id}, время {start_time}, {duration_min} мин, мест {total_spots}, цена {price}",
-    effect="Занятие изменится на месте — второго не появится. Перенос времени, зала или "
-           "длительности уведомит записанных клиентов и тренера.",
+    summary="Изменить занятие {lesson_id}: услуга {service_id}, название {name}, тренер {teacher_id}, "
+            "зал {hall_id}, время {start_time}, {duration_min} мин, мест {total_spots}, цена {price}, "
+            "уровень {level}, инвентарь {equipment}",
+    effect="Занятие изменится на месте — второго не появится. Записанным уйдёт уведомление о "
+           "том, что поменялось; неоплаченная сумма пойдёт за новой ценой. У прошедшего "
+           "занятия правка исправляет запись — без уведомлений.",
 )
 async def update_lesson(ctx: StudioContext, db: AsyncSession, args: UpdateLessonArgs) -> dict:
-    """ИЗМЕНИТЬ УЖЕ СТОЯЩЕЕ занятие: другая услуга, тренер, зал, время, цена, мест.
+    """ИЗМЕНИТЬ УЖЕ СТОЯЩЕЕ занятие: другая услуга, название, тренер, зал, время,
+    цена, мест, уровень, инвентарь — в том числе прошедшее («вчера вёл Саша, а не
+    Аня» — это тоже update_lesson).
 
     Это инструмент для слов «поменяй», «замени», «перенеси», «сделай вместо».
     «Поменяй хатху на стретчинг» — это update_lesson на каждое такое занятие
@@ -2028,8 +2042,9 @@ async def update_lesson(ctx: StudioContext, db: AsyncSession, args: UpdateLesson
     поверх старого не встанет — часы у тренера уже заняты, и старое никуда не
     денется. Меняются только те поля, которые назвали.
 
-    Занятие можно менять не позднее чем за 2 часа до начала; отменённое —
-    нельзя вовсе."""
+    Занятие с записанными меняют не позднее чем за срок отмены записи + 2 часа
+    до начала (без записанных — за 2 часа); после окончания — снова можно, но
+    время остаётся в прошлом. Отменённое — нельзя вовсе."""
     lesson = await _r_update_lesson(
         lesson_id=args.lesson_id,
         body=LessonUpdateRequest(**args.model_dump(exclude={"lesson_id"}, exclude_none=True)),

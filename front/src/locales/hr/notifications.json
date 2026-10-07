@@ -107,7 +107,7 @@
     },
     "c11": {
       "title": "Termin je pomaknut",
-      "desc": "Promijenjeno je vrijeme, dvorana ili trener"
+      "desc": "Novo vrijeme ili dvorana"
     },
     "c12": {
       "title": "Bonus je dodijeljen",
@@ -116,6 +116,10 @@
     "c13": {
       "title": "Kava nakon termina",
       "desc": "Tko iz grupe ide na kavu"
+    },
+    "c14": {
+      "title": "Promjene u terminu",
+      "desc": "Trener, naziv, razina ili iznos za plaćanje"
     },
     "t1": {
       "title": "Nova rezervacija kod trenera",

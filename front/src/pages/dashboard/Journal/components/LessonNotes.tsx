@@ -23,9 +23,8 @@ const FLOOR = 9500;
  * блока: окно поверх попапа закрывало собой занятие, ради которого заметку и
  * пишут.
  */
-export function LessonNotes({ booking, canEdit, mutations, onSaved }: {
+export function LessonNotes({ booking, mutations, onSaved }: {
   booking: Booking;
-  canEdit: boolean;
   mutations: ReturnType<typeof useJournalMutations>;
   onSaved: (next: Booking) => void;
 }) {
@@ -63,10 +62,9 @@ export function LessonNotes({ booking, canEdit, mutations, onSaved }: {
     );
   }
 
-  // Пустую заметку показываем только тому, кто может её написать: тренеру
-  // пустая строка «Заметка о занятии» не говорит ничего.
+  // Заметку пишут все, кто видит занятие, — тренер своего тоже: что принести,
+  // что случилось на занятии, он знает лучше всех.
   if (!booking.notes && booking.photos.length === 0) {
-    if (!canEdit) return null;
     return (
       <button
         type="button"
@@ -90,26 +88,24 @@ export function LessonNotes({ booking, canEdit, mutations, onSaved }: {
           <span className="ln-title">
             <Icons.Clipboard /> {t('lessonNotes.title')}
           </span>
-          {canEdit && (
-            <div className="ln-acts">
-              <button
-                className="bp-btn ghost ln-act"
-                title={t('common:buttons.edit')}
-                aria-label={t('common:buttons.edit')}
-                onClick={e => { e.stopPropagation(); setEditing(true); }}
-              >
-                <Icons.Edit />
-              </button>
-              <button
-                className="bp-btn danger ln-act"
-                title={t('common:buttons.delete')}
-                aria-label={t('common:buttons.delete')}
-                onClick={e => { e.stopPropagation(); setRemoving(true); }}
-              >
-                <Icons.Trash />
-              </button>
-            </div>
-          )}
+          <div className="ln-acts">
+            <button
+              className="bp-btn ghost ln-act"
+              title={t('common:buttons.edit')}
+              aria-label={t('common:buttons.edit')}
+              onClick={e => { e.stopPropagation(); setEditing(true); }}
+            >
+              <Icons.Edit />
+            </button>
+            <button
+              className="bp-btn danger ln-act"
+              title={t('common:buttons.delete')}
+              aria-label={t('common:buttons.delete')}
+              onClick={e => { e.stopPropagation(); setRemoving(true); }}
+            >
+              <Icons.Trash />
+            </button>
+          </div>
         </div>
         {/* Длинная заметка не распирает попап: первые четыре строки, дальше —
             по кнопке, целиком и без правки. Прокрутки вбок нет ни при какой

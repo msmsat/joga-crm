@@ -101,7 +101,7 @@
     },
     "c11": {
       "title": "Lezione riprogrammata",
-      "desc": "Cambio di orario, sala o istruttore"
+      "desc": "Nuovo orario o sala"
     },
     "c12": {
       "title": "Bonus accreditato",
@@ -110,6 +110,10 @@
     "c13": {
       "title": "Caffè dopo la lezione",
       "desc": "Chi del gruppo va a prendere un caffè"
+    },
+    "c14": {
+      "title": "Modifiche alla lezione",
+      "desc": "Istruttore, nome, livello o importo da pagare"
     },
     "t1": {
       "title": "Nuova prenotazione con l'istruttore",

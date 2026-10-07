@@ -15,15 +15,19 @@ interface Props {
   timeEnd: number;
   /** Шаг сетки журнала в минутах — на него сдвигают кнопки начала. */
   stepMin: number;
-  /** Раньше этого начала сервер занятие не примет (правило двух часов). */
+  /** Раньше этого начала сервер занятие не примет: ближе последнего момента
+   *  для правки (срок отмены записи + 2 ч, без записанных — 2 ч). */
   earliest: number | null;
+  /** Позже этого конца прошедшее занятие не уедет — оно остаётся в прошлом.
+   *  `null` — без предела; `-Infinity` — в этот день прошлого ещё нет. */
+  latestEnd?: number | null;
   invalid?: boolean;
   onChange: (next: { timeStart: number; timeEnd: number }) => void;
 }
 
 const EPS = 1e-6;
 
-export function TimeControls({ timeStart, timeEnd, stepMin, earliest, invalid = false, onChange }: Props) {
+export function TimeControls({ timeStart, timeEnd, stepMin, earliest, latestEnd = null, invalid = false, onChange }: Props) {
   const { t } = useTranslation('journal');
   const durationLabel = useDurationLabel();
   // На телефоне поле только открывает список: экранная клавиатура вылезла бы
@@ -43,13 +47,14 @@ export function TimeControls({ timeStart, timeEnd, stepMin, earliest, invalid = 
   const duration = timeEnd - timeStart;
   const minutes = Math.round(duration * 60);
   const floor = Math.max(MIN_TIME_INDEX, earliest ?? MIN_TIME_INDEX);
+  const ceiling = Math.min(MAX_TIME_INDEX, latestEnd ?? MAX_TIME_INDEX);
   const earlier = moveStart(timeStart, timeEnd, -step);
   const later = moveStart(timeStart, timeEnd, step);
   const canEarlier = earlier.timeStart < timeStart - EPS && earlier.timeStart >= floor - EPS;
-  const canLater = later.timeStart > timeStart + EPS;
+  const canLater = later.timeStart > timeStart + EPS && later.timeEnd <= ceiling + EPS;
   const longer = resize(timeStart, timeEnd, DURATION_STEP_MIN);
   const canShorten = minutes > MIN_DURATION_MIN;
-  const canLengthen = longer > timeEnd + EPS;
+  const canLengthen = longer > timeEnd + EPS && longer <= ceiling + EPS;
 
   const options = useMemo(() => generateTimeIntervals(stepMin), [stepMin]);
 
@@ -73,7 +78,7 @@ export function TimeControls({ timeStart, timeEnd, stepMin, earliest, invalid = 
   const commitText = (value: string) => {
     setOpen(false);
     const idx = parseTimeToIndex(value);
-    const next = placeStart(timeStart, timeEnd, Math.max(idx, floor));
+    const next = placeStart(timeStart, timeEnd, Math.min(Math.max(idx, floor), ceiling - duration));
     setText(formatIndexToTimeStr(next.timeStart));
     if (Math.abs(next.timeStart - timeStart) > EPS) onChange(next);
   };
@@ -108,9 +113,10 @@ export function TimeControls({ timeStart, timeEnd, stepMin, earliest, invalid = 
               <div className="kp-time-dropdown le-time-list" ref={listRef}>
                 {options.map(option => {
                   const idx = parseTimeToIndex(option);
-                  // Начало, с которого занятие не помещается до 23:00, или раньше
-                  // правила двух часов, — сервер не примет; в списке его нет.
-                  if (idx < floor - EPS || idx + duration > MAX_TIME_INDEX + EPS) return null;
+                  // Начало, с которого занятие не помещается до 23:00, раньше
+                  // последнего момента для правки или (у прошедшего) с концом
+                  // позже «сейчас», — сервер не примет; в списке его нет.
+                  if (idx < floor - EPS || idx + duration > ceiling + EPS) return null;
                   return (
                     <div key={option}
                          className={`kp-time-item${formatIndexToTimeStr(timeStart) === option ? ' active-time-item' : ''}`}

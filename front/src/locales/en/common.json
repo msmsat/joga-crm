@@ -173,7 +173,10 @@
       "not_found": "This block has already been removed",
       "bad_clock": "This time doesn't exist or repeats because of a clock change — pick another one",
       "blocks_lesson": "The class overlaps the employee's studio time (cleaning, meeting) — pick another time"
-    }
+    },
+    "lesson_edit_frozen": "This lesson can no longer be changed — it starts too soon. You can change spots now and everything else after it ends.",
+    "lesson_edit_too_soon": "The new time is too close — pick a later one",
+    "lesson_stays_in_past": "A past lesson stays in the past — it must end before now"
   },
   "units": {
     "min": "min",

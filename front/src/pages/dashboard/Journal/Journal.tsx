@@ -6,7 +6,7 @@ import { useAiEntity } from '../../../hooks/useAiEntity';
 import { useTranslation } from 'react-i18next';
 import './Journal.css';
 import type { Booking } from './types';
-import type { LessonCreate } from '../../../api/schedule/schedule.types';
+import type { LessonCreate, LessonUpdate } from '../../../api/schedule/schedule.types';
 import { scheduleApi } from '../../../api/schedule';
 import { errorMessage } from '../../../api/errorMessage';
 import { indexToDateTime, toDateStr, formatIndexToTimeStr, parseTimeToIndex } from './utils';
@@ -33,7 +33,7 @@ import { Grid } from './components/ScheduleGrid/Grid';
 import { GridSkeleton } from './components/ScheduleGrid/GridSkeleton';
 import { LoadError } from './components/LoadError';
 import { BookingPopup } from './components/BookingPopup';
-import type { LessonDraft } from './components/lesson/editor/editorModel';
+import { EMPTY_DRAFT, type LessonDraft } from './components/lesson/editor/editorModel';
 import { NO_HALL_COLUMN } from './constants';
 import { useServiceOptions } from './hooks/useServiceOptions';
 import { NewBookingModal } from './components/modals/NewBookingModal';
@@ -135,7 +135,7 @@ export default function Journal() {
     return () => window.clearTimeout(timer);
   }, [closingPopup]);
   const shownPopup = popupBooking ?? closingPopup?.booking ?? null;
-  const [editForm, setEditForm] = useState<LessonDraft>({ serviceId: null, title: '', hall: '', maxClients: '8', timeStart: 0, timeEnd: 0, date: '', trainer: 0 });
+  const [editForm, setEditForm] = useState<LessonDraft>(EMPTY_DRAFT);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addModalBooking] = useState<Booking | null>(null);
   const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number; bufferAfter?: number } | null>(null);
@@ -168,7 +168,10 @@ export default function Journal() {
   const [newForm, setNewForm] = useState<NewBookingForm>({ serviceId: null, title: '', hall: '', maxClients: '8', branchId: null });
   const [timeStep, setTimeStep] = useState<number>(15); // 🔥 Шаг времени в минутах (по умолчанию 15)
   // 🔥 СТЕЙТЫ ДЛЯ УМНОГО ВВОДА ВРЕМЕНИ
-  // Владелец и администратор редактируют журнал напрямую; тренер — только просмотр (ТЗ 2.3).
+  // Владелец и администратор ведут журнал целиком: создают и отменяют занятия,
+  // принимают оплату, двигают жестами. Своё занятие (а других он и не видит)
+  // меняет и тренер — окном «Изменить занятие», вместе с его клиентами: это
+  // решает попап, а сервер пускает тренера только к своим (get_scoped_lesson).
   const canEdit = getUserRoleFromToken() !== 'trainer';
 
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -593,8 +596,8 @@ export default function Journal() {
   useGridSwipe(gridWrapperRef, !isTransitioning, stepGrid);
 
   // Diff двух карточек → payload PATCH (общий для forward- и backward-хода правки).
-  const diffPayload = React.useCallback((prev: Booking, next: Booking): Partial<LessonCreate> => {
-    const payload: Partial<LessonCreate> = {};
+  const diffPayload = React.useCallback((prev: Booking, next: Booking): LessonUpdate => {
+    const payload: LessonUpdate = {};
     if (next.date && (next.timeStart !== prev.timeStart || next.date !== prev.date)) {
       payload.start_time = indexToDateTime(next.date, next.timeStart);
     }
@@ -608,6 +611,12 @@ export default function Journal() {
     }
     if (next.serviceId !== prev.serviceId && next.serviceId != null) payload.service_id = next.serviceId;
     if (next.maxClients !== prev.maxClients) payload.total_spots = next.maxClients;
+    // Название, цена, уровень и инвентарь меняет только окно «Изменить занятие»:
+    // у перетаскивания их нет, и в его diff они не попадают.
+    if (next.title.trim() && next.title !== prev.title) payload.name = next.title.trim();
+    if (next.price !== prev.price) payload.price = next.price;
+    if (next.level !== undefined && next.level !== prev.level) payload.level = next.level;
+    if (next.equipment !== undefined && next.equipment !== prev.equipment) payload.equipment = next.equipment;
     return payload;
   }, [halls]);
 

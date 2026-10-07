@@ -101,7 +101,7 @@
     },
     "c11": {
       "title": "Lekce přeložena",
-      "desc": "Změnil se čas, sál nebo trenér"
+      "desc": "Nový čas nebo sál"
     },
     "c12": {
       "title": "Připsán bonus",
@@ -110,6 +110,10 @@
     "c13": {
       "title": "Káva po lekci",
       "desc": "Kdo ze skupiny jde na kávu"
+    },
+    "c14": {
+      "title": "Změny v lekci",
+      "desc": "Lektor, název, úroveň nebo částka k úhradě"
     },
     "t1": {
       "title": "Nová rezervace k trenérovi",

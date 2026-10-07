@@ -104,7 +104,7 @@
     },
     "c11": {
       "title": "Az óra át lett ütemezve",
-      "desc": "Az idő, terem vagy edző megváltozott"
+      "desc": "Új időpont vagy terem"
     },
     "c12": {
       "title": "Bónusz jóváírva",
@@ -113,6 +113,10 @@
     "c13": {
       "title": "Kávé az óra után",
       "desc": "Ki megy a csoportból kávézni"
+    },
+    "c14": {
+      "title": "Változás az órában",
+      "desc": "Edző, név, szint vagy fizetendő összeg"
     },
     "t1": {
       "title": "Új foglalás edzőnél",

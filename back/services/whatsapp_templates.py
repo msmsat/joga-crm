@@ -1,4 +1,4 @@
-"""Шаблоны WhatsApp для всех 40 событий каталога (services/notification_catalog)
+"""Шаблоны WhatsApp для всех 41 события каталога (services/notification_catalog)
 на всех пяти языках продукта — ru, en, uk, cs, de.
 
 ЗАЧЕМ. `_send_whatsapp` шлёт `type: "text"` — свободный текст, который Meta
@@ -88,6 +88,12 @@ def _word(key: str, lang: str) -> str:
     return pick(WORDS[key], lang)
 
 
+def _change_lines(changes, lang: str, currency: str) -> list[str]:
+    from services.notifier import change_lines
+
+    return change_lines(changes, lang, currency)
+
+
 def _when(context: dict, lang: str) -> str:
     # Тот же формат, что в письме и в Telegram («17 августа, 12:00»): человек,
     # получивший подтверждение в WhatsApp, а напоминание на почту, не должен
@@ -125,6 +131,9 @@ _SLOT_VALUE: dict[str, Callable[[dict, str, str], str]] = {
     "period": lambda c, lang, cur: _v(
         " — ".join(p for p in (c.get("period_start"), c.get("period_end")) if p), "—",
     ),
+    # Изменения занятия (c14) одной строкой: параметр шаблона не может содержать
+    # переносов — Meta отклоняет такое сообщение при отправке.
+    "changes": lambda c, lang, cur: _v("; ".join(_change_lines(c.get("changes"), lang, cur)), "—"),
 }
 
 _SAMPLE: dict[str, dict[str, str]] = {
@@ -151,6 +160,9 @@ _SAMPLE: dict[str, dict[str, str]] = {
              "cs": "administrátor", "de": "Administrator"},
     "period": {"ru": "1 — 31 мая", "en": "May 1 — 31", "uk": "1 — 31 травня",
                "cs": "1. — 31. května", "de": "1. — 31. Mai"},
+    "changes": {"ru": "Тренер: Анна → Мария", "en": "Trainer: Anna → Maria",
+                "uk": "Тренер: Ганна → Марія", "cs": "Lektor: Anna → Marie",
+                "de": "Trainer: Anna → Maria"},
 }
 
 
@@ -239,6 +251,23 @@ WA_TEMPLATES: dict[str, WaTemplate] = {
         "de": "🔄 *Kurs verschoben*\n\n"
               "Der Kurs „{{1}}“ findet zu einer anderen Zeit statt.\n🗓 Neuer Beginn: *{{2}}*\n\n"
               "Ihre Buchung bleibt bestehen — sagen Sie ab, falls die Zeit nicht passt.",
+    }),
+    "c14": WaTemplate("UTILITY", ("lesson", "changes"), {
+        "ru": "📝 *Изменения в занятии*\n\n"
+              "В занятии «{{1}}» есть изменения: {{2}}.\n\n"
+              "Ваша запись сохранена — если что-то не подходит, отмените её.",
+        "en": "📝 *Class updated*\n\n"
+              "There are changes to the class “{{1}}”: {{2}}.\n\n"
+              "Your booking is kept — cancel it if something does not work for you.",
+        "uk": "📝 *Зміни в занятті*\n\n"
+              "У занятті «{{1}}» є зміни: {{2}}.\n\n"
+              "Ваш запис збережено — якщо щось не підходить, скасуйте його.",
+        "cs": "📝 *Změny v lekci*\n\n"
+              "V lekci „{{1}}“ došlo ke změnám: {{2}}.\n\n"
+              "Rezervace zůstává — pokud vám něco nevyhovuje, zrušte ji.",
+        "de": "📝 *Änderungen am Kurs*\n\n"
+              "Beim Kurs „{{1}}“ gibt es Änderungen: {{2}}.\n\n"
+              "Ihre Buchung bleibt bestehen — sagen Sie ab, falls etwas nicht passt.",
     }),
     "c5": WaTemplate("UTILITY", ("remaining",), {
         "ru": "⚠️ *Абонемент на исходе*\n\n"

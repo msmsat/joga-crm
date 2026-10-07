@@ -100,7 +100,7 @@ LARGE_PAYMENT = 10_000
 # сверяется с services.notification_catalog.CATALOG (EPIC 3, Задача 1). Новое
 # событие в TEXTS → сразу добавить и сюда, иначе импорт модуля упадёт на assert.
 KNOWN_EVENT_IDS = frozenset({
-    "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13",
+    "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14",
     "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9",
     "a1", "a2", "a3", "a4", "a6", "a7", "a8", "a9", "a10",
     "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9",
@@ -112,6 +112,7 @@ KNOWN_EVENT_IDS = frozenset({
 EVENT_EMOJI: dict[str, str] = {
     "c1": "✅", "c2": "⏰", "c3": "❌", "c4": "💳", "c5": "⚠️", "c6": "🔕",
     "c7": "🎉", "c8": "⭐", "c9": "↩️", "c10": "🧾", "c11": "🔄", "c12": "🎁", "c13": "☕",
+    "c14": "📝",
     "t1": "📅", "t2": "❌", "t3": "⏰", "t4": "⏳", "t5": "🔄", "t6": "💰",
     "t7": "⭐", "t8": "🎂", "t9": "❌",
     "a1": "🌐", "a2": "⚠️", "a3": "👤", "a4": "💳", "a6": "⚠️", "a7": "🔀",
@@ -226,6 +227,41 @@ def when_text(context: dict[str, Any], lang: str) -> str:
     month = _MONTHS.get(lang, _MONTHS["ru"])[at.month - 1]
     day = f"{at.day}." if lang in _DAY_DOT else str(at.day)
     return f"{day} {month}, {at:%H:%M}"
+
+
+def _change_value(field: str, value: Any, lang: str, currency: str) -> str:
+    if value is None or value == "":
+        return "—"
+    if field == "start":
+        return when_text({"start_at": value}, lang)
+    if field == "duration":
+        return pick(notify_texts.MINUTES, lang).format(n=value)
+    if field in ("due", "price"):
+        return _fmt_amount(value, currency)
+    return str(value)
+
+
+def change_lines(changes: Any, lang: str, currency: str) -> list[str]:
+    """Изменения занятия строками «Тренер: Анна → Мария» — для письма, Telegram,
+    WhatsApp (там они склеиваются в одну строку) и ленты событий студии.
+
+    `changes` — список services/lesson_changes.diff: {field, old, new}. Время
+    одного и того же дня пишется коротко («18:00 → 19:00»): дата уже стоит в
+    первой строке сообщения, и повторять её дважды значит прятать главное.
+    """
+    lines = []
+    for change in changes or ():
+        field = change.get("field")
+        labels = notify_texts.CHANGE_LABELS.get(field)
+        if labels is None:
+            continue
+        old, new = change.get("old"), change.get("new")
+        old_text = _change_value(field, old, lang, currency)
+        new_text = _change_value(field, new, lang, currency)
+        if field == "start" and old and new and str(old)[:10] == str(new)[:10]:
+            old_text, new_text = str(old)[11:16], str(new)[11:16]
+        lines.append(f"{pick(labels, lang)}: {old_text} → {new_text}")
+    return lines
 
 
 async def lesson_context(db: AsyncSession, lesson: "Lesson") -> dict[str, Any]:
@@ -434,8 +470,9 @@ async def deliver(
 # События с занятием в календаре: подтверждение и перенос кладут занятие в
 # календарь, отмена — вычёркивает его оттуда (STATUS:CANCELLED по тому же UID).
 # Напоминание (c2) файл не прикладывает: занятие уже в календаре с c1, второй
-# файл создал бы дубль встречи.
-_CALENDAR_EVENTS = {"c1": False, "c11": False, "c3": True}
+# файл создал бы дубль встречи. Изменение занятия (c14) — прикладывает: та же
+# встреча по тому же UID получает новое название, время и место.
+_CALENDAR_EVENTS = {"c1": False, "c11": False, "c14": False, "c3": True}
 
 
 def _calendar_for(event_id: str | None, context: dict[str, Any], studio) -> bytes | None:
@@ -470,7 +507,7 @@ def _event_markup(event_id: str | None, context: dict[str, Any], studio, studio_
 
     Только подтверждение и перенос: у отменённого занятия карточка с маршрутом —
     приглашение съездить зря."""
-    if event_id not in ("c1", "c11") or not context.get("start_at"):
+    if event_id not in ("c1", "c11", "c14") or not context.get("start_at"):
         return ""
     try:
         start = datetime.fromisoformat(str(context["start_at"]))
@@ -630,6 +667,8 @@ def _values(context: dict[str, Any], lang: str, currency: str) -> dict[str, str]
         "bday": (pick(notify_texts.BDAY_NAMED, lang).format(name=client_name) if client_name
                  else pick(notify_texts.BDAY_PLAIN, lang)),
         "spots": pick(notify_texts.SPOTS, lang).format(spots=spots) if spots else "",
+        # Что поменялось в занятии (c14) — строка на изменение.
+        "changes": "\n".join(change_lines(context.get("changes"), lang, currency)) or "—",
         "description": f" {description}" if description else "",
     }
 
@@ -652,7 +691,7 @@ _EXTRA_FACTS: dict[str, tuple[str, ...]] = {
 # выплата, состав группы. Только у них строки текста превращаются в таблицу; на
 # остальных разбор не запускается вовсе, иначе фраза «Отменена: запись к тренеру
 # (18:00) — менее чем за 2 часа» стала бы строкой таблицы.
-_LIST_EVENTS = frozenset({"t4", "t6", "a8", "o1", "o2", "o4", "c13"})
+_LIST_EVENTS = frozenset({"t4", "t6", "a8", "o1", "o2", "o4", "c13", "c14"})
 
 # Даже внутри перечисления первая строка бывает фразой («Вы собирались на кофе —
 # вас 3: Анна, Ольга»), поэтому ярлык и значение ограничены длиной: факт короток

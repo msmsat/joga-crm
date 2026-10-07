@@ -173,7 +173,10 @@
       "not_found": "Ky bllok është hequr tashmë",
       "bad_clock": "Kjo orë nuk ekziston ose përsëritet për shkak të ndërrimit të orës — zgjidhni një tjetër",
       "blocks_lesson": "Seanca përputhet me kohën e studios së punonjësit (pastrim, mbledhje) — zgjidhni një orë tjetër"
-    }
+    },
+    "lesson_edit_frozen": "Klasa nuk mund të ndryshohet më — fillon shumë shpejt. Tani vetëm vendet, pjesa tjetër pas përfundimit.",
+    "lesson_edit_too_soon": "Ora e re është shumë afër — zgjidhni një më vonë",
+    "lesson_stays_in_past": "Një klasë e kaluar mbetet në të kaluarën — duhet të mbarojë para tani"
   },
   "units": {
     "min": "min",

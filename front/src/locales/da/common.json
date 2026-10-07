@@ -173,7 +173,10 @@
       "not_found": "Denne blok er allerede fjernet",
       "bad_clock": "Dette tidspunkt findes ikke eller gentages pga. tidsomstilling — vælg et andet",
       "blocks_lesson": "Holdet overlapper medarbejderens studietid (rengøring, møde) — vælg et andet tidspunkt"
-    }
+    },
+    "lesson_edit_frozen": "Klassen kan ikke længere ændres — den starter for snart. Nu kun pladserne, resten efter afslutning.",
+    "lesson_edit_too_soon": "Det nye tidspunkt er for tæt på — vælg et senere",
+    "lesson_stays_in_past": "En afsluttet klasse forbliver i fortiden — den skal slutte før nu"
   },
   "units": {
     "min": "min",

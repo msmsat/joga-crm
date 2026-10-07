@@ -174,6 +174,10 @@ class LessonDetail(LessonRead):
     compensation: Optional[LessonCompensation] = None
     booked_clients: List[BookedClient] = Field(default_factory=list)
     location: Optional[LessonLocation] = None
+    # Срок отмены записи по правилам студии, минуты. Окно правки считает по нему
+    # последний момент для изменений заранее (services/lesson_edit_policy):
+    # срок + 2 часа, если на занятие кто-то записан.
+    cancel_deadline_min: int = 240
 
 
 class EligibleClient(BaseSchema):
@@ -239,20 +243,40 @@ class LessonCreateRequest(BaseSchema):
 
 class LessonUpdateRequest(BaseSchema):
     """Тело PATCH /schedule/lessons/{id}. Все поля опциональны — меняем только
-    присланные (см. exclude_unset). teacher_name пересчитываем из teacher_id,
-    name — из service_id."""
+    присланные (см. exclude_unset). teacher_name пересчитываем из teacher_id;
+    name — из service_id, если своего названия не прислали. Когда что можно
+    менять — services/lesson_edit_policy."""
     service_id: Optional[int] = None
+    # Своё название занятия («Хатха для начинающих»). Без него название едет
+    # за услугой, как и раньше.
+    name: Optional[str] = Field(None, max_length=150)
     teacher_id: Optional[int] = None
     hall_id: Optional[int] = None
     branch_id: Optional[int] = None
     start_time: Optional[datetime] = None
     duration_min: Optional[int] = None
     total_spots: Optional[int] = None
-    price: Optional[int] = None
+    price: Optional[int] = Field(None, ge=0)
+    level: Optional[str] = Field(None, max_length=50)
+    equipment: Optional[str] = Field(None, max_length=50)
     cancel_reason: Optional[str] = None
     notes: Optional[str] = None
     # None — «фото не трогать»: правка одного текста не должна стирать снимки.
     photos: Optional[NotePhotos] = None
+
+    @model_validator(mode="after")
+    def _strip_texts(self):
+        """Название без пробелов по краям и не пустое: занятие без названия
+        в сетке и в уведомлении выглядело бы сбоем."""
+        if self.name is not None:
+            self.name = self.name.strip()
+            if not self.name:
+                raise ValueError("Название занятия не может быть пустым")
+        for field in ("level", "equipment"):
+            value = getattr(self, field)
+            if value is not None:
+                setattr(self, field, value.strip())
+        return self
 
 
 class LessonCancelRequest(BaseSchema):

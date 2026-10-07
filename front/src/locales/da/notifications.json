@@ -104,7 +104,7 @@
     },
     "c11": {
       "title": "Klasse flyttet",
-      "desc": "Tid, lokale eller træner ændret"
+      "desc": "Nyt tidspunkt eller lokale"
     },
     "c12": {
       "title": "Bonus tildelt",
@@ -113,6 +113,10 @@
     "c13": {
       "title": "Kaffe efter klassen",
       "desc": "Hvem fra gruppen tager med på kaffe"
+    },
+    "c14": {
+      "title": "Ændringer i klassen",
+      "desc": "Træner, navn, niveau eller beløb at betale"
     },
     "t1": {
       "title": "Ny booking hos træner",

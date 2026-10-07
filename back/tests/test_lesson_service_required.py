@@ -55,6 +55,8 @@ class _Lesson:
         # Статус записи-источника при переносе (Bumpix) — поле модели,
         # уходит в ответ _lesson_read, фейк обязан его нести.
         self.source_status = None
+        # Отменённое и убранное из сетки — поле модели, уходит в ответ.
+        self.hidden_at = None
 
 
 class _Service:
@@ -135,6 +137,9 @@ class _DB:
 
     async def execute(self, _q):
         return _R(self._seq.pop(0))
+
+    async def get(self, *_args, **_kwargs):
+        return None
 
 
 def _ctx(role="owner"):
@@ -234,9 +239,11 @@ def test_update_service_id_recomputes_name():
     db = _DB([
         _Studio(),                      # lock_studio
         lesson,                        # get_scoped_lesson
+        0,                              # записанные — нет
+        None,                           # правила записи — умолчания
         _Service(id=2, name="Стретчинг", price=2000),  # _service_in_studio
         None,                           # своя цена новой услуги у тренера — нет
-        0,                              # финальный _booked_count
+        [],                             # автор правки для ленты событий
     ])
     body = LessonUpdateRequest(service_id=2)
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
@@ -248,7 +255,7 @@ def test_update_service_id_recomputes_name():
 
 def test_update_service_not_in_studio_404():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), service_id=1)
-    db = _DB([_Studio(), lesson, None])  # lock_studio, get_scoped_lesson, service не найдена
+    db = _DB([_Studio(), lesson, 0, None, None])  # lock_studio, get_scoped_lesson, записанные, правила, service не найдена
     body = LessonUpdateRequest(service_id=99)
     try:
         asyncio.run(L.update_lesson(1, body, _ctx(), db))

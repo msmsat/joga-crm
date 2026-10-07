@@ -25,7 +25,10 @@ import './lessonCard.css';
 
 interface Props {
   clients: BookedClient[];
-  canEdit: boolean;
+  /** Принимать и менять оплату — владелец и администратор: тренер кассу не
+   *  ведёт. Подтвердить, отметить и снять клиента может и тренер (своё
+   *  занятие — других он в журнале не видит). */
+  canPay: boolean;
   /** Снять человека с занятия (групповое). У индивидуальной записи — нет. */
   removable: boolean;
   /** Занятие началось: неотмеченный уже считается пришедшим, а отметка
@@ -50,7 +53,7 @@ const CHANNELS = new Set(['online', 'telegram', 'web', 'miniapp']);
 const initials = (c: BookedClient) =>
   [c.name, c.last_name].filter(Boolean).map(n => n![0]).join('').toUpperCase();
 
-export function BookedClients({ clients, canEdit, removable, started, currency, price, lessonLabel, mutations, patch, reload, showToast, onPeek, onRemove }: Props) {
+export function BookedClients({ clients, canPay, removable, started, currency, price, lessonLabel, mutations, patch, reload, showToast, onPeek, onRemove }: Props) {
   const { t } = useTranslation('journal');
   const toast = useToast();
   // Кому сейчас принимаем оплату.
@@ -144,22 +147,20 @@ export function BookedClients({ clients, canEdit, removable, started, currency, 
 
               <div className="lc-person-actions">
                 {c.status === 'pending' ? (
-                  canEdit && (
-                    <button type="button" className="lc-act is-peach" title={t('bookingPopup.confirmBooking')}
-                            aria-label={t('bookingPopup.confirmBooking')}
-                            onClick={e => { e.stopPropagation(); confirm(c); }}>
-                      <Icons.Check />
-                    </button>
-                  )
+                  <button type="button" className="lc-act is-peach" title={t('bookingPopup.confirmBooking')}
+                          aria-label={t('bookingPopup.confirmBooking')}
+                          onClick={e => { e.stopPropagation(); confirm(c); }}>
+                    <Icons.Check />
+                  </button>
                 ) : (
                   <>
-                    <PayMark client={c} canPay={canEdit} onPay={() => setPaying(c)}
-                             onReview={canEdit && paymentChangeable(c) ? () => setReviewing(c) : undefined} />
+                    <PayMark client={c} canPay={canPay} onPay={() => setPaying(c)}
+                             onReview={canPay && paymentChangeable(c) ? () => setReviewing(c) : undefined} />
                     <AttendMark state={attendanceOf(c, started)} started={started}
-                                onSet={canEdit ? attended => mark(c, attended) : undefined} />
+                                onSet={attended => mark(c, attended)} />
                   </>
                 )}
-                {canEdit && (removable || c.status === 'pending') && (
+                {(removable || c.status === 'pending') && (
                   <button type="button" className="lc-act is-quiet"
                           title={c.status === 'pending' ? t('bookingPopup.rejectBooking') : t('bookingPopup.removeFromLesson')}
                           aria-label={c.status === 'pending' ? t('bookingPopup.rejectBooking') : t('bookingPopup.removeFromLesson')}

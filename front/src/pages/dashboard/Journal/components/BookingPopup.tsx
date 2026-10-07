@@ -23,7 +23,7 @@ import { EligibleClientRow } from './lesson/EligibleClientRow';
 import { EditorConsequence, LessonEditor } from './lesson/LessonEditor';
 import { PurgeLesson } from './lesson/PurgeLesson';
 import { useLessonEditor } from './lesson/editor/useLessonEditor';
-import type { LessonDraft } from './lesson/editor/editorModel';
+import { DEFAULT_CANCEL_DEADLINE_MIN, draftOf, type LessonDraft } from './lesson/editor/editorModel';
 import type { useJournalMutations } from '../hooks/useJournalMutations';
 import type { HistoryEntry } from '../hooks/useUndoHistory';
 import { useToast, ConfirmModal, QrShareModal } from '../../../../components/ui/index';
@@ -50,6 +50,8 @@ interface BookingPopupProps {
   /** Попап уже закрыт и доигрывает уход. Он не перерисовывается вовсе (см.
    *  memo ниже), класс ухода и гашение кликов вешает Journal прямо в DOM. */
   leaving?: boolean;
+  /** Владелец и администратор: создать, отменить, принять оплату. Правка
+   *  занятия и его клиентов открыта и тренеру — он видит только свои. */
   canEdit: boolean;
   timeStep: number;
   setPopupBooking: (b: Booking | null) => void;
@@ -100,9 +102,24 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
   const isCancelled = popupBooking.status === 'cancelled';
   const isResource = popupBooking.bookingMode === 'resource';
 
+  // Полные данные занятия: записанные (с оплатой и отзывами), адрес, уровень,
+  // инвентарь. lessonId в состоянии переживает смену занятия без reset-эффекта.
+  // Подтянутое заранее (наведение или касание карточки, useLessonDetail) берём
+  // с первого кадра: попап открывается сразу целиком, а не дорастает на глазах.
+  const qc = useQueryClient();
+  const [loaded, setLoaded] = useState<{ lessonId: number; detail: LessonDetail | null; clients: BookedClient[] } | null>(() => {
+    const cached = cachedLessonDetail(qc, popupBooking);
+    return cached ? { lessonId: popupBooking.id, detail: cached, clients: cached.booked_clients } : null;
+  });
+  const current = loaded?.lessonId === popupBooking.id ? loaded : null;
+  const bookedClients = current?.clients ?? null;
+  const detail = current?.detail ?? null;
+
   // Правка занятия: черновик живёт в Journal (сетка рисует его живьём), здесь —
-  // что в нём изменилось, что неверно и идёт ли сохранение.
-  const editor = useLessonEditor(popupBooking, editForm);
+  // в какой фазе занятие, что изменилось, что неверно и идёт ли сохранение.
+  // Срок отмены записи приходит с деталями; до них — умолчание правил записи.
+  const editor = useLessonEditor(
+    popupBooking, editForm, detail?.cancel_deadline_min ?? DEFAULT_CANCEL_DEADLINE_MIN);
   const [savingEdit, setSavingEdit] = useState(false);
   const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
   const [showQr, setShowQr] = useState(false);
@@ -148,7 +165,21 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
   // Подпись занятия в окне оплаты: «Хатха · 10:00».
   const lessonLabel = `${popupBooking.title} · ${formatIndexToTimeStr(popupBooking.timeStart)}`;
 
-  const { services, options: serviceOptions } = useServiceOptions();
+  const { services, options: serviceOptions, priceFor } = useServiceOptions();
+
+  // Цена в окне едет за услугой и тренером ровно так, как на сервере
+  // (update_lesson): новая услуга — её цена у итогового тренера; тот же
+  // тренер и услуга — прежняя цена; смена одного тренера пересчитывает цену,
+  // только пока никто не записан. Набранную руками цену не трогаем.
+  const autoPrice = (f: LessonDraft, serviceId: number | null, trainer: number) => {
+    if (f.priceEdited) return f.price;
+    const sameService = serviceId === popupBooking.serviceId;
+    if (sameService && (trainer === popupBooking.trainer || popupBooking.clients > 0)) {
+      return String(popupBooking.price);
+    }
+    const price = priceFor(serviceId, trainer);
+    return price != null ? String(price) : f.price;
+  };
 
   const handleServiceChange = (value: string) => {
     if (value === CREATE_SERVICE_OPTION) {
@@ -157,17 +188,24 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
     }
     const service = services.find(s => String(s.id) === value);
     if (!service) return;
-    setEditForm(f => ({ ...f, serviceId: service.id, title: service.name }));
+    setEditForm(f => {
+      // Название едет за услугой, пока его не переписали руками.
+      const previous = services.find(s => s.id === f.serviceId)?.name;
+      const followsService = f.title.trim() === popupBooking.title || f.title === previous;
+      return {
+        ...f,
+        serviceId: service.id,
+        title: followsService ? service.name : f.title,
+        price: autoPrice(f, service.id, f.trainer),
+      };
+    });
   };
 
+  const handleTrainerChange = (trainer: number) =>
+    setEditForm(f => ({ ...f, trainer, price: autoPrice(f, f.serviceId, trainer) }));
+
   const startEditing = () => {
-    setEditForm({
-      serviceId: popupBooking.serviceId,
-      title: popupBooking.title, hall: popupBooking.hall,
-      maxClients: String(popupBooking.maxClients),
-      timeStart: popupBooking.timeStart, timeEnd: popupBooking.timeEnd,
-      date: popupBooking.date ?? '', trainer: popupBooking.trainer,
-    });
+    setEditForm(draftOf(popupBooking));
     setIsEditingBooking(true);
   };
 
@@ -179,7 +217,10 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
     if (!editor.canSave || savingEdit) return;
     const next: Booking = {
       ...popupBooking,
-      title: editForm.title,
+      title: editForm.title.trim(),
+      price: Number(editForm.price),
+      level: editForm.level.trim(),
+      equipment: editForm.equipment.trim(),
       hall: editForm.hall,
       maxClients: Number(editForm.maxClients),
       timeStart: editForm.timeStart,
@@ -202,18 +243,6 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
     }
   };
 
-  // Полные данные занятия: записанные (с оплатой и отзывами), адрес, уровень,
-  // инвентарь. lessonId в состоянии переживает смену занятия без reset-эффекта.
-  // Подтянутое заранее (наведение или касание карточки, useLessonDetail) берём
-  // с первого кадра: попап открывается сразу целиком, а не дорастает на глазах.
-  const qc = useQueryClient();
-  const [loaded, setLoaded] = useState<{ lessonId: number; detail: LessonDetail | null; clients: BookedClient[] } | null>(() => {
-    const cached = cachedLessonDetail(qc, popupBooking);
-    return cached ? { lessonId: popupBooking.id, detail: cached, clients: cached.booked_clients } : null;
-  });
-  const current = loaded?.lessonId === popupBooking.id ? loaded : null;
-  const bookedClients = current?.clients ?? null;
-  const detail = current?.detail ?? null;
 
   // fresh — мимо кэша: после оплаты, отметки, записи данные уже другие.
   const loadLesson = (stale: () => boolean = () => false, fresh = true) =>
@@ -456,8 +485,10 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
             halls={halls}
             showHalls={spaceIsAxis !== false}
             timeStep={timeStep}
+            currency={currency}
             serviceOptions={serviceOptions}
             onServiceChange={handleServiceChange}
+            onTrainerChange={handleTrainerChange}
           />
           
         /* ОБЫЧНЫЙ РЕЖИМ ПРОСМОТРА: всё о занятии, заметка, записанные */
@@ -470,7 +501,6 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
                 а не про конкретного человека. */}
             <LessonNotes
               booking={popupBooking}
-              canEdit={canEdit}
               mutations={mutations}
               onSaved={setPopupBooking}
             />
@@ -485,7 +515,7 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
             {bookedClients && bookedClients.length > 0 && (
               <BookedClients
                 clients={bookedClients}
-                canEdit={canEdit}
+                canPay={canEdit}
                 removable={!isResource}
                 started={isLessonStarted(popupBooking)}
                 currency={currency}
@@ -557,7 +587,9 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
           </>
         ) : (
           <>
-            {canEdit && !isResource && (
+            {/* Записать клиента и изменить занятие может и тренер — своё
+                занятие (сервер пускает его только к своим). */}
+            {!isResource && (
               <>
                 <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); setIsAddingClient(true); }}>
                   <Icons.UserPlus /> {t('bookingPopup.add')}

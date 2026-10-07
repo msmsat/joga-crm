@@ -173,7 +173,10 @@
       "not_found": "Ezt a blokkot már eltávolították",
       "bad_clock": "Ez az időpont nem létezik vagy az óraátállítás miatt ismétlődik — válasszon másikat",
       "blocks_lesson": "Az óra ütközik a munkatárs stúdióidejével (takarítás, megbeszélés) — válasszon másik időpontot"
-    }
+    },
+    "lesson_edit_frozen": "Az óra már nem módosítható — túl hamar kezdődik. Most csak a helyek, a többi a végén.",
+    "lesson_edit_too_soon": "Az új időpont túl közel van — válasszon későbbit",
+    "lesson_stays_in_past": "A lezajlott óra a múltban marad — korábban kell véget érnie, mint most"
   },
   "units": {
     "min": "perc",

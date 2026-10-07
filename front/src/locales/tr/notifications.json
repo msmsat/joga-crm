@@ -104,7 +104,7 @@
     },
     "c11": {
       "title": "Ders yeniden planlandı",
-      "desc": "Saat, salon veya eğitmen değişti"
+      "desc": "Yeni saat veya salon"
     },
     "c12": {
       "title": "Bonus eklendi",
@@ -113,6 +113,10 @@
     "c13": {
       "title": "Dersten sonra kahve",
       "desc": "Gruptan kimin kahveye gittiği"
+    },
+    "c14": {
+      "title": "Derste değişiklik",
+      "desc": "Eğitmen, ad, seviye veya ödenecek tutar"
     },
     "t1": {
       "title": "Eğitmende yeni rezervasyon",

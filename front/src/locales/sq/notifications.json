@@ -104,7 +104,7 @@
     },
     "c11": {
       "title": "Klasa u ricaktua",
-      "desc": "Ora, salla ose trajneri ndryshoi"
+      "desc": "Orë ose sallë e re"
     },
     "c12": {
       "title": "Bonusi u shtua",
@@ -113,6 +113,10 @@
     "c13": {
       "title": "Kafe pas klasës",
       "desc": "Kush nga grupi shkon për kafe"
+    },
+    "c14": {
+      "title": "Ndryshime në klasë",
+      "desc": "Trajner, emër, nivel ose shumë për t'u paguar"
     },
     "t1": {
       "title": "Rezervim i ri te trajneri",

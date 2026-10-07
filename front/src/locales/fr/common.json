@@ -173,7 +173,10 @@
       "not_found": "Ce créneau a déjà été retiré",
       "bad_clock": "Cette heure n’existe pas ou se répète à cause du changement d’heure — choisissez-en une autre",
       "blocks_lesson": "Le cours chevauche le temps studio de l’employé (ménage, réunion) — choisissez une autre heure"
-    }
+    },
+    "lesson_edit_frozen": "Le cours ne peut plus être modifié : il commence trop tôt. Maintenant, seules les places ; le reste après la fin.",
+    "lesson_edit_too_soon": "Le nouvel horaire est trop proche : choisissez plus tard",
+    "lesson_stays_in_past": "Un cours passé reste dans le passé : il doit se terminer avant maintenant"
   },
   "units": {
     "min": "min",

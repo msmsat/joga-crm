@@ -85,6 +85,9 @@ def test_lesson_detail_exposes_estimate_only_to_owner(monkeypatch):
                 'debt': 125, 'paid_amount': 0}]
     monkeypatch.setattr(lessons, 'get_scoped_lesson', AsyncMock(return_value=lesson))
     monkeypatch.setattr(lessons, '_lesson_location', AsyncMock(return_value={}))
+    # Срок отмены записи для окна правки — отдельный загрузчик правил, к условиям
+    # оплаты тренера отношения не имеет.
+    monkeypatch.setattr(lessons, 'load_rules', AsyncMock(return_value=SimpleNamespace(cancellation_deadline_min=240)))
 
     class Result:
         def __init__(self, value): self.value = value

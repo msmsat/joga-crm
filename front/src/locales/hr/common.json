@@ -173,7 +173,10 @@
       "not_found": "Ovaj blok je već uklonjen",
       "bad_clock": "Ovo vrijeme ne postoji ili se ponavlja zbog pomicanja sata — odaberite drugo",
       "blocks_lesson": "Termin se preklapa s vremenom studija zaposlenika (čišćenje, sastanak) — odaberite drugo vrijeme"
-    }
+    },
+    "lesson_edit_frozen": "Termin se više ne može mijenjati — počinje prerano. Sada samo mjesta, ostalo nakon završetka.",
+    "lesson_edit_too_soon": "Novo vrijeme je preblizu — odaberite kasnije",
+    "lesson_stays_in_past": "Prošli termin ostaje u prošlosti — mora završiti prije sadašnjeg trenutka"
   },
   "units": {
     "min": "min",
