@@ -606,6 +606,8 @@
   "pastLessons": {
     "title": "Aiemmat tunnit",
     "empty": "Ei vielä tunteja — tämä on ensimmäinen",
-    "more": "Näytä {{n}} lisää"
+    "more": "Näytä {{n}} lisää",
+    "repeat": "Toista",
+    "repeatHint": "Napauta tuntia, niin varaamme saman uudelleen"
   }
 }

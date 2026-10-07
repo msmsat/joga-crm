@@ -610,6 +610,8 @@
   "pastLessons": {
     "title": "Prošli termini",
     "empty": "Još nema termina — ovo će biti prvi",
-    "more": "Prikaži još {{n}}"
+    "more": "Prikaži još {{n}}",
+    "repeat": "Ponovi",
+    "repeatHint": "Dodirnite termin — zakazat ćemo isto"
   }
 }

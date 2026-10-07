@@ -127,6 +127,10 @@ export function useBookingWizard(o: WizardOptions) {
   const settle = useWizardSettle(resource, client?.id ?? null);
   /** Клиент, заведённый прямо в мастере: стоит первым в списке, пока открыт мастер. */
   const [fresh, setFresh] = useState<{ id: number; name: string; hint?: string } | null>(null);
+  /** Повторили прошлое занятие клиента («Записать так же»): запись затеяна
+      ради этого человека — как из его карточки, клиент у неё обязателен. */
+  const [repeated, setRepeated] = useState(false);
+  const personal = o.clientId != null || repeated;
   const [service, setServiceState] = useState<ServiceRead | null>(null);
   /** «Индивидуальное»: групповая услуга занятием на одного клиента. */
   const [solo, setSolo] = useState(false);
@@ -197,7 +201,7 @@ export function useBookingWizard(o: WizardOptions) {
   const availability = useWizardAvailability({
     services: serviceList, trainers, date, time, lessons: dayLessons, lessonsReady: lessonsReady && !lessonsLoading,
     // Индивидуальное в стоящую группу не встаёт: её время для него занято.
-    joinable: o.clientId != null && !solo,
+    joinable: personal && !solo,
     notBefore: date < toDateStr(now) ? 1440 : isToday ? nowMin : null,
     serviceId: service?.id ?? null, teacherId: masterChosen ? teacherId : null, step: timeStep,
   });
@@ -212,9 +216,10 @@ export function useBookingWizard(o: WizardOptions) {
       индивидуальных нет вовсе (студия пилатеса), клиента нет с самого начала;
       пока каталог грузится — раздел на месте, чтобы не мигал. */
   const noResource = servicesReady && staffReady && !serviceList.some(s => s.booking_mode === 'resource');
-  /** Без клиента записать нельзя: индивидуальная услуга или карточка клиента. */
+  /** Без клиента записать нельзя: индивидуальная услуга, карточка клиента
+      или повтор его прошлого занятия. */
   const requiresClientFor = (s: ServiceRead | null) =>
-    o.clientId != null || (s ? s.booking_mode === 'resource' : !noResource);
+    personal || (s ? s.booking_mode === 'resource' : !noResource);
   /** Раздел «Клиент» есть: обязательный — или необязательный у «Индивидуального». */
   const needsClientFor = (s: ServiceRead | null) => requiresClientFor(s) || solo;
   const stepsFor = (v: Snapshot) => needsClientFor(v.service) ? ALL_STEPS : ALL_STEPS.filter(s => s !== CLIENT_STEP);
@@ -340,6 +345,47 @@ export function useBookingWizard(o: WizardOptions) {
     if (at) { setTimeState(at); o.onDateChange?.(date); }
     setMasterChosen(true);
     goTo(nextAfter(MASTER_STEP, { ...current, time: at ?? time, masterChosen: true }));
+  };
+
+  /** Услугу прошлого занятия можно повторить, если её записывает этот мастер. */
+  const canRepeat = (serviceId: number) => serviceList.some(s => s.id === serviceId);
+  /**
+   * «Записать так же» из истории клиента: этот клиент, услуга того занятия,
+   * его мастер (если он её всё ещё ведёт) и время дня — в выбранный день.
+   * Дальше — итог, а если мастера или времени не хватает, их раздел. Групповое
+   * занятие ведёт себя как запись из карточки клиента: человек встаёт в уже
+   * стоящую группу в это время, иначе для него ставится новое занятие.
+   */
+  const repeat = (who: { id: number; name: string }, past: { serviceId: number; teacherId: number | null; time: string | null }) => {
+    const s = serviceList.find(item => item.id === past.serviceId);
+    if (!s) return;
+    const keep = past.teacherId != null && (s.booking_mode === 'resource'
+      ? !!resourceStaff?.staff.some(m => m.teacher_id === past.teacherId && m.service_ids.includes(s.id))
+      : trainers.some(tr => tr.id === past.teacherId)
+        && (s.masters.length === 0 || s.masters.some(m => m.user_id === past.teacherId)));
+    const master = keep ? past.teacherId : null;
+    autoPicked.current = null;
+    setBranchPicked(false);
+    setRepeated(true);
+    setClientState(who);
+    resource.setClient(who.id);
+    setServiceState(s);
+    if (s.booking_mode === 'resource') resource.setServiceId(s.id);
+    setTeacherState(master);
+    setMasterChosen(keep);
+    resource.setTeacherId(master);
+    // Время того занятия уже прошло сегодня — спрашивает то же окно, что и
+    // тап по прошедшей клетке («тот же час впереди или своё время»).
+    const wanted = past.time != null && isTime(past.time) ? past.time : null;
+    const gone = wanted != null && isPastSlot(date, wanted);
+    const at = wanted != null && !gone ? wanted : time;
+    if (gone) setPastAsk(nextSameTime(wanted));
+    else if (at !== time) { setTimeState(at); o.onDateChange?.(date); }
+    if (s.booking_mode === 'resource') {
+      const branch = availability.branchFor(s.id, master, at);
+      if (branch != null) resource.setBranchId(branch);
+    }
+    goTo(!isTime(at) && !gone ? TIME_STEP : !keep ? MASTER_STEP : SUMMARY_STEP);
   };
 
   // ── Выбранный мастер в названное время ────────────────────────────────────
@@ -524,6 +570,7 @@ export function useBookingWizard(o: WizardOptions) {
     saving: saving || resource.saving,
     dayLessons, lessonsReady: lessonsReady && !lessonsLoading, notBefore: isToday ? nowMin : null,
     pickClient, clearClient, addFreshClient, pickService, pickMaster, setWhen, pickTime, submit, pastAsk, acceptPast, choosePastOwn,
+    canRepeat, repeat,
     notes, setNotes, notePhotos, notePending, settle,
   };
 }

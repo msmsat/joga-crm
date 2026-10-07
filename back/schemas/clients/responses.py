@@ -1,6 +1,7 @@
 from typing import List, Literal, Optional
 
 from schemas._base import BaseSchema
+from schemas.schedule.lessons import PaymentBreakdown
 
 
 class ActiveSubscriptionOut(BaseSchema):
@@ -100,6 +101,24 @@ class ClientProfileOut(ClientListItemOut):
     notes: List[NoteOut] = []
 
 
+class EventFundingOut(BaseSchema):
+    """Как записан и чем закрыт визит — те же поля, что у строки записанного
+    в Журнале (schedule.BookedClient): по ним история клиента показывает цену
+    со скидкой и итог. Разбирает их фронт одним правилом (lesson/funding.ts)."""
+    price: int = 0
+    is_trial: bool = False
+    trial_discount_percent: Optional[int] = None
+    trial_discount_amount: Optional[int] = None
+    manual_discount_percent: Optional[int] = None
+    by_subscription: bool = False
+    subscription_name: Optional[str] = None
+    # Непогашенный долг «оплата на месте» и уже погашенный — сумма платежа брони.
+    debt: int = 0
+    paid_amount: int = 0
+    # Снимок кассы на момент оплаты: прайс, скидки, баллы, сертификат, итог.
+    payment: Optional[PaymentBreakdown] = None
+
+
 class EventRecordOut(BaseSchema):
     # Main display date. Booking/visit use the lesson's studio wall clock.
     date: Optional[str] = None
@@ -119,6 +138,13 @@ class EventRecordOut(BaseSchema):
     paid: Optional[str] = None
     amount: Optional[str] = None
     lesson_id: Optional[int] = None
+    # Какой услугой и у кого было занятие: «Записать так же» в истории клиента
+    # (Журнал) подставляет их в новую запись. Имена выше — для показа, по ним
+    # услугу и мастера не найти: их переименовывают.
+    service_id: Optional[int] = None
+    teacher_id: Optional[int] = None
+    # Только у записей на занятие: цена, скидки, итог и чем закрыт визит.
+    funding: Optional[EventFundingOut] = None
     notes: Optional[str] = None
     photos: List[str] = []
     status: Optional[str] = None

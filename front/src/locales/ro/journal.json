@@ -610,6 +610,8 @@
   "pastLessons": {
     "title": "Ședințe anterioare",
     "empty": "Încă nu au fost ședințe — aceasta va fi prima",
-    "more": "Arată încă {{n}}"
+    "more": "Arată încă {{n}}",
+    "repeat": "Repetă",
+    "repeatHint": "Atingeți o ședință pentru a programa la fel"
   }
 }

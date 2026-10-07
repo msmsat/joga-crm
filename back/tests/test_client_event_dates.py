@@ -26,7 +26,8 @@ class Rows:
 def request(monkeypatch, kind, batches):
     monkeypatch.setattr(profiles, '_get_client_or_404', AsyncMock(return_value=NS(id=2)))
     if kind in ('visit', 'completed', 'booking', 'cancel'):
-        batches = [[(r, None) for r in rows] for rows in batches]
+        # Строка запроса — бронь, статус и сумма её платежа, имя абонемента.
+        batches = [[r if isinstance(r, tuple) else (r, None, None, None) for r in rows] for rows in batches]
         # These tests verify timestamp formatting; freeze classification so old
         # fixture dates do not move from Booking to Completed as time passes.
         monkeypatch.setattr(profiles, 'appointment_state', lambda r, studio: 'upcoming' if kind == 'booking' else 'cancelled' if kind == 'cancel' else 'completed')
@@ -49,6 +50,55 @@ def test_booking_primary_date_is_lesson_not_created_date(monkeypatch):
 def test_visit_keeps_studio_wall_clock(monkeypatch):
     event, = request(monkeypatch, 'visit', [[reservation(status='attended')]])
     assert event.date.startswith('2026-09-28T10:00')
+
+
+def test_visit_names_its_service_and_master_for_booking_the_same_again(monkeypatch):
+    # «Записать так же» в истории клиента ищет услугу и мастера по номерам:
+    # имена для этого не годятся — их переименовывают.
+    past = lesson()
+    past.service_id, past.teacher_id = 12, 34
+    event, = request(monkeypatch, 'visit', [[reservation(status='attended', lesson=past)]])
+    assert (event.service_id, event.teacher_id) == (12, 34)
+    # У занятия без услуги (перенесённая история) номера нет — повторять нечего.
+    event, = request(monkeypatch, 'visit', [[reservation(status='attended')]])
+    assert (event.service_id, event.teacher_id) == (None, None)
+
+
+def test_visit_carries_its_price_discounts_and_settlement(monkeypatch):
+    # Окно записи показывает в истории цену со скидкой и итог — по тем же
+    # полям, что строка записанного в карточке занятия (BookedClient).
+    past = lesson()
+    past.price = 500
+    unpaid = reservation(status='attended', lesson=past, is_trial=True, trial_discount_percent=20)
+    event, = request(monkeypatch, 'visit', [[(unpaid, 'pending', 400, None)]])
+    f = event.funding
+    assert (f.price, f.is_trial, f.trial_discount_percent, f.debt, f.paid_amount) == (500, True, 20, 400, 0)
+    # Оплачено — снимок кассы: прайс, скидки и итог.
+    receipt = {'base_price': 500, 'discounts': [{'kind': 'first_lesson', 'amount': 100}], 'total': 400, 'method': 'cash'}
+    paid = reservation(status='attended', lesson=past, payment_breakdown=receipt)
+    event, = request(monkeypatch, 'visit', [[(paid, 'success', 400, None)]])
+    assert (event.funding.paid_amount, event.funding.debt) == (400, 0)
+    assert event.funding.payment.total == 400 and event.funding.payment.discounts[0].kind == 'first_lesson'
+    # Абонемент — его имя; денег по такому визиту не ждут.
+    sub = reservation(status='attended', lesson=past, subscription_id=9)
+    event, = request(monkeypatch, 'visit', [[(sub, None, None, '10 занятий')]])
+    assert event.funding.by_subscription and event.funding.subscription_name == '10 занятий'
+    assert event.funding.debt == 0
+
+
+def test_assistant_does_not_receive_visit_funding(monkeypatch):
+    # Разбор цены нужен окну записи; модели он удвоил бы ответ инструмента.
+    from services import ai_tools
+    past = lesson()
+    past.price = 500
+    event, = request(monkeypatch, 'visit', [[(reservation(status='attended', lesson=past), 'pending', 500, None)]])
+    assert event.funding is not None
+    monkeypatch.setattr(ai_tools, '_r_get_client_events', AsyncMock(return_value=[event]))
+    monkeypatch.setattr(ai_tools, '_currency', AsyncMock(return_value='EUR'))
+    ctx = NS(user=NS(id=5), studio_id=3, role='owner')
+    result = asyncio.run(ai_tools.get_client_events(ctx, NS(), ai_tools.ClientEventsArgs(client_id=2, event_type='visit')))
+    (item,) = result['items']
+    assert 'funding' not in item and item['subject'] == 'Service'
 
 
 def test_cancellation_keeps_both_action_time_and_lesson_time(monkeypatch):

@@ -6,15 +6,17 @@ import { Select, type SelectOption } from '../../../../../components/ui/index';
 import { errorMessage } from '../../../../../api/errorMessage';
 import * as Icons from '../../../../../components/Icons';
 import { AddClientModal as NewClientModal } from '../../../Clients/components/modals/AddClientModal';
-import { PastLessonsButton } from '../pastLessons';
+import { PastLessonsButton, type RepeatProps } from '../pastLessons';
 
 /** Выбор клиента из списка с поиском и «+ Новый клиент» рядом с подписью.
  *  Кроме записи в Журнале — промокод на клиента в Лояльности: там выбор
  *  необязателен, поэтому есть `onClear` (код снова для всех).
  *  `history` — справа от выбранного клиента кнопка его прошлых занятий:
- *  нужна записи, промокоду — нет. */
+ *  нужна записи, промокоду — нет. `onRepeat` — нажатие на прошлое занятие
+ *  подставляет его в запись (услуга, мастер, время). */
 export function ResourceClientPicker({
   value, onChange, disabled = false, labelClass = 'vk-label', label, placeholder, onClear, clearLabel, history = false,
+  canRepeat, onRepeat,
 }: {
   value: number | null; onChange: (id: number) => void; disabled?: boolean;
   /** Клавиатурное окно журнала подписывает поля своим классом (kp-section-title). */
@@ -24,7 +26,7 @@ export function ResourceClientPicker({
   /** Выбор можно снять: кнопка появляется у подписи, пока клиент выбран. */
   onClear?: () => void; clearLabel?: string;
   history?: boolean;
-}) {
+} & RepeatProps) {
   const { t } = useTranslation(['journal', 'common', 'clients']);
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
@@ -74,7 +76,9 @@ export function ResourceClientPicker({
           setSelected(options.find(option => option.value === id) ?? null);
           onChange(Number(id));
         }} />
-      {history && value != null && <PastLessonsButton clientId={value} disabled={disabled} />}
+      {history && value != null && (
+        <PastLessonsButton clientId={value} disabled={disabled} canRepeat={canRepeat} onRepeat={onRepeat} />
+      )}
     </div>
     {/* Окно формы — порталом в body, но события React всплывают по дереву:
         без этой обёртки клик в форме закрыл бы окно записи под ней. */}

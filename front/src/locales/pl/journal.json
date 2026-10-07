@@ -614,6 +614,8 @@
   "pastLessons": {
     "title": "Poprzednie zajęcia",
     "empty": "Jeszcze nie było zajęć — to będą pierwsze",
-    "more": "Pokaż jeszcze {{n}}"
+    "more": "Pokaż jeszcze {{n}}",
+    "repeat": "Powtórz",
+    "repeatHint": "Kliknij zajęcia — zapiszemy tak samo"
   }
 }

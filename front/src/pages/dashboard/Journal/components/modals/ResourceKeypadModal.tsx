@@ -16,6 +16,7 @@ import { useLeave } from '../../hooks/useLeave';
 import { confirmLabel } from '../../hooks/useBookingPayment';
 import { PastBookingPrompt } from './PastBookingPrompt';
 import { usePastBooking } from './usePastBooking';
+import type { RepeatOf } from '../pastLessons';
 
 type Props = {
   trainers: Trainer[];
@@ -79,6 +80,13 @@ export function ResourceKeypadModal({
   }, defaultDate, defaultTime);
   const [notes, setNotes] = useState('');
   const notePhotos = useNotePhotos();
+  // «Записать так же» из истории клиента: его услуга, мастер и время дня — в
+  // выбранный день. Прошедшее время спросит то же окно, что и ручной ввод;
+  // условия под свободное время возьмутся сами (эффект ниже).
+  const repeat = (r: RepeatOf) => {
+    booking.repeat(r.serviceId, r.teacherId);
+    if (r.time && !past.ask(booking.date, r.time)) setTypedTime(r.time);
+  };
   // Свободные начала сервер считает по длительности услуги и её буферам:
   // 30-минутная стрижка встаёт в любой свободный получас, а не только в час.
   const free = slots.map(s => s.local_start.slice(11, 16));
@@ -172,7 +180,8 @@ export function ResourceKeypadModal({
               {clientId == null && (
                 <div className="kp-section">
                   <ResourceClientPicker value={booking.client} disabled={saving}
-                                        onChange={booking.setClient} labelClass="kp-section-title" history />
+                                        onChange={booking.setClient} labelClass="kp-section-title" history
+                                        canRepeat={booking.canRepeat} onRepeat={repeat} />
                 </div>
               )}
 

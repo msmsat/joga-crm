@@ -14,6 +14,7 @@ import { BookingPayment } from '../BookingPayment';
 import { confirmLabel } from '../../hooks/useBookingPayment';
 import { PastBookingPrompt } from './PastBookingPrompt';
 import { usePastBooking } from './usePastBooking';
+import type { RepeatOf } from '../pastLessons';
 
 /**
  * HB-22: «записать на индивидуальную услугу» — отдельная команда, не создание
@@ -67,6 +68,12 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
   }, options.defaultDate, defaultTime);
   const { choice, serviceId, branchId, teacherId, chosenService, loadingChoice, quote, quoting, saving, slots, reason } = booking;
   const shown = new Set(listedTimes(slots.map(slot => slot.local_start.slice(11, 16)), 15));
+  // «Записать так же» из истории клиента: услуга, мастер и время дня — в
+  // выбранный день; время подсвечивается в списке свободного, как названное.
+  const repeat = (r: RepeatOf) => {
+    booking.repeat(r.serviceId, r.teacherId);
+    if (r.time && !past.ask(booking.date, r.time)) setWantedTime(r.time);
+  };
   // Время записи — днём недели и числом, как на проверке мастера записи и в
   // переносе («пн, 28 сентября, 09:00»), а не строкой ISO. Полдень — чтобы
   // перевод часов не сдвинул день.
@@ -89,7 +96,10 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
       />
       <ModalBody>
         <fieldset disabled={saving || !!past.offered} style={{ display: 'grid', gap: '12px', border: 0, padding: 0, margin: 0, minWidth: 0 }}>
-          {options.clientId == null && <ResourceClientPicker value={booking.client} disabled={saving} onChange={booking.setClient} history />}
+          {options.clientId == null && (
+            <ResourceClientPicker value={booking.client} disabled={saving} onChange={booking.setClient} history
+                                  canRepeat={booking.canRepeat} onRepeat={repeat} />
+          )}
           <div>
             <label className="vk-label">{t('journal:resourceBooking.service')}</label>
             <Select value={serviceId ? String(serviceId) : ''} onChange={v => booking.setServiceId(Number(v))}

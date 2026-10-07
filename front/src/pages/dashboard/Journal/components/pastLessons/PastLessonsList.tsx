@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { Repeat, Sparkles } from 'lucide-react';
 import { errorMessage } from '../../../../../api/errorMessage';
 import { monthLabel } from '../../../Clients/utils/clientEvents';
-import { PAST_TONES, usePastLessons, type PastLesson, type PastTone } from './usePastLessons';
+import {
+  PAST_TONES, lessonTime, repeatOf, usePastLessons, type PastLesson, type PastTone, type RepeatOf,
+} from './usePastLessons';
+import { PastLessonPrice } from './PastLessonPrice';
 import './pastLessons.css';
 
 /** Сколько строк сразу и сколько добавляет «Показать ещё»: в поповере место
@@ -18,13 +21,23 @@ type Translate = (key: string, options?: Record<string, unknown>) => string;
 const toneLabel = (tone: PastTone, t: Translate) =>
   tone === 'done' ? t('clients:panel.events.noMark') : t(`clients:panel.events.state.${tone}`);
 
+/** «Записать так же»: нажатие на прошлое занятие подставляет его в запись. */
+export interface RepeatProps {
+  /** Записывает ли эта форма такую услугу; нет — строка остаётся только для чтения. */
+  canRepeat?: (serviceId: number) => boolean;
+  /** Без него лента только для чтения. */
+  onRepeat?: (repeat: RepeatOf) => void;
+}
+
 /**
  * Прошлые занятия клиента — компактной лентой: полоса посещаемости с легендой
  * сверху, ниже занятия по месяцам, новые первыми. Одна и та же лента живёт в
  * поповере у поля клиента (компьютер) и раскрывается под строкой клиента в
  * мастере записи (`inline`).
  */
-export function PastLessonsList({ clientId, inline = false }: { clientId: number; inline?: boolean }) {
+export function PastLessonsList({ clientId, inline = false, canRepeat, onRepeat }: {
+  clientId: number; inline?: boolean;
+} & RepeatProps) {
   const { t, i18n } = useTranslation(['journal', 'clients', 'common']);
   const locale = i18n.resolvedLanguage || i18n.language;
   const { lessons, counts, visits, isPending, error, refetch } = usePastLessons(clientId);
@@ -49,6 +62,12 @@ export function PastLessonsList({ clientId, inline = false }: { clientId: number
   const weekday = useMemo(() => new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone: 'UTC' }), [locale]);
   const shownTones = PAST_TONES.filter(tone => counts[tone] > 0);
   const rest = lessons.length - limit;
+  /** Что подставит нажатие на строку; null — строку повторить нельзя. */
+  const repeatable = (lesson: PastLesson) => {
+    const repeat = onRepeat ? repeatOf(lesson) : null;
+    return repeat && (canRepeat?.(repeat.serviceId) ?? true) ? repeat : null;
+  };
+  const anyRepeatable = lessons.some(lesson => repeatable(lesson) != null);
 
   return (
     <div className={`plh${inline ? ' is-inline' : ''}`}>
@@ -73,6 +92,11 @@ export function PastLessonsList({ clientId, inline = false }: { clientId: number
                 </span>
               ))}
             </div>
+            {/* Подсказка нужна телефону: наведения там нет, и без неё строку
+                не отличить от просто прочитанной. */}
+            {anyRepeatable && (
+              <div className="plh-hint"><Repeat size={12} strokeWidth={2.4} />{t('journal:pastLessons.repeatHint')}</div>
+            )}
           </>
         )}
       </div>
@@ -93,24 +117,10 @@ export function PastLessonsList({ clientId, inline = false }: { clientId: number
         ) : months.map(month => (
           <section key={month.key} className="plh-month">
             <div className="plh-month-label">{month.label}</div>
-            {month.items.map((lesson, i) => {
-              const { event, tone, at } = lesson;
-              const time = at.h === undefined ? null : `${String(at.h).padStart(2, '0')}:${String(at.mi).padStart(2, '0')}`;
-              const label = toneLabel(tone, t);
-              return (
-                <div key={lesson.key} className={`plh-row is-${tone}`} style={{ ['--i' as string]: Math.min(i, 8) }}>
-                  <span className="plh-date">
-                    <b>{at.d}</b>
-                    <small>{weekday.format(new Date(Date.UTC(at.y, at.mo - 1, at.d)))}</small>
-                  </span>
-                  <span className="plh-main">
-                    <span className="plh-name">{event.subject || event.title}</span>
-                    <span className="plh-sub">{[time, event.trainer].filter(Boolean).join(' · ')}</span>
-                  </span>
-                  <span className="plh-state" title={label}><i /><span className="plh-state-label">{label}</span></span>
-                </div>
-              );
-            })}
+            {month.items.map((lesson, i) => (
+              <LessonRow key={lesson.key} lesson={lesson} index={i} weekday={weekday}
+                         repeat={repeatable(lesson)} onRepeat={onRepeat} />
+            ))}
           </section>
         ))}
         {!isPending && !error && rest > 0 && (
@@ -123,9 +133,56 @@ export function PastLessonsList({ clientId, inline = false }: { clientId: number
   );
 }
 
+/** Одно прошлое занятие: справа состояние и под ним цена со скидкой. Можно
+ *  повторить — строка становится кнопкой: при наведении на месте состояния и
+ *  цены проступает «Повторить». */
+function LessonRow({ lesson, index, weekday, repeat, onRepeat }: {
+  lesson: PastLesson; index: number; weekday: Intl.DateTimeFormat;
+  repeat: RepeatOf | null; onRepeat?: (repeat: RepeatOf) => void;
+}) {
+  const { t } = useTranslation(['journal', 'clients']);
+  const { event, tone, at } = lesson;
+  const name = event.subject || event.title;
+  const time = lessonTime(at);
+  const label = toneLabel(tone, t);
+  const style = { ['--i' as string]: Math.min(index, 8) };
+  const body = (
+    <>
+      <span className="plh-date">
+        <b>{at.d}</b>
+        <small>{weekday.format(new Date(Date.UTC(at.y, at.mo - 1, at.d)))}</small>
+      </span>
+      <span className="plh-main">
+        <span className="plh-name">{name}</span>
+        <span className="plh-sub">{[time, event.trainer].filter(Boolean).join(' · ')}</span>
+      </span>
+      <span className="plh-side">
+        <span className="plh-state" title={label}><i /><span className="plh-state-label">{label}</span></span>
+        {/* Отменённое ничего не стоило — цене там не место. */}
+        {tone !== 'cancelled' && event.funding && (
+          <PastLessonPrice funding={event.funding} paymentStatus={event.payment_status} />
+        )}
+        {repeat && (
+          <span className="plh-repeat" aria-hidden="true"><Repeat size={11} strokeWidth={2.6} />{t('journal:pastLessons.repeat')}</span>
+        )}
+      </span>
+    </>
+  );
+  if (!repeat || !onRepeat) return <div className={`plh-row is-${tone}`} style={style}>{body}</div>;
+  return (
+    <button type="button" className={`plh-row is-${tone} is-pickable`} style={style}
+            aria-label={`${t('journal:pastLessons.repeat')}: ${[name, time].filter(Boolean).join(', ')}`}
+            onClick={() => onRepeat(repeat)}>
+      {body}
+    </button>
+  );
+}
+
 /** Лента под строкой клиента в мастере записи: раскрывается по высоте, а не
  *  появляется рывком — строки ниже плавно уступают ей место. */
-export function PastLessonsInline({ clientId, open }: { clientId: number; open: boolean }) {
+export function PastLessonsInline({ clientId, open, canRepeat, onRepeat }: {
+  clientId: number; open: boolean;
+} & RepeatProps) {
   return (
     <AnimatePresence initial={false}>
       {open && (
@@ -138,7 +195,7 @@ export function PastLessonsInline({ clientId, open }: { clientId: number; open: 
           transition={{ duration: 0.24, ease: [0.2, 0.8, 0.2, 1] }}
           style={{ overflow: 'hidden' }}
         >
-          <PastLessonsList clientId={clientId} inline />
+          <PastLessonsList clientId={clientId} inline canRepeat={canRepeat} onRepeat={onRepeat} />
         </motion.div>
       )}
     </AnimatePresence>

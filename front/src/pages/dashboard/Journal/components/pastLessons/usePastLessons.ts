@@ -17,6 +17,26 @@ export interface PastLesson {
   at: Stamp;
 }
 
+/** Что берёт новая запись из прошлого занятия по «Записать так же». */
+export interface RepeatOf {
+  serviceId: number;
+  /** Мастер того занятия; ведёт ли он услугу сейчас — решает форма. */
+  teacherId: number | null;
+  /** Время дня «ЧЧ:ММ» — день остаётся тем, что выбран в форме. */
+  time: string | null;
+}
+
+/** Время дня занятия «ЧЧ:ММ»; в данных его нет — null. */
+export const lessonTime = (at: Stamp) => at.h === undefined
+  ? null : `${String(at.h).padStart(2, '0')}:${String(at.mi).padStart(2, '0')}`;
+
+/** Повторить можно только занятие с услугой: у перенесённой истории её нет. */
+export const repeatOf = (lesson: PastLesson): RepeatOf | null => lesson.event.service_id == null ? null : {
+  serviceId: lesson.event.service_id,
+  teacherId: lesson.event.teacher_id ?? null,
+  time: lessonTime(lesson.at),
+};
+
 const isPast = (tone: string): tone is PastTone => (PAST_TONES as readonly string[]).includes(tone);
 
 /** «Сейчас» в том же виде, что время занятия с сервера (часы студии, без пояса). */

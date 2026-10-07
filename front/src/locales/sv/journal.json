@@ -606,6 +606,8 @@
   "pastLessons": {
     "title": "Tidigare pass",
     "empty": "Inga pass än — det här blir det första",
-    "more": "Visa {{n}} till"
+    "more": "Visa {{n}} till",
+    "repeat": "Upprepa",
+    "repeatHint": "Tryck på ett pass för att boka samma igen"
   }
 }

@@ -556,22 +556,27 @@ async def get_client_events(
     # Fetch an appointment once. The Visit tab is the full appointment history;
     # Completed/Cancellations are subsets, not extra copies in All.
     if not event_type or event_type in ("all", "visit", "completed", "booking", "cancel"):
-        stmt = (select(Reservation, ClientPayment.status)
+        # Платёж брони и абонемент — для цены визита (funding): сколько стоило,
+        # что сняли скидки, оплачено ли. Внешними соединениями: у большинства
+        # броней нет ни долга, ни абонемента.
+        stmt = (select(Reservation, ClientPayment.status, ClientPayment.amount, ClientSubscription.type)
             .join(Lesson, Lesson.id == Reservation.lesson_id)
             .outerjoin(ClientPayment, ClientPayment.id == Reservation.debt_payment_id)
+            .outerjoin(ClientSubscription, ClientSubscription.id == Reservation.subscription_id)
             .where(Reservation.client_id == client_id, Lesson.studio_id == studio_id,
                    Reservation.status != "hold")
             .options(selectinload(Reservation.lesson)))
         if ctx.role == 'trainer':
             stmt = stmt.where(Lesson.teacher_id == ctx.user.id)
         rows = (await db.execute(stmt)).all()
-        for reservation, debt_status in rows:
+        for reservation, debt_status, debt_amount, subscription_name in rows:
             state = appointment_state(reservation, studio)
             if event_type == "completed" and state != "completed": continue
             if event_type == "cancel" and state != "cancelled": continue
             if event_type == "booking" and state not in ("upcoming", "ongoing"): continue
             kind = "cancel" if state == "cancelled" else "completed" if state == "completed" else "booking"
-            events.append(reservation_event(reservation, kind, studio, debt_status=debt_status))
+            events.append(reservation_event(reservation, kind, studio, debt_status=debt_status,
+                                            debt_amount=debt_amount, subscription_name=subscription_name))
 
     if not event_type or event_type in ("all", "payment"):
         rows = (await db.execute(

@@ -4,7 +4,7 @@ Database connections pin infrastructure timestamps to UTC (database.py).
 Lesson.start_time is the studio's wall clock and must never be treated as UTC.
 """
 from datetime import datetime
-from schemas.clients.responses import EventRecordOut
+from schemas.clients.responses import EventFundingOut, EventRecordOut
 from services import studio_time
 from services.client_visits import appointment_state, attendance_state, payment_state
 
@@ -24,7 +24,25 @@ def lesson_stamp(lesson):
     return lesson.start_time.isoformat() if lesson is not None else None
 
 
-def reservation_event(reservation, kind, studio, *, debt_status=None):
+def reservation_funding(reservation, lesson, *, debt_status=None, debt_amount=None, subscription_name=None):
+    """Цена визита и чем он закрыт — по тем же полям, что строка записанного
+    в карточке занятия: платёж брони в ожидании — долг, проведён — оплачено."""
+    amount = debt_amount or 0
+    return EventFundingOut(
+        price=getattr(lesson, "price", None) or 0,
+        is_trial=bool(getattr(reservation, "is_trial", False)),
+        trial_discount_percent=getattr(reservation, "trial_discount_percent", None),
+        trial_discount_amount=getattr(reservation, "trial_discount_amount", None),
+        manual_discount_percent=getattr(reservation, "manual_discount_percent", None),
+        by_subscription=getattr(reservation, "subscription_id", None) is not None,
+        subscription_name=subscription_name,
+        debt=amount if debt_status == "pending" else 0,
+        paid_amount=amount if debt_status == "success" else 0,
+        payment=getattr(reservation, "payment_breakdown", None) or None,
+    )
+
+
+def reservation_event(reservation, kind, studio, *, debt_status=None, debt_amount=None, subscription_name=None):
     lesson = reservation.lesson
     scheduled = lesson_stamp(lesson)
     occurred = (scheduled if kind in ("visit", "completed") else
@@ -37,12 +55,16 @@ def reservation_event(reservation, kind, studio, *, debt_status=None):
         subject=lesson.name if lesson else None,
         trainer=lesson.teacher_name if lesson else None,
         lesson_id=getattr(lesson, 'id', None),
+        service_id=getattr(lesson, 'service_id', None),
+        teacher_id=getattr(lesson, 'teacher_id', None),
         notes=getattr(lesson, 'notes', None),
         photos=getattr(lesson, 'photos', None) or [],
         status=getattr(lesson, 'source_status', None),
         appointment_status=appointment_state(reservation, studio),
         attendance_status=attendance_state(reservation, studio),
         payment_status=payment_state(reservation, debt_status),
+        funding=reservation_funding(reservation, lesson, debt_status=debt_status, debt_amount=debt_amount,
+                                    subscription_name=subscription_name) if lesson is not None else None,
     )
 
 
