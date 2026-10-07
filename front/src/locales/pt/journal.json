@@ -426,7 +426,22 @@
       "unconfigured": "Remuneração não definida",
       "unavailable": "Receita indisponível",
       "hourly": "{{rate}}/h",
-      "estimate": "Estimativa nas condições atuais. Não confirma o pagamento."
+      "estimate": "Estimativa nas condições atuais. Não confirma o pagamento.",
+      "salaryHint": "As aulas não são pagas à parte",
+      "setRate": "A percentagem define-se na ficha do colaborador",
+      "of": "{{rate}}% de {{base}}",
+      "perClient": "{{rate}}% do preço {{price}}, por cliente",
+      "state": {
+        "paid": "Pago",
+        "partial": "Pago em parte",
+        "due": "A aguardar pagamento",
+        "estimated": "Pagamento não registado"
+      },
+      "split": {
+        "paid": "{{amount}} do pago",
+        "pending": "{{amount}} previsto"
+      },
+      "unknown": "Visitas de pacote sem preço não contadas: {{number}}"
     },
     "today": "Hoje",
     "minutes": "{{value}} min",

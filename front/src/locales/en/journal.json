@@ -426,7 +426,22 @@
       "unconfigured": "Pay not configured",
       "unavailable": "Earnings unavailable",
       "hourly": "{{rate}}/h",
-      "estimate": "Estimate at current rates. Not a payment confirmation."
+      "estimate": "Estimate at current rates. Not a payment confirmation.",
+      "salaryHint": "Lessons aren't paid separately",
+      "setRate": "Set the rate in the staff profile",
+      "of": "{{rate}}% of {{base}}",
+      "perClient": "{{rate}}% of the {{price}} price — per client",
+      "state": {
+        "paid": "Paid",
+        "partial": "Partly paid",
+        "due": "Awaiting payment",
+        "estimated": "Payment not recorded"
+      },
+      "split": {
+        "paid": "{{amount}} from paid",
+        "pending": "{{amount}} expected"
+      },
+      "unknown": "Membership visits without a price not counted: {{number}}"
     },
     "today": "Today",
     "minutes": "{{value}} min",

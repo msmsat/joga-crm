@@ -430,7 +430,22 @@
       "unconfigured": "Plata nu este configurată",
       "unavailable": "Venit necunoscut",
       "hourly": "{{rate}}/oră",
-      "estimate": "Calcul conform condițiilor actuale. Nu confirmă plata."
+      "estimate": "Calcul conform condițiilor actuale. Nu confirmă plata.",
+      "salaryHint": "Ședințele nu se plătesc separat",
+      "setRate": "Procentul se setează în fișa angajatului",
+      "of": "{{rate}}% din {{base}}",
+      "perClient": "{{rate}}% din prețul {{price}} — de la fiecare client",
+      "state": {
+        "paid": "Plătit",
+        "partial": "Plătit parțial",
+        "due": "Așteaptă plata",
+        "estimated": "Plata nu este înregistrată"
+      },
+      "split": {
+        "paid": "{{amount}} din plătit",
+        "pending": "{{amount}} așteptat"
+      },
+      "unknown": "Vizite cu abonament fără preț neincluse: {{number}}"
     },
     "today": "Azi",
     "minutes": "{{value}} min",

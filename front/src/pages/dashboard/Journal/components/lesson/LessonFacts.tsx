@@ -1,7 +1,8 @@
 // Всё о занятии одним взглядом: когда, где (зал, филиал, улица — со ссылкой на
-// карту), кто ведёт, сколько стоит, уровень, инвентарь, заполненность и деньги
-// по записанным. Данные — из GET /schedule/lessons/{id}; пока он летит,
-// плитки строятся по карточке сетки, а адрес и сводка по деньгам дорисуются.
+// карту), кто ведёт, сколько стоит, уровень, инвентарь, заполненность, деньги
+// по записанным и сколько из них получит мастер. Данные — из
+// GET /schedule/lessons/{id}; пока он летит, плитки строятся по карточке сетки,
+// а адрес и сводка по деньгам дорисуются.
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { BookedClient, LessonDetail } from '../../../../../api/schedule/schedule.types';
@@ -69,7 +70,7 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency, lo
       </a>
 
       <div className="lc-tiles">
-        <Tile label={roleLabel('trainer')} caption={<MasterCompensation value={detail?.compensation} currency={currency} />}>
+        <Tile label={roleLabel('trainer')}>
           <span className="lc-dot" style={{ background: booking.color }} />
           {trainerName ?? '—'}
         </Tile>
@@ -111,6 +112,11 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency, lo
           <div className="lc-money-cell" /><div className="lc-money-cell" /><div className="lc-money-cell" />
         </div>
       )}
+
+      {/* Сколько из этих денег получит мастер — процент от оплаченного, а не от
+          прайса. Приходит только тому, кому положено видеть условия. */}
+      <MasterCompensation value={detail?.compensation} currency={currency}
+                          price={booking.price} empty={booked?.length === 0} />
     </div>
   );
 }

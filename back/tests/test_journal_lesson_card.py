@@ -22,8 +22,10 @@ import test_hybrid_crm_api as crm
 import test_resource_booking as resource
 from database import async_session_maker
 from models import (
-    ClientLoyaltyCard, ClientPayment, GiftCertificate, Lesson, Reservation, StudioBranch, StudioPromoCode,
+    ClientLoyaltyCard, ClientPayment, ClientSubscription, GiftCertificate, Lesson, Reservation, StudioBranch,
+    StudioMember, StudioPromoCode, StudioSubscriptionProgramConfig, SubscriptionPackage,
 )
+from services.lesson_compensation import membership_visit_values
 from routers.clients.router import router as clients_router
 
 enabled = resource.enabled
@@ -282,6 +284,104 @@ def test_client_digest_counts_visits_no_shows_and_reviews():
                 await db.execute(Reservation.__table__.delete().where(
                     Reservation.client_id == ids["client"], Reservation.status.in_(("attended", "active"))
                     , Reservation.debt_payment_id.is_(None)))
+                await db.commit()
+            await flp._cleanup(ids)
+    asyncio.run(run())
+
+
+def test_master_share_follows_the_money_the_client_actually_paid():
+    """Мастер на 30 %, первое занятие −50 %: доля считается от 500, которые
+    клиент должен и потом платит, — а не от прайса 1000. До оплаты это «ждёт
+    оплаты», после — «оплачено»; без записи о деньгах — по цене брони."""
+    async def run():
+        ids = await flp._seed(percent=50)
+        try:
+            async with async_session_maker() as db:
+                await db.execute(update(StudioMember).where(
+                    StudioMember.studio_id == ids["studio"], StudioMember.user_id == ids["teacher"],
+                ).values(rate=30, rate_type="percent"))
+                await db.commit()
+            async with crm._client(flp._app(ids)) as http:
+                reservation = await _booked_with_debt(http, ids)
+                url = f"/schedule/lessons/{reservation.lesson_id}"
+
+                due = (await http.get(url)).json()["compensation"]
+                assert (due["kind"], due["rate"], due["amount"]) == ("percent", 30, 150)
+                assert (due["due_base"], due["paid_base"], due["paid_amount"]) == (500, 0, 0)
+
+                paid = await http.post(f"/schedule/reservations/{reservation.id}/pay", json={
+                    "payment_method": "cash", "expected_total": 500})
+                assert paid.status_code == 200, paid.text
+                settled = (await http.get(url)).json()["compensation"]
+                assert (settled["amount"], settled["paid_base"], settled["paid_amount"]) == (150, 500, 150)
+                assert settled["due_base"] == 0
+
+                # Бронь без записи о деньгах (перенос из прошлой системы): не ноль,
+                # а цена брони — с обещанной ей скидкой.
+                async with async_session_maker() as db:
+                    await db.execute(update(Reservation).where(Reservation.id == reservation.id).values(
+                        debt_payment_id=None, payment_breakdown=None, booking_channel="import"))
+                    await db.commit()
+                imported = (await http.get(url)).json()["compensation"]
+                assert (imported["estimated_base"], imported["amount"]) == (500, 150)
+        finally:
+            await flp._cleanup(ids)
+    asyncio.run(run())
+
+
+def test_membership_visit_is_valued_by_its_sale_not_by_the_price_list():
+    """Абонемент на 8 занятий по прайсу 3200 продан за 2400: визит стоит 300."""
+    async def run():
+        ids = await flp._seed(percent=50)
+        try:
+            async with async_session_maker() as db:
+                config = StudioSubscriptionProgramConfig(studio_id=ids["studio"])
+                db.add(config)
+                await db.flush()
+                package = SubscriptionPackage(studio_id=ids["studio"], config_id=config.id, name="8",
+                                              class_count=8, price=3200, per_visit_price=400)
+                db.add(package)
+                await db.flush()
+                # Продажа пишет абонемент и платёж одной транзакцией — как
+                # routers/clients/subscriptions.attach_subscription.
+                sold = ClientSubscription(client_id=ids["client"], type="8", total_classes=8,
+                                          expires_at=resource.hours.DAY, package_id=package.id)
+                db.add(sold)
+                db.add(ClientPayment(client_id=ids["client"], amount=2400, description="8", status="success",
+                                     action_type="subscription", item_key=str(package.id)))
+                await db.commit()
+                await db.refresh(sold)
+                package_id, sold_id, sold_at = package.id, sold.id, sold.created_at
+            # Второй абонемент выдан через три дня, и продажи рядом с ним нет.
+            async with async_session_maker() as db:
+                gifted = ClientSubscription(client_id=ids["client"], type="8", total_classes=8,
+                                            expires_at=resource.hours.DAY, package_id=package_id,
+                                            created_at=sold_at + timedelta(days=3))
+                db.add(gifted)
+                await db.flush()
+                lesson = Lesson(studio_id=ids["studio"], name="Group", teacher_name="T", teacher_id=ids["teacher"],
+                                start_time=datetime(2026, 9, 1, 10), duration_min=60, price=1000, level="",
+                                equipment="", total_spots=4, status="confirmed")
+                db.add(lesson)
+                await db.flush()
+                first = Reservation(client_id=ids["client"], lesson_id=lesson.id, spot_number=1,
+                                    subscription_id=sold_id)
+                second = Reservation(client_id=ids["client"], lesson_id=lesson.id, spot_number=2,
+                                     subscription_id=gifted.id)
+                db.add_all([first, second])
+                await db.commit()
+                values = await membership_visit_values(db, [first.id, second.id])
+            assert (values[first.id].amount, values[first.id].paid) == (300, True)
+            assert (values[second.id].amount, values[second.id].paid) == (400, False)
+        finally:
+            async with async_session_maker() as db:
+                await db.execute(Reservation.__table__.delete().where(Reservation.client_id == ids["client"]))
+                await db.execute(ClientSubscription.__table__.delete().where(
+                    ClientSubscription.client_id == ids["client"]))
+                await db.execute(SubscriptionPackage.__table__.delete().where(
+                    SubscriptionPackage.studio_id == ids["studio"]))
+                await db.execute(StudioSubscriptionProgramConfig.__table__.delete().where(
+                    StudioSubscriptionProgramConfig.studio_id == ids["studio"]))
                 await db.commit()
             await flp._cleanup(ids)
     asyncio.run(run())

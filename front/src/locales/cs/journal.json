@@ -430,7 +430,22 @@
       "unconfigured": "Odměna nenastavena",
       "unavailable": "Příjem není znám",
       "hourly": "{{rate}}/h",
-      "estimate": "Odhad podle aktuálních podmínek. Nepotvrzuje výplatu."
+      "estimate": "Odhad podle aktuálních podmínek. Nepotvrzuje výplatu.",
+      "salaryHint": "Lekce se neplatí zvlášť",
+      "setRate": "Sazba se nastavuje v kartě zaměstnance",
+      "of": "{{rate}} % z {{base}}",
+      "perClient": "{{rate}} % z ceny {{price}} — za každého klienta",
+      "state": {
+        "paid": "Zaplaceno",
+        "partial": "Zaplaceno částečně",
+        "due": "Čeká na platbu",
+        "estimated": "Platba nezaznamenána"
+      },
+      "split": {
+        "paid": "{{amount}} ze zaplaceného",
+        "pending": "{{amount}} očekáváno"
+      },
+      "unknown": "Nezapočteny návštěvy na permanentku bez ceny: {{number}}"
     },
     "today": "Dnes",
     "minutes": "{{value}} min",

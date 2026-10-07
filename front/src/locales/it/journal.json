@@ -426,7 +426,22 @@
       "unconfigured": "Compenso non impostato",
       "unavailable": "Ricavo non disponibile",
       "hourly": "{{rate}}/h",
-      "estimate": "Stima alle condizioni attuali. Non conferma il pagamento."
+      "estimate": "Stima alle condizioni attuali. Non conferma il pagamento.",
+      "salaryHint": "Le lezioni non sono pagate a parte",
+      "setRate": "La percentuale si imposta nella scheda del collaboratore",
+      "of": "{{rate}}% di {{base}}",
+      "perClient": "{{rate}}% del prezzo {{price}}, per cliente",
+      "state": {
+        "paid": "Pagato",
+        "partial": "Pagato in parte",
+        "due": "In attesa di pagamento",
+        "estimated": "Pagamento non registrato"
+      },
+      "split": {
+        "paid": "{{amount}} dal pagato",
+        "pending": "{{amount}} previsto"
+      },
+      "unknown": "Visite in abbonamento senza prezzo non conteggiate: {{number}}"
     },
     "today": "Oggi",
     "minutes": "{{value}} min",

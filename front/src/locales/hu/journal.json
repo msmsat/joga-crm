@@ -426,7 +426,22 @@
       "unconfigured": "Díjazás nincs beállítva",
       "unavailable": "Bevételi adat nincs",
       "hourly": "{{rate}}/óra",
-      "estimate": "Becslés a jelenlegi feltételekkel. Nem igazolja a kifizetést."
+      "estimate": "Becslés a jelenlegi feltételekkel. Nem igazolja a kifizetést.",
+      "salaryHint": "Az alkalmak nem külön fizetettek",
+      "setRate": "A százalék a munkatárs adatlapján állítható be",
+      "of": "{{base}} {{rate}}%-a",
+      "perClient": "A(z) {{price}} ár {{rate}}%-a ügyfelenként",
+      "state": {
+        "paid": "Fizetve",
+        "partial": "Részben fizetve",
+        "due": "Fizetésre vár",
+        "estimated": "Fizetés nincs rögzítve"
+      },
+      "split": {
+        "paid": "{{amount}} a kifizetettből",
+        "pending": "{{amount}} várható"
+      },
+      "unknown": "Ár nélküli bérletes látogatások nincsenek beszámítva: {{number}}"
     },
     "today": "Ma",
     "minutes": "{{value}} perc",

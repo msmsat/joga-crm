@@ -426,7 +426,22 @@
       "unconfigured": "Pago sin configurar",
       "unavailable": "Ingresos no disponibles",
       "hourly": "{{rate}}/h",
-      "estimate": "Estimación según las condiciones actuales. No confirma el pago."
+      "estimate": "Estimación según las condiciones actuales. No confirma el pago.",
+      "salaryHint": "Las clases no se pagan por separado",
+      "setRate": "El porcentaje se fija en la ficha del empleado",
+      "of": "{{rate}} % de {{base}}",
+      "perClient": "{{rate}} % del precio {{price}}, por cliente",
+      "state": {
+        "paid": "Pagado",
+        "partial": "Pagado en parte",
+        "due": "Pendiente de pago",
+        "estimated": "Pago no registrado"
+      },
+      "split": {
+        "paid": "{{amount}} de lo pagado",
+        "pending": "{{amount}} pendiente"
+      },
+      "unknown": "Visitas con bono sin precio no incluidas: {{number}}"
     },
     "today": "Hoy",
     "minutes": "{{value}} min",

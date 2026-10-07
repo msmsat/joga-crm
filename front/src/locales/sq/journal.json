@@ -426,7 +426,22 @@
       "unconfigured": "Pagesa nuk është caktuar",
       "unavailable": "Të ardhurat nuk dihen",
       "hourly": "{{rate}}/orë",
-      "estimate": "Llogaritje sipas kushteve aktuale. Nuk konfirmon pagesën."
+      "estimate": "Llogaritje sipas kushteve aktuale. Nuk konfirmon pagesën.",
+      "salaryHint": "Seancat nuk paguhen veçmas",
+      "setRate": "Përqindja caktohet në kartelën e punonjësit",
+      "of": "{{rate}}% e {{base}}",
+      "perClient": "{{rate}}% e çmimit {{price}} — për çdo klient",
+      "state": {
+        "paid": "Paguar",
+        "partial": "Paguar pjesërisht",
+        "due": "Pret pagesën",
+        "estimated": "Pagesa nuk është shënuar"
+      },
+      "split": {
+        "paid": "{{amount}} nga e paguara",
+        "pending": "{{amount}} pritet"
+      },
+      "unknown": "Vizita me abonim pa çmim të pallogaritura: {{number}}"
     },
     "today": "Sot",
     "minutes": "{{value}} min",

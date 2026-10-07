@@ -426,7 +426,22 @@
       "unconfigured": "Lön inte inställd",
       "unavailable": "Intäkt okänd",
       "hourly": "{{rate}}/tim",
-      "estimate": "Beräknat enligt aktuella villkor. Bekräftar inte utbetalning."
+      "estimate": "Beräknat enligt aktuella villkor. Bekräftar inte utbetalning.",
+      "salaryHint": "Pass betalas inte separat",
+      "setRate": "Procentsatsen anges på personalkortet",
+      "of": "{{rate}} % av {{base}}",
+      "perClient": "{{rate}} % av priset {{price}} — per kund",
+      "state": {
+        "paid": "Betald",
+        "partial": "Delvis betald",
+        "due": "Väntar på betalning",
+        "estimated": "Betalning ej registrerad"
+      },
+      "split": {
+        "paid": "{{amount}} av det betalda",
+        "pending": "{{amount}} väntas"
+      },
+      "unknown": "Klippkortsbesök utan pris ej medräknade: {{number}}"
     },
     "today": "I dag",
     "minutes": "{{value}} min",

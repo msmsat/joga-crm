@@ -426,7 +426,22 @@
       "unconfigured": "Rémunération non définie",
       "unavailable": "Revenu indisponible",
       "hourly": "{{rate}}/h",
-      "estimate": "Estimation selon les conditions actuelles. Ne confirme pas le versement."
+      "estimate": "Estimation selon les conditions actuelles. Ne confirme pas le versement.",
+      "salaryHint": "Les séances ne sont pas rémunérées séparément",
+      "setRate": "Le taux se règle dans la fiche du collaborateur",
+      "of": "{{rate}} % de {{base}}",
+      "perClient": "{{rate}} % du prix {{price}}, par client",
+      "state": {
+        "paid": "Payé",
+        "partial": "Payé en partie",
+        "due": "En attente de paiement",
+        "estimated": "Paiement non enregistré"
+      },
+      "split": {
+        "paid": "{{amount}} sur le payé",
+        "pending": "{{amount}} attendu"
+      },
+      "unknown": "Visites d'abonnement sans prix non comptées : {{number}}"
     },
     "today": "Aujourd'hui",
     "minutes": "{{value}} min",
