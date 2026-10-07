@@ -11,6 +11,7 @@ import { useStaffFilters } from './hooks/useStaffFilters';
 import { StaffWeekSchedule } from './components/StaffWeekSchedule';
 import { StaffList }  from './components/StaffList';
 import { StaffStats } from './components/StaffStats';
+import { StaffServiceTerms } from './components/StaffServiceTerms';
 import { AddEmployeeModal }  from './components/modals/AddEmployeeModal';
 import EditStaffModal from '../../../components/modals/EditStaffModal';
 import { DeleteConfirmModal } from './components/modals/DeleteConfirmModal';
@@ -25,10 +26,8 @@ import { QrShareModal } from '../../../components/ui/index';
 import { miniappLink } from '../../../lib/miniapp';
 import { getCurrencySymbol } from '../../../components/UI';
 import { staffColor } from '../../../lib/staffColors';
-import { formatMoney } from '../../../lib/money';
-import { useDurationLabel } from '../../../hooks/useDurationLabel';
 import { ownServiceTerms, servicePricesPayload } from './serviceTerms';
-import type { StaffListItem, StaffWorkingHoursItem, StaffProfile, StaffMonthScheduleResponse } from '../../../api/staff/staff.types';
+import type { StaffListItem, StaffWorkingHoursItem, StaffProfile, StaffMonthScheduleResponse, StaffService } from '../../../api/staff/staff.types';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -103,7 +102,6 @@ interface DeleteModal {
 
 export default function Staff() {
   const { t, i18n } = useTranslation(['staff', 'common']);
-  const durationLabel = useDurationLabel();
   // Роль называется словом отрасли: «тренер», «мастер», «специалист».
   const roleLabel = useRoleLabel();
 
@@ -278,6 +276,25 @@ export default function Staff() {
     } catch (err) {
       setDayMarks(prev);
       toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
+    }
+  };
+
+  // Своя цена или своё время одной услуги — прямо из строки в профиле, без
+  // модалки. Ручка пишет строку целиком, поэтому соседнее поле несём своим
+  // значением (или null, если оно из Каталога) — иначе оно бы снялось.
+  const saveServiceTerm = async (
+    svc: StaffService, field: 'price' | 'duration', value: number | null,
+  ) => {
+    if (!activeStaffId) return;
+    try {
+      await staffApi.setServiceTerms(activeStaffId, svc.id, {
+        price: field === 'price' ? value : (svc.price_custom ? svc.price : null),
+        duration_min: field === 'duration' ? value : (svc.duration_custom ? svc.duration_min : null),
+      });
+      refetchProfile();
+      toast.success(t('staff:toasts.changesSaved'));
+    } catch (err) {
+      toast.error(err instanceof ApiError ? errorMessage(err, t) : t('staff:toasts.errorSave'));
     }
   };
 
@@ -587,29 +604,11 @@ export default function Staff() {
                     <div className="sec-title">
                       <span>{t('common:fields.services')}</span>
                     </div>
-                    <div className="staff-svc-prices">
-                      {profile!.services.map(svc => (
-                        <div key={svc.id} className="staff-svc-price">
-                          <span className="staff-svc-price-name">{svc.name}</span>
-                          <span
-                            className={`staff-svc-price-v ${svc.price_custom ? 'custom' : ''}`}
-                            title={t(svc.price_custom
-                              ? 'common:servicePrice.custom'
-                              : 'common:servicePrice.inherited')}
-                          >
-                            {formatMoney(svc.price, currency)}
-                          </span>
-                          <span
-                            className={`staff-svc-price-v ${svc.duration_custom ? 'custom' : ''}`}
-                            title={t(svc.duration_custom
-                              ? 'common:servicePrice.durationCustom'
-                              : 'common:servicePrice.durationInherited')}
-                          >
-                            {durationLabel(svc.duration_min)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                    <StaffServiceTerms
+                      services={profile!.services}
+                      currency={currency}
+                      onSave={saveServiceTerm}
+                    />
                   </>
                 )}
 

@@ -378,3 +378,29 @@ async def apply_staff_prices(
     await _apply_own(db, user_id, studio_id, "price", prices)
     if durations is not None:
         await _apply_own(db, user_id, studio_id, "duration_min", durations)
+
+
+async def set_staff_service_terms(
+    db: AsyncSession, user_id: int, studio_id: int, service_id: int,
+    price: Optional[int], duration_min: Optional[int],
+) -> bool:
+    """Свои цена и время мастера на ОДНУ услугу; остальные его услуги не трогаем.
+
+    Правка прямо в карточке сотрудника: владелец меняет одну строку, и гонять
+    ради неё весь набор (`apply_staff_prices` — «пришедшее — истина») значило бы
+    рисковать чужими строками. `None` — «как в Каталоге», по общему правилу.
+
+    Возвращает False, если услуга мастеру этой студии не назначена: цену на
+    несуществующую связь молча не пишем — строки под неё нет.
+    """
+    studio_services = select(Service.id).where(Service.studio_id == studio_id)
+    result = await db.execute(
+        update(user_services)
+        .where(
+            user_services.c.user_id == user_id,
+            user_services.c.service_id == service_id,
+            user_services.c.service_id.in_(studio_services),
+        )
+        .values(price=price, duration_min=duration_min)
+    )
+    return result.rowcount > 0

@@ -1121,6 +1121,51 @@
   border: 1px solid rgba(252, 174, 145, 0.3);
 }
 
+/* Плашки — кнопки: нажатие открывает поле для своего значения прямо в строке,
+   без модалки редактирования сотрудника. */
+button.staff-svc-price-v {
+  border: 1px solid transparent;
+  font-family: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+button.staff-svc-price-v.custom { border-color: rgba(252, 174, 145, 0.3); }
+button.staff-svc-price-v:hover:not(:disabled) {
+  color: var(--accent2);
+  border-color: rgba(252, 174, 145, 0.55);
+}
+button.staff-svc-price-v:disabled { cursor: progress; opacity: 0.6; }
+button.staff-svc-price-v:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(252, 174, 145, 0.35);
+}
+
+.staff-svc-price-input {
+  box-sizing: border-box;
+  text-align: center;
+  font-family: inherit;
+  color: var(--onyx);
+  background: var(--bg-card);
+  border: 1px solid #FCAE91;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(252, 174, 145, 0.25);
+}
+
+.staff-svc-price-error {
+  padding: 4px 10px 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--error);
+}
+
+.staff-svc-price-hint {
+  padding: 4px 10px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+}
+
 /* ── Очень низкий экран: фильтры ролей листаются вбок ──────────────────────
    Чипы «Все / Владелец / Администратор / Тренер» в колонке 220px не влезают
    в строку и переносятся на два-три этажа. На высоком экране это не мешает
