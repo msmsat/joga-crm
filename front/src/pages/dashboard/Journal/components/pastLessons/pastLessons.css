@@ -107,9 +107,10 @@ button.plh-row {
 .plh-row.is-pickable:hover { background: rgba(249, 160, 139, 0.1); }
 .plh-row.is-pickable:active { background: rgba(249, 160, 139, 0.16); transform: scale(0.985); }
 .plh-row.is-pickable:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--peach-glow), inset 0 0 0 1px rgba(249, 160, 139, 0.6); }
-/* На месте состояния при наведении проступает «Повторить». */
-.plh-side { position: relative; display: inline-flex; justify-content: flex-end; }
-.plh-state { transition: opacity 0.15s ease; }
+/* Справа — стопка: состояние и под ним цена. При наведении на их месте
+   проступает «Повторить». */
+.plh-side { position: relative; display: inline-flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.plh-side > :not(.plh-repeat) { transition: opacity 0.15s ease; }
 .plh-repeat {
   position: absolute; top: 50%; right: 0;
   display: inline-flex; align-items: center; gap: 4px;
@@ -120,17 +121,42 @@ button.plh-row {
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 @media (hover: hover) {
-  .plh-row.is-pickable:hover .plh-state, .plh-row.is-pickable:focus-visible .plh-state { opacity: 0; }
+  .plh-row.is-pickable:hover .plh-side > :not(.plh-repeat),
+  .plh-row.is-pickable:focus-visible .plh-side > :not(.plh-repeat) { opacity: 0; }
   .plh-row.is-pickable:hover .plh-repeat, .plh-row.is-pickable:focus-visible .plh-repeat {
     opacity: 1; transform: translateY(-50%) scale(1);
   }
 }
+/* Во что обошлось занятие: значок, прайс зачёркнут, цена клиента — жирно,
+   скидка — персиковой капсулой процента. Не оплачено — итог розовым. */
+.plh-price {
+  display: inline-flex; align-items: center; gap: 4px;
+  font: 600 11px/1.2 var(--font); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.plh-price svg { flex-shrink: 0; color: var(--text3); }
+.plh-price-now { font-weight: 800; color: var(--onyx); }
+.plh-price-was { color: var(--text3); text-decoration-thickness: 1.5px; text-decoration-color: rgba(var(--ink), 0.4); }
+.plh-price.is-sale svg, .plh-price.is-free svg { color: var(--peach); }
+.plh-price-off {
+  padding: 1px 5px; border-radius: 999px;
+  font-size: 10px; font-weight: 800; letter-spacing: -0.01em;
+  background: rgba(249, 160, 139, 0.16); color: #C9694F;
+}
+:root.dark .plh-price-off { color: var(--peach-light); }
+.plh-price.is-free .plh-price-now { color: #C9694F; }
+:root.dark .plh-price.is-free .plh-price-now { color: var(--peach-light); }
+.plh-price.is-debt .plh-price-now { color: var(--plh-cancelled); }
+
 /* Узкая лента (телефон): подпись уезжает, состояние остаётся точкой — цвет
-   объясняет легенда над лентой. */
+   объясняет легенда над лентой; у цены остаётся главное — во что обошлось. */
+@container (max-width: 340px) {
+  .plh-price-off { display: none; }
+}
 @container (max-width: 300px) {
   .plh-state { padding: 0; background: none; }
   .plh-state i { width: 8px; height: 8px; }
   .plh-state-label { display: none; }
+  .plh-price-was { display: none; }
 }
 
 .plh-more {
@@ -229,7 +255,7 @@ button.plh-row {
 @keyframes plh-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 @media (prefers-reduced-motion: reduce) {
   .plh-row, .plh-bar > span, .plh-btn, .plh-skeleton div { animation: none; }
-  .plh-row.is-pickable, .plh-state, .plh-repeat { transition: none; }
+  .plh-row.is-pickable, .plh-side > *, .plh-repeat { transition: none; }
   .plh-btn-icon, .plh-toggle svg { transition: none; }
 }
 

@@ -1488,6 +1488,10 @@ async def get_client_events(ctx: StudioContext, db: AsyncSession, args: ClientEv
         client_id=args.client_id, ctx=ctx, current_user=ctx.user, db=db,
         event_type=args.event_type,
     )
+    # Разбор цены каждой записи (funding) нужен окну записи в Журнале. Модели он
+    # удвоил бы ответ и сократил число событий, влезающих в лимит объёма, а
+    # суммы оплат она и так видит событиями «payment».
+    rows = [row.model_dump(mode="json", exclude={"funding"}) for row in rows]
     return _items(rows, limit=args.limit, currency=await _currency(db, ctx.studio_id))
 
 

@@ -66,6 +66,21 @@ export interface SegmentRules {
   vip_min_visits: number
 }
 
+/** Цена визита и чем он закрыт — те же поля, что у строки записанного в
+ *  Журнале (BookedClient); разбирает их lesson/funding.ts. */
+export interface EventFunding {
+  price: number
+  is_trial: boolean
+  trial_discount_percent?: number | null
+  trial_discount_amount?: number | null
+  manual_discount_percent?: number | null
+  by_subscription: boolean
+  subscription_name?: string | null
+  debt: number
+  paid_amount: number
+  payment?: PaymentBreakdown | null
+}
+
 export interface EventRecord {
   date: string | null
   occurred_at?: string | null
@@ -76,6 +91,8 @@ export interface EventRecord {
   /** Услуга и мастер занятия — для «Записать так же» в истории клиента. */
   service_id?: number | null
   teacher_id?: number | null
+  /** Только у записей на занятие: цена, скидки, итог и чем закрыт визит. */
+  funding?: EventFunding | null
   notes?: string | null
   photos?: string[]
   status?: string | null

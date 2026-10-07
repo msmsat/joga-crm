@@ -7,6 +7,7 @@ import { monthLabel } from '../../../Clients/utils/clientEvents';
 import {
   PAST_TONES, lessonTime, repeatOf, usePastLessons, type PastLesson, type PastTone, type RepeatOf,
 } from './usePastLessons';
+import { PastLessonPrice } from './PastLessonPrice';
 import './pastLessons.css';
 
 /** Сколько строк сразу и сколько добавляет «Показать ещё»: в поповере место
@@ -132,8 +133,9 @@ export function PastLessonsList({ clientId, inline = false, canRepeat, onRepeat 
   );
 }
 
-/** Одно прошлое занятие. Можно повторить — строка становится кнопкой: при
- *  наведении на месте состояния проступает «Повторить». */
+/** Одно прошлое занятие: справа состояние и под ним цена со скидкой. Можно
+ *  повторить — строка становится кнопкой: при наведении на месте состояния и
+ *  цены проступает «Повторить». */
 function LessonRow({ lesson, index, weekday, repeat, onRepeat }: {
   lesson: PastLesson; index: number; weekday: Intl.DateTimeFormat;
   repeat: RepeatOf | null; onRepeat?: (repeat: RepeatOf) => void;
@@ -156,6 +158,10 @@ function LessonRow({ lesson, index, weekday, repeat, onRepeat }: {
       </span>
       <span className="plh-side">
         <span className="plh-state" title={label}><i /><span className="plh-state-label">{label}</span></span>
+        {/* Отменённое ничего не стоило — цене там не место. */}
+        {tone !== 'cancelled' && event.funding && (
+          <PastLessonPrice funding={event.funding} paymentStatus={event.payment_status} />
+        )}
         {repeat && (
           <span className="plh-repeat" aria-hidden="true"><Repeat size={11} strokeWidth={2.6} />{t('journal:pastLessons.repeat')}</span>
         )}
