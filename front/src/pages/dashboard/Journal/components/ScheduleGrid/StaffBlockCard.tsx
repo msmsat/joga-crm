@@ -50,10 +50,7 @@ export const StaffBlockCard = memo(function StaffBlockCard({ block, top, height,
         <div className="j-staff-block-copy">
           {name && <span className="j-staff-block-name">{name}</span>}
           <strong>{label}</strong>
-          <span className="j-staff-block-time">
-            {when}
-            {studio && <span className="j-staff-block-dur">{duration}</span>}
-          </span>
+          <span className="j-staff-block-time">{when}</span>
         </div>
         {noted
           ? <span className="j-staff-block-note" aria-hidden><StickyNote size={12} strokeWidth={2} /></span>

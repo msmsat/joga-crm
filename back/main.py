@@ -120,6 +120,14 @@ _ALLOWED_ORIGINS = [
         "CORS_ORIGINS", os.getenv("WEB_APP_URL", "http://localhost:5173"),
     ).split(",") if o.strip()
 ]
+# Локально фронт открывают и через dev (5173), и через `npm run preview` (4173):
+# без второго источника собранная версия получает отказ CORS на каждый запрос, и
+# кабинет стоит пустым. На проде фронт живёт на своём домене — там это не нужно.
+if any(o.startswith(("http://localhost", "http://127.0.0.1")) for o in _ALLOWED_ORIGINS):
+    for _origin in ("http://localhost:5173", "http://localhost:4173",
+                    "http://127.0.0.1:5173", "http://127.0.0.1:4173"):
+        if _origin not in _ALLOWED_ORIGINS:
+            _ALLOWED_ORIGINS.append(_origin)
 
 app.add_middleware(
     CORSMiddleware,
