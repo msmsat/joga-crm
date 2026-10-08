@@ -106,5 +106,41 @@
     "cancelled": "Otkazano",
     "utilization": "Popunjenost",
     "noData": "Nema podataka"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Добро јутро, {{name}}",
+      "day": "Добар дан, {{name}}",
+      "evening": "Добро вече, {{name}}",
+      "night": "Добро вече, {{name}}",
+      "morningPlain": "Добро јутро",
+      "dayPlain": "Добар дан",
+      "eveningPlain": "Добро вече",
+      "nightPlain": "Добро вече"
+    },
+    "today": "Данас",
+    "live": "У току",
+    "vsPrev": "у односу на прошли месец",
+    "newClientsOn": "Нови клијенти, {{date}}",
+    "retentionHint": "Удео клијената који се враћају",
+    "collapse": "Скупи",
+    "metricShort": {
+      "revenue": "Приход",
+      "clients": "Клијенти",
+      "bookings": "Заказивања",
+      "retention": "Задржавање",
+      "lessons": "Термини",
+      "attendance": "Долазност",
+      "fill_rate": "Попуњеност",
+      "rating": "Оцена",
+      "active_clients": "Клијенти"
+    },
+    "month": {
+      "title": "Месец у студију",
+      "finance": "Финансије",
+      "services": "Услуге",
+      "trainers": "Тренери",
+      "modes": "Заказивање"
+    }
   }
 }

@@ -272,6 +272,27 @@
       "stretching": "Stretching",
       "individual": "Individuale",
       "other": "Senza categoria"
+    },
+    "card": {
+      "switch": "Cambia",
+      "switchTitle": "Cambia servizio",
+      "search": "Cerca servizio",
+      "group": "Di gruppo",
+      "individual": "Individuale",
+      "onlineOn": "Prenotazione online aperta",
+      "onlineOff": "Solo tramite reception",
+      "slotTotal": "Occupa in agenda",
+      "durationVaries": "Il tempo dipende dall'operatore",
+      "statsTitle": "Prenotazioni e incassi",
+      "share": "{{pct}}% di tutte le prenotazioni dello studio",
+      "bookingsTotal": "prenotazioni in totale",
+      "revenueTotal": "incassi totali",
+      "avgCheck": "scontrino medio",
+      "weekTitle": "Questa settimana",
+      "weekEmpty": "Niente in programma questa settimana",
+      "dayEmpty": "Niente in questo giorno",
+      "openJournal": "Apri agenda",
+      "ownTerms": "prezzo o tempo proprio dell'operatore"
     }
   },
   "subscriptions": {

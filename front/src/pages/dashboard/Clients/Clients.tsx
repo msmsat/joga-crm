@@ -134,7 +134,7 @@ export default function Clients() {
       />
 
       <div className={styles.panelContainer}>
-        <div className={`${styles.gridWrap} ${isPanelOpen ? styles.gridWrapShifted : ''}`}>
+        <div className={`${styles.gridWrap} dock-scroll ${isPanelOpen ? styles.gridWrapShifted : ''}`}>
           <ClientsTable
             clients={clients}
             activeClientId={activeClientId}

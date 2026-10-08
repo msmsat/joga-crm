@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Select } from '../../../../../../components/ui/index';
+import { Segmented } from '../../../../../../components/ui/modal';
 import type { AssigneeOption, StudioRole, TaskScope } from '../../../../../../api/analytics';
 
 // Инвариант UI ↔ API: это фильтр удобства, не защита. Право доступа проверяет
@@ -18,10 +19,13 @@ interface TasksHeaderProps {
   assigneeId: number | null;
   setAssigneeId: (id: number | null) => void;
   assignees: AssigneeOption[];
+  /** Только фильтры «чьи задачи» — заголовок с числом стоит над карточкой
+   *  (телефонная главная). Фильтровать нечего (тренер) — шапки нет вовсе. */
+  bare?: boolean;
 }
 
 export default function TasksHeader({
-  pendingCount, role, scope, setScope, assigneeId, setAssigneeId, assignees,
+  pendingCount, role, scope, setScope, assigneeId, setAssigneeId, assignees, bare,
 }: TasksHeaderProps) {
   const { t } = useTranslation('dashboard');
 
@@ -32,6 +36,52 @@ export default function TasksHeader({
   // Бейдж уже показывает число — подзаголовок не дублирует его, а описывает срез.
   const selectedPerson = assigneeId != null ? assignees.find(a => a.user_id === assigneeId) : null;
   const subtitle = selectedPerson?.name ?? t(`tasks.scope.${scope}`);
+
+  const personPicker = scope !== 'mine' && (people.length === 0 ? (
+    <div style={{
+      padding: '12px 15px', borderRadius: 12, fontSize: 13, fontWeight: 500,
+      color: 'var(--muted)', background: 'rgba(var(--ink),0.025)',
+    }}>
+      {t('state.empty')}
+    </div>
+  ) : (
+    <Select
+      value={assigneeId != null ? String(assigneeId) : ''}
+      options={people.map(p => ({ value: String(p.user_id), label: p.name }))}
+      onChange={v => setAssigneeId(Number(v))}
+      placeholder={t('tasks.assigneePlaceholder')}
+    />
+  ));
+
+  const filtersBlock = scopeOptions.length > 1 && (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+      <div style={{ minWidth: 130 }}>
+        <Select
+          value={scope}
+          options={scopeOptions}
+          onChange={v => setScope(v as TaskScope)}
+        />
+      </div>
+      {personPicker && <div style={{ minWidth: 150 }}>{personPicker}</div>}
+    </div>
+  );
+
+  // Телефон: срезы — переключателем (их два-три, и все видны сразу), а не
+  // выпадающим списком на всю строку; сотрудник — по-прежнему списком.
+  if (bare) {
+    if (scopeOptions.length <= 1) return null;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '10px 10px 0' }}>
+        <Segmented<TaskScope>
+          value={scope}
+          options={scopeOptions}
+          onChange={setScope}
+          ariaLabel={t('tasks.title')}
+        />
+        {personPicker}
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -67,36 +117,7 @@ export default function TasksHeader({
         )}
       </div>
 
-      {scopeOptions.length > 1 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ minWidth: 130 }}>
-            <Select
-              value={scope}
-              options={scopeOptions}
-              onChange={v => setScope(v as TaskScope)}
-            />
-          </div>
-          {scope !== 'mine' && (
-            <div style={{ minWidth: 150 }}>
-              {people.length === 0 ? (
-                <div style={{
-                  padding: '12px 15px', borderRadius: 12, fontSize: 13, fontWeight: 500,
-                  color: 'var(--muted)', background: 'rgba(var(--ink),0.025)',
-                }}>
-                  {t('state.empty')}
-                </div>
-              ) : (
-                <Select
-                  value={assigneeId != null ? String(assigneeId) : ''}
-                  options={people.map(p => ({ value: String(p.user_id), label: p.name }))}
-                  onChange={v => setAssigneeId(Number(v))}
-                  placeholder={t('tasks.assigneePlaceholder')}
-                />
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      {filtersBlock}
     </div>
   );
 }

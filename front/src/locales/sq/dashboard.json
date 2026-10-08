@@ -105,5 +105,41 @@
     "cancelled": "Anuluar",
     "utilization": "Ngarkesa",
     "noData": "Pa të dhëna"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Mirëmëngjes, {{name}}",
+      "day": "Mirëdita, {{name}}",
+      "evening": "Mirëmbrëma, {{name}}",
+      "night": "Mirëmbrëma, {{name}}",
+      "morningPlain": "Mirëmëngjes",
+      "dayPlain": "Mirëdita",
+      "eveningPlain": "Mirëmbrëma",
+      "nightPlain": "Mirëmbrëma"
+    },
+    "today": "Sot",
+    "live": "Në vazhdim",
+    "vsPrev": "krahasuar me muajin e kaluar",
+    "newClientsOn": "Klientë të rinj, {{date}}",
+    "retentionHint": "Pjesa e klientëve që kthehen",
+    "collapse": "Mblidh",
+    "metricShort": {
+      "revenue": "Të ardhurat",
+      "clients": "Klientët",
+      "bookings": "Rezervimet",
+      "retention": "Mbajtja",
+      "lessons": "Mësimet",
+      "attendance": "Pjesëmarrja",
+      "fill_rate": "Mbushja",
+      "rating": "Vlerësimi",
+      "active_clients": "Klientët"
+    },
+    "month": {
+      "title": "Muaji në studio",
+      "finance": "Financat",
+      "services": "Shërbimet",
+      "trainers": "Trajnerët",
+      "modes": "Rezervimet"
+    }
   }
 }

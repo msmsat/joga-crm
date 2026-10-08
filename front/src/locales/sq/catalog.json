@@ -272,6 +272,27 @@
       "stretching": "Shtrirje",
       "individual": "Individual",
       "other": "Pa kategori"
+    },
+    "card": {
+      "switch": "Ndrysho",
+      "switchTitle": "Ndrysho shërbimin",
+      "search": "Kërko shërbim",
+      "group": "Në grup",
+      "individual": "Individual",
+      "onlineOn": "Rezervimi online i hapur",
+      "onlineOff": "Vetëm përmes recepsionit",
+      "slotTotal": "Zë në ditar",
+      "durationVaries": "Koha varet nga specialisti",
+      "statsTitle": "Rezervime dhe të ardhura",
+      "share": "{{pct}}% e të gjitha rezervimeve të studios",
+      "bookingsTotal": "rezervime gjithsej",
+      "revenueTotal": "të ardhura gjithsej",
+      "avgCheck": "fatura mesatare",
+      "weekTitle": "Këtë javë",
+      "weekEmpty": "Asgjë e planifikuar këtë javë",
+      "dayEmpty": "Asgjë këtë ditë",
+      "openJournal": "Hap ditarin",
+      "ownTerms": "çmim ose kohë e vetë specialistit"
     }
   },
   "subscriptions": {

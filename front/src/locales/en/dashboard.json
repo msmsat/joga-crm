@@ -105,5 +105,41 @@
     "cancelled": "Cancelled",
     "utilization": "Utilization",
     "noData": "No data"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Good morning, {{name}}",
+      "day": "Good afternoon, {{name}}",
+      "evening": "Good evening, {{name}}",
+      "night": "Hello, {{name}}",
+      "morningPlain": "Good morning",
+      "dayPlain": "Good afternoon",
+      "eveningPlain": "Good evening",
+      "nightPlain": "Hello"
+    },
+    "today": "Today",
+    "live": "Live",
+    "vsPrev": "vs last month",
+    "newClientsOn": "New clients, {{date}}",
+    "retentionHint": "Share of clients who keep coming back",
+    "collapse": "Show less",
+    "metricShort": {
+      "revenue": "Revenue",
+      "clients": "Clients",
+      "bookings": "Bookings",
+      "retention": "Retention",
+      "lessons": "Classes",
+      "attendance": "Attendance",
+      "fill_rate": "Fill rate",
+      "rating": "Rating",
+      "active_clients": "Clients"
+    },
+    "month": {
+      "title": "This month in the studio",
+      "finance": "Finances",
+      "services": "Services",
+      "trainers": "Trainers",
+      "modes": "Bookings"
+    }
   }
 }

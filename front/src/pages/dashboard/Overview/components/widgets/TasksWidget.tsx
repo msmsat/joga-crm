@@ -8,6 +8,8 @@ import styles from '../../Overview.module.css';
 import TasksHeader from './tasks/TasksHeader';
 import TaskRow from './tasks/TaskRow';
 import AddTaskForm from './tasks/AddTaskForm';
+import SectionHead from '../phone/SectionHead';
+import phoneStyles from '../phone/PhoneLists.module.css';
 
 const ListSkeleton = () => (
   <>
@@ -17,7 +19,13 @@ const ListSkeleton = () => (
   </>
 );
 
-export default function TasksWidget() {
+interface Props {
+  /** Телефонная главная: заголовок с числом дел — над карточкой, как у
+   *  соседних блоков, а карточка растёт по списку вместо окна в 400px. */
+  phone?: boolean;
+}
+
+export default function TasksWidget({ phone }: Props) {
   const { t } = useTranslation('dashboard');
   const toast = useToast();
   const {
@@ -46,28 +54,22 @@ export default function TasksWidget() {
   const pending = tasks.filter(t => !t.is_done);
   const done    = tasks.filter(t => t.is_done);
 
-  return (
-    <div
-      className="card"
-      style={{
-        padding: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        height: '400px',
-        overflow: 'hidden',
-        border: '1px solid var(--border2)',
-        boxShadow: 'var(--dash-shadow-lg)',
-      }}
-    >
-      <TasksHeader
-        pendingCount={pending.length}
-        role={role}
-        scope={scope}
-        setScope={setScope}
-        assigneeId={assigneeId}
-        setAssigneeId={setAssigneeId}
-        assignees={assignees}
-      />
+  const header = (
+    <TasksHeader
+      pendingCount={pending.length}
+      role={role}
+      scope={scope}
+      setScope={setScope}
+      assigneeId={assigneeId}
+      setAssigneeId={setAssigneeId}
+      assignees={assignees}
+      bare={phone}
+    />
+  );
+
+  const body = (
+    <>
+      {header}
 
       {forbidden ? (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, textAlign: 'center', color: 'var(--text3)', fontSize: 13 }}>
@@ -127,6 +129,32 @@ export default function TasksWidget() {
           <AddTaskForm scope={scope} assigneeId={assigneeId} onCreate={create} onCreated={handleCreated} />
         </>
       )}
+    </>
+  );
+
+  if (phone) {
+    return (
+      <section className={phoneStyles.section}>
+        <SectionHead title={t('tasks.title')} count={pending.length} />
+        <div className={phoneStyles.card} style={{ padding: 0, overflow: 'hidden' }}>{body}</div>
+      </section>
+    );
+  }
+
+  return (
+    <div
+      className="card"
+      style={{
+        padding: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        height: '400px',
+        overflow: 'hidden',
+        border: '1px solid var(--border2)',
+        boxShadow: 'var(--dash-shadow-lg)',
+      }}
+    >
+      {body}
     </div>
   );
 }

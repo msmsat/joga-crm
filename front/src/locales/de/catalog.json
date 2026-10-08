@@ -272,6 +272,27 @@
       "stretching": "Stretching",
       "individual": "Einzeltraining",
       "other": "Ohne Kategorie"
+    },
+    "card": {
+      "switch": "Wechseln",
+      "switchTitle": "Leistung wechseln",
+      "search": "Leistung suchen",
+      "group": "Gruppe",
+      "individual": "Einzeltermin",
+      "onlineOn": "Online-Buchung offen",
+      "onlineOff": "Nur über die Rezeption",
+      "slotTotal": "Belegt im Journal",
+      "durationVaries": "Dauer hängt vom Mitarbeiter ab",
+      "statsTitle": "Buchungen und Umsatz",
+      "share": "{{pct}} % aller Buchungen im Studio",
+      "bookingsTotal": "Buchungen insgesamt",
+      "revenueTotal": "Umsatz insgesamt",
+      "avgCheck": "Durchschnittsbon",
+      "weekTitle": "Diese Woche",
+      "weekEmpty": "Diese Woche ist nichts geplant",
+      "dayEmpty": "An diesem Tag ist nichts geplant",
+      "openJournal": "Journal öffnen",
+      "ownTerms": "eigener Preis oder eigene Dauer des Mitarbeiters"
     }
   },
   "subscriptions": {

@@ -272,6 +272,27 @@
       "stretching": "Tøying",
       "individual": "Individuell",
       "other": "Uten kategori"
+    },
+    "card": {
+      "switch": "Bytt",
+      "switchTitle": "Bytt tjeneste",
+      "search": "Finn tjeneste",
+      "group": "Gruppe",
+      "individual": "Individuell",
+      "onlineOn": "Nettbooking åpen",
+      "onlineOff": "Kun via resepsjonen",
+      "slotTotal": "Tar i timeplanen",
+      "durationVaries": "Tiden avhenger av utøveren",
+      "statsTitle": "Bookinger og omsetning",
+      "share": "{{pct}} % av alle bookinger i studioet",
+      "bookingsTotal": "bookinger totalt",
+      "revenueTotal": "omsetning totalt",
+      "avgCheck": "snittkjøp",
+      "weekTitle": "Denne uken",
+      "weekEmpty": "Ingenting planlagt denne uken",
+      "dayEmpty": "Ingenting denne dagen",
+      "openJournal": "Åpne timeplanen",
+      "ownTerms": "egen pris eller tid for utøveren"
     }
   },
   "subscriptions": {

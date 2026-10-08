@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional
 from pydantic import EmailStr, Field, model_validator
 from schemas._base import BaseSchema
@@ -228,8 +229,23 @@ class ServiceUpdate(BaseSchema):
 
 
 class ServiceWeekSlot(BaseSchema):
+    """Одно занятие услуги на текущей неделе студии — строка блока «На этой
+    неделе» в карточке услуги Каталога.
+
+    Раньше здесь были только день и час, и сетка Каталога теряла минуты
+    (18:30 рисовалось как 18:00) и часы, которых не было в её зашитом
+    перечне (13, 14, 16, 18, 21). Теперь время точное, а `day_of_week` и
+    `hour` оставлены для старых клиентов."""
     day_of_week: int   # 0=Пн … 6=Вс (текущая неделя)
     hour: int          # час начала занятия (0-23)
+    service_id: int
+    lesson_id: int
+    day: date          # стенная дата студии
+    start: str         # «HH:MM» по стенным часам студии
+    duration_min: int
+    booked: int        # записанных без отменённых
+    capacity: int      # мест у занятия (у записи на время — 1)
+    teacher_name: Optional[str] = None
 
 
 class BranchDetail(BaseSchema):

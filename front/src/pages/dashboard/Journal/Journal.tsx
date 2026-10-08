@@ -1071,7 +1071,7 @@ export default function Journal() {
           {/* ── СЕТКА ── */}
           <div className="j-layout">
             <div
-              className={`j-grid-wrapper${compactHeaders ? ' j-hdr-compact' : ''}${slideBack ? ' j-slide-back' : ''}`}
+              className={`j-grid-wrapper dock-scroll${compactHeaders ? ' j-hdr-compact' : ''}${slideBack ? ' j-slide-back' : ''}`}
               ref={gridWrapperRef}
               onScroll={e => {
                 // На телефоне и на небольшом экране шапка колонок не сжимается:

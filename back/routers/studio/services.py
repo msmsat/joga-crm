@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -14,7 +14,7 @@ from schemas.schedule.hybrid import AVAILABLE_BOOKING_MODES
 from schemas.studio import ServiceRead, ServiceCreate, ServiceUpdate, ServiceWeekSlot
 from schemas.studio.studio import ServiceBundlePartRead, ServiceMasterRead, ServiceRefRead
 from schemas.studio.studio import reject_resource_group_combo
-from services import schedule_guard, service_bundles, service_pricing, terminology
+from services import lesson_time, schedule_guard, service_bundles, service_pricing, terminology
 
 router = APIRouter()
 
@@ -224,6 +224,20 @@ async def list_services(
     return list((await _read_all(ctx.studio_id, db, include_archived=False)).values())
 
 
+@router.get("/services/week", response_model=list[ServiceWeekSlot])
+async def get_services_week(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Неделя ВСЕХ услуг одним запросом. Карточка услуги берёт свои строки из
+    общего набора, и смена услуги в Каталоге рисуется одним кадром — без
+    поштучного запроса, после которого блок недели дорисовывался бы и двигал
+    раскладку. Маршрут объявлен раньше `/services/{service_id}`: иначе «week»
+    разбиралось бы как id и падало в 422.
+    """
+    return await _week_slots(ctx.studio_id, db)
+
+
 @router.get("/services/{service_id}", response_model=ServiceRead)
 async def get_service(
     service_id: int,
@@ -365,28 +379,63 @@ async def delete_service(
     await db.commit()
 
 
+async def _week_slots(studio_id: int, db: AsyncSession, service_id: int | None = None) -> list[ServiceWeekSlot]:
+    """Занятия услуг студии на её текущей неделе — блок «На этой неделе»
+    карточки услуги Каталога.
+
+    Неделя — по стенным часам СТУДИИ (`lesson_time.local_now`), а не сервера
+    приложения: `start_time` хранит стенное время студии, и в воскресенье
+    вечером сервер в UTC уже жил бы в следующей неделе. Каждое занятие —
+    отдельной строкой с точным временем и заполненностью: прежние пары
+    «день, час» склеивали два занятия одного часа в одно и теряли минуты.
+    Записанные считаются одним GROUP BY, как в списке Журнала.
+    """
+    studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one()
+    today = lesson_time.local_now(studio).date()
+    week_start = datetime.combine(today - timedelta(days=today.weekday()), time.min)
+    week_end = week_start + timedelta(days=7)
+
+    booked_sq = (
+        select(Reservation.lesson_id.label("lesson_id"), func.count(Reservation.id).label("booked"))
+        .where(Reservation.status != "cancelled")
+        .group_by(Reservation.lesson_id)
+        .subquery()
+    )
+    stmt = (
+        select(
+            Lesson.id, Lesson.service_id, Lesson.start_time, Lesson.duration_min,
+            Lesson.total_spots, Lesson.teacher_name, func.coalesce(booked_sq.c.booked, 0),
+        )
+        .outerjoin(booked_sq, booked_sq.c.lesson_id == Lesson.id)
+        .where(
+            Lesson.studio_id == studio_id,
+            Lesson.service_id.is_not(None),
+            Lesson.status != "cancelled",
+            Lesson.start_time >= week_start,
+            Lesson.start_time < week_end,
+        )
+        .order_by(Lesson.start_time, Lesson.id)
+    )
+    if service_id is not None:
+        stmt = stmt.where(Lesson.service_id == service_id)
+
+    return [
+        ServiceWeekSlot(
+            service_id=lesson_service, day_of_week=start.weekday(), hour=start.hour,
+            lesson_id=lesson_id, day=start.date(), start=start.strftime("%H:%M"),
+            duration_min=duration, booked=booked, capacity=spots or 1,
+            teacher_name=teacher or None,
+        )
+        for lesson_id, lesson_service, start, duration, spots, teacher, booked in (await db.execute(stmt)).all()
+    ]
+
+
 @router.get("/services/{service_id}/week", response_model=list[ServiceWeekSlot])
 async def get_service_week(
     service_id: int,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Реальные занятия услуги на текущей неделе — для честной сетки «Расписание» в Каталоге."""
+    """Неделя одной услуги (см. `_week_slots`)."""
     await _get_service_or_404(service_id, ctx.studio_id, db)
-
-    today = datetime.now()
-    week_start = (today - timedelta(days=today.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
-    week_end = week_start + timedelta(days=7)
-
-    lessons = (await db.execute(
-        select(Lesson.start_time).where(
-            Lesson.service_id == service_id,
-            Lesson.studio_id == ctx.studio_id,
-            Lesson.status != "cancelled",
-            Lesson.start_time >= week_start,
-            Lesson.start_time < week_end,
-        )
-    )).scalars().all()
-
-    slots = {(st.weekday(), st.hour) for st in lessons}
-    return [ServiceWeekSlot(day_of_week=d, hour=h) for d, h in slots]
+    return await _week_slots(ctx.studio_id, db, service_id)

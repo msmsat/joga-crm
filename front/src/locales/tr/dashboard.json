@@ -105,5 +105,41 @@
     "cancelled": "İptal",
     "utilization": "Doluluk",
     "noData": "Veri yok"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Günaydın, {{name}}",
+      "day": "İyi günler, {{name}}",
+      "evening": "İyi akşamlar, {{name}}",
+      "night": "İyi akşamlar, {{name}}",
+      "morningPlain": "Günaydın",
+      "dayPlain": "İyi günler",
+      "eveningPlain": "İyi akşamlar",
+      "nightPlain": "İyi akşamlar"
+    },
+    "today": "Bugün",
+    "live": "Devam ediyor",
+    "vsPrev": "geçen aya göre",
+    "newClientsOn": "Yeni müşteriler, {{date}}",
+    "retentionHint": "Geri gelen müşterilerin payı",
+    "collapse": "Daralt",
+    "metricShort": {
+      "revenue": "Ciro",
+      "clients": "Müşteriler",
+      "bookings": "Randevular",
+      "retention": "Elde tutma",
+      "lessons": "Dersler",
+      "attendance": "Katılım",
+      "fill_rate": "Doluluk",
+      "rating": "Puan",
+      "active_clients": "Müşteriler"
+    },
+    "month": {
+      "title": "Stüdyoda bu ay",
+      "finance": "Finans",
+      "services": "Hizmetler",
+      "trainers": "Eğitmenler",
+      "modes": "Randevular"
+    }
   }
 }

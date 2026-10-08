@@ -371,17 +371,6 @@
   box-shadow: 0 8px 20px rgba(249, 160, 139, 0.3);
 }
 
-.cat-svc-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
 .cat-hero-name {
   font-size: 20px;
   font-weight: 800;
@@ -395,13 +384,6 @@
   margin-top: 3px;
   font-weight: 500;
 }
-
-.cat-hero-type {
-  font-weight: 700;
-}
-
-.cat-hero-type.group { color: #5BAB72; }
-.cat-hero-type.individual { color: #9B59B6; }
 
 /* ─── BODY ─────────────────────────────────────────────────────────────────── */
 .cat-body {
@@ -585,54 +567,6 @@
 
 .cat-hours-time.closed-txt { color: #CCCCCC; }
 
-/* ─── SERVICE SCHEDULE GRID ────────────────────────────────────────────────── */
-.cat-sch-wrap {
-  background: var(--bg);
-  border: 1.5px solid rgba(var(--ink), 0.06);
-  border-radius: 12px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.cat-sch-grid {
-  display: grid;
-  grid-template-columns: 44px repeat(7, 1fr);
-  gap: 2px;
-  padding: 10px;
-}
-
-.cat-sch-head {
-  font-size: 9px;
-  font-weight: 800;
-  color: #AAAAAA;
-  text-align: center;
-  padding: 4px 0 6px;
-  letter-spacing: 0.3px;
-}
-
-.cat-sch-time {
-  font-size: 9px;
-  font-weight: 600;
-  color: #CCCCCC;
-  display: flex;
-  align-items: center;
-  padding-right: 6px;
-  justify-content: flex-end;
-  height: 20px;
-}
-
-.cat-sch-cell {
-  height: 20px;
-  border-radius: 4px;
-  background: rgba(var(--ink), 0.04);
-  transition: background 0.15s;
-}
-
-.cat-sch-cell.booked {
-  background: currentColor;
-  opacity: 0.85;
-}
-
 /* ─── ACTION BUTTONS (hall detail) ────────────────────────────────────────── */
 .cat-action-btn {
   display: flex;
@@ -660,18 +594,6 @@
   border-color: rgba(216, 140, 154, 0.4);
   color: #D88C9A;
   background: rgba(216, 140, 154, 0.04);
-}
-
-/* ─── DESCRIPTION ──────────────────────────────────────────────────────────── */
-.cat-description {
-  font-size: 13.5px;
-  color: var(--muted);
-  line-height: 1.65;
-  margin: 8px 0 0;
-  padding: 14px 16px;
-  background: var(--bg);
-  border-radius: 10px;
-  border: 1.5px solid rgba(var(--ink), 0.05);
 }
 
 /* ─── EMPTY STATE ──────────────────────────────────────────────────────────── */
@@ -1441,7 +1363,7 @@
   .cat-h-btn { font-size: 0; gap: 0; padding: 8px; border-radius: 9px; }
   .cat-hero-info { flex: 1; min-width: 0; gap: 10px; }
   .cat-hero-info > div { min-width: 0; }
-  .cat-hero-icon, .cat-svc-icon { width: 40px; height: 40px; border-radius: 11px; }
+  .cat-hero-icon { width: 40px; height: 40px; border-radius: 11px; }
   .cat-hero-name {
     font-size: 15px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -1466,7 +1388,3 @@
 }
 
 @media (min-width: 921px) { .cat-bundle-mobile { display: none; } }
-@media (max-width: 900px) {
-  .cat-item:has(.cat-type-badge) { width: 220px; }
-  .cat-item .cat-type-badge { flex-shrink: 0; }
-}

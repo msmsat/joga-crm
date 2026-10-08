@@ -105,5 +105,41 @@
     "cancelled": "Peruttu",
     "utilization": "Käyttöaste",
     "noData": "Ei tietoja"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Hyvää huomenta, {{name}}",
+      "day": "Hyvää päivää, {{name}}",
+      "evening": "Hyvää iltaa, {{name}}",
+      "night": "Hei, {{name}}",
+      "morningPlain": "Hyvää huomenta",
+      "dayPlain": "Hyvää päivää",
+      "eveningPlain": "Hyvää iltaa",
+      "nightPlain": "Hei"
+    },
+    "today": "Tänään",
+    "live": "Käynnissä",
+    "vsPrev": "edelliseen kuukauteen",
+    "newClientsOn": "Uudet asiakkaat, {{date}}",
+    "retentionHint": "Palaavien asiakkaiden osuus",
+    "collapse": "Näytä vähemmän",
+    "metricShort": {
+      "revenue": "Liikevaihto",
+      "clients": "Asiakkaat",
+      "bookings": "Varaukset",
+      "retention": "Pysyvyys",
+      "lessons": "Tunnit",
+      "attendance": "Osallistuminen",
+      "fill_rate": "Täyttöaste",
+      "rating": "Arvosana",
+      "active_clients": "Asiakkaat"
+    },
+    "month": {
+      "title": "Kuukausi studiolla",
+      "finance": "Talous",
+      "services": "Palvelut",
+      "trainers": "Ohjaajat",
+      "modes": "Varaukset"
+    }
   }
 }

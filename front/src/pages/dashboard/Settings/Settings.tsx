@@ -89,7 +89,7 @@ export default function Settings() {
       {/* ─── CONTENT ─── */}
       <div
         ref={rightPanelRef}
-        className="set-content"
+        className="set-content dock-scroll"
         style={{ flex: 1, minWidth: 0, padding: "calc(var(--card-pad) + 8px) calc(var(--card-pad) + 16px)", width: "100%", maxWidth: "100%", boxSizing: "border-box", height: "100%", overflowY: "auto" }}
       >
         <div key={section} className="settings-content-anim" style={{ display: "flex", flexDirection: "column", gap: "0" }}>

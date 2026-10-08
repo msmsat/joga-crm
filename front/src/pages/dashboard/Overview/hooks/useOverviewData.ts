@@ -183,10 +183,17 @@ export function useOverviewData() {
     summary: summary.data ?? null,
     metrics, activeMetric, setActiveMetric, activeConfig,
     period, setPeriod, series: series.data ?? [],
+    seriesLoading: series.isPending && isOwner && seriesMetric !== null,
     trainers: trainers.data ?? [], services: services.data ?? [],
     events: activity.data ?? [],
     bookingModes: bookingModes.data?.booking_modes ?? [],
+    // Подсказки «требует внимания» едут в том же ответе /analytics/overview —
+    // их показывает телефонная главная (на большом экране они в Отчётах).
+    insights: bookingModes.data?.insights ?? [],
+    insightsLoading: bookingModes.isPending && isOwner,
     currencySymbol,
     // tasks/setTasks здесь БОЛЬШЕ НЕТ — вынесены в useOverviewTasks.ts (временная заглушка до D4)
   };
 }
+
+export type OverviewData = ReturnType<typeof useOverviewData>;

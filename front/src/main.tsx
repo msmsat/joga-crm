@@ -9,6 +9,9 @@ import '@fontsource/manrope/600.css'
 import '@fontsource/manrope/700.css'
 import '@fontsource/manrope/800.css'
 import './index.css'
+// До первого кадра: док телефона (MobileNav) встаёт над перекрытой полосой
+// окна сразу, а не прыжком после монтирования.
+import './lib/appHeight'
 import App from './App.tsx'
 import './i18n';
 import { detectLanguage } from './lib/detectLanguage';

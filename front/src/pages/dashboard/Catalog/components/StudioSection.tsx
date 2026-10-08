@@ -184,7 +184,7 @@ export function StudioSection() {
               </div>
             </div>
 
-            <div className="cat-body cat-fade" key={activeStudioId}>
+            <div className="cat-body cat-fade dock-scroll" key={activeStudioId}>
               {/* Hall selector tabs */}
               <div className="cat-hall-tabs">
                 <button

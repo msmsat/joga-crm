@@ -272,6 +272,27 @@
       "stretching": "Nyújtás",
       "individual": "Egyéni",
       "other": "Kategorizálatlan"
+    },
+    "card": {
+      "switch": "Csere",
+      "switchTitle": "Szolgáltatás cseréje",
+      "search": "Szolgáltatás keresése",
+      "group": "Csoportos",
+      "individual": "Egyéni",
+      "onlineOn": "Online foglalás nyitva",
+      "onlineOff": "Csak a recepción",
+      "slotTotal": "Ennyit foglal a naplóban",
+      "durationVaries": "Az idő a szakembertől függ",
+      "statsTitle": "Foglalások és bevétel",
+      "share": "a stúdió összes foglalásának {{pct}}%-a",
+      "bookingsTotal": "foglalás összesen",
+      "revenueTotal": "bevétel összesen",
+      "avgCheck": "átlagos kosár",
+      "weekTitle": "Ezen a héten",
+      "weekEmpty": "Erre a hétre nincs semmi beütemezve",
+      "dayEmpty": "Ezen a napon nincs semmi",
+      "openJournal": "Napló megnyitása",
+      "ownTerms": "a szakember saját ára vagy ideje"
     }
   },
   "subscriptions": {

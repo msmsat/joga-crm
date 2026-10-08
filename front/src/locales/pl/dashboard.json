@@ -106,5 +106,41 @@
     "cancelled": "Anulowane",
     "utilization": "Obłożenie",
     "noData": "Brak danych"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Dzień dobry, {{name}}",
+      "day": "Dzień dobry, {{name}}",
+      "evening": "Dobry wieczór, {{name}}",
+      "night": "Dobry wieczór, {{name}}",
+      "morningPlain": "Dzień dobry",
+      "dayPlain": "Dzień dobry",
+      "eveningPlain": "Dobry wieczór",
+      "nightPlain": "Dobry wieczór"
+    },
+    "today": "Dziś",
+    "live": "Trwa",
+    "vsPrev": "względem poprzedniego miesiąca",
+    "newClientsOn": "Nowi klienci, {{date}}",
+    "retentionHint": "Odsetek klientów, którzy wracają",
+    "collapse": "Zwiń",
+    "metricShort": {
+      "revenue": "Przychód",
+      "clients": "Klienci",
+      "bookings": "Rezerwacje",
+      "retention": "Utrzymanie",
+      "lessons": "Zajęcia",
+      "attendance": "Frekwencja",
+      "fill_rate": "Wypełnienie",
+      "rating": "Ocena",
+      "active_clients": "Klienci"
+    },
+    "month": {
+      "title": "Miesiąc w studiu",
+      "finance": "Finanse",
+      "services": "Usługi",
+      "trainers": "Trenerzy",
+      "modes": "Rezerwacje"
+    }
   }
 }

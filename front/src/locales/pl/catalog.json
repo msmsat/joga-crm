@@ -273,6 +273,27 @@
       "stretching": "Rozciąganie",
       "individual": "Indywidualna",
       "other": "Bez kategorii"
+    },
+    "card": {
+      "switch": "Zmień",
+      "switchTitle": "Zmień usługę",
+      "search": "Znajdź usługę",
+      "group": "Grupowa",
+      "individual": "Indywidualna",
+      "onlineOn": "Rezerwacja online otwarta",
+      "onlineOff": "Tylko przez recepcję",
+      "slotTotal": "Zajmuje w grafiku",
+      "durationVaries": "Czas zależy od wykonawcy",
+      "statsTitle": "Rezerwacje i przychód",
+      "share": "{{pct}}% wszystkich rezerwacji studia",
+      "bookingsTotal": "rezerwacji łącznie",
+      "revenueTotal": "przychód łącznie",
+      "avgCheck": "średni paragon",
+      "weekTitle": "W tym tygodniu",
+      "weekEmpty": "W tym tygodniu nic nie zaplanowano",
+      "dayEmpty": "W tym dniu nic nie ma",
+      "openJournal": "Otwórz grafik",
+      "ownTerms": "własna cena lub czas wykonawcy"
     }
   },
   "subscriptions": {

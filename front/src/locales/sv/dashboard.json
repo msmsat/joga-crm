@@ -105,5 +105,41 @@
     "cancelled": "Avbokat",
     "utilization": "Beläggning",
     "noData": "Inga data"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "God morgon, {{name}}",
+      "day": "God dag, {{name}}",
+      "evening": "God kväll, {{name}}",
+      "night": "Hej, {{name}}",
+      "morningPlain": "God morgon",
+      "dayPlain": "God dag",
+      "eveningPlain": "God kväll",
+      "nightPlain": "Hej"
+    },
+    "today": "Idag",
+    "live": "Pågår",
+    "vsPrev": "mot förra månaden",
+    "newClientsOn": "Nya kunder, {{date}}",
+    "retentionHint": "Andelen kunder som kommer tillbaka",
+    "collapse": "Visa mindre",
+    "metricShort": {
+      "revenue": "Intäkter",
+      "clients": "Kunder",
+      "bookings": "Bokningar",
+      "retention": "Lojalitet",
+      "lessons": "Pass",
+      "attendance": "Närvaro",
+      "fill_rate": "Beläggning",
+      "rating": "Betyg",
+      "active_clients": "Kunder"
+    },
+    "month": {
+      "title": "Månaden i studion",
+      "finance": "Ekonomi",
+      "services": "Tjänster",
+      "trainers": "Instruktörer",
+      "modes": "Bokning"
+    }
   }
 }

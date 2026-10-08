@@ -272,6 +272,27 @@
       "stretching": "Estiramientos",
       "individual": "Individual",
       "other": "Sin categoría"
+    },
+    "card": {
+      "switch": "Cambiar",
+      "switchTitle": "Cambiar servicio",
+      "search": "Buscar servicio",
+      "group": "Grupal",
+      "individual": "Individual",
+      "onlineOn": "Reserva online abierta",
+      "onlineOff": "Solo en recepción",
+      "slotTotal": "Ocupa en la agenda",
+      "durationVaries": "El tiempo depende del profesional",
+      "statsTitle": "Reservas e ingresos",
+      "share": "{{pct}} % de todas las reservas del estudio",
+      "bookingsTotal": "reservas en total",
+      "revenueTotal": "ingresos en total",
+      "avgCheck": "ticket medio",
+      "weekTitle": "Esta semana",
+      "weekEmpty": "No hay nada programado esta semana",
+      "dayEmpty": "Nada este día",
+      "openJournal": "Abrir agenda",
+      "ownTerms": "precio o tiempo propio del profesional"
     }
   },
   "subscriptions": {

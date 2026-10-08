@@ -1,0 +1,218 @@
+/* ── Телефонная главная ─────────────────────────────────────────────────────
+   Своя раскладка, а не сжатая десктопная сетка: приветствие, «пульс» студии
+   тёмной карточкой, лента метрик, день, внимание, задачи, лента, месяц.
+   Ритм — воздух между блоками, а не линии (ДС). Токены страницы объявлены
+   здесь и наследуются всеми блоками (TodayStrip, PhoneLists). */
+.page {
+  --ph-gutter: 16px;
+  /* Персик ДС на белом — 2:1, для текста ссылки слишком бледно. Тот же тон,
+     уведённый в глубину; в тёмной теме персик читается и сам. */
+  --ph-link: #B9654C;
+  --ph-up: #4F8F5A;
+  --ph-down: #C26D7E;
+  --ph-card-shadow: 0 10px 26px -10px rgba(26, 26, 26, 0.08), 0 2px 6px -2px rgba(26, 26, 26, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  /* .content на телефоне даёт 11px — поля страницы добираем до 16. */
+  padding: 6px calc(var(--ph-gutter) - var(--content-pad, 11px)) 28px;
+}
+:global(.dark) .page {
+  --ph-link: #F9A08B;
+  --ph-up: #A3C9A8;
+  --ph-down: #D88C9A;
+  --ph-card-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.6), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+}
+
+/* Главная карточка и лента метрик — одна мысль: ближе друг к другу. */
+.pulse { display: flex; flex-direction: column; gap: 14px; }
+
+/* ── Приветствие ── */
+.greeting { padding-top: 8px; }
+.date {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--text3);
+}
+.hello {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.14;
+  font-weight: 800;
+  letter-spacing: -0.9px;
+  color: var(--text);
+  text-wrap: balance;
+}
+.hello > span { display: inline-block; white-space: pre; }
+.helloPending { visibility: hidden; }
+
+/* ── Заголовок раздела ── */
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.headText { min-width: 0; }
+.headTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.45px;
+  color: var(--text);
+}
+.headSub {
+  margin: 3px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text3);
+}
+.count {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--peach-light), var(--peach));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.headAction {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  margin-right: -4px;
+  padding: 6px 0 6px 8px;
+  border: 0;
+  background: none;
+  color: var(--ph-link);
+  font: 700 13.5px var(--font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.headAction:active { opacity: 0.6; }
+
+/* ── Лента метрик ── */
+.rail,
+.tileGrid {
+  display: flex;
+  gap: 10px;
+}
+.rail {
+  overflow-x: auto;
+  margin: 0 calc(var(--ph-gutter) * -1) -14px;
+  padding: 2px var(--ph-gutter) 16px;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--ph-gutter);
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar { display: none; }
+.tileGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tile {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 132px;
+  padding: 13px 15px 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--card);
+  box-shadow: var(--ph-card-shadow);
+  color: var(--text);
+  font-family: var(--font);
+  text-align: left;
+  cursor: pointer;
+  scroll-snap-align: start;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tileGrid .tile { min-width: 0; }
+.tile:active { transform: scale(0.97); }
+.tile:focus-visible { outline: 2px solid var(--peach); outline-offset: 2px; }
+.tileRing {
+  position: absolute;
+  inset: -1px;
+  border: 1.5px solid var(--peach);
+  border-radius: 18px;
+  box-shadow: 0 10px 22px -12px rgba(249, 160, 139, 0.75);
+  pointer-events: none;
+}
+.tileLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tileOn .tileLabel { color: var(--text); }
+.tileDot { flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%; }
+.tileValue {
+  margin-top: 8px;
+  font-size: 20px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tileSkel {
+  width: 76px;
+  height: 22px;
+  margin-top: 8px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, rgba(var(--ink), 0.04) 25%, rgba(var(--ink), 0.08) 37%, rgba(var(--ink), 0.04) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+.tileTrend { min-height: 17px; margin-top: 3px; }
+.up,
+.down {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+.up { color: var(--ph-up); }
+.down { color: var(--ph-down); }
+
+/* ── Состояния ── */
+.notice {
+  padding: 22px 18px;
+  border: 1px dashed var(--border2);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--text3);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tileSkel { animation: none; }
+}

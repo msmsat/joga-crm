@@ -272,6 +272,27 @@
       "stretching": "Stretching",
       "individual": "Individuell",
       "other": "Okategoriserad"
+    },
+    "card": {
+      "switch": "Byt",
+      "switchTitle": "Byt tjänst",
+      "search": "Sök tjänst",
+      "group": "Grupp",
+      "individual": "Individuell",
+      "onlineOn": "Onlinebokning öppen",
+      "onlineOff": "Endast via receptionen",
+      "slotTotal": "Tar i schemat",
+      "durationVaries": "Tiden beror på utövaren",
+      "statsTitle": "Bokningar och intäkter",
+      "share": "{{pct}} % av alla studions bokningar",
+      "bookingsTotal": "bokningar totalt",
+      "revenueTotal": "intäkter totalt",
+      "avgCheck": "snittköp",
+      "weekTitle": "Den här veckan",
+      "weekEmpty": "Inget inplanerat den här veckan",
+      "dayEmpty": "Inget den här dagen",
+      "openJournal": "Öppna schemat",
+      "ownTerms": "utövarens egna pris eller tid"
     }
   },
   "subscriptions": {

@@ -105,5 +105,41 @@
     "cancelled": "Canceladas",
     "utilization": "Ocupação",
     "noData": "Sem dados"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Bom dia, {{name}}",
+      "day": "Boa tarde, {{name}}",
+      "evening": "Boa noite, {{name}}",
+      "night": "Boa noite, {{name}}",
+      "morningPlain": "Bom dia",
+      "dayPlain": "Boa tarde",
+      "eveningPlain": "Boa noite",
+      "nightPlain": "Boa noite"
+    },
+    "today": "Hoje",
+    "live": "A decorrer",
+    "vsPrev": "vs mês anterior",
+    "newClientsOn": "Novos clientes, {{date}}",
+    "retentionHint": "Parte dos clientes que voltam",
+    "collapse": "Mostrar menos",
+    "metricShort": {
+      "revenue": "Receita",
+      "clients": "Clientes",
+      "bookings": "Marcações",
+      "retention": "Retenção",
+      "lessons": "Aulas",
+      "attendance": "Presenças",
+      "fill_rate": "Ocupação",
+      "rating": "Avaliação",
+      "active_clients": "Clientes"
+    },
+    "month": {
+      "title": "O mês no estúdio",
+      "finance": "Finanças",
+      "services": "Serviços",
+      "trainers": "Treinadores",
+      "modes": "Marcações"
+    }
   }
 }

@@ -146,12 +146,13 @@ export function useServiceList() {
   return { services, isLoading, error, refetch, createService, updateService, deleteService }
 }
 
-// Реальные занятия услуги на текущей неделе — честная сетка «Расписание», без выдумки.
-export function useServiceWeek(serviceId: number | null) {
+// Занятия всех услуг на текущей неделе студии одним набором: карточка берёт
+// строки своей услуги синхронно, и переключение услуг рисуется одним кадром,
+// без дозагрузки, после которой блок недели двигал бы раскладку.
+export function useServicesWeek() {
   const { data: slots = [], isLoading } = useQuery<ServiceWeekSlot[]>({
-    queryKey: queryKeys.serviceWeek(serviceId ?? 0),
-    queryFn: () => servicesApi.getWeek(serviceId!),
-    enabled: serviceId != null,
+    queryKey: queryKeys.servicesWeek,
+    queryFn: () => servicesApi.getWeekAll(),
   })
   return { slots, isLoading }
 }

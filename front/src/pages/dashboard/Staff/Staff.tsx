@@ -531,7 +531,7 @@ export default function Staff() {
                 </div>
               </div>
 
-              <div className="premium-body fade-in" key={profile.id}>
+              <div className="premium-body fade-in dock-scroll" key={profile.id}>
 
                 {/* Stats cards — JSON-driven per role */}
                 <div className="stats-row" style={{ gridTemplateColumns: `repeat(auto-fit, minmax(min(140px, 100%), 1fr))` }}>

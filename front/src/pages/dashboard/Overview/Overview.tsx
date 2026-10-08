@@ -8,6 +8,8 @@ import TodayLessons from './components/widgets/TodayLessons';
 import RecentEventsBoard from './components/widgets/RecentEventsBoard';
 import { BookingModesBoard } from './components/BookingModesBoard';
 import SummaryWidgets from './components/widgets/SummaryWidgets';
+import PhoneOverview from './components/phone/PhoneOverview';
+import { usePhone } from '../../../hooks/usePhone';
 import { errorMessage } from '../../../api/errorMessage';
 import { Button, EmptyState, useToast } from '../../../components/ui/index';
 
@@ -15,6 +17,7 @@ export default function Overview() {
   const { t } = useTranslation('dashboard');
   const d = useOverviewData();
   const toast = useToast();
+  const isPhone = usePhone();
   // Владелец видит студию целиком; админ и тренер — свой срез (GET /analytics/me).
   // forbidden значит «роль в токене устарела»: ряд метрик пустой у обоих.
   const canSeeStudioData = d.isOwner && !d.forbidden; // owner-only срезы (финансы, аналитика студии)
@@ -41,6 +44,9 @@ export default function Overview() {
       />
     </div>
   );
+
+  // На телефоне — своя раскладка из тех же данных, а не эта сетка в одну колонку.
+  if (isPhone) return <PhoneOverview d={d} errorCard={errorCard} />;
 
   return (
     <>

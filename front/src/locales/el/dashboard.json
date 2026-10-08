@@ -105,5 +105,41 @@
     "cancelled": "Ακυρωμένες",
     "utilization": "Πληρότητα",
     "noData": "Χωρίς δεδομένα"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Καλημέρα, {{name}}",
+      "day": "Καλησπέρα, {{name}}",
+      "evening": "Καλησπέρα, {{name}}",
+      "night": "Καλησπέρα, {{name}}",
+      "morningPlain": "Καλημέρα",
+      "dayPlain": "Καλησπέρα",
+      "eveningPlain": "Καλησπέρα",
+      "nightPlain": "Καλησπέρα"
+    },
+    "today": "Σήμερα",
+    "live": "Σε εξέλιξη",
+    "vsPrev": "έναντι προηγούμενου μήνα",
+    "newClientsOn": "Νέοι πελάτες, {{date}}",
+    "retentionHint": "Ποσοστό πελατών που επιστρέφουν",
+    "collapse": "Λιγότερα",
+    "metricShort": {
+      "revenue": "Έσοδα",
+      "clients": "Πελάτες",
+      "bookings": "Κρατήσεις",
+      "retention": "Διατήρηση",
+      "lessons": "Μαθήματα",
+      "attendance": "Προσέλευση",
+      "fill_rate": "Πληρότητα",
+      "rating": "Βαθμολογία",
+      "active_clients": "Πελάτες"
+    },
+    "month": {
+      "title": "Ο μήνας στο στούντιο",
+      "finance": "Οικονομικά",
+      "services": "Υπηρεσίες",
+      "trainers": "Εκπαιδευτές",
+      "modes": "Κρατήσεις"
+    }
   }
 }

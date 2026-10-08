@@ -273,6 +273,27 @@
       "stretching": "Stretching",
       "individual": "Individual",
       "other": "Necategorizat"
+    },
+    "card": {
+      "switch": "Schimbă",
+      "switchTitle": "Schimbă serviciul",
+      "search": "Caută serviciu",
+      "group": "Grup",
+      "individual": "Individual",
+      "onlineOn": "Programare online deschisă",
+      "onlineOff": "Doar prin recepție",
+      "slotTotal": "Ocupă în jurnal",
+      "durationVaries": "Timpul depinde de specialist",
+      "statsTitle": "Rezervări și încasări",
+      "share": "{{pct}}% din toate rezervările studioului",
+      "bookingsTotal": "rezervări în total",
+      "revenueTotal": "încasări totale",
+      "avgCheck": "bon mediu",
+      "weekTitle": "Săptămâna aceasta",
+      "weekEmpty": "Nimic programat săptămâna aceasta",
+      "dayEmpty": "Nimic în această zi",
+      "openJournal": "Deschide jurnalul",
+      "ownTerms": "preț sau timp propriu al specialistului"
     }
   },
   "subscriptions": {

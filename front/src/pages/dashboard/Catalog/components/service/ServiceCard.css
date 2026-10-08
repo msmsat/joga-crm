@@ -1,0 +1,810 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   КАРТОЧКА УСЛУГИ
+   Услуга студии — это отрезок времени, который продают. Поэтому главный
+   элемент карточки — «лента времени»: сколько услуга занимает в журнале
+   вместе с буферами до и после, в цвете самой услуги (этим же цветом она
+   стоит в сетке журнала). Остальное — спокойные цифры и списки без рамок:
+   смелость потрачена в одном месте.
+   Цвет услуги приходит инлайном как --svc.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.cat-right.svc-right { display: flex; flex-direction: column; min-height: 0; }
+
+/* Переключатель услуги живёт только там, где нет левого списка (≤900px) */
+.svc-switch-wrap { display: none; }
+
+.svc-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.svc-scroll::-webkit-scrollbar { display: none; }
+
+.svc-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding-bottom: 30px;
+}
+
+/* ─── ШАПКА ──────────────────────────────────────────────────────────────── */
+.svc-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "tags actions"
+    "name name"
+    "desc desc"
+    "figs figs"
+    "time time";
+  column-gap: 16px;
+  padding: 24px 28px 22px;
+  background: color-mix(in srgb, var(--svc) 5%, var(--bg-card));
+  border-bottom: 1px solid color-mix(in srgb, var(--svc) 14%, transparent);
+}
+
+.svc-tags {
+  grid-area: tags;
+  align-self: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+.svc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-card) 72%, transparent);
+  box-shadow: inset 0 0 0 1px rgba(var(--ink), 0.08);
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.svc-tag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--svc);
+  flex-shrink: 0;
+}
+
+.svc-tag.is-on .svc-tag-dot {
+  background: #A3C9A8;
+  box-shadow: 0 0 0 3px rgba(163, 201, 168, 0.28);
+}
+
+.svc-tag.is-off { color: var(--text3); }
+.svc-tag.is-off .svc-tag-dot { background: rgba(var(--ink), 0.22); }
+
+.svc-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.svc-name {
+  grid-area: name;
+  margin: 18px 0 0;
+  color: var(--onyx);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+
+.svc-desc {
+  grid-area: desc;
+  max-width: 64ch;
+  margin: 8px 0 0;
+  color: var(--text2);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+/* Цифры предложения: цена, длительность, места */
+.svc-figs {
+  grid-area: figs;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 44px;
+  margin-top: 24px;
+}
+
+.svc-fig { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+.svc-fig-v {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--onyx);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.svc-fig-unit {
+  color: var(--text2);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.svc-fig-was {
+  margin-left: 6px;
+  color: var(--text3);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.svc-fig-l { color: var(--text3); font-size: 12.5px; font-weight: 600; }
+
+/* ─── ЛЕНТА ВРЕМЕНИ ──────────────────────────────────────────────────────── */
+.svc-time { grid-area: time; margin-top: 22px; }
+
+.svc-time-track {
+  height: 12px;
+  border-radius: 6px;
+  background: rgba(var(--ink), 0.06);
+  overflow: hidden;
+}
+
+.svc-time-fill {
+  display: flex;
+  gap: 2px;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.svc-seg { min-width: 3px; height: 100%; }
+.svc-seg.is-main { background: var(--svc); }
+/* Мастера, у которых услуга идёт дольше: тот же цвет, но штрихом */
+.svc-seg.is-ext {
+  background: repeating-linear-gradient(-45deg,
+    var(--svc) 0 3px, color-mix(in srgb, var(--svc) 30%, transparent) 3px 6px);
+}
+.svc-seg.is-buf {
+  background: repeating-linear-gradient(-45deg,
+    rgba(var(--ink), 0.2) 0 2px, rgba(var(--ink), 0.06) 2px 6px);
+}
+
+.svc-ruler { position: relative; height: 24px; margin-top: 6px; }
+
+.svc-tick {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 4px;
+  background: rgba(var(--ink), 0.16);
+}
+.svc-tick.is-major { height: 7px; background: rgba(var(--ink), 0.32); }
+
+.svc-tick-l {
+  position: absolute;
+  top: 10px;
+  transform: translateX(-50%);
+  color: var(--text3);
+  font-size: 10.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.svc-tick-l.is-first { transform: none; }
+.svc-tick-l.is-last { transform: translateX(-100%); color: var(--onyx); font-weight: 800; }
+
+.svc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.svc-leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text2);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.svc-leg b { color: var(--onyx); font-weight: 800; font-variant-numeric: tabular-nums; }
+.svc-leg-sw { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.svc-leg-total { margin-left: auto; }
+
+/* ─── БЛОКИ ──────────────────────────────────────────────────────────────── */
+.svc-block { padding: 0 28px; min-width: 0; }
+
+/* Неделя и исполнители — рядом, когда карточке хватает ширины: на всю
+   ширину ноутбука семь дней разъезжались на 170px каждый, а строка занятия
+   становилась полосой с временем и заполненностью на разных концах экрана. */
+.svc-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
+  align-items: start;
+  gap: 30px 44px;
+  padding: 0 28px;
+}
+.svc-pair > .svc-block { padding: 0; }
+
+.svc-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  color: var(--onyx);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.svc-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: rgba(var(--ink), 0.06);
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.svc-muted { margin: 0; color: var(--text3); font-size: 13px; font-weight: 600; line-height: 1.55; }
+
+/* Записи и выручка: одна подложка на четыре цифры, без отдельных плашек */
+.svc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 4px;
+  padding: 6px;
+  border-radius: 18px;
+  background: rgba(var(--ink), 0.028);
+}
+
+.svc-stat { display: flex; flex-direction: column; gap: 5px; padding: 14px 16px; min-width: 0; }
+
+.svc-stat-v {
+  overflow: hidden;
+  color: var(--onyx);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.svc-stat-l { color: var(--text3); font-size: 12.5px; font-weight: 600; line-height: 1.35; }
+
+.svc-share {
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: rgba(var(--ink), 0.08);
+  overflow: hidden;
+}
+.svc-share > i { display: block; height: 100%; border-radius: 2px; background: var(--svc); }
+.svc-share-l { color: var(--text2); font-size: 11.5px; font-weight: 700; }
+
+/* ─── НЕДЕЛЯ ─────────────────────────────────────────────────────────────── */
+.svc-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.svc-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0 9px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text2);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+.svc-day:hover { background: rgba(var(--ink), 0.04); }
+.svc-day:focus-visible { outline: 2px solid #FCAE91; outline-offset: 1px; }
+
+.svc-day-w { color: var(--text3); font-size: 11.5px; font-weight: 700; }
+.svc-day-n {
+  color: var(--onyx);
+  font-size: 17px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.svc-day.is-past .svc-day-n { color: var(--text3); }
+.svc-day.is-today .svc-day-w { color: #F9A08B; }
+
+.svc-day-dots { display: flex; gap: 3px; height: 5px; }
+.svc-day-dots > i { width: 5px; height: 5px; border-radius: 50%; background: var(--svc); }
+
+.svc-day[aria-pressed="true"] { background: var(--onyx); }
+.svc-day[aria-pressed="true"] .svc-day-w,
+.svc-day[aria-pressed="true"] .svc-day-n { color: var(--bg); }
+.svc-day[aria-pressed="true"].is-today .svc-day-w { color: #FCAE91; }
+
+.svc-slots { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+
+/* Строка занятия — как карточка в журнале: полоска цвета услуги слева */
+.svc-slot {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px 12px 16px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(var(--ink), 0.028);
+  box-shadow: inset 3px 0 0 var(--svc);
+  color: var(--text2);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+.svc-slot:hover { background: rgba(var(--ink), 0.055); }
+.svc-slot:focus-visible { outline: 2px solid #FCAE91; outline-offset: 1px; }
+.svc-slot.is-past { opacity: 0.55; }
+
+.svc-slot-time {
+  color: var(--onyx);
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.svc-slot-end { margin-left: 2px; color: var(--text3); font-size: 12px; font-weight: 600; }
+
+.svc-slot-who {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.svc-slot-fill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.svc-slot-bar { width: 44px; height: 4px; border-radius: 2px; background: rgba(var(--ink), 0.09); overflow: hidden; }
+.svc-slot-bar > i { display: block; height: 100%; background: var(--svc); }
+.svc-slot-go { display: flex; color: var(--text3); }
+
+.svc-week-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(var(--ink), 0.028);
+}
+
+/* ─── КТО ВЕДЁТ ──────────────────────────────────────────────────────────── */
+.svc-people { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+
+.svc-person {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 0;
+}
+
+.svc-person-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.svc-person-sub { color: var(--text3); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.svc-ava {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--svc) 20%, var(--bg-card));
+  color: var(--onyx);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.svc-person-name {
+  overflow: hidden;
+  color: var(--onyx);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.svc-person-v {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.svc-person-v.is-own { color: var(--onyx); }
+.svc-own-dot { width: 6px; height: 6px; border-radius: 50%; background: #F9A08B; flex-shrink: 0; }
+.svc-own-note { display: flex; align-items: center; gap: 7px; margin: 8px 0 0; color: var(--text3); font-size: 12px; font-weight: 600; }
+
+/* ─── СОСТАВ КОМПЛЕКСА ───────────────────────────────────────────────────── */
+.svc-parts { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+
+.svc-part {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 14px 11px 12px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(var(--ink), 0.028);
+  color: var(--text2);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+.svc-part:hover { background: rgba(var(--ink), 0.055); }
+.svc-part:focus-visible { outline: 2px solid #FCAE91; outline-offset: 1px; }
+
+.svc-part-n {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--onyx);
+  font-size: 11.5px;
+  font-weight: 800;
+}
+
+.svc-part-name {
+  overflow: hidden;
+  color: var(--onyx);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.svc-part-meta { font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.svc-refs { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ─── ПЕРЕКЛЮЧАТЕЛЬ УСЛУГИ (≤900px) ──────────────────────────────────────── */
+.svc-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 62px;
+  padding: 10px 10px 10px 12px;
+  border: 1.5px solid rgba(var(--ink), 0.08);
+  border-radius: 18px;
+  background: var(--bg-card);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06);
+  color: var(--onyx);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s ease, border-radius 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.svc-switch:active { transform: scale(0.985); }
+.svc-switch:focus-visible { outline: 2px solid #FCAE91; outline-offset: 2px; }
+/* Открытая кнопка — верх одной фигуры со списком: низ без скруглений и без
+   рамки, рамка персиковая, как у списка под ней. */
+.svc-switch[aria-expanded="true"] {
+  border-color: rgba(252, 174, 145, 0.6);
+  border-bottom-color: transparent;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+.svc-switch-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--svc) 20%, var(--bg-card));
+  flex-shrink: 0;
+}
+.svc-switch-mark > i { width: 12px; height: 12px; border-radius: 50%; background: var(--svc); }
+
+.svc-switch-text { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+
+.svc-switch-name,
+.svc-switch-sub {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.svc-switch-name { font-size: 17px; font-weight: 800; letter-spacing: -0.015em; line-height: 1.2; }
+.svc-switch-sub { color: var(--text3); font-size: 12px; font-weight: 600; }
+
+.svc-switch-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 10px 0 13px;
+  border-radius: 999px;
+  background: rgba(252, 174, 145, 0.18);
+  color: var(--onyx);
+  font-size: 12.5px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.svc-switch-cta svg { color: #F9A08B; transition: transform 0.22s ease; }
+.svc-switch[aria-expanded="true"] .svc-switch-cta svg { transform: rotate(180deg); }
+
+/* Список услуг — продолжение кнопки: портал на <body> (выше дока, ниже
+   модалок), вплотную под кнопкой и на её ширину, рамка продолжает её рамку.
+   Страница не затемняется — ловушка тапа прозрачная. */
+.svc-pop-catch { position: fixed; inset: 0; z-index: 900; }
+
+.svc-pop {
+  position: fixed;
+  z-index: 901;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border: 1.5px solid rgba(252, 174, 145, 0.6);
+  border-top: none;
+  border-radius: 0 0 18px 18px;
+  background: var(--bg-card);
+  box-shadow: 0 26px 40px -18px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+  animation: svc-pop-unfold 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+/* Шов между кнопкой и списком — тонкая линия с отступами, а не рамка */
+.svc-pop::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: rgba(var(--ink), 0.07);
+}
+
+.svc-pop-add {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 8px 2px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(252, 174, 145, 0.13);
+  color: var(--onyx);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease;
+  flex-shrink: 0;
+}
+.svc-pop-add:hover { background: rgba(252, 174, 145, 0.22); }
+.svc-pop-add:focus-visible { outline: 2px solid #FCAE91; outline-offset: 1px; }
+
+.svc-pop-plus {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+  box-shadow: 0 6px 14px rgba(249, 160, 139, 0.35);
+  color: #FFFFFF;
+}
+
+.svc-pop-search { padding: 8px 8px 2px; flex-shrink: 0; }
+
+.svc-pop-list {
+  padding: 2px 8px 10px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.svc-pop-group { padding: 12px 10px 5px; color: var(--text3); font-size: 12px; font-weight: 700; }
+
+.svc-pop-item {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--onyx);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.svc-pop-item:hover,
+.svc-pop-item:focus-visible { background: rgba(var(--ink), 0.045); outline: none; }
+.svc-pop-item[aria-current="true"] { background: rgba(252, 174, 145, 0.13); }
+
+.svc-pop-dot { width: 10px; height: 10px; border-radius: 50%; }
+.svc-pop-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.svc-pop-name {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.svc-pop-sub { color: var(--text3); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.svc-pop-check { display: flex; color: #F9A08B; }
+.svc-pop-empty { padding: 18px 10px; color: var(--text3); font-size: 13px; font-weight: 600; text-align: center; }
+
+/* Список выезжает из-под кнопки вниз; края по бокам и снизу оставлены под тень */
+@keyframes svc-pop-unfold {
+  from { clip-path: inset(0 -48px 100% -48px); }
+  to { clip-path: inset(0 -48px -64px -48px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svc-pop { animation: none; }
+}
+
+/* ── Низкий экран ноутбука: шапка отдаёт высоту содержимому ─────────────── */
+@media (max-height: 820px) {
+  .svc-hero { padding: 18px 24px 18px; }
+  .svc-name { margin-top: 12px; font-size: 26px; }
+  .svc-figs { margin-top: 18px; }
+  .svc-fig-v { font-size: 27px; }
+  .svc-time { margin-top: 18px; }
+  .svc-content { gap: 26px; }
+  .svc-block { padding: 0 24px; }
+  .svc-pair { padding: 0 24px; }
+}
+
+/* ── Планшет и телефон: левый список уходит, его место — переключатель ────
+   Лента карточек над содержимым была второй навигацией: на телефоне она
+   съедала строку экрана и всё равно показывала полторы услуги. Теперь
+   текущая услуга сама кнопка, а список с «+» открывается из неё. */
+@media (max-width: 900px) {
+  .cat-layout.svc-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  .cat-layout.svc-layout > .cat-list-panel { display: none; }
+  /* Тот же оттенок, что у шапки: кнопка и шапка читаются одним заголовком */
+  .svc-switch-wrap {
+    display: block;
+    flex-shrink: 0;
+    padding: 16px 20px 0;
+    background: color-mix(in srgb, var(--svc) 5%, var(--bg-card));
+  }
+  /* Название, категория и формат уже на кнопке-переключателе */
+  .svc-hero .svc-name,
+  .svc-hero .svc-tag-id { display: none; }
+  .svc-hero { grid-template-areas: "tags actions" "desc desc" "figs figs" "time time"; }
+}
+
+/* ── Телефон: другая раскладка, а не «то же самое, но уже» ─────────────────
+   Рамка правой панели уходит: блоки становятся самостоятельными карточками
+   на фоне страницы, а прокрутка забирает поля страницы, чтобы мягкие тени
+   карточек не обрезались по краю. Действия — внизу шапки, под пальцем. */
+@media (max-width: 767px) {
+  .cat-layout.svc-layout { overflow: visible; }
+  .cat-right.svc-right {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .svc-switch-wrap { padding: 0 0 10px; background: none; }
+
+  .svc-scroll {
+    margin-inline: calc(-1 * var(--card-pad));
+    padding-inline: var(--card-pad);
+    /* Карточки уходят под переключатель мягко, а не срезом по линейке */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 10px);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 10px);
+  }
+
+  .svc-content { gap: 12px; padding: 10px 0 0; }
+  .svc-pair { gap: 12px; padding: 0; }
+  .svc-pair > .svc-block { padding: 16px; }
+
+  .svc-hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "tags" "desc" "figs" "time" "actions";
+    padding: 16px 16px 14px;
+    border: 1px solid color-mix(in srgb, var(--svc) 18%, transparent);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.05);
+  }
+  .svc-tags { gap: 5px; }
+  .svc-tag { height: 26px; padding: 0 10px; font-size: 11.5px; }
+  .svc-desc { margin-top: 12px; font-size: 13.5px; }
+  .svc-figs { gap: 12px 26px; margin-top: 16px; }
+  .svc-fig-v { font-size: 25px; }
+  .svc-fig-unit { font-size: 13px; }
+  .svc-time { margin-top: 16px; }
+  .svc-legend { gap: 6px 14px; }
+  .svc-leg-total { margin-left: 0; }
+
+  .svc-actions { margin-top: 14px; }
+  .svc-actions > .v-btn:first-child { flex: 1; }
+
+  .svc-block {
+    padding: 16px;
+    border: 1px solid rgba(var(--ink), 0.05);
+    border-radius: 20px;
+    background: var(--bg-card);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.05);
+  }
+  .svc-h { margin-bottom: 12px; font-size: 15px; }
+
+  .svc-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; padding: 0; background: none; }
+  .svc-stat { padding: 8px 4px 10px 0; }
+  .svc-stat-v { font-size: 20px; }
+
+  .svc-days { gap: 2px; }
+  .svc-day { padding: 8px 0 7px; border-radius: 12px; }
+  .svc-day-n { font-size: 16px; }
+
+  .svc-slot { grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; padding: 11px 12px 11px 14px; }
+  .svc-slot-go { display: none; }
+  .svc-slot-bar { width: 32px; }
+
+  .svc-person { gap: 12px; }
+
+}

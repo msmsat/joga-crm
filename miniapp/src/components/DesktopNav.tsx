@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { NavItem } from './navItems';
 import AccountMenu from './AccountMenu';
 import LanguagePopover from './profile/LanguagePopover';
+import NavGlyph from './NavGlyph';
 import { cn } from '../lib/utils';
 
 type Props = {
@@ -151,21 +152,17 @@ export default function DesktopNav({
                 />
               )}
 
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                strokeWidth={1.8}
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              {/* Та же иконка, что в капсуле телефона: у открытого раздела
+                  она залита цветом студии (NavGlyph). */}
+              <NavGlyph
+                icon={item.icon}
+                solid={item.solid}
+                filled={isActive}
                 className={cn(
-                  'relative h-[19px] w-[19px] shrink-0 transition-colors duration-200',
-                  isActive
-                    ? 'stroke-brand'
-                    : 'stroke-muted-foreground group-hover:stroke-foreground',
+                  '[--glyph:20px] transition-colors duration-200',
+                  isActive ? 'text-brand' : 'text-muted-foreground group-hover:text-foreground',
                 )}
-              >
-                {item.icon}
-              </svg>
+              />
 
               <span
                 className={cn(

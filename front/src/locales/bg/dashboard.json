@@ -105,5 +105,41 @@
     "cancelled": "Отменени",
     "utilization": "Натовареност",
     "noData": "Няма данни"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Добро утро, {{name}}",
+      "day": "Добър ден, {{name}}",
+      "evening": "Добър вечер, {{name}}",
+      "night": "Добър вечер, {{name}}",
+      "morningPlain": "Добро утро",
+      "dayPlain": "Добър ден",
+      "eveningPlain": "Добър вечер",
+      "nightPlain": "Добър вечер"
+    },
+    "today": "Днес",
+    "live": "Тече",
+    "vsPrev": "спрямо миналия месец",
+    "newClientsOn": "Нови клиенти, {{date}}",
+    "retentionHint": "Дял на клиентите, които се връщат",
+    "collapse": "Свий",
+    "metricShort": {
+      "revenue": "Приходи",
+      "clients": "Клиенти",
+      "bookings": "Записвания",
+      "retention": "Задържане",
+      "lessons": "Занятия",
+      "attendance": "Посещаемост",
+      "fill_rate": "Запълване",
+      "rating": "Оценка",
+      "active_clients": "Клиенти"
+    },
+    "month": {
+      "title": "Месецът в студиото",
+      "finance": "Финанси",
+      "services": "Услуги",
+      "trainers": "Треньори",
+      "modes": "Записване"
+    }
   }
 }

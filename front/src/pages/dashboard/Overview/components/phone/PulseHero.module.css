@@ -1,0 +1,263 @@
+/* ── Главная карточка телефона ─────────────────────────────────────────────
+   Тёплый графит в обеих темах: тёмная поверхность здесь — не тема, а роль
+   (единственный тёмный блок страницы, на него глаз падает первым). Поэтому
+   цвета — свои токены карточки, а не токены темы: токены светлой темы дали
+   бы оникс на графите. */
+.hero {
+  --hero-ink: #FFF7F2;
+  --hero-dim: rgba(255, 238, 228, 0.64);
+  --hero-faint: rgba(255, 238, 228, 0.42);
+  --hero-glass: rgba(255, 255, 255, 0.07);
+  --hero-up: #C4E6C8;
+  --hero-down: #F4BAC5;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 26px;
+  padding: 18px 20px 16px;
+  color: var(--hero-ink);
+  background:
+    radial-gradient(120% 75% at 105% -12%, rgba(249, 160, 139, 0.36) 0%, rgba(249, 160, 139, 0) 60%),
+    radial-gradient(70% 55% at -12% 108%, rgba(252, 174, 145, 0.12) 0%, rgba(252, 174, 145, 0) 62%),
+    linear-gradient(162deg, #2B2320 0%, #1C1715 52%, #141110 100%);
+  box-shadow:
+    0 30px 50px -28px rgba(60, 30, 18, 0.55),
+    0 12px 22px -14px rgba(60, 30, 18, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Зерно: без него ровный градиент на OLED-экране выглядит пластиком. */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* На графитовой странице карточке нужен свой край, иначе она в ней тонет. */
+:global(.dark) .hero {
+  background:
+    radial-gradient(120% 75% at 105% -12%, rgba(249, 160, 139, 0.28) 0%, rgba(249, 160, 139, 0) 60%),
+    radial-gradient(70% 55% at -12% 108%, rgba(252, 174, 145, 0.10) 0%, rgba(252, 174, 145, 0) 62%),
+    linear-gradient(162deg, #302724 0%, #211C1A 55%, #1A1615 100%);
+  box-shadow:
+    0 30px 50px -28px rgba(0, 0, 0, 0.9),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+/* ── Шапка: что за число и куда провалиться ── */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 28px;
+}
+
+.label {
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--hero-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.more {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-right: -6px;
+  padding: 7px 10px 7px 11px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--hero-glass);
+  color: var(--hero-ink);
+  font: 700 12px/1 var(--font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.more:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.13); }
+.more:focus-visible { outline: 2px solid var(--peach); outline-offset: 2px; }
+
+/* ── Число ── */
+.number {
+  position: relative;
+  margin-top: 8px;
+  height: 50px;
+  font-size: 44px;
+  line-height: 50px;
+  font-weight: 800;
+  letter-spacing: -1.6px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.numberSm { font-size: 36px; letter-spacing: -1.2px; }
+.numberXs { font-size: 30px; letter-spacing: -0.9px; }
+.ghost { visibility: hidden; }
+.scrubValue { position: absolute; left: 0; top: 0; }
+.numberSkel {
+  display: inline-block;
+  width: 62%;
+  height: 38px;
+  vertical-align: middle;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 25%, rgba(255, 255, 255, 0.13) 37%, rgba(255, 255, 255, 0.06) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.delta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--hero-faint);
+}
+
+.chipUp,
+.chipDown {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px 4px 7px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.chipUp { color: var(--hero-up); background: rgba(163, 201, 168, 0.16); }
+.chipDown { color: var(--hero-down); background: rgba(216, 140, 154, 0.18); }
+
+/* ── Кривая ── */
+.chart {
+  position: relative;
+  height: 128px;
+  /* Во всю ширину карточки: кривая уходит под её скругление, а не обрывается
+     на полях текста. Крайние точки при этом стоят под краями текста (PAD_X). */
+  margin: 14px -20px 0;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.svg { display: block; overflow: visible; }
+.baseline { stroke: rgba(255, 255, 255, 0.09); stroke-width: 1; stroke-dasharray: 2 5; }
+/* Мягкое свечение под линией — тот же путь, размытый и полупрозрачный. */
+.glow { opacity: 0.55; }
+
+.beacon { transition: opacity 0.2s ease; }
+/* !important: motion держит на узле инлайновую opacity после въезда. */
+.beaconHidden { opacity: 0 !important; transition: opacity 0.12s ease; }
+.beaconRing {
+  fill: none;
+  stroke: rgba(252, 174, 145, 0.8);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: beacon 2.6s cubic-bezier(0.2, 0.7, 0.2, 1) infinite;
+}
+.beaconDot { fill: #FFE6DC; filter: drop-shadow(0 0 6px rgba(249, 160, 139, 0.95)); }
+.hair { stroke: rgba(255, 255, 255, 0.34); stroke-width: 1; }
+.scrubDot { fill: #FFF7F2; stroke: #F9A08B; stroke-width: 2.5; filter: drop-shadow(0 0 8px rgba(249, 160, 139, 0.85)); }
+
+.chartEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 128px;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hero-faint);
+}
+.chartSkel {
+  width: 100%;
+  height: 72px;
+  align-self: flex-end;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.09) 37%, rgba(255, 255, 255, 0.04) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  height: 16px;
+  line-height: 16px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--hero-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Период: переключатель кита в «стеклянном» виде ── */
+.foot { display: flex; align-items: center; height: 46px; margin-top: 13px; }
+.foot > * { flex: 1; min-width: 0; }
+.foot :global(.vk-seg) { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.06); border-radius: 13px; }
+.foot :global(.vk-seg-thumb) { background: rgba(255, 255, 255, 0.13); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08); border-radius: 10px; }
+.foot :global(.vk-seg-btn) { padding: 9px 6px; font-size: 12.5px; color: var(--hero-faint); }
+.foot :global(.vk-seg-btn:hover) { color: var(--hero-dim); }
+.foot :global(.vk-seg-btn.is-on) { color: var(--hero-ink); }
+
+/* ── Удержание: шкала из капсул вместо кривой ── */
+.retention {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 128px;
+  margin-top: 14px;
+  padding-top: 24px;
+}
+.cell,
+.cellOn {
+  flex: 1;
+  height: 100%;
+  border-radius: 6px;
+  transform-origin: bottom;
+}
+.cell { background: rgba(255, 255, 255, 0.08); }
+.cellOn {
+  background: linear-gradient(180deg, #FFDCCF 0%, #F9A08B 100%);
+  box-shadow: 0 0 14px -3px rgba(249, 160, 139, 0.6);
+}
+.hint {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--hero-faint);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes beacon {
+  0% { transform: scale(0.6); opacity: 0.95; }
+  80%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+@media (max-width: 359px) {
+  .number { height: 44px; font-size: 38px; line-height: 44px; letter-spacing: -1.3px; }
+  .numberSm { font-size: 31px; }
+  .numberXs { font-size: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beaconRing { animation: none; opacity: 0; }
+  .numberSkel, .chartSkel { animation: none; }
+}

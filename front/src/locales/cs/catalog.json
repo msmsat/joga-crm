@@ -273,6 +273,27 @@
       "stretching": "Strečink",
       "individual": "Individuální",
       "other": "Bez kategorie"
+    },
+    "card": {
+      "switch": "Změnit",
+      "switchTitle": "Změnit službu",
+      "search": "Najít službu",
+      "group": "Skupinová",
+      "individual": "Individuální",
+      "onlineOn": "Online rezervace otevřená",
+      "onlineOff": "Jen přes recepci",
+      "slotTotal": "Zabere v deníku",
+      "durationVaries": "Čas se liší podle pracovníka",
+      "statsTitle": "Rezervace a tržby",
+      "share": "{{pct}} % všech rezervací studia",
+      "bookingsTotal": "rezervací celkem",
+      "revenueTotal": "tržby celkem",
+      "avgCheck": "průměrná útrata",
+      "weekTitle": "Tento týden",
+      "weekEmpty": "Na tento týden není nic naplánováno",
+      "dayEmpty": "Tento den nic není",
+      "openJournal": "Otevřít deník",
+      "ownTerms": "vlastní cena nebo čas pracovníka"
     }
   },
   "subscriptions": {

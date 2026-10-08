@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { NavLink, matchPath, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { motion, useReducedMotion, type Transition } from 'framer-motion';
 import { NAV, NAV_BOTTOM, JOURNAL_ENTRY, type NavEntry } from './navItems';
-import { UserMenu } from './UserMenu';
-import { useDrawerSwipe } from './drawerSwipe';
+import { MobileMore } from './MobileMore';
 
 // ─── НИЖНЯЯ ПАНЕЛЬ (телефон, <768px) ─────────────────────────────────────────
 // Колонка меню на экране в 375px съедает половину ширины, поэтому на телефоне
@@ -28,27 +28,33 @@ const TAB_KEYS = ['dashboard', 'journal', 'clients', 'settings'];
 const BY_KEY = new Map([...NAV, ...NAV_BOTTOM, JOURNAL_ENTRY].map(item => [item.key, item]));
 const TABS: NavEntry[] = TAB_KEYS.map(k => BY_KEY.get(k)).filter((i): i is NavEntry => !!i);
 const TAB_KEY_SET = new Set(TAB_KEYS);
+const MORE = 'more';
 
-// ─── ПАНЕЛЬ «ЕЩЁ» ────────────────────────────────────────────────────────────
-// Девять одинаковых плиток — девять одинаково важных действий: глазу не за что
-// зацепиться, и меню приходится прочитывать целиком. Ищем среди ТРЁХ смысловых
-// групп, а не среди девяти объектов; с ростом числа разделов сетка ломается, а
-// группы — нет. Внутри первой — крупные плитки (в них ходят каждый день), в
-// остальных компактные строки с пояснением из menu:subtitles.<key> — тех же
-// слов, что и подзаголовок самого раздела. Пояснение заодно отвечает на «чем
-// „искра“ в шапке отличается от Velora AI в меню»: там чат ассистента, здесь
-// раздел с агентами и автоответами.
-const GROUPS: { title: string; keys: string[]; tiles?: boolean }[] = [
-  { title: 'more.business', keys: ['staff', 'catalog', 'finances', 'reports'], tiles: true },
-  { title: 'more.comms', keys: ['loyalty', 'booking', 'notifications'] },
-  { title: 'brand.product', keys: ['ai', 'billing'] },
-];
+// ─── ДОК ─────────────────────────────────────────────────────────────────────
+// Ониксовая капсула над краем экрана. Подпись есть только у ТЕКУЩЕГО раздела:
+// персиковая «бусина» под ним раскрывается в иконку с названием, остальные —
+// иконки. Пять подписей по 9px читались хуже, чем одна крупная: человек всегда
+// видит, где он, а куда ещё можно — говорят знакомые значки. Бусина одна на всю
+// панель (общий layoutId) и ПЕРЕТЕКАЕТ к новой вкладке, а не гаснет в одной и
+// загорается в другой — так глаз ведёт за переходом.
+// Пока открыта панель «Ещё», бусина стоит на «Ещё», три точки сворачиваются в
+// крестик, а подпись становится «Закрыть»: второй тап по той же кнопке — и
+// есть способ закрыть. На разделе из «Ещё» (Финансы, Отчёты…) вкладки этого
+// раздела внизу нет — бусина стоит на «Ещё», откуда в него пришли.
+const SPRING: Transition = { type: 'spring', visualDuration: 0.42, bounce: 0.22 };
+// Подпись проявляется, когда бусина уже подъехала под неё, а не раньше.
+const LABEL_IN: Transition = { duration: 0.24, delay: 0.2, ease: [0.2, 0.8, 0.2, 1] };
+const INSTANT: Transition = { duration: 0 };
 
-const MoreIcon = (
-  <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
-    <circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none" />
+// Три точки, которые сворачиваются в крестик: крайние съезжаются в центр и
+// гаснут, штрихи креста прорисовываются поверх (stroke-dashoffset, App.css).
+const MoreGlyph = (
+  <svg className="nav-icon mnav-moreglyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <circle className="mnav-dot mnav-dot-l" cx="5" cy="12" r="1.7" fill="currentColor" stroke="none" />
+    <circle className="mnav-dot mnav-dot-c" cx="12" cy="12" r="1.7" fill="currentColor" stroke="none" />
+    <circle className="mnav-dot mnav-dot-r" cx="19" cy="12" r="1.7" fill="currentColor" stroke="none" />
+    <path className="mnav-cross mnav-cross-a" d="M7 7l10 10" pathLength={1} />
+    <path className="mnav-cross mnav-cross-b" d="M17 7L7 17" pathLength={1} />
   </svg>
 );
 
@@ -57,37 +63,46 @@ export interface MobileNavProps {
   clientsCount: number | null;
 }
 
+type Phase = 'closed' | 'open' | 'leaving';
+
 export function MobileNav({ role, clientsCount }: MobileNavProps) {
   const { t } = useTranslation('menu');
-  const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
+  const { pathname } = useLocation();
+  const reduce = useReducedMotion();
+  // Три состояния, а не флаг: закрытая панель ещё ~0,3 с уезжает вправо, и всё
+  // это время её надо держать на экране.
+  const [phase, setPhase] = useState<Phase>('closed');
+  const open = phase === 'open';
+
+  const close = useCallback(() => setPhase(p => (p === 'open' ? 'leaving' : p)), []);
+  const closed = useCallback(() => setPhase(p => (p === 'leaving' ? 'closed' : p)), []);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
+  }, [open, close]);
 
-  const swipe = useDrawerSwipe(close);
+  // Подстраховка к animationend: событие не придёт, если анимацию сняли
+  // (свернули вкладку браузера, повернули экран в планшетную ширину).
+  useEffect(() => {
+    if (phase !== 'leaving') return;
+    const id = window.setTimeout(closed, 450);
+    return () => window.clearTimeout(id);
+  }, [phase, closed]);
 
-  const visible = (item: NavEntry) => !item.owner || role === 'owner';
-  // «Ещё» — всё, чего нет в нижней панели: разделы владельца, тариф, ассистент.
-  const rest = [...NAV, ...NAV_BOTTOM].filter(item => visible(item) && !TAB_KEY_SET.has(item.key));
-  const byKey = new Map(rest.map(item => [item.key, item]));
-  const listed = new Set(GROUPS.flatMap(g => g.keys));
-  // Раздел, который завели в navItems и забыли расписать по группам, падает в
-  // последнюю: строка не в той группе видна глазами, пропавший раздел — нет.
-  // Группа без единого доступного роли раздела не рисуется вовсе — у тренера и
-  // администратора от «Бизнеса» не остаётся ничего.
-  const groups = GROUPS.map((g, i) => ({
-    title: g.title,
-    tiles: g.tiles,
-    items: [
-      ...g.keys.map(k => byKey.get(k)).filter((x): x is NavEntry => !!x),
-      ...(i === GROUPS.length - 1 ? rest.filter(x => !listed.has(x.key)) : []),
-    ],
-  })).filter(g => g.items.length > 0);
+  // Бусина едет в кадр тапа, а не когда новый раздел догрузится: роутер держит
+  // прежний адрес, пока ленивая страница не готова, и без этого палец ждал бы
+  // отклика полсекунды. Цель живёт, пока адрес тот же, с которого ушли.
+  const [pending, setPending] = useState<{ key: string; from: string } | null>(null);
+  if (pending && pending.from !== pathname) setPending(null);
+  const target = pending?.from === pathname ? pending.key : undefined;
+  const go = (key: string) => { setPending({ key, from: pathname }); close(); };
+
+  const routeKey = TABS.find(item => matchPath({ path: item.to, end: !!item.end }, pathname))?.key;
+  const beadKey = open ? MORE : target ?? routeKey ?? MORE;
+  const spring = reduce ? INSTANT : SPRING;
 
   const badgeFor = (item: NavEntry) => {
     if (item.badge === 'clients' && clientsCount !== null) return String(clientsCount);
@@ -95,118 +110,80 @@ export function MobileNav({ role, clientsCount }: MobileNavProps) {
     return null;
   };
 
-  const tile = (item: NavEntry) => (
-    <NavLink
-      key={item.to}
-      to={item.to}
-      end={item.end}
-      className={({ isActive }) => `mdrawer-tile${isActive ? ' active' : ''}`}
-    >
-      {item.icon}
-      <span>{t(`nav.${item.key}`)}</span>
-    </NavLink>
-  );
+  // Содержимое кнопки одинаково у вкладок и у «Ещё»: капсула, бусина под ней
+  // (только у выбранной), иконка и подпись. layout у капсулы — ширина меняется
+  // плавно, layout="position" у детей — текст и иконка не растягиваются, пока
+  // капсула растёт.
+  const pill = (key: string, icon: ReactNode, label: string, badge: string | null) => {
+    const on = beadKey === key;
+    return (
+      <motion.span layout transition={spring} className="mnav-pill">
+        {on && <motion.span layoutId="mnav-bead" transition={spring} className="mnav-bead" style={{ borderRadius: 24 }} />}
+        <motion.span layout="position" transition={spring} className="mnav-icon">
+          {icon}
+          {badge && <span className="mnav-badge">{badge}</span>}
+        </motion.span>
+        {on && (
+          <motion.span
+            key={label}
+            layout="position"
+            className="mnav-label"
+            initial={reduce ? false : { opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={reduce ? INSTANT : { ...LABEL_IN, layout: spring }}
+          >
+            {label}
+          </motion.span>
+        )}
+      </motion.span>
+    );
+  };
 
-  const row = (item: NavEntry) => (
-    <NavLink
-      key={item.to}
-      to={item.to}
-      end={item.end}
-      className={({ isActive }) => `mdrawer-row${isActive ? ' active' : ''}`}
-    >
-      {item.icon}
-      <span className="mdrawer-row-text">
-        <span className="mdrawer-row-label">{t(`nav.${item.key}`)}</span>
-        <span className="mdrawer-row-sub">{t(`subtitles.${item.key}`)}</span>
-      </span>
-    </NavLink>
-  );
+  const moreLabel = open ? t('common:buttons.close') : t('nav.more');
 
   return (
     <>
       <nav className="mnav" aria-label={t('nav.dashboard')}>
-        {TABS.map(item => {
-          const badge = badgeFor(item);
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              onClick={close}
-              className={({ isActive }) => `mnav-item${isActive ? ' active' : ''}`}
-            >
-              <span className="mnav-icon">
-                {item.icon}
-                {badge && <span className="mnav-badge">{badge}</span>}
-              </span>
-              <span className="mnav-label">{t(`nav.${item.key}`)}</span>
-            </NavLink>
-          );
-        })}
+        <div className="mnav-dock">
+          {TABS.map(item => {
+            const label = t(`nav.${item.key}`);
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                onClick={() => go(item.key)}
+                aria-label={label}
+                className={`mnav-item${beadKey === item.key ? ' is-on' : ''}`}
+              >
+                {pill(item.key, item.icon, label, badgeFor(item))}
+              </NavLink>
+            );
+          })}
 
-        {/* Панель выезжает НЕ поверх нижней панели, поэтому «Ещё» остаётся под
-            тем же пальцем: второй тап по той же кнопке закрывает. */}
-        <button
-          type="button"
-          className={`mnav-item${open ? ' active' : ''}`}
-          onClick={() => setOpen(v => !v)}
-          aria-expanded={open}
-        >
-          <span className="mnav-icon">{MoreIcon}</span>
-          <span className="mnav-label">{t('nav.more')}</span>
-        </button>
+          {/* Панель выезжает ПОД доком, поэтому «Ещё» остаётся под тем же
+              пальцем: второй тап по той же кнопке закрывает. */}
+          <button
+            type="button"
+            className={`mnav-item${beadKey === MORE ? ' is-on' : ''}${open ? ' is-open' : ''}`}
+            onClick={() => setPhase(p => (p === 'open' ? 'leaving' : 'open'))}
+            aria-expanded={open}
+            aria-label={moreLabel}
+          >
+            {pill(MORE, MoreGlyph, moreLabel, null)}
+          </button>
+        </div>
       </nav>
 
-      {open && (
-        // Затемнение кончается над нижней панелью: полоса слева от панели —
-        // тоже «закрыть», а сама навигация остаётся видимой и живой.
-        <div className="mdrawer-scrim" onClick={close}>
-          <aside
-            {...swipe}
-            className="mdrawer"
-            role="dialog"
-            aria-label={t('more.title')}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="mdrawer-head">
-              <span className="mdrawer-title">{t('more.title')}</span>
-              <button type="button" className="mdrawer-close" onClick={close} aria-label={t('common:buttons.close')}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="mdrawer-body">
-              {/* Закрываем на всплытии клика, а не эффектом по смене пути: тап
-                  по разделу должен убирать панель и когда путь тот же (человек
-                  вернулся в раздел, из которого открыл «Ещё»). */}
-              <div onClick={close}>
-                {groups.map(g => (
-                  <section key={g.title} className="mdrawer-group">
-                    <h3 className="mdrawer-gtitle">{t(g.title)}</h3>
-                    <div className={g.tiles ? 'mdrawer-tiles' : 'mdrawer-rows'}>
-                      {g.items.map(g.tiles ? tile : row)}
-                    </div>
-                  </section>
-                ))}
-              </div>
-            </div>
-
-            {/* Аккаунт закреплён у нижнего края и в прокрутку списка не уходит:
-                профиль, смена студии и выход должны быть на одном месте, каким
-                бы длинным ни стал список разделов. Кнопка остаётся внизу, меню
-                раскрывается ВВЕРХ поверх разделов (.user-menu-panel и так
-                absolute + bottom: 100% — блок вынесен из .mdrawer-body, чтобы
-                его не срезал скролл).
-                Панель закрывается вместе с меню аккаунтов: тап по «Профилю»
-                уводит на страницу, а панель без этого оставалась бы висеть
-                поверх неё (клик по группам сюда не доходит — соседний блок). */}
-            <div className="mdrawer-account">
-              <UserMenu onNavigate={close} />
-            </div>
-          </aside>
-        </div>
+      {phase !== 'closed' && (
+        <MobileMore
+          role={role}
+          tabKeys={TAB_KEY_SET}
+          leaving={phase === 'leaving'}
+          onClose={close}
+          onNavigate={() => go(MORE)}
+          onClosed={closed}
+        />
       )}
     </>
   );

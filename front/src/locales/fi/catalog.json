@@ -272,6 +272,27 @@
       "stretching": "Venyttely",
       "individual": "Yksilöllinen",
       "other": "Luokittelematon"
+    },
+    "card": {
+      "switch": "Vaihda",
+      "switchTitle": "Vaihda palvelu",
+      "search": "Etsi palvelu",
+      "group": "Ryhmä",
+      "individual": "Yksilö",
+      "onlineOn": "Verkkovaraus auki",
+      "onlineOff": "Vain vastaanoton kautta",
+      "slotTotal": "Vie päiväkirjasta",
+      "durationVaries": "Aika riippuu tekijästä",
+      "statsTitle": "Varaukset ja myynti",
+      "share": "{{pct}} % studion kaikista varauksista",
+      "bookingsTotal": "varausta yhteensä",
+      "revenueTotal": "myynti yhteensä",
+      "avgCheck": "keskiostos",
+      "weekTitle": "Tällä viikolla",
+      "weekEmpty": "Tälle viikolle ei ole mitään",
+      "dayEmpty": "Tälle päivälle ei ole mitään",
+      "openJournal": "Avaa päiväkirja",
+      "ownTerms": "tekijän oma hinta tai aika"
     }
   },
   "subscriptions": {

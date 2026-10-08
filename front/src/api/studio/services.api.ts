@@ -78,10 +78,20 @@ export interface ServiceCreate {
 
 export type ServiceUpdate = Partial<ServiceCreate>
 
-// Слот реального занятия услуги на текущей неделе (day_of_week: 0=Пн…6=Вс).
+// Одно занятие услуги на текущей неделе студии (зеркало ServiceWeekSlot,
+// back/schemas/studio/studio.py; day_of_week: 0=Пн…6=Вс). Время — стенное
+// время студии.
 export interface ServiceWeekSlot {
   day_of_week: number
   hour: number
+  service_id: number
+  lesson_id: number
+  day: string          // YYYY-MM-DD
+  start: string        // HH:MM
+  duration_min: number
+  booked: number
+  capacity: number
+  teacher_name: string | null
 }
 
 export const servicesApi = {
@@ -100,6 +110,7 @@ export const servicesApi = {
   delete: (serviceId: number) =>
     client.delete<void>(`/studio/services/${serviceId}`),
 
-  getWeek: (serviceId: number) =>
-    client.get<ServiceWeekSlot[]>(`/studio/services/${serviceId}/week`),
+  // Неделя всех услуг одним запросом — смена услуги в Каталоге без дозагрузки.
+  getWeekAll: () =>
+    client.get<ServiceWeekSlot[]>('/studio/services/week'),
 }

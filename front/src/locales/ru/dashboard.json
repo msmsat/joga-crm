@@ -106,5 +106,41 @@
     "cancelled": "Отменено",
     "utilization": "Загрузка",
     "noData": "Нет данных"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Доброе утро, {{name}}",
+      "day": "Добрый день, {{name}}",
+      "evening": "Добрый вечер, {{name}}",
+      "night": "Доброй ночи, {{name}}",
+      "morningPlain": "Доброе утро",
+      "dayPlain": "Добрый день",
+      "eveningPlain": "Добрый вечер",
+      "nightPlain": "Доброй ночи"
+    },
+    "today": "Сегодня",
+    "live": "Идёт",
+    "vsPrev": "к прошлому месяцу",
+    "newClientsOn": "Новые клиенты, {{date}}",
+    "retentionHint": "Доля клиентов, которые возвращаются снова",
+    "collapse": "Свернуть",
+    "metricShort": {
+      "revenue": "Выручка",
+      "clients": "Клиенты",
+      "bookings": "Записи",
+      "retention": "Удержание",
+      "lessons": "Занятия",
+      "attendance": "Посещения",
+      "fill_rate": "Заполняемость",
+      "rating": "Рейтинг",
+      "active_clients": "Клиенты"
+    },
+    "month": {
+      "title": "Месяц в студии",
+      "finance": "Финансы",
+      "services": "Услуги",
+      "trainers": "Тренеры",
+      "modes": "Запись"
+    }
   }
 }

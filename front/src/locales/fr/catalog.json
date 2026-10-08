@@ -272,6 +272,27 @@
       "stretching": "Étirements",
       "individual": "Individuel",
       "other": "Sans catégorie"
+    },
+    "card": {
+      "switch": "Changer",
+      "switchTitle": "Changer de service",
+      "search": "Rechercher un service",
+      "group": "Groupe",
+      "individual": "Individuel",
+      "onlineOn": "Réservation en ligne ouverte",
+      "onlineOff": "Uniquement à l'accueil",
+      "slotTotal": "Occupe dans le journal",
+      "durationVaries": "La durée dépend du praticien",
+      "statsTitle": "Réservations et chiffre d'affaires",
+      "share": "{{pct}} % de toutes les réservations du studio",
+      "bookingsTotal": "réservations au total",
+      "revenueTotal": "chiffre d'affaires total",
+      "avgCheck": "panier moyen",
+      "weekTitle": "Cette semaine",
+      "weekEmpty": "Rien de prévu cette semaine",
+      "dayEmpty": "Rien ce jour-là",
+      "openJournal": "Ouvrir le journal",
+      "ownTerms": "prix ou durée propre au praticien"
     }
   },
   "subscriptions": {

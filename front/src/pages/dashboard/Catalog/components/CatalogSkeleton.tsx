@@ -41,7 +41,7 @@ export function CatalogRightSkeleton() {
   return (
     <>
       <div className="cat-skel cat-skel-hero" />
-      <div className="cat-body">
+      <div className="cat-body dock-scroll">
         <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))' }}>
           <div className="cat-skel cat-skel-stat" />
           <div className="cat-skel cat-skel-stat" />

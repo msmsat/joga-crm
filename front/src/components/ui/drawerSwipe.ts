@@ -1,14 +1,34 @@
 import { useRef, type MouseEvent, type PointerEvent } from 'react';
 
-/** Horizontal dismissal; the browser keeps native vertical scrolling and pinch zoom. */
+/**
+ * Horizontal dismissal; the browser keeps native vertical scrolling and pinch zoom.
+ *
+ * The panel's parent (the layer holding panel + scrim) receives the progress:
+ * `--swipe` (0…1) dims the scrim along with the finger, `data-dragging` turns off
+ * the scrim's own transition so it does not lag behind the finger.
+ * On dismissal the panel keeps where the finger left it in `--swipe-x`: the exit
+ * animation starts from there instead of jumping back to zero first.
+ */
 export function useDrawerSwipe(close: () => void) {
-  const gesture = useRef<{ id: number; x: number; y: number; axis: 'x' | 'y' | null } | null>(null);
+  const gesture = useRef<{
+    id: number; x: number; y: number; axis: 'x' | 'y' | null;
+    dx: number; vx: number; t: number;
+  } | null>(null);
   const suppressClick = useRef(false);
+
+  const release = (panel: HTMLElement, keepProgress: boolean) => {
+    const layer = panel.parentElement;
+    if (layer) {
+      delete layer.dataset.dragging;
+      if (!keepProgress) layer.style.removeProperty('--swipe');
+    }
+    gesture.current = null;
+  };
 
   const reset = (panel: HTMLElement) => {
     panel.style.transition = '';
     panel.style.transform = '';
-    gesture.current = null;
+    release(panel, false);
   };
 
   return {
@@ -16,7 +36,11 @@ export function useDrawerSwipe(close: () => void) {
       suppressClick.current = false;
       if (!event.isPrimary) { reset(event.currentTarget); return; }
       if (event.pointerType === 'mouse') return;
-      gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, axis: null };
+      event.currentTarget.style.removeProperty('--swipe-x');
+      gesture.current = {
+        id: event.pointerId, x: event.clientX, y: event.clientY, axis: null,
+        dx: 0, vx: 0, t: event.timeStamp,
+      };
     },
     onPointerMove: (event: PointerEvent<HTMLElement>) => {
       const start = gesture.current;
@@ -30,16 +54,40 @@ export function useDrawerSwipe(close: () => void) {
       // Capture only a horizontal drag, including one that started on a link.
       // Do not cancel pointer events: Safari must retain native vertical scrolling.
       suppressClick.current = true;
-      event.currentTarget.setPointerCapture(event.pointerId);
-      event.currentTarget.style.transition = 'none';
-      event.currentTarget.style.transform = `translateX(${Math.max(0, dx)}px)`;
+      const panel = event.currentTarget;
+      panel.setPointerCapture(event.pointerId);
+
+      const dt = event.timeStamp - start.t;
+      if (dt > 0) start.vx = start.vx * 0.4 + ((dx - start.dx) / dt) * 0.6;
+      start.dx = dx;
+      start.t = event.timeStamp;
+
+      // To the left the panel has nowhere to go: it gives a little and resists.
+      const x = dx > 0 ? dx : -Math.min(18, Math.sqrt(-dx) * 2.4);
+      panel.style.transition = 'none';
+      panel.style.transform = `translateX(${x}px)`;
+      const layer = panel.parentElement;
+      if (layer) {
+        layer.dataset.dragging = '';
+        layer.style.setProperty('--swipe', String(Math.min(1, Math.max(0, dx / panel.offsetWidth))));
+      }
     },
     onPointerUp: (event: PointerEvent<HTMLElement>) => {
       const start = gesture.current;
       if (!start || start.id !== event.pointerId) return;
-      const dismiss = start.axis === 'x' && event.clientX - start.x > 70;
-      reset(event.currentTarget);
-      if (dismiss) close();
+      const dx = event.clientX - start.x;
+      // A short flick dismisses as well as a long drag; a finger that stopped
+      // before lifting is not a flick, whatever its speed was a moment ago.
+      const flick = event.timeStamp - start.t < 90 && start.vx > 0.45;
+      const dismiss = start.axis === 'x' && (dx > 70 || (dx > 16 && flick));
+      const panel = event.currentTarget;
+      if (!dismiss) { reset(panel); return; }
+      panel.style.setProperty('--swipe-x', `${Math.max(0, dx)}px`);
+      // transition: none — a running transition outranks the exit animation in the cascade.
+      panel.style.transition = 'none';
+      panel.style.transform = '';
+      release(panel, true);
+      close();
     },
     onPointerCancel: (event: PointerEvent<HTMLElement>) => {
       reset(event.currentTarget);

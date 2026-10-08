@@ -105,5 +105,41 @@
     "cancelled": "Storniert",
     "utilization": "Auslastung",
     "noData": "Keine Daten"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Guten Morgen, {{name}}",
+      "day": "Guten Tag, {{name}}",
+      "evening": "Guten Abend, {{name}}",
+      "night": "Hallo, {{name}}",
+      "morningPlain": "Guten Morgen",
+      "dayPlain": "Guten Tag",
+      "eveningPlain": "Guten Abend",
+      "nightPlain": "Hallo"
+    },
+    "today": "Heute",
+    "live": "Läuft",
+    "vsPrev": "zum Vormonat",
+    "newClientsOn": "Neue Kunden, {{date}}",
+    "retentionHint": "Anteil der Kunden, die wiederkommen",
+    "collapse": "Weniger anzeigen",
+    "metricShort": {
+      "revenue": "Umsatz",
+      "clients": "Kunden",
+      "bookings": "Buchungen",
+      "retention": "Bindung",
+      "lessons": "Kurse",
+      "attendance": "Teilnahme",
+      "fill_rate": "Auslastung",
+      "rating": "Bewertung",
+      "active_clients": "Kunden"
+    },
+    "month": {
+      "title": "Der Monat im Studio",
+      "finance": "Finanzen",
+      "services": "Leistungen",
+      "trainers": "Trainer",
+      "modes": "Buchung"
+    }
   }
 }

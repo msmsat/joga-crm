@@ -105,5 +105,41 @@
     "cancelled": "Lemondva",
     "utilization": "Kihasználtság",
     "noData": "Nincs adat"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Jó reggelt, {{name}}",
+      "day": "Jó napot, {{name}}",
+      "evening": "Jó estét, {{name}}",
+      "night": "Jó estét, {{name}}",
+      "morningPlain": "Jó reggelt",
+      "dayPlain": "Jó napot",
+      "eveningPlain": "Jó estét",
+      "nightPlain": "Jó estét"
+    },
+    "today": "Ma",
+    "live": "Folyamatban",
+    "vsPrev": "az előző hónaphoz",
+    "newClientsOn": "Új ügyfelek, {{date}}",
+    "retentionHint": "A visszatérő ügyfelek aránya",
+    "collapse": "Kevesebb",
+    "metricShort": {
+      "revenue": "Bevétel",
+      "clients": "Ügyfelek",
+      "bookings": "Foglalások",
+      "retention": "Megtartás",
+      "lessons": "Órák",
+      "attendance": "Részvétel",
+      "fill_rate": "Kihasználtság",
+      "rating": "Értékelés",
+      "active_clients": "Ügyfelek"
+    },
+    "month": {
+      "title": "A hónap a stúdióban",
+      "finance": "Pénzügyek",
+      "services": "Szolgáltatások",
+      "trainers": "Edzők",
+      "modes": "Foglalás"
+    }
   }
 }

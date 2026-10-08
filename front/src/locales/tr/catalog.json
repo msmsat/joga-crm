@@ -272,6 +272,27 @@
       "stretching": "Esneme",
       "individual": "Bireysel",
       "other": "Kategorisiz"
+    },
+    "card": {
+      "switch": "Değiştir",
+      "switchTitle": "Hizmeti değiştir",
+      "search": "Hizmet ara",
+      "group": "Grup",
+      "individual": "Bireysel",
+      "onlineOn": "Online rezervasyon açık",
+      "onlineOff": "Yalnızca resepsiyondan",
+      "slotTotal": "Takvimde kapladığı süre",
+      "durationVaries": "Süre uzmana göre değişir",
+      "statsTitle": "Rezervasyonlar ve gelir",
+      "share": "stüdyo rezervasyonlarındaki payı: %{{pct}}",
+      "bookingsTotal": "toplam rezervasyon",
+      "revenueTotal": "toplam gelir",
+      "avgCheck": "ortalama sepet",
+      "weekTitle": "Bu hafta",
+      "weekEmpty": "Bu hafta planlanmış bir şey yok",
+      "dayEmpty": "Bu gün bir şey yok",
+      "openJournal": "Takvimi aç",
+      "ownTerms": "uzmanın kendi fiyatı veya süresi"
     }
   },
   "subscriptions": {

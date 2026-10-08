@@ -272,6 +272,27 @@
       "stretching": "Stretching",
       "individual": "Individual",
       "other": "Uncategorized"
+    },
+    "card": {
+      "switch": "Change",
+      "switchTitle": "Change service",
+      "search": "Find a service",
+      "group": "Group",
+      "individual": "Individual",
+      "onlineOn": "Online booking open",
+      "onlineOff": "Front desk only",
+      "slotTotal": "Takes in the journal",
+      "durationVaries": "Time depends on the staff member",
+      "statsTitle": "Bookings and revenue",
+      "share": "{{pct}}% of all studio bookings",
+      "bookingsTotal": "bookings all time",
+      "revenueTotal": "revenue all time",
+      "avgCheck": "average ticket",
+      "weekTitle": "This week",
+      "weekEmpty": "Nothing scheduled this week",
+      "dayEmpty": "Nothing on this day",
+      "openJournal": "Open journal",
+      "ownTerms": "own price or time of the staff member"
     }
   },
   "subscriptions": {

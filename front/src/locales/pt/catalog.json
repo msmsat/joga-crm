@@ -272,6 +272,27 @@
       "stretching": "Alongamentos",
       "individual": "Individual",
       "other": "Sem categoria"
+    },
+    "card": {
+      "switch": "Trocar",
+      "switchTitle": "Trocar serviço",
+      "search": "Procurar serviço",
+      "group": "Grupo",
+      "individual": "Individual",
+      "onlineOn": "Marcação online aberta",
+      "onlineOff": "Apenas pela receção",
+      "slotTotal": "Ocupa na agenda",
+      "durationVaries": "O tempo depende do profissional",
+      "statsTitle": "Reservas e receita",
+      "share": "{{pct}}% de todas as reservas do estúdio",
+      "bookingsTotal": "reservas no total",
+      "revenueTotal": "receita total",
+      "avgCheck": "ticket médio",
+      "weekTitle": "Esta semana",
+      "weekEmpty": "Nada agendado esta semana",
+      "dayEmpty": "Nada neste dia",
+      "openJournal": "Abrir agenda",
+      "ownTerms": "preço ou tempo próprio do profissional"
     }
   },
   "subscriptions": {

@@ -3007,16 +3007,23 @@
     --topbar-h: 56px;
     --radius-lg: 16px;
     --drawer-w: 100vw;
-    /* Высота нижней панели без «безопасной зоны» — её прибавляют там, где
-       нужно (padding контента, отступ плавающих кнопок). */
-    --mnav-h: 60px;
-    /* Отступ под системной полосой жестов. НЕ голый env(): на Android
-       (Chrome edge-to-edge, Samsung Internet, встроенные браузеры Telegram/
-       Instagram) он приходит нулём, а полоса жестов всё равно лежит поверх
-       иконок. Нижняя граница 14px держит панель над ней на любом устройстве;
-       на iPhone с «чёлкой» env даёт 34px и сам берёт верх. Отступ — внутри
-       панели (её фон тянется до края), поэтому она не «висит в воздухе». */
-    --mnav-inset: max(env(safe-area-inset-bottom, 0px), 14px);
+    /* Нижняя панель — парящий док: капсула --mnav-dock с полями --mnav-side
+       по бокам и зазором --mnav-gap над ней. --mnav-h — её место без
+       отступа от края, который прибавляют там, где нужно (padding контента,
+       отступ плавающих кнопок, низ панели «Ещё»). */
+    --mnav-dock: 60px;
+    --mnav-gap: 10px;
+    --mnav-side: 12px;
+    --mnav-h: calc(var(--mnav-dock) + var(--mnav-gap));
+    /* Отступ дока от края — по формуле мини-приложения (--nav-offset в
+       miniapp/src/index.css): воздух 12–20px ПОВЕРХ всей безопасной зоны, а не
+       внутри неё. Воздух ужимается только на низком экране (--app-h).
+       --app-cut — полоса окна, которую перекрыла чужая панель (iOS-вебвью
+       Instagram, Telegram, почтовых клиентов кладут её поверх страницы, не
+       меняя размер окна); меряет lib/appHeight.ts. Без неё док уходил под эту
+       панель целиком. */
+    --mnav-lift: clamp(12px, calc((var(--app-h, 100dvh) - 480px) * 0.065), 20px);
+    --mnav-inset: calc(var(--mnav-lift) + env(safe-area-inset-bottom, 0px) + var(--app-cut, 0px));
     --mnav-safe: calc(var(--mnav-h) + var(--mnav-inset));
   }
 
@@ -3026,11 +3033,27 @@
   .dash-root { height: 100dvh !important; padding-right: 0 !important; }
   .sidebar { display: none !important; }
 
-  /* Место под нижнюю панель отнимается у ВСЕЙ колонки контента, а не у одного
-     .content: половина страниц (Журнал, Каталог, Сотрудники, AI, Настройки)
-     тянется на всю доступную высоту, и padding у скролл-контейнера оставлял
-     бы им полосу пустоты над панелью вместо экрана. */
-  .main { padding-bottom: var(--mnav-safe); }
+  /* Контент уходит ПОД док: лента тянется до низа экрана и видна слева,
+     справа и под парящей капсулой, а не обрывается над ней полосой фона.
+     Запас под док — в КОНЦЕ прокрутки, чтобы последнюю карточку можно было
+     поднять над капсулой.
+     • Обычная страница прокручивается самой .content — запас её нижним полем.
+     • Страница во всю высоту со своей прокруткой (Журнал, Клиенты, Настройки,
+       Сотрудники, Каталог, Финансы) помечает прокручиваемый блок классом
+       .dock-scroll: запас встаёт в его конце, а у .content поле снимается,
+       иначе страница кончалась бы над доком и под ним снова была бы пустота.
+       Помеченный блок обязан быть обычным блочным контейнером (::after —
+       строка в конце, а не ячейка сетки).
+     • AI не помечен намеренно: внизу у него поле ввода, ему место над доком.
+     Без :has (старые браузеры) поле .content остаётся — страница во всю
+     высоту просто кончается над доком, как раньше. */
+  .content { padding-bottom: calc(var(--content-pad) + var(--mnav-safe)); }
+  .content:has(.dock-scroll) { padding-bottom: 0; }
+  .dock-scroll::after {
+    content: '';
+    display: block;
+    height: var(--mnav-safe);
+  }
 
   /* ── Топбар: заголовок + две кнопки ──────────────────────────────────── */
   .topbar { padding: 0 var(--content-pad); gap: 8px; }
@@ -3348,22 +3371,127 @@
 }
 
 /* ==========================================================================
-   НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (MobileNav)
+   НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (MobileNav) — ДОК И ПАНЕЛЬ «ЕЩЁ»
    Показывается только медиазапросом выше; здесь — её вид.
+   Навигация телефона — отдельный слой из двух предметов одного материала:
+   парящий док над краем экрана и панель «Ещё», которая встаёт над ним справа.
+   Персик — только «бусина» текущего раздела и значки разделов.
+   Материал у каждой темы свой (токены --nv-*), раскладка и движение — общие:
+     светлая — «фарфор»: белая капсула с тёплой парящей тенью, панель цвета
+       жемчуга, из угла с «Ещё» — персиковый свет;
+     тёмная — «графит и жар»: графитовая капсула с бликом по кромке, бусина
+       светится и подсвечивает док вокруг себя, как уголёк.
    ========================================================================== */
+.mnav,
+.mdrawer-layer {
+  --nv-bead: linear-gradient(135deg, #FDBC9F 0%, #FCAE91 46%, #F69B85 100%);
+  --nv-on-bead: #1A1A1A;
+
+  /* ── Фарфор (светлая тема) ── */
+  --nv-dock: linear-gradient(180deg, #FFFFFF 0%, #FAF5F1 100%);
+  --nv-dock-shadow:
+    inset 0 1px 0 #FFFFFF,
+    inset 0 -1px 0 rgba(120, 80, 60, 0.05),
+    0 0 0 1px rgba(80, 50, 35, 0.07),
+    0 18px 38px -16px rgba(120, 70, 45, 0.34),
+    0 4px 12px -6px rgba(26, 26, 26, 0.10);
+  --nv-ring: #FFFFFF;
+  --nv-mute: #968983;
+  --nv-bead-glow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(170, 80, 50, 0.14),
+    0 8px 18px -8px rgba(236, 128, 98, 0.75);
+
+  --nv-scrim:
+    radial-gradient(110% 60% at 100% 100%, rgba(252, 174, 145, 0.32), transparent 62%),
+    rgba(48, 32, 24, 0.28);
+  --nv-pane:
+    radial-gradient(130% 46% at 100% 0%, rgba(252, 174, 145, 0.30), transparent 62%),
+    radial-gradient(100% 34% at 100% 100%, rgba(252, 174, 145, 0.13), transparent 70%),
+    linear-gradient(180deg, #FFFFFF, #FBF7F3);
+  --nv-pane-shadow:
+    inset 0 1px 0 #FFFFFF,
+    0 0 0 1px rgba(80, 50, 35, 0.07),
+    0 34px 80px -22px rgba(90, 50, 30, 0.42),
+    0 10px 26px -12px rgba(26, 26, 26, 0.14);
+  --nv-title: #1A1A1A;
+  --nv-text: #1F1B19;
+  --nv-sub: #9A8D86;
+  --nv-glass: rgba(150, 100, 75, 0.055);
+  --nv-glass-line: rgba(80, 50, 35, 0.05);
+  --nv-press: rgba(150, 100, 75, 0.11);
+  --nv-glyph-bg: rgba(252, 174, 145, 0.22);
+  --nv-glyph-ink: #DE7C5C;
+  --nv-row-glyph-bg: rgba(26, 26, 26, 0.045);
+  --nv-row-glyph-ink: #5F5652;
+  --nv-chev: rgba(26, 26, 26, 0.22);
+  --nv-close-bg: rgba(26, 26, 26, 0.05);
+  --nv-close-ink: #6B625D;
+  --nv-tile-on: linear-gradient(155deg, rgba(252, 174, 145, 0.34), rgba(252, 174, 145, 0.10));
+  --nv-tile-on-line: rgba(236, 128, 98, 0.38);
+  --nv-row-on: rgba(252, 174, 145, 0.18);
+  --nv-ink-on: #C9684A;
+}
+
+:root.dark .mnav,
+:root.dark .mdrawer-layer {
+  /* ── Графит и жар (тёмная тема) ── */
+  --nv-dock: linear-gradient(180deg, #2C2826 0%, #1D1A19 74%);
+  --nv-dock-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.055),
+    0 18px 40px -12px rgba(0, 0, 0, 0.85),
+    0 4px 12px -4px rgba(0, 0, 0, 0.6);
+  --nv-ring: #222020;
+  --nv-mute: rgba(255, 245, 240, 0.52);
+  /* Свечение: бусина не лежит на доке, а светит на него. */
+  --nv-bead-glow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(170, 80, 50, 0.2),
+    0 0 26px -4px rgba(249, 160, 139, 0.55),
+    0 8px 20px -8px rgba(249, 160, 139, 0.85);
+
+  --nv-scrim:
+    radial-gradient(110% 60% at 100% 100%, rgba(249, 160, 139, 0.13), transparent 62%),
+    rgba(0, 0, 0, 0.62);
+  --nv-pane:
+    radial-gradient(130% 46% at 100% 0%, rgba(249, 160, 139, 0.20), transparent 62%),
+    radial-gradient(100% 34% at 100% 100%, rgba(249, 160, 139, 0.09), transparent 70%),
+    linear-gradient(180deg, #2C2826, #1F1C1B);
+  --nv-pane-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    0 30px 80px -16px rgba(0, 0, 0, 0.9);
+  --nv-title: #FFFFFF;
+  --nv-text: #F6F1EE;
+  --nv-sub: rgba(255, 245, 240, 0.46);
+  --nv-glass: rgba(255, 255, 255, 0.05);
+  --nv-glass-line: rgba(255, 255, 255, 0.06);
+  --nv-press: rgba(255, 255, 255, 0.09);
+  --nv-glyph-bg: rgba(252, 174, 145, 0.13);
+  --nv-glyph-ink: #FCAE91;
+  --nv-row-glyph-bg: rgba(255, 255, 255, 0.07);
+  --nv-row-glyph-ink: rgba(255, 245, 240, 0.86);
+  --nv-chev: rgba(255, 255, 255, 0.26);
+  --nv-close-bg: rgba(255, 255, 255, 0.08);
+  --nv-close-ink: rgba(255, 245, 240, 0.78);
+  --nv-tile-on: linear-gradient(155deg, rgba(252, 174, 145, 0.24), rgba(249, 160, 139, 0.06));
+  --nv-tile-on-line: rgba(252, 174, 145, 0.36);
+  --nv-row-on: rgba(252, 174, 145, 0.12);
+  --nv-ink-on: #FCAE91;
+}
+
 .mnav {
   display: flex;
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 150;
-  align-items: stretch;
-  height: var(--mnav-safe, 74px);
-  padding-bottom: var(--mnav-inset, 14px);
-  background: var(--bg-card);
-  border-top: 1px solid var(--border);
-  /* Без backdrop-filter — по той же причине, что и у оверлеев модалок
-     (см. .v-overlay): размытие во весь вьюпорт роняет кадры. */
-  box-shadow: 0 -8px 32px -12px rgba(0,0,0,0.14);
+  align-items: flex-end;
+  height: var(--mnav-safe, 90px);
+  padding: 0 var(--mnav-side, 12px) var(--mnav-inset, 20px);
+  /* Своего фона у полосы нет — контент виден вокруг капсулы и под ней.
+     Тапы мимо капсулы тоже проходят насквозь, к контенту. */
+  pointer-events: none;
 }
 
 /* Прячется на десктопе через min-width, а не показывается на телефоне через
@@ -3374,114 +3502,275 @@
   .mnav { display: none; }
 }
 
+/* Без backdrop-filter — по той же причине, что и у оверлеев модалок
+   (см. .v-overlay): размытие роняет кадры, а здесь оно ещё и ничего бы не
+   показало — контент под док не заезжает. */
+.mnav-dock {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  max-width: 480px;
+  height: var(--mnav-dock, 60px);
+  margin: 0 auto;
+  padding: 6px;
+  border-radius: 999px;
+  background: var(--nv-dock);
+  box-shadow: var(--nv-dock-shadow);
+  pointer-events: auto;
+}
+
+/* Невыбранные вкладки делят остаток поровну, выбранная берёт ширину по
+   содержимому (иконка + подпись). Плавность ширине даёт framer-motion
+   (layout у .mnav-pill), а не transition: из auto в 1fr CSS не анимирует. */
 .mnav-item {
   flex: 1 1 0;
   min-width: 0;
+  height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
   padding: 0;
   border: none;
+  border-radius: 999px;
   background: transparent;
-  color: var(--text3);
+  color: var(--nv-mute);
   font-family: var(--font);
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: color 0.18s ease;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.12s ease;
 }
+.mnav-item.is-on {
+  flex: 0 0 auto;
+  color: var(--nv-on-bead);
+  /* Иконка темнеет, когда под неё уже подъехала бусина, а не раньше: на
+     светлом доке она слилась бы с капсулой, на тёмном — пропала бы. */
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.24s ease 0.1s;
+}
+/* Нажатие — на самой кнопке, а не на капсуле: transform капсулы во время
+   перетекания занят framer-motion. */
+.mnav-item:active { transform: scale(0.9); }
+.mnav-item:focus-visible { outline: none; }
+.mnav-item:focus-visible .mnav-pill { box-shadow: 0 0 0 2px rgba(249, 160, 139, 0.75); }
 
-/* Иконка сидит в «пилюле», которая проявляется у активного раздела: акцент
-   даёт форма, а не заливка всей вкладки. */
-.mnav-icon {
+.mnav-pill {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 28px;
-  border-radius: 10px;
-  transition: background 0.22s cubic-bezier(0.34,1.4,0.64,1), transform 0.16s ease;
+  gap: 7px;
+  height: 48px;
+  min-width: 48px;
+  padding: 0 12px;
+  border-radius: 24px;
 }
-.mnav-icon .nav-icon { width: 20px; height: 20px; opacity: 1; }
+.mnav-item.is-on .mnav-pill { padding: 0 17px 0 14px; }
+/* Каждая капсула — свой слой (z-index), выбранная — нижний. Во время
+   перетекания framer-motion двигает капсулы трансформой, и без этого слоем
+   выше оказывалась та, что позже в разметке: бусина ехала ПОВЕРХ иконок
+   соседних вкладок и гасила их. Теперь она проходит под ними. */
+.mnav-pill { z-index: 1; }
+.mnav-item.is-on .mnav-pill { z-index: 0; }
+
+/* Бусина: персиковая капсула со светом сверху — единственный цветной предмет
+   в доке. Скругление задано инлайном (style), чтобы framer-motion
+   пересчитывал его при растяжении и концы не сплющивались. */
+.mnav-bead {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--nv-bead);
+  box-shadow: var(--nv-bead-glow);
+}
+/* Блик: бусина смонтирована заново у каждой новой вкладки (общий layoutId),
+   поэтому он пробегает один раз — ровно когда она встаёт на место. */
+.mnav-bead::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 60%;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.6) 50%, transparent 80%);
+  transform: translateX(-140%) skewX(-14deg);
+  animation: mnav-glint 0.85s cubic-bezier(0.3, 0.55, 0.2, 1) 0.22s backwards;
+  pointer-events: none;
+}
+@keyframes mnav-glint {
+  from { transform: translateX(-140%) skewX(-14deg); }
+  to { transform: translateX(240%) skewX(-14deg); }
+}
+
+.mnav-icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.mnav-icon .nav-icon { width: 22px; height: 22px; opacity: 1; }
+.mnav-item.is-on .mnav-icon .nav-icon { stroke-width: 2.1; }
 
 .mnav-label {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.1px;
-  max-width: 100%;
+  position: relative;
+  z-index: 1;
+  max-width: 104px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.15px;
+  line-height: 1;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+}
+@media (max-width: 359px) {
+  .mnav-label { max-width: 72px; }
 }
 
-.mnav-item.active { color: var(--accent2); }
-.mnav-item.active .mnav-icon { background: rgba(252,174,145,0.16); }
-.mnav-item:active .mnav-icon { transform: scale(0.92); }
-
-/* Счётчик клиентов и метка NEW — на углу иконки: в подпись они не помещаются,
-   а знать «что-то появилось» на телефоне нужнее, чем сколько именно. */
+/* Счётчик клиентов и метка NEW — на углу иконки. Обводка цветом дока
+   отрезает значок от иконки под ним; на бусине цвета меняются местами. */
 .mnav-badge {
   position: absolute;
-  top: -1px;
-  right: 3px;
-  min-width: 15px;
-  height: 15px;
-  padding: 0 4px;
-  border-radius: 20px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 9px;
+  top: -7px;
+  left: 13px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--nv-bead);
+  color: var(--nv-on-bead);
+  font-size: 9.5px;
   font-weight: 800;
-  line-height: 15px;
+  line-height: 17px;
   text-align: center;
+  box-shadow: 0 0 0 2px var(--nv-ring);
 }
+.mnav-item.is-on .mnav-badge {
+  background: var(--nv-on-bead);
+  color: #FCAE91;
+  box-shadow: 0 0 0 2px #FCAE91;
+}
+
+/* «Ещё» ⇄ «Закрыть»: точки поворачиваются, съезжаются в центр и гаснут, поверх
+   прорисовываются штрихи крестика. */
+.mnav-moreglyph { transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.25, 1.15); }
+.mnav-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.22s ease;
+}
+.mnav-cross {
+  stroke-width: 2.2;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.22s cubic-bezier(0.4, 0, 1, 1);
+}
+.mnav-item.is-open .mnav-moreglyph { transform: rotate(90deg); }
+.mnav-item.is-open .mnav-dot { opacity: 0; }
+.mnav-item.is-open .mnav-dot-l { transform: translateX(7px) scale(0.3); }
+.mnav-item.is-open .mnav-dot-c { transform: scale(0.3); }
+.mnav-item.is-open .mnav-dot-r { transform: translateX(-7px) scale(0.3); }
+.mnav-item.is-open .mnav-cross {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.34s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s;
+}
+.mnav-item.is-open .mnav-cross-b { transition-delay: 0.17s; }
 
 /* ── Панель «Ещё» ────────────────────────────────────────────────────────────
    Не шит снизу во весь экран: тот читался как отдельная страница, а не как
-   меню. Панель выезжает СПРАВА и упирается в нижнюю навигацию, не накрывая её.
-   Этаж ниже .mnav (150) — и это главное в блоке: навигация остаётся видимой и
-   нажимаемой, поэтому «Ещё» закрывается вторым тапом по той же кнопке, а не
-   поиском крестика. Полоса слева от панели (затемнение) — тоже «закрыть». */
-.mdrawer-scrim {
+   меню. Панель выезжает СПРАВА и встаёт над доком, не накрывая его: правые
+   края совпадают, зазор над доком — тот же, что у дока над краем экрана.
+   Слой — этаж НИЖЕ .mnav (150), и это главное в блоке: затемнение ложится на
+   весь экран, а док остаётся над ним видимым и нажимаемым, поэтому «Ещё»
+   закрывается вторым тапом по той же кнопке, а не поиском крестика. */
+.mdrawer-layer {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  /* Размер видимой области меняется вместе с адресной строкой телефона. */
-  height: calc(100dvh - var(--mnav-safe, 60px));
+  inset: 0;
   z-index: 140;
-  background: rgba(0,0,0,0.38);
-  animation: mdrawer-tint 0.2s ease both;
 }
-@keyframes mdrawer-tint { from { opacity: 0 } to { opacity: 1 } }
+.mdrawer-layer.is-leaving { pointer-events: none; }
+
+/* Затемнение с тёплым отсветом из угла, где стоит «Ещё»: панель будто
+   поднимается из этой кнопки. При свайпе гаснет вслед за пальцем (--swipe). */
+.mdrawer-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--nv-scrim);
+  opacity: calc(1 - var(--swipe, 0));
+  transition: opacity 0.26s ease;
+  animation: mdrawer-tint 0.34s ease backwards;
+  -webkit-tap-highlight-color: transparent;
+}
+.mdrawer-layer[data-dragging] .mdrawer-scrim { transition: none; }
+.mdrawer-layer.is-leaving .mdrawer-scrim { animation: mdrawer-untint 0.3s ease both; }
+@keyframes mdrawer-tint { from { opacity: 0; } }
+@keyframes mdrawer-untint { from { opacity: calc(1 - var(--swipe, 0)); } to { opacity: 0; } }
 
 .mdrawer {
+  /* Пружина: быстрый выезд с едва заметным перелётом и мягкой посадкой.
+     Без поддержки linear() — обычная кривая без перелёта. */
+  --mdrawer-spring: cubic-bezier(0.22, 1, 0.36, 1);
+
   position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
+  /* Под шапкой, как окно быстрого вопроса AI: поверх неё скругление панели
+     открывало угол кнопки «+», а название раздела над панелью остаётся
+     подсказкой, откуда её открыли. */
+  top: calc(var(--topbar-h, 56px) + 10px);
+  right: var(--mnav-side, 12px);
+  bottom: var(--mnav-safe, 90px);
+  width: min(calc(100% - 60px), 360px);
   min-height: 0;
-  width: min(84%, 360px);
   /* Средняя строка сжимается до доступной высоты и скроллится сама.
      Не полагаемся на расчёт вложенного flex-скроллера в iOS Safari. */
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  background: var(--bg-card);
-  border-left: 1px solid var(--border);
-  border-radius: 20px 0 0 20px;
-  box-shadow: -18px 0 52px -12px rgba(0,0,0,0.3);
+  color: var(--nv-text);
+  background: var(--nv-pane);
+  border-radius: 30px;
+  box-shadow: var(--nv-pane-shadow);
+  transform-origin: 100% 100%;
   /* backwards, а не both: с заливкой вперёд анимация продолжала держать
      transform и перебивала инлайновый стиль — свайп вправо не сдвигал панель
      (та же засада, что у шитов модалок, см. .v-modal в телефонном блоке). */
-  animation: mdrawer-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) backwards;
-  transition: transform 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+  animation: mdrawer-in 0.62s var(--mdrawer-spring) backwards;
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   /* Vertical scrolling stays native; horizontal movement dismisses the drawer. */
   touch-action: pan-y pinch-zoom;
 }
-@keyframes mdrawer-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
+/* Поповер меню аккаунта берёт фон карточки — в тёмной теме это поверхность
+   самой панели, а не общий #1E1E1E, иначе он выглядел бы дырой в ней. */
+:root.dark .mdrawer {
+  --bg-card: #2A2624;
+  --card: #2A2624;
+}
+@supports (animation-timing-function: linear(0, 1)) {
+  .mdrawer {
+    --mdrawer-spring: linear(0, 0.057, 0.188, 0.344, 0.498, 0.635, 0.749, 0.837, 0.903, 0.949, 0.98, 0.999, 1.009, 1.014, 1.015, 1.014, 1.012, 1.01, 1.008, 1.005, 1.004, 1.002, 1.001, 1.001, 1);
+  }
+}
+/* Уходит туда же, откуда пришла — и с того места, где её отпустил палец. */
+.mdrawer-layer.is-leaving .mdrawer { animation: mdrawer-out 0.3s cubic-bezier(0.4, 0, 0.9, 0.35) both; }
+@keyframes mdrawer-in { from { transform: translateX(calc(100% + 28px)) scale(0.96); } to { transform: none; } }
+@keyframes mdrawer-out { from { transform: translateX(var(--swipe-x, 0px)); } to { transform: translateX(calc(100% + 28px)); } }
+
+/* Содержимое въезжает вслед за панелью строка за строкой (--i — номер в
+   каскаде, ставит MobileMore): одно движение, а не девять одновременных. */
+.mdrawer-head,
+.mdrawer-gtitle,
+.mdrawer-tile,
+.mdrawer-row,
+.mdrawer-account {
+  animation: mdrawer-rise 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc(120ms + var(--i, 0) * 26ms);
+}
+.mdrawer-head { animation-delay: 70ms; }
+@keyframes mdrawer-rise { from { opacity: 0; transform: translateX(28px); } }
 
 /* Шапка: человек должен видеть, ЧТО он открыл, а не гадать по полоске. */
 .mdrawer-head {
@@ -3489,29 +3778,31 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  flex-shrink: 0;
-  padding: 15px 14px 9px;
+  padding: 20px 14px 14px 22px;
 }
 .mdrawer-title {
-  font-size: 15px;
+  font-size: 22px;
   font-weight: 800;
-  letter-spacing: -0.3px;
-  color: var(--onyx);
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+  color: var(--nv-title);
 }
 .mdrawer-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
   border: none;
-  border-radius: 9px;
-  background: rgba(var(--ink),0.05);
-  color: var(--text3);
+  border-radius: 50%;
+  background: var(--nv-close-bg);
+  color: var(--nv-close-ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 0.18s ease, background 0.2s ease;
 }
+.mdrawer-close:active { transform: scale(0.88); background: var(--nv-press); }
+.mdrawer-close:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249, 160, 139, 0.7); }
 
 .mdrawer-body {
   min-height: 0;
@@ -3520,19 +3811,36 @@
   overscroll-behavior-y: contain;
   touch-action: pan-y pinch-zoom;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  padding: 0 12px 14px;
+  scrollbar-width: none;
+  padding: 2px 14px 18px;
+  /* Список, уходящий под пилюлю аккаунта, растворяется, а не режется. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+}
+.mdrawer-body::-webkit-scrollbar { display: none; }
+
+.mdrawer-group + .mdrawer-group { margin-top: 18px; }
+.mdrawer-gtitle {
+  margin: 0 0 10px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--nv-sub);
 }
 
-.mdrawer-group + .mdrawer-group { margin-top: 16px; }
-.mdrawer-gtitle {
-  margin: 0 0 8px 4px;
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  color: var(--text3);
+/* Значок раздела — в своей плашке: в плитке и в строке одна и та же форма,
+   у текущего раздела плашка заливается бусиной дока. */
+.mdrawer-glyph {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  background: var(--nv-glyph-bg);
+  color: var(--nv-glyph-ink);
+  transition: background 0.2s ease, color 0.2s ease;
 }
+.mdrawer-glyph .nav-icon { width: 19px; height: 19px; opacity: 1; }
 
 /* Крупные плитки — только для первой группы: в эти разделы заходят каждый
    день, и именно они должны ловить взгляд раньше остальных строк. */
@@ -3544,86 +3852,135 @@
 .mdrawer-tile {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 9px;
-  min-height: 76px;
-  padding: 12px;
-  border-radius: 14px;
-  background: rgba(var(--ink),0.035);
-  color: var(--text2);
-  font-size: 12.5px;
-  font-weight: 700;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 88px;
+  padding: 13px 14px 14px 13px;
+  border-radius: 22px;
+  background: var(--nv-glass);
+  box-shadow: inset 0 0 0 1px var(--nv-glass-line);
+  color: var(--nv-text);
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.18s ease, color 0.18s ease;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease;
 }
-.mdrawer-tile .nav-icon { width: 20px; height: 20px; opacity: 0.8; }
-.mdrawer-tile span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mdrawer-tile:active { background: rgba(252,174,145,0.14); }
-.mdrawer-tile.active { background: rgba(252,174,145,0.15); color: var(--accent2); }
-.mdrawer-tile.active .nav-icon { opacity: 1; }
+.mdrawer-tile-label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mdrawer-tile.active {
+  background: var(--nv-tile-on);
+  box-shadow: inset 0 0 0 1px var(--nv-tile-on-line);
+}
 
+/* Строки групп — в общей подложке, как сгруппированный список. */
 .mdrawer-rows {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: 5px;
+  border-radius: 22px;
+  background: var(--nv-glass);
+  box-shadow: inset 0 0 0 1px var(--nv-glass-line);
 }
 .mdrawer-row {
   display: flex;
   align-items: center;
-  gap: 11px;
-  min-height: 48px;
-  padding: 6px 10px;
-  border-radius: 12px;
-  color: var(--text2);
+  gap: 12px;
+  min-height: 54px;
+  padding: 7px 10px 7px 8px;
+  border-radius: 17px;
+  color: var(--nv-text);
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.18s ease, color 0.18s ease;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease;
 }
-.mdrawer-row .nav-icon { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
-.mdrawer-row-text { display: flex; flex-direction: column; min-width: 0; }
+.mdrawer-row .mdrawer-glyph {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--nv-row-glyph-bg);
+  color: var(--nv-row-glyph-ink);
+}
+.mdrawer-row-text { display: flex; flex: 1; flex-direction: column; min-width: 0; }
 .mdrawer-row-label {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
+  letter-spacing: -0.15px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .mdrawer-row-sub {
-  margin-top: 1px;
-  font-size: 10.5px;
+  margin-top: 2px;
+  font-size: 11.5px;
   font-weight: 600;
-  color: var(--text3);
+  color: var(--nv-sub);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.mdrawer-row:active { background: rgba(252,174,145,0.14); }
-.mdrawer-row.active { background: rgba(252,174,145,0.15); color: var(--accent2); }
-.mdrawer-row.active .nav-icon { opacity: 1; }
+.mdrawer-row-chev { flex-shrink: 0; color: var(--nv-chev); }
+.mdrawer-row.active { background: var(--nv-row-on); }
+.mdrawer-row.active .mdrawer-row-label { color: var(--nv-ink-on); }
 
-/* Аккаунт — та же плитка, что в боковом меню, но ПРИКЛЕЕН к нижнему краю:
+.mdrawer-tile:active,
+.mdrawer-row:active { transform: scale(0.97); background: var(--nv-press); }
+.mdrawer-tile.active .mdrawer-glyph,
+.mdrawer-row.active .mdrawer-glyph {
+  background: var(--nv-bead);
+  color: var(--nv-on-bead);
+  box-shadow: 0 6px 16px -6px rgba(240, 140, 110, 0.75);
+}
+.mdrawer-tile:focus-visible,
+.mdrawer-row:focus-visible { outline: none; box-shadow: inset 0 0 0 2px rgba(249, 160, 139, 0.7); }
+
+/* Аккаунт — та же пилюля, что в боковом меню, но ПРИКЛЕЕНА к нижнему краю:
    лежит рядом с .mdrawer-body, а не внутри него, поэтому не уезжает вместе со
    списком разделов и не обрезается его скроллом. Список студий и «Выйти»
-   всплывают над плиткой (.user-menu-panel: absolute, bottom: 100%) — кнопка
-   остаётся на месте, меню раскрывается вверх поверх разделов. Своя заливка
-   обязательна: под плиткой проезжает прокручиваемый список. */
-.mdrawer-account {
-  flex-shrink: 0;
-  padding: 10px 12px 12px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-card);
+   всплывают над пилюлей (.user-menu-panel: absolute, bottom: 100%) — кнопка
+   остаётся на месте, меню раскрывается вверх поверх разделов. */
+.mdrawer-account { padding: 4px 12px 12px; }
+.mdrawer-account .user-pill {
+  padding: 10px 12px 10px 10px;
+  border-radius: 20px;
+  background: var(--nv-glass);
+  box-shadow: inset 0 0 0 1px var(--nv-glass-line);
+}
+.mdrawer-account .user-pill:hover,
+.mdrawer-account .user-pill:active {
+  transform: none;
+  background: var(--nv-press);
+  box-shadow: inset 0 0 0 1px var(--nv-glass-line);
+}
+.mdrawer-account .user-avatar { width: 34px; height: 34px; background: var(--nv-bead); color: var(--nv-on-bead); }
+.mdrawer-account .user-email { font-size: 12px; font-weight: 600; color: var(--nv-text); }
+.mdrawer .user-menu-panel { border-radius: 20px; }
+:root.dark .mdrawer .user-menu-panel {
+  box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 /* Панель открывается только с телефона, но остаться открытой при повороте в
    планшетную ширину не должна — прячем тем же приёмом, что и саму .mnav. */
 @media (min-width: 768px) {
-  .mdrawer-scrim { display: none; }
+  .mdrawer-layer { display: none; }
 }
 
+/* Без движения: вместо выезда и перетекания — короткое проявление. Ключевые
+   кадры переопределены с теми же именами, поэтому конец ухода (animationend
+   mdrawer-out) MobileNav ловит как обычно. */
 @media (prefers-reduced-motion: reduce) {
-  .mdrawer, .mdrawer-scrim { animation: none; }
-  .mnav-icon { transition: none; }
+  @keyframes mdrawer-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes mdrawer-out { from { opacity: 1; } to { opacity: 0; } }
+  .mdrawer { animation-duration: 0.18s; }
+  .mdrawer-layer.is-leaving .mdrawer { animation-duration: 0.16s; }
+  .mdrawer-head, .mdrawer-gtitle, .mdrawer-tile, .mdrawer-row, .mdrawer-account { animation: none; }
+  .mnav-bead::after { display: none; }
+  .mnav-item, .mnav-moreglyph, .mnav-dot, .mnav-cross { transition: none; }
 }
 
 /* ==========================================================================

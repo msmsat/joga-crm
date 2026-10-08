@@ -1,0 +1,205 @@
+/* ── Спокойные блоки телефонной главной: внимание, лента, месяц ────────────
+   Белая карточка, внутри — воздух вместо разделителей (ДС). */
+.section { display: flex; flex-direction: column; gap: 12px; }
+
+.card {
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--card);
+  box-shadow: var(--ph-card-shadow);
+}
+
+.calm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text2);
+}
+.calmIcon { display: inline-flex; flex-shrink: 0; color: var(--ph-up); }
+
+/* ── «Требует внимания» ── */
+.signal {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 8px 12px 10px;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  color: var(--text);
+  font-family: var(--font);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.signal:active { background: rgba(var(--ink), 0.04); transform: scale(0.985); }
+.signal:focus-visible { outline: 2px solid var(--peach); outline-offset: -2px; }
+.signalIcon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+}
+.signal[data-severity='info'] .signalIcon { color: #4A80C4; background: rgba(74, 128, 196, 0.12); }
+.signal[data-severity='warning'] .signalIcon { color: #D9826B; background: rgba(249, 160, 139, 0.16); }
+.signal[data-severity='critical'] .signalIcon { color: #C26D7E; background: rgba(216, 140, 154, 0.16); }
+.signalText { font-size: 14px; font-weight: 600; line-height: 1.42; }
+.chevron { display: inline-flex; color: var(--text3); }
+
+/* ── Лента событий ── */
+.feed { margin: 0; padding: 4px 0; list-style: none; }
+.eventItem { overflow: hidden; }
+.event {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px;
+  padding: 9px 4px 9px 6px;
+}
+/* Нить таймлайна: от точки к точке, у первой — только вниз, у последней — только вверх. */
+.event::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  border-radius: 1px;
+  background: rgba(var(--ink), 0.08);
+}
+.eventItem:first-child .event::before { top: 20px; }
+.eventItem:last-child .event::before { bottom: calc(100% - 20px); }
+.eventItem:only-child .event::before { display: none; }
+.eventDot {
+  position: relative;
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  margin: 6px 0 0 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--card);
+}
+.eventBody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.eventText { font-size: 14px; line-height: 1.42; color: var(--text2); overflow-wrap: anywhere; }
+.eventText strong { font-weight: 750; color: var(--text); }
+.eventTime { font-size: 12px; font-weight: 600; color: var(--text3); }
+.eventMenu { align-self: center; }
+
+.more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 2px;
+  padding: 12px;
+  border: 0;
+  border-radius: 16px;
+  background: rgba(var(--ink), 0.035);
+  color: var(--text);
+  font: 700 13.5px var(--font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.more:active { transform: scale(0.985); background: rgba(var(--ink), 0.06); }
+.moreCount {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(var(--ink), 0.07);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── «Месяц в студии» ── */
+.monthTabs { padding: 4px 4px 0; }
+.monthBody { overflow: hidden; }
+
+.fin {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 14px;
+  margin: 0;
+  padding: 18px 12px 14px;
+}
+.fin dt { font-size: 12.5px; font-weight: 600; color: var(--text3); }
+.fin dd {
+  margin: 4px 0 0;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.finGood dd { color: var(--ph-up); }
+.finBad dd { color: var(--ph-down); }
+
+.bars { display: flex; flex-direction: column; gap: 16px; padding: 18px 12px 16px; }
+.barTop { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+.barLabel { min-width: 0; font-weight: 650; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.barValue { flex-shrink: 0; font-weight: 800; font-variant-numeric: tabular-nums; }
+.barTrack {
+  height: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: rgba(var(--ink), 0.06);
+}
+.barFill { display: block; height: 100%; border-radius: inherit; transform-origin: left; }
+.rowSkel {
+  display: block;
+  height: 30px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(var(--ink), 0.04) 25%, rgba(var(--ink), 0.07) 37%, rgba(var(--ink), 0.04) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.modes { display: flex; flex-direction: column; gap: 22px; padding: 18px 12px 14px; }
+.modeHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+}
+.modeUtil { display: inline-flex; align-items: baseline; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--text3); }
+.modeUtil b { font-size: 15px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+.modeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 10px;
+  margin: 12px 0 0;
+}
+/* Подпись в две строки («Ждут подтверждения») не должна сдвигать число:
+   числа одного ряда стоят на общей линии внизу ячейки. */
+.modeGrid > div { display: flex; flex-direction: column; justify-content: space-between; }
+.modeGrid dt { font-size: 11.5px; font-weight: 600; line-height: 1.3; color: var(--text3); }
+.modeGrid dd { margin: 3px 0 0; font-size: 17px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+.muted dd { color: var(--text2); }
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rowSkel { animation: none; }
+}
+
+.skelList { display: flex; flex-direction: column; gap: 8px; padding: 10px; }
+.skelList .rowSkel { height: 44px; border-radius: 14px; }

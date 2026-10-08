@@ -92,7 +92,7 @@ export default function Finances() {
           инлайном, и уплотнить их можно только отсюда (см. .finPane). */}
       <div
         key={activeTab}
-        className={styles.finPane}
+        className={`${styles.finPane} dock-scroll`}
         style={{
           flex: 1,
           overflowY: 'auto',

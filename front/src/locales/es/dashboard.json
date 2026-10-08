@@ -105,5 +105,41 @@
     "cancelled": "Canceladas",
     "utilization": "Ocupación",
     "noData": "Sin datos"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Buenos días, {{name}}",
+      "day": "Buenas tardes, {{name}}",
+      "evening": "Buenas noches, {{name}}",
+      "night": "Buenas noches, {{name}}",
+      "morningPlain": "Buenos días",
+      "dayPlain": "Buenas tardes",
+      "eveningPlain": "Buenas noches",
+      "nightPlain": "Buenas noches"
+    },
+    "today": "Hoy",
+    "live": "En curso",
+    "vsPrev": "vs el mes pasado",
+    "newClientsOn": "Clientes nuevos, {{date}}",
+    "retentionHint": "Proporción de clientes que vuelven",
+    "collapse": "Ver menos",
+    "metricShort": {
+      "revenue": "Ingresos",
+      "clients": "Clientes",
+      "bookings": "Reservas",
+      "retention": "Retención",
+      "lessons": "Clases",
+      "attendance": "Asistencia",
+      "fill_rate": "Ocupación",
+      "rating": "Valoración",
+      "active_clients": "Clientes"
+    },
+    "month": {
+      "title": "El mes en el estudio",
+      "finance": "Finanzas",
+      "services": "Servicios",
+      "trainers": "Entrenadores",
+      "modes": "Reservas"
+    }
   }
 }

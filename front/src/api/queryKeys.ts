@@ -35,7 +35,9 @@ export const queryKeys = {
   branches: ['branches'] as const,
   branch: (id: number) => ['branch', id] as const,
   services: ['services'] as const,
-  serviceWeek: (id: number) => ['services', id, 'week'] as const,
+  // Неделя всех услуг одним набором (карточка услуги Каталога). Под префиксом
+  // services: правка услуги перечитывает и её.
+  servicesWeek: ['services', 'week'] as const,
   packages: ['catalog', 'packages'] as const,
   checkoutServices: ['checkout', 'services'] as const,
   subscriptionConfig: ['catalog', 'subscription-config'] as const,

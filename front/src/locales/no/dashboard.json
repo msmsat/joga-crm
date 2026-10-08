@@ -105,5 +105,41 @@
     "cancelled": "Avlyst",
     "utilization": "Belegg",
     "noData": "Ingen data"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "God morgen, {{name}}",
+      "day": "God dag, {{name}}",
+      "evening": "God kveld, {{name}}",
+      "night": "Hei, {{name}}",
+      "morningPlain": "God morgen",
+      "dayPlain": "God dag",
+      "eveningPlain": "God kveld",
+      "nightPlain": "Hei"
+    },
+    "today": "I dag",
+    "live": "Pågår",
+    "vsPrev": "mot forrige måned",
+    "newClientsOn": "Nye kunder, {{date}}",
+    "retentionHint": "Andelen kunder som kommer tilbake",
+    "collapse": "Vis mindre",
+    "metricShort": {
+      "revenue": "Omsetning",
+      "clients": "Kunder",
+      "bookings": "Bookinger",
+      "retention": "Lojalitet",
+      "lessons": "Økter",
+      "attendance": "Oppmøte",
+      "fill_rate": "Fyllingsgrad",
+      "rating": "Vurdering",
+      "active_clients": "Kunder"
+    },
+    "month": {
+      "title": "Måneden i studioet",
+      "finance": "Økonomi",
+      "services": "Tjenester",
+      "trainers": "Instruktører",
+      "modes": "Booking"
+    }
   }
 }

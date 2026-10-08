@@ -272,6 +272,27 @@
       "stretching": "Stræk",
       "individual": "Individuel",
       "other": "Uden kategori"
+    },
+    "card": {
+      "switch": "Skift",
+      "switchTitle": "Skift ydelse",
+      "search": "Find ydelse",
+      "group": "Hold",
+      "individual": "Individuel",
+      "onlineOn": "Onlinebooking åben",
+      "onlineOff": "Kun via receptionen",
+      "slotTotal": "Fylder i kalenderen",
+      "durationVaries": "Tiden afhænger af medarbejderen",
+      "statsTitle": "Bookinger og omsætning",
+      "share": "{{pct}} % af alle studiets bookinger",
+      "bookingsTotal": "bookinger i alt",
+      "revenueTotal": "omsætning i alt",
+      "avgCheck": "gennemsnitlig bon",
+      "weekTitle": "Denne uge",
+      "weekEmpty": "Intet planlagt i denne uge",
+      "dayEmpty": "Intet denne dag",
+      "openJournal": "Åbn kalenderen",
+      "ownTerms": "medarbejderens egen pris eller tid"
     }
   },
   "subscriptions": {

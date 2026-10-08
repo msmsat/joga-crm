@@ -1,0 +1,164 @@
+/* ── «Сегодня»: занятия дня лентой ───────────────────────────────────────── */
+.section { display: flex; flex-direction: column; gap: 14px; }
+
+/* Лента выходит в края экрана: следующая карточка выглядывает из-за края —
+   видно, что её листают. Нижнее поле — под тень карточек (overflow-x
+   обрезает и по вертикали), отрицательный отступ возвращает его ритму. */
+.rail {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin: 0 calc(var(--ph-gutter) * -1) -14px;
+  padding: 2px var(--ph-gutter) 16px;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--ph-gutter);
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar { display: none; }
+
+.card {
+  position: relative;
+  flex: 0 0 172px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 152px;
+  padding: 14px 14px 13px 17px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  box-shadow: var(--ph-card-shadow);
+  color: var(--text);
+  font-family: var(--font);
+  text-align: left;
+  cursor: pointer;
+  scroll-snap-align: start;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
+}
+.card:active { transform: scale(0.97); }
+.card:focus-visible { outline: 2px solid var(--peach); outline-offset: 2px; }
+.card[data-state='done'] { opacity: 0.52; }
+.card[data-state='live'] {
+  border-color: rgba(249, 160, 139, 0.55);
+  background: linear-gradient(180deg, rgba(252, 174, 145, 0.16) 0%, rgba(252, 174, 145, 0) 62%), var(--card);
+  box-shadow: 0 16px 30px -16px rgba(249, 160, 139, 0.6), var(--ph-card-shadow);
+}
+
+/* Цвет услуги — та же метка, что в сетке Журнала: занятие узнаётся по
+   полоске, а не по перечитыванию названия. */
+.stripe {
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+}
+
+.top { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 26px; }
+.top > :last-child:not(.time) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.time {
+  flex-shrink: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.live,
+.soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.live { color: var(--ph-link); background: rgba(249, 160, 139, 0.16); }
+.live i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--peach);
+  animation: breathe 1.8s ease-in-out infinite;
+}
+.soon { gap: 4px; color: var(--text2); background: rgba(var(--ink), 0.05); }
+.done { display: inline-flex; color: var(--text3); }
+
+.name {
+  font-size: 14.5px;
+  font-weight: 750;
+  line-height: 1.3;
+  letter-spacing: -0.15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.who {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fill { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 6px; }
+.track {
+  flex: 1;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(var(--ink), 0.07);
+}
+.trackIn,
+.trackFull {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transform-origin: left;
+}
+.trackIn { background: linear-gradient(90deg, var(--peach-light), var(--peach)); }
+/* Мест нет — полоса фисташковая: это хорошая новость, а не тревога. */
+.trackFull { background: linear-gradient(90deg, #BCD9C0, var(--pistachio)); }
+.seats { font-size: 12px; font-weight: 800; color: var(--text2); font-variant-numeric: tabular-nums; }
+.solo { font-size: 12px; font-weight: 700; color: var(--text3); }
+
+.skel {
+  flex: 0 0 172px;
+  height: 152px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, rgba(var(--ink), 0.04) 25%, rgba(var(--ink), 0.07) 37%, rgba(var(--ink), 0.04) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 18px 17px;
+  border: 1px dashed var(--border2);
+  border-radius: 20px;
+}
+.emptyTitle { font-size: 15px; font-weight: 750; color: var(--text); }
+.emptyText { font-size: 13px; font-weight: 500; line-height: 1.45; color: var(--text3); }
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 160, 139, 0.55); }
+  50% { transform: scale(1.15); box-shadow: 0 0 0 5px rgba(249, 160, 139, 0); }
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live i, .skel { animation: none; }
+}

@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
+import { useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { NavItem } from './navItems';
-import { cn } from '../lib/utils';
+import NavGlyph from './NavGlyph';
 
 type Props = {
   active: string;
@@ -11,23 +11,55 @@ type Props = {
 };
 
 /**
- * Плавающая светлая капсула навигации.
+ * Плавающая капсула навигации — поднос и камень на нём. Поднос: фарфоровый
+ * (в тёмной теме графитовый) обод и вырезанное в нём ложе. Камень — линза
+ * текущего раздела: матовый дымчатый обсидиан (в тёмной теме — кварц), а не
+ * цвет студии; студия остаётся в нём тёплым отсветом. Материалы и свет —
+ * токены --dock-* и --lens-* в index.css.
+ *
+ * ── Заливка живёт в линзе ──────────────────────────────────────────────────
+ *
+ * Рядов два, и они лежат друг на друге клетка в клетку. Нижний — кнопки:
+ * контурные иконки, серые подписи. Верхний — тот же ряд залитым и жемчужным, и
+ * он целиком внутри камня, обрезанный его формой. Поэтому залито ровно
+ * то, что под линзой: линза съехала с иконки наполовину — иконка залита
+ * наполовину, ушла совсем — иконка снова контурная. Налив и слив — это сам
+ * край линзы, а не отдельная анимация, которая могла бы с ним разойтись.
+ *
+ * Линза едет вбок на N своих ширин, ряд внутри неё — на те же N ширин обратно,
+ * с той же длительностью и кривой, поэтому иконки стоят на месте, а движется
+ * только окно. На ходу линза вытягивается каплей; ряд сжимается обратно ровно
+ * настолько же, чтобы иконки не плыли. Отражения на камне привязаны к этому
+ * же ряду, то есть к капсуле, а не к камню: камень едет — блики скользят по нему.
  *
  * ПРОИЗВОДИТЕЛЬНОСТЬ — почему сделано именно так:
  *
- * 1. Анимируется РОВНО ОДИН элемент — персиковая подложка, и только трансформой
- *    (layoutId переносит её с места на место через translate). Предыдущая версия
- *    гнала `width: 0 → auto` у подписи плюс `layout` у капсулы и у каждой кнопки:
- *    три слоя пересчёта раскладки на кадр, и всё это в момент, когда React
- *    монтирует целый экран. Отсюда и был лаг.
- * 2. Ширины кнопок постоянные — подписи видны у всех пунктов сразу, поэтому
- *    менять раскладку при переключении вообще не нужно.
+ * 1. Только CSS и только transform — всё движение идёт на видеокарте и не ждёт
+ *    главного потока, который в кадре тапа занят новым разделом. Никаких
+ *    замеров и framer: layoutId будил бы проекцию framer, а покадровый JS
+ *    делил бы кадр с React. Отсюда и был прежний лаг.
+ * 2. Ширины кнопок постоянные — сетка на равные доли, подписи видны у всех
+ *    пунктов сразу, поэтому раскладка при переключении не меняется вовсе.
  * 3. Никакого backdrop-filter: у закреплённого элемента над прокруткой размытие
- *    перерисовывается каждый кадр прокрутки. «Лёгкость» здесь даёт светлая
- *    поверхность с мягкой тенью и волосяной обводкой, а не полупрозрачность.
+ *    перерисовывается каждый кадр прокрутки. «Лёгкость» здесь даёт поверхность
+ *    с бликом по кромке и парящей тенью, а не полупрозрачность.
  */
 export default function BottomNav({ active, onSelect, items }: Props) {
   const { t } = useTranslation();
+  const index = items.findIndex((item) => item.id === active);
+
+  // Переезды линзы. Капля проигрывается на каждый переезд и ни разу — при
+  // первом показе приложения. Перезапуск — сменой имени анимации (a ↔ b), а не
+  // перемонтированием: внутри линзы едет ряд, и новый узел встал бы на место
+  // сразу, без перехода, разойдясь с линзой. Правка состояния в рендере —
+  // штатный приём React для «значения с прошлого рендера».
+  const [shownIndex, setShownIndex] = useState(index);
+  const [moves, setMoves] = useState(0);
+  if (index !== shownIndex) {
+    setShownIndex(index);
+    setMoves(moves + 1);
+  }
+  const drop = moves === 0 ? undefined : moves % 2 ? 'a' : 'b';
 
   return (
     /* absolute, а не fixed: `fixed` привязывает низ капсулы к ОКНУ БРАУЗЕРА, а
@@ -41,55 +73,42 @@ export default function BottomNav({ active, onSelect, items }: Props) {
        и капсула ложилась на самую кромку экрана. Сам расчёт — `--nav-offset`
        в index.css: зазор плюс безопасная зона, в том числе та, что сообщает
        Telegram (в его вебвью голый env() — ноль). Там же `--nav-h` — держать
-       в паре с высотой кнопок ниже. */
+       в паре с высотой кнопок (`.dock-cell`). */
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-4 pb-[var(--nav-offset)]">
-      <nav className="pointer-events-auto flex items-stretch gap-1 rounded-full bg-card p-1.5 shadow-lift ring-1 ring-inset ring-border">
-        {items.map((item) => {
-          const isActive = active === item.id;
-          return (
-            <motion.button
-              key={item.id}
-              type="button"
-              aria-label={t(item.labelKey)}
-              aria-current={isActive ? 'page' : undefined}
-              onClick={() => onSelect(item.id)}
-              whileTap={{ scale: 0.93 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-              className="relative flex min-h-[var(--nav-button-h)] flex-1 flex-col items-center justify-center gap-1 rounded-full"
-            >
-              {isActive && (
-                <motion.span
-                  layoutId="nav-active"
-                  transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-                  className="absolute inset-0 rounded-full bg-brand/14"
-                />
-              )}
+      <nav
+        className="dock"
+        style={{ '--dock-n': items.length, '--dock-i': Math.max(index, 0) } as CSSProperties}
+      >
+        {items.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            aria-current={item.id === active ? 'page' : undefined}
+            onClick={() => onSelect(item.id)}
+            className="dock-cell dock-tab"
+          >
+            <NavGlyph icon={item.icon} solid={item.solid} filled={false} />
+            <span className="dock-label">{t(item.labelKey)}</span>
+          </button>
+        ))}
 
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                strokeWidth={1.8}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={cn(
-                  'relative h-[19px] w-[19px] transition-colors duration-200',
-                  isActive ? 'stroke-brand' : 'stroke-muted-foreground',
-                )}
-              >
-                {item.icon}
-              </svg>
-
-              <span
-                className={cn(
-                  'relative max-w-full truncate px-1 text-[9.5px] leading-none tracking-[-0.005em] transition-colors duration-200',
-                  isActive ? 'font-extrabold text-brand' : 'font-semibold text-muted-foreground',
-                )}
-              >
-                {t(item.labelKey)}
+        {/* Раздела нет в меню (например, «Клуб» выключили, пока он открыт) —
+            линза гаснет, а не встаёт на чужую вкладку. Нажатия проходят сквозь
+            неё к кнопкам. */}
+        <span className="dock-lens" data-hidden={index < 0 || undefined} aria-hidden="true">
+          <span className="dock-lens-body" data-drop={drop}>
+            <span className="dock-lens-ink">
+              <span className="dock-lens-row">
+                {items.map((item) => (
+                  <span key={item.id} className="dock-cell">
+                    <NavGlyph icon={item.icon} solid={item.solid} filled />
+                    <span className="dock-label">{t(item.labelKey)}</span>
+                  </span>
+                ))}
               </span>
-            </motion.button>
-          );
-        })}
+            </span>
+          </span>
+        </span>
       </nav>
     </div>
   );

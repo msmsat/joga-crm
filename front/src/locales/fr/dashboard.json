@@ -105,5 +105,41 @@
     "cancelled": "Annulées",
     "utilization": "Taux d’occupation",
     "noData": "Aucune donnée"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Bonjour, {{name}}",
+      "day": "Bonjour, {{name}}",
+      "evening": "Bonsoir, {{name}}",
+      "night": "Bonsoir, {{name}}",
+      "morningPlain": "Bonjour",
+      "dayPlain": "Bonjour",
+      "eveningPlain": "Bonsoir",
+      "nightPlain": "Bonsoir"
+    },
+    "today": "Aujourd’hui",
+    "live": "En cours",
+    "vsPrev": "vs mois dernier",
+    "newClientsOn": "Nouveaux clients, {{date}}",
+    "retentionHint": "Part des clients qui reviennent",
+    "collapse": "Réduire",
+    "metricShort": {
+      "revenue": "Chiffre d’affaires",
+      "clients": "Clients",
+      "bookings": "Réservations",
+      "retention": "Fidélisation",
+      "lessons": "Cours",
+      "attendance": "Présence",
+      "fill_rate": "Remplissage",
+      "rating": "Note",
+      "active_clients": "Clients"
+    },
+    "month": {
+      "title": "Le mois au studio",
+      "finance": "Finances",
+      "services": "Services",
+      "trainers": "Coachs",
+      "modes": "Réservations"
+    }
   }
 }

@@ -273,6 +273,27 @@
       "stretching": "Istezanje",
       "individual": "Individualna",
       "other": "Nekategorizirano"
+    },
+    "card": {
+      "switch": "Promijeni",
+      "switchTitle": "Promijeni uslugu",
+      "search": "Pronađi uslugu",
+      "group": "Grupna",
+      "individual": "Individualna",
+      "onlineOn": "Online rezervacija otvorena",
+      "onlineOff": "Samo preko recepcije",
+      "slotTotal": "Zauzima u dnevniku",
+      "durationVaries": "Vrijeme ovisi o izvođaču",
+      "statsTitle": "Rezervacije i prihod",
+      "share": "{{pct}} % svih rezervacija studija",
+      "bookingsTotal": "rezervacija ukupno",
+      "revenueTotal": "prihod ukupno",
+      "avgCheck": "prosječan račun",
+      "weekTitle": "Ovaj tjedan",
+      "weekEmpty": "Ovaj tjedan ništa nije zakazano",
+      "dayEmpty": "Taj dan nema ničega",
+      "openJournal": "Otvori dnevnik",
+      "ownTerms": "vlastita cijena ili vrijeme izvođača"
     }
   },
   "subscriptions": {

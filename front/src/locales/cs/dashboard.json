@@ -106,5 +106,41 @@
     "cancelled": "Zrušeno",
     "utilization": "Vytížení",
     "noData": "Nejsou data"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Dobré ráno, {{name}}",
+      "day": "Dobrý den, {{name}}",
+      "evening": "Dobrý večer, {{name}}",
+      "night": "Dobrou noc, {{name}}",
+      "morningPlain": "Dobré ráno",
+      "dayPlain": "Dobrý den",
+      "eveningPlain": "Dobrý večer",
+      "nightPlain": "Dobrou noc"
+    },
+    "today": "Dnes",
+    "live": "Probíhá",
+    "vsPrev": "oproti minulému měsíci",
+    "newClientsOn": "Noví klienti, {{date}}",
+    "retentionHint": "Podíl klientů, kteří se vracejí",
+    "collapse": "Sbalit",
+    "metricShort": {
+      "revenue": "Tržby",
+      "clients": "Klienti",
+      "bookings": "Rezervace",
+      "retention": "Udržení",
+      "lessons": "Lekce",
+      "attendance": "Docházka",
+      "fill_rate": "Naplněnost",
+      "rating": "Hodnocení",
+      "active_clients": "Klienti"
+    },
+    "month": {
+      "title": "Měsíc ve studiu",
+      "finance": "Finance",
+      "services": "Služby",
+      "trainers": "Trenéři",
+      "modes": "Rezervace"
+    }
   }
 }

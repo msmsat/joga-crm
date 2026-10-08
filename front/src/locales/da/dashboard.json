@@ -105,5 +105,41 @@
     "cancelled": "Aflyst",
     "utilization": "Belægning",
     "noData": "Ingen data"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Godmorgen, {{name}}",
+      "day": "Goddag, {{name}}",
+      "evening": "Godaften, {{name}}",
+      "night": "Hej, {{name}}",
+      "morningPlain": "Godmorgen",
+      "dayPlain": "Goddag",
+      "eveningPlain": "Godaften",
+      "nightPlain": "Hej"
+    },
+    "today": "I dag",
+    "live": "I gang",
+    "vsPrev": "ift. sidste måned",
+    "newClientsOn": "Nye kunder, {{date}}",
+    "retentionHint": "Andelen af kunder, der kommer igen",
+    "collapse": "Vis mindre",
+    "metricShort": {
+      "revenue": "Omsætning",
+      "clients": "Kunder",
+      "bookings": "Bookinger",
+      "retention": "Fastholdelse",
+      "lessons": "Hold",
+      "attendance": "Fremmøde",
+      "fill_rate": "Belægning",
+      "rating": "Vurdering",
+      "active_clients": "Kunder"
+    },
+    "month": {
+      "title": "Måneden i studiet",
+      "finance": "Økonomi",
+      "services": "Ydelser",
+      "trainers": "Instruktører",
+      "modes": "Booking"
+    }
   }
 }

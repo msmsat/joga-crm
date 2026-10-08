@@ -107,5 +107,41 @@
     "cancelled": "Скасовано",
     "utilization": "Завантаження",
     "noData": "Немає даних"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Доброго ранку, {{name}}",
+      "day": "Добрий день, {{name}}",
+      "evening": "Добрий вечір, {{name}}",
+      "night": "Доброї ночі, {{name}}",
+      "morningPlain": "Доброго ранку",
+      "dayPlain": "Добрий день",
+      "eveningPlain": "Добрий вечір",
+      "nightPlain": "Доброї ночі"
+    },
+    "today": "Сьогодні",
+    "live": "Триває",
+    "vsPrev": "до минулого місяця",
+    "newClientsOn": "Нові клієнти, {{date}}",
+    "retentionHint": "Частка клієнтів, які повертаються знову",
+    "collapse": "Згорнути",
+    "metricShort": {
+      "revenue": "Виручка",
+      "clients": "Клієнти",
+      "bookings": "Записи",
+      "retention": "Утримання",
+      "lessons": "Заняття",
+      "attendance": "Відвідування",
+      "fill_rate": "Заповнюваність",
+      "rating": "Оцінка",
+      "active_clients": "Клієнти"
+    },
+    "month": {
+      "title": "Місяць у студії",
+      "finance": "Фінанси",
+      "services": "Послуги",
+      "trainers": "Тренери",
+      "modes": "Запис"
+    }
   }
 }

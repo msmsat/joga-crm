@@ -85,6 +85,38 @@
   --v-shadow-button: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(26, 26, 26, 0.04), 0 0 0 1px rgba(26, 26, 26, 0.07), 0 1px 2px rgba(26, 26, 26, 0.06), 0 8px 18px -8px rgba(26, 26, 26, 0.20);
   --v-shadow-button-press: inset 0 1px 3px rgba(26, 26, 26, 0.10), 0 0 0 1px rgba(26, 26, 26, 0.08);
 
+  /* Зерно матовых поверхностей: шум, сведённый в серый. Серый, а не белый
+     или чёрный, — он виден и на фарфоре, и на камне. Растр рисуется один раз
+     и дальше ездит вместе со слоем. На камне 6% — сатин; на светлом подносе
+     столько же читалось штукатуркой, там 3%. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='2 0 0 0 -.5 2 0 0 0 -.5 2 0 0 0 -.5 0 0 0 0 .06'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --grain-tray: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='2 0 0 0 -.5 2 0 0 0 -.5 2 0 0 0 -.5 0 0 0 0 .03'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+
+  /* Капсула навигации (BottomNav) — поднос и камень на нём.
+     Поднос: фарфоровый обод с бликом по кромке и вырезанное в нём ложе — оно
+     темнее обода и утоплено (тень под верхним краем, свет на нижнем). Над
+     центром висит «лампа»: светлое пятно на ложе и отражение на камне стоят
+     в одной точке, поэтому свет у всей капсулы общий. */
+  --dock-rim: linear-gradient(180deg, #FFFFFF 0%, #F5F1EC 100%);
+  --dock-shadow: inset 0 1px 0 #FFFFFF, 0 0 0 1px rgba(60, 40, 30, 0.07), 0 18px 38px -16px rgba(90, 55, 35, 0.30), 0 4px 12px -6px rgba(26, 26, 26, 0.10);
+  --dock-bed: linear-gradient(180deg, #EBE6E0 0%, #F4F1ED 100%);
+  --dock-bed-shadow: inset 0 2px 3px -1px rgba(80, 55, 40, 0.18), inset 0 0 0 1px rgba(80, 55, 40, 0.05), inset 0 -1px 0 rgba(255, 255, 255, 0.95);
+  --dock-lamp: rgba(255, 255, 255, 0.8);
+  /* Невыбранные разделы. Тёплый серый под фарфор; 4.7:1 на ложе — подпись
+     в 10px читается по WCAG. */
+  --dock-ink: #6B625D;
+
+  /* Камень — матовый дымчатый обсидиан. Не цвет студии: персиковая линза во
+     всю клетку добавляла акцента туда, где его и так много. Студия остаётся
+     в камне светом — тёплым отсветом изнутри снизу и бликом на ложе под ним. */
+  --lens-face: linear-gradient(180deg, #36322F 0%, #1D1B19 50%, #121110 100%);
+  --lens-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 -10px 16px -10px rgba(0, 0, 0, 0.7), 0 1px 1.5px rgba(30, 20, 15, 0.28), 0 10px 22px -10px rgba(30, 20, 15, 0.6), 0 6px 16px -10px color-mix(in srgb, var(--v-brand) 50%, transparent);
+  --lens-ember: color-mix(in srgb, var(--v-brand) 46%, transparent);
+  --lens-sheen: rgba(255, 255, 255, 0.1);
+  --lens-lamp: rgba(255, 255, 255, 0.16);
+  --lens-reflect: rgba(255, 255, 255, 0.09);
+  --lens-ink: #F6F1EB;
+
   /* Нижняя безопасная зона — ОДНА на всё приложение: меню, подвалы листов, `pb-safe`.
      Голого `env(safe-area-inset-bottom)` мало: вебвью Telegram (iOS, Android в
      режиме «от края до края») отдаёт в нём ноль, хотя низ окна лежит под
@@ -119,8 +151,6 @@
   --v-brand-light: #FCAE91;
   --v-brand-foreground: #1A1A1A;
 
-  /* Капсула навигации: в светлой теме оникс (--v-foreground), в тёмной он
-     сливается с фоном, поэтому там приподнятая поверхность (--v-muted). */
   --v-background: #121212;
   --v-foreground: #F5F5F5;
   --v-card: #1E1E1E;
@@ -148,6 +178,25 @@
   --v-surface-raised: linear-gradient(180deg, #2A2A2A 0%, #1F1F1F 100%);
   --v-shadow-button: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 18px -8px rgba(0, 0, 0, 0.65);
   --v-shadow-button-press: inset 0 1px 3px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+
+  /* Графитовый поднос: на тёмном тень не видна, глубину ложа держат блики по
+     кромкам. Камень здесь светлее ложа — дымчатый кварц, а не обсидиан:
+     чёрный камень в чёрном ложе был бы дырой, а не предметом. */
+  --grain-tray: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='2 0 0 0 -.5 2 0 0 0 -.5 2 0 0 0 -.5 0 0 0 0 .05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --dock-rim: linear-gradient(180deg, #2F2E2D 0%, #1E1D1C 100%);
+  --dock-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 18px 40px -12px rgba(0, 0, 0, 0.85), 0 4px 12px -4px rgba(0, 0, 0, 0.6);
+  --dock-bed: linear-gradient(180deg, #131211 0%, #1A1918 100%);
+  --dock-bed-shadow: inset 0 2px 4px -1px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  --dock-lamp: rgba(255, 255, 255, 0.05);
+  --dock-ink: rgba(255, 255, 255, 0.56);
+
+  --lens-face: linear-gradient(180deg, #4A4541 0%, #2E2B28 50%, #22201E 100%);
+  --lens-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 -10px 16px -10px rgba(0, 0, 0, 0.6), 0 1px 1.5px rgba(0, 0, 0, 0.5), 0 10px 22px -8px rgba(0, 0, 0, 0.85), 0 6px 18px -8px color-mix(in srgb, var(--v-brand) 42%, transparent);
+  --lens-ember: color-mix(in srgb, var(--v-brand) 48%, transparent);
+  --lens-sheen: rgba(255, 255, 255, 0.1);
+  --lens-lamp: rgba(255, 255, 255, 0.14);
+  --lens-reflect: rgba(255, 255, 255, 0.08);
+  --lens-ink: #F6F1EB;
 }
 
 /* Проброс в утилиты Tailwind: bg-brand, text-muted-foreground, shadow-lift, … */
@@ -578,6 +627,290 @@
   outline: 1px dashed color-mix(in srgb, var(--v-brand-foreground) 40%, transparent);
   outline-offset: -4px;
   box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.45);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   НАВИГАЦИЯ: иконка раздела и капсула телефона.
+
+   Правила НЕ в слое: утилиты Tailwind на этих узлах не стоят, а слой
+   отдал бы им приоритет над раскладкой капсулы. Размер иконки снаружи
+   задаётся переменной (`[--glyph:20px]`), а не утилитой ширины, — её
+   это бесслойное правило перебило бы.
+   ───────────────────────────────────────────────────────────── */
+
+/* Иконка раздела (NavGlyph): контур и залитая фигура в одной точке. */
+.nav-glyph {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: var(--glyph, 22px);
+  height: var(--glyph, 22px);
+}
+
+.nav-glyph svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-glyph-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav-glyph-solid {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0;
+}
+
+/* Залитая фигура без своего варианта — тот же контур с той же обводкой:
+   силуэт совпадает с контуром до пикселя. */
+.nav-glyph-solid.is-traced {
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav-glyph[data-filled] .nav-glyph-solid { opacity: 1; }
+.nav-glyph[data-filled] .nav-glyph-line { opacity: 0; }
+
+/* Капсула телефона (BottomNav) — поднос: обод и вырезанное в нём ложе,
+   по которому катается камень (токены --dock-* и --lens-* в :root и .dark).
+   Высота клетки — --nav-button-h, поля — 6px: в сумме ровно --nav-h. */
+.dock {
+  /* Один ход на линзу и на ряд внутри неё: разойдись они хоть на кадр —
+     иконки под линзой поплыли бы. Перелёт пропорционален пути, поэтому он
+     скромный: с крайней вкладки на крайнюю больший прижимал линзу к кромке. */
+  --dock-glide: 0.56s cubic-bezier(0.3, 1.1, 0.45, 1);
+
+  position: relative;
+  /* Своя стопка слоёв: ложе (z-index -1) ложится над ободом, но под кнопками. */
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(var(--dock-n), minmax(0, 1fr));
+  padding: 6px;
+  border-radius: 999px;
+  background: var(--grain-tray) 0 0 / 140px 140px, var(--dock-rim);
+  box-shadow: var(--dock-shadow);
+  pointer-events: auto;
+}
+
+/* Ложе. Отступ 3px от края — обод остаётся тонкой светлой кромкой, а камень
+   (поля капсулы 6px) встаёт в ложе с зазором в 3px по кругу, как вкладыш. */
+.dock::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 3px;
+  border-radius: 999px;
+  background:
+    var(--grain-tray) 0 0 / 140px 140px,
+    radial-gradient(45% 130% at 50% -35%, var(--dock-lamp), transparent 70%),
+    var(--dock-bed);
+  box-shadow: var(--dock-bed-shadow);
+  pointer-events: none;
+}
+
+/* Клетка — общая у кнопки и у её залитого двойника в линзе: иконка и подпись
+   обязаны стоять в обоих рядах в одних и тех же координатах. */
+.dock-cell {
+  display: flex;
+  min-width: 0;
+  min-height: var(--nav-button-h);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 2px;
+}
+
+.dock-tab {
+  border-radius: 999px;
+  color: var(--dock-ink);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dock-tab:active {
+  transform: scale(0.92);
+}
+
+/* Вес один в обоих рядах: у 800 и 700 разная ширина букв, и на краю линзы
+   подпись разъезжалась бы на две половинки. Текущий раздел и так виден —
+   цветом и самой линзой. */
+.dock-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.005em;
+}
+
+/* 320px: «Мои занятия» встаёт в линзу впритык к её краям. */
+@media (max-width: 359px) {
+  .dock-label {
+    font-size: 9.5px;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Линза текущего раздела. Ширина — доля капсулы, место — сдвиг на целое
+   число своих ширин: ни замеров, ни пересчёта раскладки. Лежит НАД кнопками —
+   прячет их контурный ряд под собой, — но нажатия пропускает к ним. */
+.dock-lens {
+  position: absolute;
+  z-index: 1;
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  width: calc((100% - 12px) / var(--dock-n));
+  transform: translateX(calc(var(--dock-i) * 100%));
+  transition: transform var(--dock-glide), opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.dock-lens[data-hidden] {
+  opacity: 0;
+}
+
+/* Камень. Слои сверху вниз: зерно (сатин, а не глянец), мягкий свет по
+   верхней половине, тёплый отсвет студии изнутри снизу, сам дымчатый тон.
+   Всё это едет вместе с камнем. Отражения «комнаты» — в ряду ниже, они стоят
+   на месте, и камень проезжает под ними. overflow + скругление — это и есть
+   «окно» залитого ряда. */
+.dock-lens-body {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background:
+    var(--grain) 0 0 / 140px 140px,
+    linear-gradient(180deg, var(--lens-sheen) 0%, transparent 46%),
+    radial-gradient(75% 70% at 50% 130%, var(--lens-ember), transparent 72%),
+    var(--lens-face);
+  box-shadow: var(--lens-shadow);
+}
+
+/* Залитый ряд: жемчужные иконки и подписи, чуть утопленные в камень —
+   тёмная кромка снизу, как у инкрустации. */
+.dock-lens-ink {
+  position: absolute;
+  inset: 0;
+  color: var(--lens-ink);
+}
+
+.dock-lens-ink .nav-glyph {
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.45));
+}
+
+.dock-lens-ink .dock-label {
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* Ряд шириной во всю капсулу, сдвинутый обратно на ход линзы: клетка в клетку
+   над кнопками, в каком бы месте пути линза ни была. */
+.dock-lens-row {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  width: calc(100% * var(--dock-n));
+  grid-template-columns: repeat(var(--dock-n), minmax(0, 1fr));
+  transform: translateX(calc(var(--dock-i) * -100% / var(--dock-n)));
+  transition: transform var(--dock-glide);
+}
+
+/* Отражения «комнаты» на камне. Ряд стоит на месте относительно капсулы,
+   значит, и они стоят: камень едет — блики скользят по его поверхности
+   навстречу, как по полированному предмету под неподвижной лампой.
+   Лампа — над центром, там же, где светлое пятно на ложе. */
+.dock-lens-row::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(42% 120% at 50% -30%, var(--lens-lamp), transparent 70%);
+  pointer-events: none;
+}
+
+/* Косые отсветы окна — по одному на каждой границе вкладок. В покое камень
+   стоит между двумя такими: они ложатся на его закруглённые бока; в пути
+   отсвет, через который он едет, проходит по всей его поверхности. Тайл
+   шириной в клетку, полоса — в середине тайла, а сам слой сдвинут на
+   полклетки влево: середины тайлов попадают ровно на границы. */
+.dock-lens-row::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: calc(-50% / var(--dock-n));
+  width: calc(100% + 100% / var(--dock-n));
+  background: linear-gradient(104deg, transparent 38%, var(--lens-reflect) 50%, transparent 62%) 0 0 / calc(100% / (var(--dock-n) + 1)) 100% repeat-x;
+  pointer-events: none;
+}
+
+/* Капля: на ходу линза вытягивается вдоль пути и оседает, а ряд внутри
+   сжимается ровно обратно — иконки не растягиваются вместе с ней. Две копии
+   ключевых кадров: смена имени перезапускает анимацию на каждом переезде
+   без перемонтирования (BottomNav, `drop`). */
+.dock-lens-body[data-drop='a'] { animation: dock-drop-a 0.56s cubic-bezier(0.3, 0.7, 0.3, 1); }
+.dock-lens-body[data-drop='b'] { animation: dock-drop-b 0.56s cubic-bezier(0.3, 0.7, 0.3, 1); }
+.dock-lens-body[data-drop='a'] > .dock-lens-ink { animation: dock-undrop-a 0.56s cubic-bezier(0.3, 0.7, 0.3, 1); }
+.dock-lens-body[data-drop='b'] > .dock-lens-ink { animation: dock-undrop-b 0.56s cubic-bezier(0.3, 0.7, 0.3, 1); }
+
+@keyframes dock-drop-a {
+  0% { transform: scale(1, 1); }
+  32% { transform: scale(1.14, 0.88); }
+  64% { transform: scale(0.97, 1.03); }
+  100% { transform: scale(1, 1); }
+}
+
+@keyframes dock-drop-b {
+  0% { transform: scale(1, 1); }
+  32% { transform: scale(1.14, 0.88); }
+  64% { transform: scale(0.97, 1.03); }
+  100% { transform: scale(1, 1); }
+}
+
+/* Обратные величины капли: 1/1.14, 1/0.88, 1/0.97, 1/1.03. */
+@keyframes dock-undrop-a {
+  0% { transform: scale(1, 1); }
+  32% { transform: scale(0.8772, 1.1364); }
+  64% { transform: scale(1.0309, 0.9709); }
+  100% { transform: scale(1, 1); }
+}
+
+@keyframes dock-undrop-b {
+  0% { transform: scale(1, 1); }
+  32% { transform: scale(0.8772, 1.1364); }
+  64% { transform: scale(1.0309, 0.9709); }
+  100% { transform: scale(1, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-lens,
+  .dock-lens-row,
+  .dock-tab,
+  .nav-glyph svg {
+    transition: none;
+  }
+
+  .dock-lens-body[data-drop],
+  .dock-lens-body[data-drop] > .dock-lens-ink {
+    animation: none;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────

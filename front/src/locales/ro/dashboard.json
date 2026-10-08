@@ -106,5 +106,41 @@
     "cancelled": "Anulate",
     "utilization": "Grad de ocupare",
     "noData": "Fără date"
+  },
+  "phone": {
+    "greeting": {
+      "morning": "Bună dimineața, {{name}}",
+      "day": "Bună ziua, {{name}}",
+      "evening": "Bună seara, {{name}}",
+      "night": "Bună seara, {{name}}",
+      "morningPlain": "Bună dimineața",
+      "dayPlain": "Bună ziua",
+      "eveningPlain": "Bună seara",
+      "nightPlain": "Bună seara"
+    },
+    "today": "Azi",
+    "live": "În curs",
+    "vsPrev": "față de luna trecută",
+    "newClientsOn": "Clienți noi, {{date}}",
+    "retentionHint": "Ponderea clienților care revin",
+    "collapse": "Restrânge",
+    "metricShort": {
+      "revenue": "Venituri",
+      "clients": "Clienți",
+      "bookings": "Rezervări",
+      "retention": "Retenție",
+      "lessons": "Ședințe",
+      "attendance": "Prezență",
+      "fill_rate": "Ocupare",
+      "rating": "Rating",
+      "active_clients": "Clienți"
+    },
+    "month": {
+      "title": "Luna în studio",
+      "finance": "Finanțe",
+      "services": "Servicii",
+      "trainers": "Antrenori",
+      "modes": "Rezervări"
+    }
   }
 }
