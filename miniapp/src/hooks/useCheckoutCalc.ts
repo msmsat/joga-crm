@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { calculateCheckout, type CheckoutCalc, type CheckoutOptions } from '../api/user';
 
 /**
@@ -13,39 +13,40 @@ import { calculateCheckout, type CheckoutCalc, type CheckoutOptions } from '../a
  * подвисший ранний ответ перезатирает свежий (классическая гонка автодополнения).
  */
 export function useCheckoutCalc(packageId: number | null, options: CheckoutOptions) {
-  const [calc, setCalc] = useState<CheckoutCalc | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
-  const requestId = useRef(0);
-
   const { promo_code, use_bonuses, use_deposit, certificate_code } = options;
+  const [attempt, setAttempt] = useState(0);
+  const key = JSON.stringify([packageId, promo_code, use_bonuses, use_deposit, certificate_code, attempt]);
+  const [result, setResult] = useState<{ key: string; calc: CheckoutCalc | null; error: boolean } | null>(null);
 
   useEffect(() => {
     if (packageId === null) return;
 
-    const id = ++requestId.current;
+    let disposed = false;
 
     const timer = setTimeout(() => {
-      setIsCalculating(true);
       calculateCheckout(packageId, { promo_code, use_bonuses, use_deposit, certificate_code })
         .then((result) => {
-          if (id !== requestId.current) return;
-          setCalc(result);
+          if (!disposed) setResult({ key, calc: result, error: false });
         })
         .catch(() => {
-          // Предпросмотр — не платёж: упавший расчёт не должен мешать открыть
-          // оплату. Кнопка останется с ценой пакета, а итог всё равно посчитает
-          // сервер при создании сессии.
-          if (id === requestId.current) setCalc(null);
-        })
-        .finally(() => {
-          if (id === requestId.current) setIsCalculating(false);
+          if (!disposed) setResult({ key, calc: null, error: true });
         });
     }, 300);
 
-    return () => clearTimeout(timer);
-  }, [packageId, promo_code, use_bonuses, use_deposit, certificate_code]);
+    return () => {
+      disposed = true;
+      clearTimeout(timer);
+      setResult(null);
+    };
+  }, [packageId, promo_code, use_bonuses, use_deposit, certificate_code, key]);
 
   // Лист оплаты закрыт — расчёта нет. Выводим, а не храним: гасить состояние
   // из эффекта значит лишний каскад рендеров (react-hooks/set-state-in-effect).
-  return { calc: packageId === null ? null : calc, isCalculating };
+  const current = packageId !== null && result?.key === key ? result : null;
+  return {
+    calc: current?.calc ?? null,
+    isCalculating: packageId !== null && current === null,
+    calcError: current?.error ?? false,
+    retry: () => setAttempt(value => value + 1),
+  };
 }

@@ -335,6 +335,7 @@ def business_attempt_id(studio_id: int, payload: dict, amount: int) -> str:
 async def reserve_checkout(
     db: AsyncSession, *, studio_id: int, user_id: int | None, account_id: str,
     payload: dict, amount: int, application_fee: int,
+    presentation: dict | None = None,
 ) -> tuple[StripeCheckout, bool]:
     """Заявка на оплату ДО похода в Stripe. → (строка, нужна ли новая сессия).
 
@@ -351,6 +352,11 @@ async def reserve_checkout(
     False во втором значении = сессия у заявки уже есть, создавать нечего.
     """
     attempt_id = business_attempt_id(studio_id, payload, amount)
+    # Appearance does not define a purchase. Freeze it only on the first insert:
+    # a studio rebrand during retry must neither create another payment nor
+    # change Stripe parameters under the same idempotency key.
+    if presentation is not None:
+        payload = {**payload, "stripe_presentation": presentation}
     row = StripeCheckout(
         studio_id=studio_id,
         user_id=user_id,

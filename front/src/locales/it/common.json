@@ -66,7 +66,8 @@
     "position": "Ruolo professionale",
     "role": "Ruolo",
     "status": "Stato",
-    "size": "Importo"
+    "size": "Importo",
+    "optional": "Facoltativo"
   },
   "days": {
     "mon": "Lunedì",

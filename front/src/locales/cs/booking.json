@@ -167,13 +167,15 @@
   "stripeGate": {
     "kicker": "Nutné pro online rezervace",
     "none": {
-      "title": "Nejdřív nastavte platby",
-      "sub": "Klient rezervuje a platí v jednom kroku. Dokud není účet Stripe připojený, rezervaci nezaplatí.",
+      "badge": "Nepřipojeno",
+      "title": "Rezervace a platba v jednom kroku",
+      "sub": "Připojte Stripe, aby klienti mohli platit studiu online. Firemní a bankovní údaje doplníte u Stripe.",
       "action": "Připojit Stripe"
     },
     "incomplete": {
-      "title": "Dokončete nastavení Stripe",
-      "sub": "Účet existuje, ale Stripe zatím platby nepovolil — formulář není kompletní.",
+      "badge": "Nastavení zahájeno",
+      "title": "Pokračujte v nastavení Stripe",
+      "sub": "Účet studia je uložený. Pokračujte u Stripe a doplňte firemní a bankovní údaje.",
       "action": "Pokračovat v nastavení"
     },
     "disabled": {
@@ -182,9 +184,10 @@
       "action": "Otevřít Finance"
     },
     "loading": {
-      "title": "Kontrola připojení",
-      "sub": "Ptáme se Stripe, zda je účet studia připravený přijímat platby.",
-      "action": "Kontrola…"
+      "badge": "Ověřujeme připojení",
+      "title": "Ověřujeme účet studia",
+      "sub": "Načítáme aktuální stav plateb ze Stripe.",
+      "action": "Ověřujeme…"
     },
     "perks": {
       "direct": "Peníze přicházejí přímo na účet studia",
@@ -192,7 +195,77 @@
       "fee": "Provize se řídí vaším tarifem Velora"
     },
     "later": "Později",
-    "note": "Otevře se formulář Stripe. Po jeho vyplnění se vrátíte na tuto stránku."
+    "note": "Pokračujte bezpečně u Stripe a vraťte se do Online rezervací.",
+    "introTitle": "Platba rovnou při rezervaci",
+    "introSub": "Klienti platí při rezervaci. Připojte Stripe účet studia a spravujte platby ve Velora.",
+    "stepsLabel": "Kroky připojení",
+    "completed": "Dokončeno",
+    "close": "Zavřít nastavení plateb",
+    "secure": "Firemní a bankovní údaje zadáte bezpečně přímo u Stripe.",
+    "refresh": "Obnovit stav",
+    "refreshing": "Ověřujeme stav…",
+    "opening": "Otevíráme Stripe…",
+    "enabled": "Zapnuto",
+    "awaiting": "Zatím nepovoleno",
+    "off": "Vypnuto",
+    "unknown": "Neznámý",
+    "statusNote": "Stav ověřujeme u Stripe. Kdykoli ho můžete obnovit.",
+    "payoutNote": "Platby jsou povoleny. Stripe zatím nepovolil výplaty na bankovní účet. Zkontrolujte bankovní údaje a ověření účtu u Stripe.",
+    "capabilities": {
+      "payments": "Platby kartou",
+      "payouts": "Výplaty na bankovní účet",
+      "booking": "Platba při rezervaci"
+    },
+    "steps": {
+      "account": {
+        "title": "Připojte studio",
+        "sub": "Vytvořte Stripe účet studia nebo pokračujte v nastavení."
+      },
+      "details": {
+        "title": "Doplňte firemní a bankovní údaje",
+        "sub": "Stripe ověří odeslané údaje."
+      },
+      "accept": {
+        "title": "Přijímejte online platby",
+        "sub": "Klienti zaplatí rovnou při rezervaci."
+      }
+    },
+    "requiresInfo": {
+      "badge": "Potřebujeme údaje",
+      "title": "Stripe potřebuje další informace",
+      "sub": "Otevřete stávající Stripe účet a zkontrolujte požadované údaje nebo dokumenty. Dostupnost plateb je uvedena níže.",
+      "action": "Doplnit údaje"
+    },
+    "pending": {
+      "badge": "Probíhá ověřování",
+      "title": "Stripe ověřuje vaše údaje",
+      "sub": "Údaje byly odeslány. Stripe zatím nepovolil přijímání plateb. Obnovte stav a zkontrolujte výsledek.",
+      "action": "Ověřit stav"
+    },
+    "paused": {
+      "badge": "Platby pozastaveny",
+      "title": "Stripe je připravený, platby vypnuté",
+      "sub": "Stripe může přijímat platby, ale online platby jsou pro studio ve Velora vypnuté. Zapněte je ve Financích.",
+      "action": "Spravovat ve Financích"
+    },
+    "ready": {
+      "badge": "Platby zapnuty",
+      "title": "Studio může přijímat platby",
+      "sub": "Stripe je připojený a platby při rezervaci jsou zapnuté. Nastavení plateb studia můžete spravovat ve Financích.",
+      "action": "Spravovat ve Financích"
+    },
+    "unavailable": {
+      "badge": "Stav nedostupný",
+      "title": "Připojení se nepodařilo ověřit",
+      "sub": "Stav připojení je dočasně nedostupný. Před pokračováním zkuste znovu ověřit stávající účet.",
+      "action": "Zkusit znovu"
+    },
+    "unconfigured": {
+      "badge": "Zatím nedostupné",
+      "title": "Platby je potřeba zpřístupnit",
+      "sub": "Připojení Stripe zatím není v tomto prostředí dostupné. Kontaktujte podporu Velora a stav znovu ověřte.",
+      "action": "Ověřit znovu"
+    }
   },
   "tg": {
     "title": "Telegram bot",
@@ -208,12 +281,12 @@
     "connect": "Připojit bota",
     "howToGet": "Jak získat token?",
     "steps": {
+      "3": "Zvolte jméno a uživatelské jméno bota",
+      "4": "Zkopírujte token a vložte ho výše",
       "1a": "Otevřete Telegram → najděte",
       "1b": "@BotFather",
       "2a": "Pošlete příkaz",
-      "2b": "/newbot",
-      "3": "Zvolte jméno a uživatelské jméno bota",
-      "4": "Zkopírujte token a vložte ho výše"
+      "2b": "/newbot"
     }
   },
   "insta": {

@@ -56,6 +56,8 @@ class _DB:
         pass
 
     async def execute(self, _q):
+        if 'pg_advisory_xact_lock' in str(_q):
+            return _R(None)
         return _R(self._seq.pop(0))
 
 
@@ -72,7 +74,12 @@ class _FakeStripe:
     async def account_status(self, _account_id):
         return self.status
 
-    async def create_account(self, _email):
+    async def account_details(self, account_id):
+        charges, submitted, due = await self.account_status(account_id)
+        return dict(charges_enabled=charges, details_submitted=submitted,
+                    requirements_due=due, payouts_enabled=charges)
+
+    async def create_account(self, _email, *, idempotency_key=None):
         self.created_accounts += 1
         return f"acct_new{self.created_accounts}"
 

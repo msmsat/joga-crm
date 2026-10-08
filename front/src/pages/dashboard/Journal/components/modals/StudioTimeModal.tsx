@@ -125,7 +125,7 @@ export function StudioTimeModal({ draft: initial, mode: startMode, canManage, tr
               timeStep={timeStep} outside={outside} saving={saving} duration={duration}
               photos={{ ...photos, add: addPhotos, canAdd: roomForPhotos > 0 }}
               nameError={touched && errors.label ? t('journal:studioTime.errors.name') : undefined}
-              autoFocus={!editing} onChange={set} onLabelTyped={() => setTouched(true)}
+              onChange={set} onLabelTyped={() => setTouched(true)}
             />
           )}
         </ModalBody>

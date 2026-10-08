@@ -2324,6 +2324,26 @@
    transition там уже 'all', так что проседание идёт плавно. */
 .v-btn:not(:disabled):active { transform: scale(0.97) !important; }
 
+/* ── Метка «Необязательно» у подписи поля кита (Input, проп optional) ──────
+   Подпись набрана капсом, метка — нарочно строчными и на полтона тише: это
+   пояснение, а не второй заголовок. Не персиковая — персик держит действия и
+   выбранное, а пропускаемое поле за внимание не спорит. Пустое колечко —
+   пара закрашенной точке у обязательного поля мастера (.ob-tag-dot). */
+.v-field-head { display: flex; align-items: center; gap: 8px; min-width: 0; margin-bottom: 7px; }
+.v-field-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 19px; padding: 0 8px 0 7px; border-radius: 99px;
+  background: rgba(var(--ink), 0.04);
+  box-shadow: inset 0 0 0 1px rgba(var(--ink), 0.07);
+  color: var(--text3);
+  font-size: 10.5px; font-weight: 650; letter-spacing: 0.1px; line-height: 1;
+  white-space: nowrap;
+}
+.v-field-tag::before {
+  content: ''; flex: none; width: 5px; height: 5px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1.3px currentColor; opacity: 0.8;
+}
+
 /* ── Двухколоночная модалка (size="lg"): превью слева, форма справа ────────
    grid-template-rows: minmax(0,1fr) — ключевая строка. С дефолтным auto-треком
    ряд растёт по контенту, вылезает за max-height карточки и просто обрезается
@@ -4052,4 +4072,12 @@
     padding: 18px;
   }
   .v-cookie-banner.is-dash { bottom: calc(var(--mnav-safe) + 12px); }
+}
+
+/* Поля кита (Input.tsx, класс v-input) на телефоне и сенсорном планшете —
+   16px. Мельче iOS на фокусе приближает страницу — в Safari и во встроенных
+   браузерах Instagram и Telegram — и после ввода обратно не отдаляет: окно
+   приходится возить пальцем. Кегль задан инлайном, отсюда !important. */
+@media (max-width: 767px), (pointer: coarse) {
+  .v-input { font-size: 16px !important; }
 }

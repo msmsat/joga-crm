@@ -10,6 +10,7 @@ export interface ChannelCardProps {
   name: string
   desc: string
   status?: ChannelStatus
+  statusLabel?: string
   color: string
   onClick(): void
 }

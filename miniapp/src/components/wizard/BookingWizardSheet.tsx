@@ -146,6 +146,7 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
         onClose={() => setPaying(false)}
         quoteId={quote?.quote_id ?? null}
         subtitle={picked}
+        studio={catalog?.studio}
         canPayOnline={Boolean(catalog?.can_pay_online)}
         venueAllowed={flow.venueAllowed}
         saving={flow.saving}

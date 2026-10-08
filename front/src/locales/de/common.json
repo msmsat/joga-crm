@@ -66,7 +66,8 @@
     "position": "Position",
     "role": "Rolle",
     "status": "Status",
-    "size": "Betrag"
+    "size": "Betrag",
+    "optional": "Optional"
   },
   "days": {
     "mon": "Montag",

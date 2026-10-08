@@ -167,14 +167,16 @@
   "stripeGate": {
     "kicker": "Necesar pentru rezervarea online",
     "none": {
-      "title": "Configurați mai întâi plățile",
-      "sub": "Clientul rezervă și plătește dintr-o singură mișcare. Până când contul Stripe nu e conectat, nu poate plăti rezervarea.",
-      "action": "Conectează Stripe"
+      "badge": "Not connected",
+      "title": "Make booking and payment one flow",
+      "sub": "Connect Stripe so clients can pay your studio online. You will add business and bank details on Stripe.",
+      "action": "Connect Stripe"
     },
     "incomplete": {
-      "title": "Finalizați configurarea Stripe",
-      "sub": "Contul există, dar Stripe nu a activat încă plățile — formularul este incomplet.",
-      "action": "Continuă configurarea"
+      "badge": "Setup started",
+      "title": "Continue your Stripe setup",
+      "sub": "Your studio account is saved. Continue on Stripe to finish the business and bank details.",
+      "action": "Continue setup"
     },
     "disabled": {
       "title": "Plățile sunt dezactivate",
@@ -182,9 +184,10 @@
       "action": "Deschide Finanțe"
     },
     "loading": {
-      "title": "Se verifică conexiunea",
-      "sub": "Întrebăm Stripe dacă contul studioului e pregătit să încaseze plăți.",
-      "action": "Se verifică…"
+      "badge": "Checking connection",
+      "title": "Checking your studio account",
+      "sub": "Fetching the latest payment status from Stripe.",
+      "action": "Checking…"
     },
     "perks": {
       "direct": "Banii ajung direct în contul studioului",
@@ -192,7 +195,77 @@
       "fee": "Comisionul urmează abonamentul dvs. Velora"
     },
     "later": "Mai târziu",
-    "note": "Se va deschide formularul Stripe. Când terminați, reveniți pe această pagină."
+    "note": "Continue securely on Stripe, then return to Online booking.",
+    "introTitle": "Payments, part of the booking",
+    "introSub": "Let clients pay when they book. Connect the studio’s Stripe account and keep payment settings together in Velora.",
+    "stepsLabel": "Connection steps",
+    "completed": "Completed",
+    "close": "Close payment setup",
+    "secure": "Business details and bank information are entered securely on Stripe.",
+    "refresh": "Refresh status",
+    "refreshing": "Checking status…",
+    "opening": "Opening Stripe…",
+    "enabled": "Enabled",
+    "awaiting": "Not enabled yet",
+    "off": "Off",
+    "unknown": "Unknown",
+    "statusNote": "Status is checked with Stripe. You can refresh it at any time.",
+    "payoutNote": "Payments are enabled. Stripe has not enabled bank payouts yet; check your bank details and verification in Stripe.",
+    "capabilities": {
+      "payments": "Card payments",
+      "payouts": "Bank payouts",
+      "booking": "Payments in booking"
+    },
+    "steps": {
+      "account": {
+        "title": "Connect the studio",
+        "sub": "Create or continue the studio’s Stripe account."
+      },
+      "details": {
+        "title": "Add business & bank details",
+        "sub": "Stripe checks the details you submit."
+      },
+      "accept": {
+        "title": "Accept online payments",
+        "sub": "Clients can pay as they book."
+      }
+    },
+    "requiresInfo": {
+      "badge": "Information needed",
+      "title": "Stripe needs more information",
+      "sub": "Open your existing Stripe account to review the requested details or documents. Payment availability is shown below.",
+      "action": "Add information"
+    },
+    "pending": {
+      "badge": "Under review",
+      "title": "Stripe is reviewing your details",
+      "sub": "Your details have been submitted. Stripe has not enabled payments yet. Refresh the status to check for an update.",
+      "action": "Check status"
+    },
+    "paused": {
+      "badge": "Payments paused",
+      "title": "Ready on Stripe, paused in Velora",
+      "sub": "Stripe can accept payments, but online payments are switched off for your studio. Enable them in Finances.",
+      "action": "Manage in Finances"
+    },
+    "ready": {
+      "badge": "Payments enabled",
+      "title": "Your studio can accept payments",
+      "sub": "Stripe is connected and payments are enabled in booking. Manage the studio’s payment settings in Finances.",
+      "action": "Manage in Finances"
+    },
+    "unavailable": {
+      "badge": "Status unavailable",
+      "title": "We could not check your connection",
+      "sub": "The connection status is temporarily unavailable. Try again to check your existing account before continuing.",
+      "action": "Try again"
+    },
+    "unconfigured": {
+      "badge": "Not available yet",
+      "title": "Payments need to be enabled",
+      "sub": "Stripe connection is not available for this workspace yet. Contact Velora support, then check again.",
+      "action": "Check again"
+    }
   },
   "tg": {
     "title": "Bot Telegram",
@@ -208,12 +281,12 @@
     "connect": "Conectează botul",
     "howToGet": "Cum obțin un token?",
     "steps": {
+      "3": "Alegeți un nume și un username pentru bot",
+      "4": "Copiați tokenul și lipiți-l mai sus",
       "1a": "Deschideți Telegram → găsiți",
       "1b": "@BotFather",
       "2a": "Trimiteți comanda",
-      "2b": "/newbot",
-      "3": "Alegeți un nume și un username pentru bot",
-      "4": "Copiați tokenul și lipiți-l mai sus"
+      "2b": "/newbot"
     }
   },
   "insta": {

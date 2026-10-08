@@ -320,7 +320,16 @@
     "use_bonuses_worth": "Spend points: {{count}} = {{value}}",
     "bonuses_spent": "Points ({{count}})",
     "confirm_free": "Confirm",
-    "free_hint": "No card payment needed — the amount is fully covered"
+    "free_hint": "No card payment needed — the amount is fully covered",
+    "calculating": "Updating your total…",
+    "calculation_error": "Your total couldn't be confirmed. Retry before continuing to payment.",
+    "estimated_amount": "Price before adjustments",
+    "secure_hint": "Continue to Stripe's secure payment page. Your card details are entered there. Return here after payment; your purchase appears once payment is confirmed.",
+    "session_error": "The payment page couldn't be opened. Please try again.",
+    "price_changed": "Your total has changed. Review the updated amount before continuing.",
+    "check_status": "Check payment status",
+    "checking_payment": "Checking payment…",
+    "verification_error": "We couldn't check your payment. Try again in a moment."
   },
   "nav": {
     "home": "Home",

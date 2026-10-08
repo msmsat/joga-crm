@@ -66,7 +66,8 @@
     "position": "Poste",
     "role": "Rôle",
     "status": "Statut",
-    "size": "Montant"
+    "size": "Montant",
+    "optional": "Facultatif"
   },
   "days": {
     "mon": "Lundi",

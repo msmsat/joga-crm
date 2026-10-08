@@ -468,6 +468,7 @@ export default function Profile({
           onCatalogRefresh?.();
         }}
         packages={catalog?.packages ?? []}
+        studio={catalog?.studio}
         initialPackageId={initialPackageId}
         canPayOnline={catalog?.can_pay_online ?? false}
         initialCertificate={pendingCertificate ?? null}

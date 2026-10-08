@@ -55,9 +55,13 @@ export function useGateways() {
   return {
     gateways: query.data ?? [],
     isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    isError: query.isError,
+    refetch: query.refetch,
     updateGateway: (type: GatewayType, payload: GatewayUpdate) => mutation.mutateAsync({ type, payload }),
     connectStripe: (returnPath?: string) => connectMut.mutate(returnPath),
     isConnecting: connectMut.isPending,
+    connectError: connectMut.error,
   };
 }
 

@@ -66,7 +66,8 @@
     "position": "Stilling",
     "role": "Rolle",
     "status": "Status",
-    "size": "Beløp"
+    "size": "Beløp",
+    "optional": "Valgfritt"
   },
   "days": {
     "mon": "Mandag",

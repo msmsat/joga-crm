@@ -320,7 +320,16 @@
     "use_bonuses_worth": "Použít body: {{count}} = {{value}}",
     "bonuses_spent": "Body ({{count}})",
     "confirm_free": "Potvrdit",
-    "free_hint": "Platba kartou není potřeba — částka je plně pokryta"
+    "free_hint": "Platba kartou není potřeba — částka je plně pokryta",
+    "calculating": "Aktualizujeme celkovou částku…",
+    "calculation_error": "Celkovou částku se nepodařilo potvrdit. Před platbou zkuste výpočet znovu.",
+    "estimated_amount": "Cena před odečtením slev",
+    "secure_hint": "Otevře se zabezpečená platební stránka Stripe, kde zadáte údaje karty. Po platbě se vraťte sem; nákup se zobrazí po potvrzení platby.",
+    "session_error": "Platební stránku se nepodařilo otevřít. Zkuste to znovu.",
+    "price_changed": "Celková částka se změnila. Před platbou zkontrolujte novou částku.",
+    "check_status": "Zkontrolovat stav platby",
+    "checking_payment": "Kontrolujeme platbu…",
+    "verification_error": "Platbu se nepodařilo ověřit. Zkuste to za chvíli znovu."
   },
   "nav": {
     "home": "Domů",

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { motion, useReducedMotion, type MotionValue } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
@@ -16,8 +16,9 @@ import { useTelegram } from '../../hooks/useTelegram';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
 import { useCheckoutCalc } from '../../hooks/useCheckoutCalc';
 import { createCheckoutSession, type CheckoutOptions, type UserSubscription } from '../../api/user';
+import type { ApiError } from '../../api/client';
 import { notify } from '../../lib/notify';
-import type { SubscriptionPackageInfo } from '../../api/studio';
+import type { StudioInfo, SubscriptionPackageInfo } from '../../api/studio';
 
 const NO_OPTIONS: CheckoutOptions = {
   promo_code: '',
@@ -31,6 +32,7 @@ interface BuyModalProps {
   onClose: () => void;
   onSuccess?: () => void;
   packages: SubscriptionPackageInfo[];
+  studio?: Pick<StudioInfo, 'name' | 'logo_url'>;
   /** Студия подключила приём онлайн-оплаты (Stripe Connect). */
   canPayOnline: boolean;
   /** Пришли из Клуба «использовать сертификат» — код уже подставлен в оплату.
@@ -65,6 +67,7 @@ export default function BuyModal({
   onClose,
   onSuccess,
   packages,
+  studio,
   canPayOnline,
   initialCertificate = null,
   initialPackageId,
@@ -76,7 +79,7 @@ export default function BuyModal({
   keepMounted = false,
 }: BuyModalProps) {
   const { t, i18n } = useTranslation();
-  const { tg } = useTelegram();
+  const { tg, isInTelegram } = useTelegram();
   const isDesktop = useIsDesktop();
   const reduce = Boolean(useReducedMotion());
 
@@ -98,6 +101,10 @@ export default function BuyModal({
     packages.forEach((plan) => guilloche(plan.id));
     money(0, currency, i18n.language);
   }, 2500), [packages, currency, i18n.language]);
+
+  const sessionPending = useRef(false);
+  const stopReturnListener = useRef<(() => void) | null>(null);
+  useEffect(() => () => stopReturnListener.current?.(), []);
 
   const materials = useMemo(() => materialsOf(packages), [packages]);
   const nameOf = useCallback(
@@ -121,9 +128,12 @@ export default function BuyModal({
 
   // Расчёт запрашиваем только когда лист оплаты открыт: в витрине рычагов
   // ещё нет, и дёргать сервер на каждую пролистанную карту незачем.
-  const { calc, isCalculating } = useCheckoutCalc(canPayOnline && paying ? paying.id : null, options);
+  const { calc, isCalculating, calcError, retry } = useCheckoutCalc(canPayOnline && paying ? paying.id : null, options);
 
   const handleClose = () => {
+    if (sessionPending.current) return;
+    stopReturnListener.current?.();
+    stopReturnListener.current = null;
     setPaying(null);
     setOptions(NO_OPTIONS);
     onClose();
@@ -147,6 +157,7 @@ export default function BuyModal({
    * когда клиент вернулся в Telegram, и показать то, что реально в базе.
    */
   const waitForReturnAndRefresh = () => {
+    stopReturnListener.current?.();
     const onVisible = () => {
       if (document.visibilityState !== 'visible') return;
       document.removeEventListener('visibilitychange', onVisible);
@@ -155,32 +166,40 @@ export default function BuyModal({
       handleClose();
     };
     document.addEventListener('visibilitychange', onVisible);
+    stopReturnListener.current = () => document.removeEventListener('visibilitychange', onVisible);
   };
 
   const startPayment = async () => {
-    if (!paying || !canPayOnline) return;
+    if (sessionPending.current || !paying || !canPayOnline || !calc || isCalculating || calcError) return;
+    sessionPending.current = true;
 
     try {
-      const { url, paid } = await createCheckoutSession(paying.id, options);
-
-      // Сертификат/депозит/баллы покрыли всё — Stripe не нужен, абонемент уже
-      // начислен на сервере. Здесь мы ЗНАЕМ, что оплата прошла, поэтому
-      // говорим прямо, а не «проверяем оплату», как в случае с картой.
-      if (paid || !url) {
-        if (onSuccess) onSuccess();
+      const { url, paid } = await createCheckoutSession(paying.id, options, calc.total_price);
+      // Only an explicit server-confirmed activation is a successful purchase.
+      if (paid) {
+        sessionPending.current = false;
+        onSuccess?.();
         notify(t('buyModal.activated'));
         handleClose();
         return;
       }
-
-      if (tg?.openLink) tg.openLink(url);
-      else window.open(url, '_blank');
+      if (!url) throw new Error(t('paymentModal.session_error'));
+      if (isInTelegram && tg?.openLink) {
+        tg.openLink(url);
+        waitForReturnAndRefresh();
+      } else window.location.assign(url);
       setPaying(null);
-      waitForReturnAndRefresh();
     } catch (error) {
-      notify(error instanceof Error ? error.message : t('buyModal.activate_error'));
+      if ((error as ApiError).code === 'checkout.price_changed') {
+        retry();
+        throw new Error(t('paymentModal.price_changed'), { cause: error });
+      }
+      throw error;
+    } finally {
+      sessionPending.current = false;
     }
   };
+
 
   // Гость платит после входа: вход поднимается поверх витрины, и оплата
   // открывается сама, как только он закончится.
@@ -306,6 +325,9 @@ export default function BuyModal({
         amountStr={paying ? paying.final_price_str : ''}
         calc={calc}
         isCalculating={isCalculating}
+        calcError={calcError}
+        onRetry={retry}
+        studio={studio ?? { name: studioName, logo_url: null }}
         options={options}
         onOptionsChange={(patch) => setOptions((prev) => ({ ...prev, ...patch }))}
         onPay={startPayment}

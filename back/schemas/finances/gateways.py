@@ -21,6 +21,11 @@ class GatewayRead(BaseSchema):
     # Stripe ждёт данные от владельца. Отличает «нужно действие» от «идёт проверка»:
     # снаружи оба выглядят как charges_enabled=false, но делать надо разное.
     requirements_due: bool = False
+    # A failed status read is not incomplete onboarding. Never ask for new data
+    # (or a new account) just because Stripe is temporarily unavailable.
+    status_available: bool = True
+    platform_configured: bool = True
+    payouts_enabled: bool = False
 
 
 class GatewayUpdate(BaseSchema):

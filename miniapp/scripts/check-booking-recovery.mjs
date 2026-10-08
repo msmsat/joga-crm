@@ -14,9 +14,11 @@ async function setup(file, api = {}) {
   let cursor = 0;
   let pending = [];
   const state = [];
-  const context = vm.createContext({ console });
+  const context = vm.createContext({ console, document: api.document,
+    window: api.window ?? { location: { assign() {} } } });
   const react = {
     useMemo: fn => fn(),
+    useCallback: fn => fn,
     useState(initial) {
       const i = cursor++;
       if (!(i in state)) state[i] = typeof initial === 'function' ? initial() : initial;
@@ -41,7 +43,7 @@ async function setup(file, api = {}) {
     revision: { bumpLessons() {} }, petals: { spawnPetals() {} }, session: { getSession: () => ({ token: 'test' }) },
     slots: { studioToday: () => '2026-10-08', dayList: () => ['2026-10-08'], lastBookableDay: () => '2026-10-08',
       availabilityQuery: value => value, timeOf: value => value.slice(11, 16) },
-    useTelegram: { useTelegram: () => ({ vibrateLight() {}, vibrateMedium() {}, tg: null }) },
+    useTelegram: { useTelegram: () => ({ vibrateLight() {}, vibrateMedium() {}, tg: null, ...api.telegram }) },
     Sheet: { SheetAction: 'button' },
   };
   async function load(url) {
@@ -51,7 +53,7 @@ async function setup(file, api = {}) {
     const mod = new vm.SourceTextModule(source, { context, identifier: url.href });
     await mod.link((name, parent) => {
       const base = name.split('/').at(-1).replace(/\.ts$/, '');
-      if (base === 'wizard' || base === 'bookingPage') return load(new URL(name.endsWith('.ts') ? name : `${name}.ts`, parent.identifier));
+      if (base === 'wizard' || base === 'bookingPage' || base === 'useBookingPaymentStatus') return load(new URL(name.endsWith('.ts') ? name : `${name}.ts`, parent.identifier));
       const exports = deps[name] ?? deps[base];
       if (!exports) throw new Error(`Missing dependency ${name}`);
       return new vm.SyntheticModule(Object.keys(exports), function () {
@@ -168,4 +170,97 @@ test('an unavailable scoped slot offers choosing another time, not an impossible
   assert.equal(Boolean(button.disabled), false);
   button.onClick();
   assert.equal(destination, 'time');
+});
+
+test('two rapid confirmations cannot create two bookings before React rerenders', async () => {
+  let confirmations = 0, resolveBooking;
+  const render = await setup('../src/hooks/useBookingWizard.ts', {
+    availability: async () => ({ slots: [{ local_start: '2026-10-08T19:00:00', starts_at: '2026-10-08T17:00:00Z', teacher_ids: [7] }] }),
+    quote: async () => quote,
+    confirm: async () => { confirmations++; return new Promise(resolve => { resolveBooking = resolve; }); },
+  });
+  const flow = () => render('useBookingWizard', { catalog, onNeedAuth() {} });
+  flow().open('summary'); flow(); await settle();
+  flow().pickService(2); flow().pickTime(1140); flow(); await settle();
+  const current = flow();
+  const first = current.submit('venue', null);
+  const second = current.submit('venue', null);
+  await settle();
+  assert.equal(confirmations, 1);
+  resolveBooking({ status: 'pending', next_action: 'wait_confirmation' });
+  await Promise.all([first, second]);
+});
+
+test('returning from card payment updates booking status only from the current server record', async () => {
+  let checks = 0;
+  const listeners = new Map();
+  const render = await setup('../src/hooks/useBookingWizard.ts', {
+    document: { visibilityState: 'visible', addEventListener(name, fn) { listeners.set(name, fn); }, removeEventListener(name) { listeners.delete(name); } },
+    availability: async () => ({ slots: [{ local_start: '2026-10-08T19:00:00', starts_at: '2026-10-08T17:00:00Z', teacher_ids: [7] }] }),
+    quote: async () => quote,
+    confirm: async () => ({ reservation_id: 41, status: 'hold', next_action: 'pay', payment_url: 'https://checkout.stripe.com/test' }),
+    readQuote: async () => { checks++; return { reservation_id: 41, status: 'active', next_action: 'none', payment_url: null }; },
+  });
+  const flow = () => render('useBookingWizard', { catalog, onNeedAuth() {} });
+  flow().open('summary'); flow(); await settle();
+  flow().pickService(2); flow().pickTime(1140); flow(); await settle();
+  await flow().submit('card', null);
+  assert.equal(flow().booking.status, 'hold');
+  listeners.get('visibilitychange')?.(); await settle();
+  assert.equal(checks, 1);
+  assert.equal(flow().booking.status, 'active');
+  assert.equal(flow().booking.payment_url, null);
+});
+
+test('failed or still-pending verification keeps the existing payment link available', async () => {
+  let checks = 0;
+  const render = await setup('../src/hooks/useBookingWizard.ts', {
+    document: { visibilityState: 'visible', addEventListener() {}, removeEventListener() {} },
+    availability: async () => ({ slots: [{ local_start: '2026-10-08T19:00:00', starts_at: '2026-10-08T17:00:00Z', teacher_ids: [7] }] }),
+    quote: async () => quote,
+    confirm: async () => ({ reservation_id: 41, status: 'hold', next_action: 'pay', payment_url: 'https://checkout.stripe.com/test' }),
+    readQuote: async () => {
+      if (++checks === 1) throw new Error('Offline');
+      return { reservation_id: 41, status: 'hold', next_action: 'pay', payment_url: null };
+    },
+  });
+  const flow = () => render('useBookingWizard', { catalog, onNeedAuth() {} });
+  flow().open('summary'); flow(); await settle();
+  flow().pickService(2); flow().pickTime(1140); flow(); await settle();
+  await flow().submit('card', null);
+  assert.equal(typeof flow().checkPayment, 'function');
+  await flow().checkPayment();
+  assert.equal(flow().paymentCheckError, true);
+  assert.equal(flow().booking.status, 'hold');
+  await flow().checkPayment();
+  assert.equal(flow().paymentCheckError, false);
+  assert.equal(flow().booking.payment_url, 'https://checkout.stripe.com/test');
+});
+
+test('browser confirmation preserves the held booking instead of unloading the app', async () => {
+  const render = await setup('../src/hooks/useBookingWizard.ts', {
+    window: { location: { assign() { assert.fail('Browser booking must stay available for retry'); } } },
+    document: { visibilityState: 'visible', addEventListener() {}, removeEventListener() {} },
+    availability: async () => ({ slots: [{ local_start: '2026-10-08T19:00:00', starts_at: '2026-10-08T17:00:00Z', teacher_ids: [7] }] }),
+    quote: async () => quote,
+    confirm: async () => ({ reservation_id: 41, status: 'hold', next_action: 'pay', payment_url: 'https://checkout.stripe.com/test' }),
+  });
+  const flow = () => render('useBookingWizard', { catalog, onNeedAuth() {} });
+  flow().open('summary'); flow(); await settle();
+  flow().pickService(2); flow().pickTime(1140); flow(); await settle();
+  await flow().submit('card', null);
+  assert.equal(flow().notice, null);
+  assert.equal(flow().isOpen, true);
+  assert.equal(flow().booking.payment_url, 'https://checkout.stripe.com/test');
+});
+
+test('a browser with the Telegram script keeps native checkout link navigation', async () => {
+  let sdkCalls = 0, intercepted = false;
+  const render = await setup('../src/hooks/useBookingWizard.ts', {
+    telegram: { isInTelegram: false, tg: { openLink() { sdkCalls++; } } },
+  });
+  const flow = render('useBookingWizard', { catalog, onNeedAuth() {} });
+  flow.openPayment('https://checkout.stripe.com/test', { preventDefault() { intercepted = true; } });
+  assert.equal(sdkCalls, 0);
+  assert.equal(intercepted, false);
 });

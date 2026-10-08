@@ -125,10 +125,12 @@ export const getUserSubscription = (): Promise<UserSubscription[]> =>
 export const createCheckoutSession = (
   packageId: number,
   options: CheckoutOptions = {},
+  expectedTotal?: number,
 ): Promise<CheckoutSessionResponse> =>
   apiPost('/global/checkout/session', {
     package_id: packageId,
     ...options,
+    expected_total: expectedTotal,
     in_telegram: isInTelegram,
   });
 

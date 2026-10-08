@@ -54,7 +54,7 @@ def to_minor_units(amount: int, currency: str) -> int:
     return amount if currency.upper() in _ZERO_DECIMAL else amount * 100
 
 
-async def create_account(email: str | None) -> str:
+async def create_account(email: str | None, *, idempotency_key: str | None = None) -> str:
     """Пустой Standard-аккаунт. Все данные студия введёт сама на страницах Stripe.
 
     ponytail: страну не передаём — Stripe берёт страну платформы. Для студий из
@@ -62,7 +62,10 @@ async def create_account(email: str | None) -> str:
     (в онбординге спрашивается только часовой пояс/валюта/язык).
     """
     stripe_env.guard_write("создание подключённого аккаунта")
-    account = await asyncio.to_thread(stripe.Account.create, type="standard", email=email)
+    account = await asyncio.to_thread(
+        stripe.Account.create, type="standard", email=email,
+        **({"idempotency_key": idempotency_key} if idempotency_key else {}),
+    )
     return account.id
 
 
@@ -77,6 +80,7 @@ async def register_payment_method_domain(account_id: str, domain: str) -> None:
     localhost — всё это не повод ронять подключение. Кошельки просто не появятся.
     """
     try:
+        stripe_env.guard_write("регистрация домена оплаты студии")
         await asyncio.to_thread(
             stripe.PaymentMethodDomain.create, domain_name=domain, stripe_account=account_id,
         )
@@ -88,6 +92,7 @@ async def register_payment_method_domain(account_id: str, domain: str) -> None:
 async def onboarding_url(account_id: str, return_url: str, refresh_url: str) -> str:
     """Одноразовая ссылка на форму Stripe. Живёт минуты — генерируем по клику,
     не храним (протухшая ведёт на refresh_url, откуда фронт просит новую)."""
+    stripe_env.guard_write("создание ссылки подключения студии")
     link = await asyncio.to_thread(
         stripe.AccountLink.create,
         account=account_id, return_url=return_url, refresh_url=refresh_url,
@@ -106,17 +111,24 @@ async def account_status(account_id: str) -> tuple[bool, bool, bool]:
     от тебя». Оба состояния выглядят как charges_enabled=false, но действие у
     владельца противоположное — без этого он будет ждать того, что не произойдёт.
     """
+    details = await account_details(account_id)
+    return details['charges_enabled'], details['details_submitted'], details['requirements_due']
+
+
+async def account_details(account_id: str) -> dict[str, bool]:
+    """One Stripe read for both payment and payout readiness."""
     account = await asyncio.to_thread(stripe.Account.retrieve, account_id)
     # У StripeObject нет .get() — обращение к отсутствующему полю кидает
     # AttributeError, поэтому только getattr с дефолтом.
     requirements = getattr(account, "requirements", None)
     due = (getattr(requirements, "currently_due", None) or []) if requirements else []
     past_due = (getattr(requirements, "past_due", None) or []) if requirements else []
-    return (
-        bool(account.charges_enabled),
-        bool(account.details_submitted),
-        bool(due or past_due),
-    )
+    return {
+        'charges_enabled': bool(account.charges_enabled),
+        'details_submitted': bool(account.details_submitted),
+        'requirements_due': bool(due or past_due),
+        'payouts_enabled': bool(getattr(account, 'payouts_enabled', False)),
+    }
 
 
 def _payment_intent_data(application_fee_minor: int, receipt_email: str | None) -> dict | None:
@@ -206,6 +218,8 @@ async def create_hosted_checkout_session(
     receipt_email: str | None = None,
     client_reference_id: str | None = None,
     idempotency_key: str | None = None,
+    branding_settings: dict | None = None,
+    locale: str | None = None,
 ) -> tuple[str, str]:
     """Оплата на счёт студии → (session_id, url) хостед-страницы Stripe.
 
@@ -235,6 +249,9 @@ async def create_hosted_checkout_session(
         success_url=success_url,
         cancel_url=cancel_url,
         stripe_account=account_id,
+        **({"branding_settings": branding_settings} if branding_settings else {}),
+        **({"locale": locale} if locale else {}),
+        **({"customer_email": receipt_email} if receipt_email else {}),
         **({"payment_intent_data": intent_data} if intent_data else {}),
         **({"client_reference_id": client_reference_id} if client_reference_id else {}),
         **({"idempotency_key": idempotency_key} if idempotency_key else {}),

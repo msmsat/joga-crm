@@ -19,7 +19,7 @@ export interface FormPhotos {
 }
 
 export function StudioTimeForm({
-  draft, anchor, trainers, timeStep, outside, photos, saving, nameError, autoFocus, duration, onChange, onLabelTyped,
+  draft, anchor, trainers, timeStep, outside, photos, saving, nameError, duration, onChange, onLabelTyped,
 }: {
   draft: StudioTimeDraft;
   /** Окно открылось с этим днём и этим сотрудником — опоры ленты и «Все». */
@@ -31,7 +31,6 @@ export function StudioTimeForm({
   photos: FormPhotos & { canAdd: boolean };
   saving: boolean;
   nameError?: string;
-  autoFocus: boolean;
   duration: (minutes: number) => string;
   onChange: (patch: Partial<StudioTimeDraft>) => void;
   onLabelTyped: () => void;
@@ -44,6 +43,8 @@ export function StudioTimeForm({
   return (
     <fieldset className="st-form" disabled={saving}>
       <div className="st-field">
+        {/* Без автофокуса: на телефоне он сразу поднимал клавиатуру поверх
+            чипов, а название чаще берут готовым, чем набирают. */}
         <Input
           label={t('studioTime.name')}
           value={draft.label}
@@ -54,7 +55,6 @@ export function StudioTimeForm({
           placeholder={t('studioTime.namePlaceholder')}
           icon={<NameIcon size={16} strokeWidth={1.8} />}
           error={nameError}
-          autoFocus={autoFocus}
         />
         <div className="st-chips" role="list">
           {LABEL_PRESETS.map(key => {
@@ -76,7 +76,7 @@ export function StudioTimeForm({
 
       <div className="st-field st-note">
         <NoteDropZone onFiles={photos.add}>
-          <Input label={t('studioTime.note')} rows={3} value={draft.notes}
+          <Input label={t('studioTime.note')} optional={t('common:fields.optional')} rows={3} value={draft.notes}
                  placeholder={t('studioTime.notePlaceholder')}
                  onChange={notes => onChange({ notes: notes.slice(0, MAX_NOTES) })} />
         </NoteDropZone>

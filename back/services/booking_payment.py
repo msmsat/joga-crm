@@ -177,7 +177,8 @@ async def start(db: AsyncSession, *, studio_id: int, reservation_id: int,
                 account_id: str, application_fee: int = 0,
                 lesson_terms: Optional[list] = None,
                 thread_id: Optional[int] = None,
-                channel: Optional[str] = None) -> Started:
+                channel: Optional[str] = None,
+                presentation: Optional[dict] = None) -> Started:
     """Завести заявку на оплату занятия. СЕТИ ЗДЕСЬ НЕТ.
 
     Порядок «сначала у себя, потом в Stripe» — тот же, что у остальных заявок
@@ -204,6 +205,7 @@ async def start(db: AsyncSession, *, studio_id: int, reservation_id: int,
         db, studio_id=studio_id, user_id=None, account_id=account_id,
         payload=payload, amount=terms.funding.price,
         application_fee=application_fee,
+        presentation=presentation,
     )
     logger.info("checkout_created studio_id=%s reservation_id=%s checkout_id=%s new=%s",
                 studio_id, reservation_id, checkout.id, needs_session)
@@ -761,11 +763,14 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
         amount = int(checkout.amount)
         attempt_id, needs_session = checkout.attempt_id, checkout.session_id is None
     else:
+        from services.studio_checkout_branding import for_studio
+        presentation = await for_studio(db, studio_id)
         started = await start(
             db, studio_id=studio_id, reservation_id=reservation_id,
             client_id=client_id, lesson_id=lesson_id, terms=terms,
             account_id=account_id, application_fee=fee_minor,
-            lesson_terms=snapshot, thread_id=thread_id, channel=channel)
+            lesson_terms=snapshot, thread_id=thread_id, channel=channel,
+            presentation=presentation)
         # `start` -> `reserve_checkout` уже закоммитил заявку: она обязана
         # существовать ДО того, как у Stripe появится форма.
         checkout = await db.get(StripeCheckout, started.checkout_id)
@@ -796,6 +801,7 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
                 # Одна попытка — одна сессия. Ретрай сети поверх уже принятого
                 # Stripe запроса вернёт ту же форму, а не заведёт вторую.
                 idempotency_key=f"cs:{attempt_id}",
+                **(checkout.payload.get("stripe_presentation") or {}),
             )
             checkout.session_id = session_id
             await db.commit()

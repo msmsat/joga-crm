@@ -320,7 +320,16 @@
     "use_bonuses_worth": "Punkte einlösen: {{count}} = {{value}}",
     "bonuses_spent": "Punkte ({{count}})",
     "confirm_free": "Bestätigen",
-    "free_hint": "Keine Kartenzahlung nötig — der Betrag ist vollständig gedeckt"
+    "free_hint": "Keine Kartenzahlung nötig — der Betrag ist vollständig gedeckt",
+    "calculating": "Gesamtbetrag wird aktualisiert…",
+    "calculation_error": "Der Gesamtbetrag konnte nicht bestätigt werden. Bitte vor der Zahlung erneut berechnen.",
+    "estimated_amount": "Preis vor Abzügen",
+    "secure_hint": "Die sichere Zahlungsseite von Stripe öffnet sich. Dort geben Sie Ihre Kartendaten ein. Kehren Sie danach hierher zurück; Ihr Kauf erscheint nach Bestätigung der Zahlung.",
+    "session_error": "Die Zahlungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.",
+    "price_changed": "Der Gesamtbetrag hat sich geändert. Prüfen Sie den neuen Betrag vor der Zahlung.",
+    "check_status": "Zahlungsstatus prüfen",
+    "checking_payment": "Zahlung wird geprüft…",
+    "verification_error": "Die Zahlung konnte nicht geprüft werden. Versuchen Sie es gleich erneut."
   },
   "nav": {
     "home": "Start",

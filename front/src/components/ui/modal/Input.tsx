@@ -19,6 +19,7 @@ export interface InputProps {
   onEnter?: () => void;          // Enter в однострочном поле — «Применить» рядом (промокод, ваучер)
   autoFocus?: boolean;           // поле, которое раскрыли кнопкой: печатать сразу, без второго клика
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']; // 'numeric' — цифровая клавиатура телефона без type="number"
+  optional?: string;             // метка «Необязательно» рядом с подписью — видно, что поле можно пропустить
 }
 
 const labelStyle: React.CSSProperties = {
@@ -27,7 +28,9 @@ const labelStyle: React.CSSProperties = {
 };
 
 // Поле ввода кита: label + glow-фокус (эталон FocusInput) + состояние ошибки.
-export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon, rows, suffix, onEnter, autoFocus, inputMode }: InputProps) {
+// Класс v-input — кегль 16px на телефоне (App.css): мельче iOS приближает
+// страницу при фокусе, в Safari и во встроенных браузерах Instagram/Telegram.
+export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon, rows, suffix, onEnter, autoFocus, inputMode, optional }: InputProps) {
   const fieldId = useId();
   const [focused, setFocused] = useState(false);
   const borderColor = error ? '#D88C9A' : focused ? '#FCAE91' : 'rgba(var(--ink),0.09)';
@@ -46,6 +49,7 @@ export function Input({ label, value, onChange, onBlur, placeholder, type = 'tex
 
   const shared = {
     id: fieldId,
+    className: 'v-input',
     value,
     placeholder,
     disabled,
@@ -56,7 +60,12 @@ export function Input({ label, value, onChange, onBlur, placeholder, type = 'tex
 
   return (
     <div>
-      {label && <label htmlFor={fieldId} style={labelStyle}>{label}</label>}
+      {label && (optional ? (
+        <div className="v-field-head">
+          <label htmlFor={fieldId} style={{ ...labelStyle, marginBottom: 0 }}>{label}</label>
+          <span className="v-field-tag">{optional}</span>
+        </div>
+      ) : <label htmlFor={fieldId} style={labelStyle}>{label}</label>)}
       <div style={{ position: 'relative' }}>
         {icon && (
           <span style={{

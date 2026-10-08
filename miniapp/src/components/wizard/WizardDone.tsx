@@ -55,14 +55,25 @@ export default function WizardDone({ flow }: { flow: BookingWizardFlow }) {
         </div>
       )}
       {booking.payment_url && (
-        <motion.button
-          type="button"
+        <motion.a
+          href={booking.payment_url}
+          target="_blank"
+          rel="noopener noreferrer"
           whileTap={{ scale: 0.97 }}
-          onClick={() => flow.openPayment(booking.payment_url!)}
+          onClick={(event) => flow.openPayment(booking.payment_url!, event)}
           className="mt-3 w-full rounded-[18px] bg-foreground py-4 text-[15px] font-extrabold text-background"
         >
           {t('resource.pay')}
-        </motion.button>
+        </motion.a>
+      )}
+      {booking.status === 'hold' && (
+        <div className="mt-3 w-full">
+          <button type="button" onClick={() => void flow.checkPayment()} disabled={flow.checkingPayment}
+            className="w-full rounded-[16px] px-4 py-3 text-[13px] font-bold text-foreground underline underline-offset-4 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-brand">
+            {t(flow.checkingPayment ? 'paymentModal.checking_payment' : 'paymentModal.check_status')}
+          </button>
+          {flow.paymentCheckError && <p role="alert" className="mt-2 text-[12px] font-medium leading-relaxed text-muted-foreground">{t('paymentModal.verification_error')}</p>}
+        </div>
       )}
     </div>
   );

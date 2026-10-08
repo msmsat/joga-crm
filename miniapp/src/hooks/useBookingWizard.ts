@@ -18,6 +18,7 @@ import {
 } from '../lib/wizard';
 import type { MasterChoice } from '../lib/bookingPage';
 import { useTelegram } from './useTelegram';
+import { useBookingPaymentStatus } from './useBookingPaymentStatus';
 
 /** Способ оплаты записи: на месте или онлайн (форма Stripe). */
 export type PayMethod = 'venue' | 'card';
@@ -46,7 +47,7 @@ type Options = {
  */
 export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   const { t } = useTranslation();
-  const { tg, vibrateLight, vibrateMedium } = useTelegram();
+  const { tg, isInTelegram, vibrateLight, vibrateMedium } = useTelegram();
   // «Предоплата при записи»: без абонемента на месте не записывают — платят
   // онлайн, если студия это принимает. Не принимает — сервер ответит 402, и
   // клиента поведут в покупку абонемента, как и раньше.
@@ -77,6 +78,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   const [notice, setNotice] = useState<string | null>(null);
   const [booking, setBooking] = useState<BookingRead | null>(null);
   const [saving, setSaving] = useState(false);
+  const submitting = useRef(false);
   const [needsPhone, setNeedsPhone] = useState(false);
   const [needsSubscription, setNeedsSubscription] = useState<string | null>(null);
   // Номер попытки quote: ответ прошлого выбора не перезапишет текущий.
@@ -141,6 +143,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   const complete = isComplete(pick) && branchId !== null;
   const pickKey = `${pick.day}|${pick.time}|${pick.serviceId}|${pick.master}|${branchId}`;
   const quote = quoted && quoted.key === pickKey ? quoted : null;
+  const paymentStatus = useBookingPaymentStatus(isOpen, quote?.data.quote_id ?? null, booking, setBooking);
 
   const invalidateQuote = () => {
     attempt.current += 1;
@@ -264,7 +267,8 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
    * способ — новые условия на тот же слот, и только потом подтверждение.
    */
   const submit = async (method: PayMethod, payment: ClientConfirmPayment | null) => {
-    if (saving) return;
+    if (submitting.current) return;
+    submitting.current = true;
     retry.current = () => void submit(method, payment);
     setSaving(true);
     setNotice(null);
@@ -277,7 +281,9 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
       bumpLessons();
       spawnPetals();
       if (tg) tg.HapticFeedback.notificationOccurred('success');
-      if (result.payment_url) openPayment(result.payment_url);
+      // Telegram can open its browser after a request. In a regular browser,
+      // WizardDone provides a direct link and keeps this booking tab available.
+      if (result.payment_url && isInTelegram && tg?.openLink) openPayment(result.payment_url);
     } catch (error) {
       const failure = error as ApiError;
       // Условия устарели — пересчитать их на тот же слот; подтверждать заново
@@ -290,14 +296,17 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
         fail(failure);
       }
     } finally {
+      submitting.current = false;
       setSaving(false);
     }
   };
 
-  /** Форма Stripe — снаружи: в Telegram ссылкой клиента, в браузере — вкладкой. */
-  const openPayment = (url: string) => {
-    if (tg?.openLink) tg.openLink(url);
-    else window.open(url, '_blank', 'noopener');
+  /** Browser links use native navigation; Telegram delegates to its SDK. */
+  const openPayment = (url: string, event?: { preventDefault: () => void }) => {
+    if (isInTelegram && tg?.openLink) {
+      event?.preventDefault();
+      tg.openLink(url);
+    }
   };
 
   return {
@@ -325,7 +334,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
     quote: quote?.data ?? null, quoting, requestQuote, defaultMethod,
     /** На месте записать нельзя — только онлайн (предоплата студии). */
     venueAllowed: !prepay,
-    notice, booking, saving, submit, openPayment,
+    notice, booking, saving, submit, openPayment, ...paymentStatus,
     needsPhone,
     closePhone: () => setNeedsPhone(false),
     retryAfterPhone: () => { setNeedsPhone(false); retry.current?.(); },

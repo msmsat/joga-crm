@@ -70,7 +70,7 @@ export default function CheckoutBreakdown({ calc, fallbackAmountStr, itemName }:
   }
 
   return (
-    <div className="rounded-[20px] bg-background px-4 py-4">
+    <div className="rounded-[20px] bg-background px-5 py-5 ring-1 ring-inset ring-border">
       {rows.map((row, i) => (
         <div
           key={row.label}
@@ -97,9 +97,9 @@ export default function CheckoutBreakdown({ calc, fallbackAmountStr, itemName }:
 
       <div className="flex items-center justify-between gap-4">
         <span className="text-[13px] font-bold text-foreground">
-          {t('paymentModal.amount_due')}
+          {t(calc ? 'paymentModal.amount_due' : 'paymentModal.estimated_amount')}
         </span>
-        <span className="text-[21px] font-extrabold tabular-nums tracking-[-0.03em] text-foreground">
+        <span className="text-[28px] font-extrabold tabular-nums tracking-[-0.04em] text-foreground">
           {calc ? calc.total_price_str : fallbackAmountStr}
         </span>
       </div>

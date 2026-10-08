@@ -57,6 +57,8 @@ export default function CheckoutOptions({
           value={promoCode}
           onChange={(e) => onPromoCode(e.target.value.toUpperCase())}
           placeholder={t('paymentModal.promo_placeholder')}
+          aria-label={t('paymentModal.promo_placeholder')}
+          aria-invalid={promoRejected}
           disabled={disabled}
           autoCapitalize="characters"
           autoComplete="off"
@@ -76,6 +78,8 @@ export default function CheckoutOptions({
           value={certificateCode}
           onChange={(e) => onCertificateCode(e.target.value.toUpperCase())}
           placeholder={t('paymentModal.certificate_placeholder')}
+          aria-label={t('paymentModal.certificate_placeholder')}
+          aria-invalid={certificateRejected}
           disabled={disabled}
           autoCapitalize="characters"
           autoComplete="off"

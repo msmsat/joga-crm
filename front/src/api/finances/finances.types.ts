@@ -190,6 +190,9 @@ export interface Gateway {
   charges_enabled: boolean
   /** Stripe ждёт данные от владельца — само не рассосётся, в отличие от проверки. */
   requirements_due: boolean
+  status_available: boolean
+  platform_configured: boolean
+  payouts_enabled: boolean
 }
 
 export interface GatewayUpdate {

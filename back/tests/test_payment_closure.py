@@ -977,7 +977,8 @@ def test_the_miniapp_never_takes_the_client_id_from_the_request_body():
     АУТЕНТИФИЦИРОВАННОГО клиента. Прими мы client_id из тела — один клиент мог бы
     подобрать чужой ключ попытки и приклеиться к чужой покупке."""
     src = inspect.getsource(MU.create_checkout_session)
-    assert '"client_id": client.id' in src
+    assert "studio_id, client_id, package_id = client.studio_id, client.id, package.id" in src
+    assert '"client_id": client_id' in src
     assert "body.client_id" not in src
 
 

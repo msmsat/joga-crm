@@ -3,16 +3,18 @@ import { ChannelCard } from '../ui/ChannelCard'
 import { MiniappCard } from '../ui/MiniappCard'
 import { IconTelegram, IconPayments } from '../ui/BookingIcons'
 import type { ChannelStatus } from '../../types'
+import type { StripeGateState } from '../../stripeStatus'
 
 interface Props {
   tgStatus: ChannelStatus
   stripeStatus: ChannelStatus
+  stripeState: StripeGateState
   miniappUrl: string
   onOpenTg(): void
   onOpenStripe(): void
 }
 
-export function BookingChannels({ tgStatus, stripeStatus, miniappUrl, onOpenTg, onOpenStripe }: Props) {
+export function BookingChannels({ tgStatus, stripeStatus, stripeState, miniappUrl, onOpenTg, onOpenStripe }: Props) {
   const { t } = useTranslation('booking')
   return (
     <div style={{ marginBottom: '28px' }}>
@@ -21,7 +23,7 @@ export function BookingChannels({ tgStatus, stripeStatus, miniappUrl, onOpenTg, 
       </div>
       <div className="channels-grid">
         <ChannelCard icon={<IconTelegram />} name={t('channels.telegram.name')} desc={t('channels.telegram.desc')} status={tgStatus}     color="#4A80C4" onClick={onOpenTg} />
-        <ChannelCard icon={<IconPayments />} name={t('channels.stripe.name')}   desc={t('channels.stripe.desc')}   status={stripeStatus} color="#F9A08B" onClick={onOpenStripe} />
+        <ChannelCard icon={<IconPayments />} name={t('channels.stripe.name')} desc={t('channels.stripe.desc')} status={stripeStatus} statusLabel={t(`stripeGate.${stripeState}.badge`)} color="#F9A08B" onClick={onOpenStripe} />
         <MiniappCard url={miniappUrl} />
       </div>
     </div>

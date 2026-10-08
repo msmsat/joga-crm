@@ -261,10 +261,11 @@
 }
 .st-days-pick { position: relative; display: grid; }
 /* Невидимое поле даты под кнопкой календаря: showPicker() раскрывает его
-   системный календарь прямо у кнопки. */
+   системный календарь прямо у кнопки. 16px — хоть поле и невидимо, фокус на
+   нём мельче этого кегля iOS встречает приближением страницы. */
 .st-days-pick input {
   position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0;
-  opacity: 0; pointer-events: none;
+  font-size: 16px; opacity: 0; pointer-events: none;
 }
 @media (hover: hover) {
   .st-days-btn:hover { background: rgba(var(--ink), .06); color: var(--onyx); }

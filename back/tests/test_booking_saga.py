@@ -94,6 +94,7 @@ class FakeStripe:
         self.fail_fetch = None
         self.fail_expire = None
         self.swallow_response = False         # Stripe принял, ответ потерялся
+        self.presentations = []
 
     async def create_hosted_checkout_session(self, *, account_id, amount_minor,
                                              currency, description, metadata,
@@ -101,8 +102,10 @@ class FakeStripe:
                                              application_fee_minor=0,
                                              receipt_email=None,
                                              client_reference_id=None,
-                                             idempotency_key=None):
+                                             idempotency_key=None,
+                                             branding_settings=None, locale=None):
         self.creates += 1
+        self.presentations.append((branding_settings, locale))
         if idempotency_key and idempotency_key in self.by_key:
             # Тот же ключ — тот же объект: Stripe возвращает сохранённый ответ.
             row = self.sessions[self.by_key[idempotency_key]]
@@ -406,6 +409,11 @@ async def _journey(ids, who):
     assert button["text"] == "Оплатить"
     # Ссылку собрал сервер из состояния заявки: домен Stripe, наш id сессии.
     assert button["url"].startswith("https://checkout.stripe.com/")
+    # Real booking -> pay_link -> hosted request carries the studio's identity.
+    async with async_session_maker() as db:
+        studio = await db.get(Studio, ids['studio'])
+        assert fake.presentations[0][0]['display_name'] == studio.name
+    assert fake.presentations[0][0]['button_color'].startswith('#')
 
     row = await _reservation(ids)
     assert row.status == "hold", "место не удержано под оплату"

@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import func
 
 from database import get_db
 from dependencies import require_role, StudioContext
@@ -53,24 +54,28 @@ async def _stripe_read(channel: OnlineChannel | None) -> GatewayRead:
     признаков готовности. Молча рисовать «Подключён» по наличию строки в БД
     нельзя: касса тогда предложит оплату картой, которая упадёт у клиента.
     """
+    configured = stripe_connect.configured()
     if channel is None or not channel.account_id:
-        return GatewayRead(gateway_type="stripe", connected=False, is_active=False)
+        return GatewayRead(gateway_type="stripe", connected=False, is_active=False,
+                           platform_configured=configured)
 
-    charges_enabled = details_submitted = requirements_due = False
-    if stripe_connect.configured():
+    status_available = False
+    details = {}
+    if configured:
         try:
-            charges_enabled, details_submitted, requirements_due = await stripe_connect.account_status(channel.account_id)
+            details = await stripe_connect.account_details(channel.account_id)
+            status_available = True
         except Exception:
             logger.exception("Stripe: не удалось получить статус аккаунта %s", channel.account_id)
 
     return GatewayRead(
         gateway_type="stripe",
-        connected=charges_enabled,
+        connected=details.get('charges_enabled', False),
         is_active=channel.is_active,
         account_id=channel.account_id,
-        details_submitted=details_submitted,
-        charges_enabled=charges_enabled,
-        requirements_due=requirements_due,
+        status_available=status_available,
+        platform_configured=configured,
+        **details,
     )
 
 
@@ -81,6 +86,12 @@ async def get_stripe_channel(db: AsyncSession, studio_id: int) -> OnlineChannel 
             OnlineChannel.channel_type == "stripe",
         )
     )).scalar_one_or_none()
+
+
+async def _lock_gateway(db: AsyncSession, studio_id: int) -> None:
+    # Dedicated per-studio Connect lock: serialize setup/toggle across workers
+    # without holding the studios row used by booking. Commit releases it.
+    await db.execute(select(func.pg_advisory_xact_lock(1398035024, studio_id)))
 
 
 @router.get("/gateways", response_model=list[GatewayRead])
@@ -118,6 +129,7 @@ async def connect_stripe(
             "message": "Приём оплат через Stripe не настроен на сервере",
         })
 
+    await _lock_gateway(db, ctx.studio_id)
     channel = await get_stripe_channel(db, ctx.studio_id)
     if channel is None:
         # is_active=True сразу: клик по «Подключить» и ЕСТЬ намерение принимать
@@ -131,7 +143,9 @@ async def connect_stripe(
             select(Studio).where(Studio.id == ctx.studio_id)
         )).scalar_one()
         try:
-            channel.account_id = await stripe_connect.create_account(studio.email)
+            channel.account_id = await stripe_connect.create_account(
+                studio.email, idempotency_key=f"connect-account:{ctx.studio_id}",
+            )
         except Exception as exc:
             logger.exception("Stripe: не удалось создать аккаунт для студии %s", ctx.studio_id)
             raise HTTPException(status_code=502, detail={
@@ -139,19 +153,20 @@ async def connect_stripe(
             }) from exc
         # Коммитим до выдачи ссылки: если ответ потеряется по дороге, аккаунт уже
         # наш и следующий клик продолжит его, а не создаст второй.
-        await db.commit()
+    account_id = channel.account_id
+    await db.commit()
 
     # ponytail: регистрируем домен на каждый клик «Подключить/Продолжить» вместо
     # отдельного хука на завершение онбординга. Вызов идемпотентный и не роняет
     # подключение; отдельный хук — если это станет заметно в логах.
     if _WALLET_DOMAIN_PUBLIC:
-        await stripe_connect.register_payment_method_domain(channel.account_id, _WALLET_DOMAIN)
+        await stripe_connect.register_payment_method_domain(account_id, _WALLET_DOMAIN)
 
     return_url, refresh_url = _stripe_links(return_path)
     try:
-        url = await stripe_connect.onboarding_url(channel.account_id, return_url, refresh_url)
+        url = await stripe_connect.onboarding_url(account_id, return_url, refresh_url)
     except Exception as exc:
-        logger.exception("Stripe: не удалось создать ссылку онбординга для %s", channel.account_id)
+        logger.exception("Stripe: не удалось создать ссылку онбординга для %s", account_id)
         raise HTTPException(status_code=502, detail={
             "code": "gateways.stripe_error", "message": "Stripe отклонил запрос",
         }) from exc
@@ -171,6 +186,7 @@ async def update_gateway(
     Ключей студии схема не принимает вовсе: Connect их не требует, а принять
     значило бы снова начать хранить чужой secret_key.
     """
+    await _lock_gateway(db, ctx.studio_id)
     channel = (await db.execute(
         select(OnlineChannel).where(
             OnlineChannel.studio_id == ctx.studio_id,

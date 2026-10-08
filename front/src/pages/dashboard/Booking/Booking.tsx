@@ -1,43 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { useTranslation } from 'react-i18next'
 import './Booking.css'
 import { useBookingModals }   from './hooks/useBookingModals'
 import { useBookingSettings } from './hooks/useBookingSettings'
 import { useChannels }        from './hooks/useChannels'
 import { useGateways }        from '../Finances/hooks/useFinances'
-import { useToast }           from '../../../components/ui/Toast'
 import { useAiIntent }        from '../../../hooks/useAiIntent'
 import { BookingChannels }    from './components/sections/BookingChannels'
 import { BookingSettings }    from './components/sections/BookingSettings'
 import { CoffeeSettings }     from './components/sections/CoffeeSettings'
 import { TgModal }            from './components/modals/TgModal'
 import { StripeGateModal }    from './components/modals/StripeGateModal'
+import { useStripeReturn } from './hooks/useStripeReturn'
+import { stripeGateState, STRIPE_REFRESH_KEY } from './stripeStatus'
+import { getActiveContextKey } from '../../../utils/auth'
 
 const BOOKING_PATH = '/dashboard/booking'
 const FINANCES_PATH = '/dashboard/finances?tab=onlinePayments'
 
 export default function Booking() {
   const navigate = useNavigate()
-  const toast = useToast()
-  const { t } = useTranslation('booking')
   const settings = useBookingSettings()
 
   // Приём оплат — отдельный канал, а не условие остальных. Статус живой, со
   // стороны Stripe: charges_enabled может выключиться сам (истёк документ, не
   // пройдена проверка). is_active — тумблер владельца на странице Финансов,
   // Stripe о нём не знает.
-  const { gateways, isLoading: gatewaysLoading, connectStripe, isConnecting } = useGateways()
+  const { gateways, isLoading: gatewaysLoading, isFetching, isError, refetch, connectStripe, isConnecting, connectError } = useGateways()
   const stripe = gateways.find(g => g.gateway_type === 'stripe')
-  const stripeReady = gatewaysLoading ? undefined : !!(stripe?.charges_enabled && stripe?.is_active)
-
-  const gateState = gatewaysLoading
-    ? 'loading'
-    : !stripe?.account_id
-      ? 'none'
-      : !stripe.charges_enabled
-        ? 'incomplete'
-        : 'disabled' // charges_enabled=true, is_active=false — выключен тумблером на Финансах
+  const gateState = stripeGateState(stripe, gatewaysLoading, isError)
+  useStripeReturn({ refetch, connectStripe })
 
   // Ассистент: /dashboard/booking?ai=booking.rules (эпик AI-6, задача 9).
   // У блока правил своей модалки нет, поэтому просто прокручиваем к нему:
@@ -51,43 +43,33 @@ export default function Booking() {
 
   const modals = useBookingModals()
   const tgBot  = useChannels()
-  const [gateOpen, setGateOpen] = useState(false)
+  const [gateOpen, setGateOpen] = useState(() => {
+    const flag = new URLSearchParams(window.location.search).get('stripe')
+    return flag === 'return' || flag === 'refresh'
+  })
 
-  // Клик по карточке приёма оплат объясняет состояние окном, а не молча уводит
-  // на сайт Stripe: владелец нажимает «Приём оплат», чтобы узнать, что с ним не
-  // так. Подключено — объяснять нечего, ведём управлять в Финансы.
-  const openStripe = () => {
-    if (stripeReady) navigate(FINANCES_PATH)
-    else setGateOpen(true)
-  }
+  const openStripe = () => setGateOpen(true)
 
   // Анкета Stripe открывается на месте и возвращает СЮДА (return_path), а не в
   // Финансы: владелец начал настройку на этой странице. Дозаполнить анкету —
   // тоже сюда; включить обратно выключенный приём можно только тумблером в
   // Финансах, поэтому там уводим.
   const gateAction = () => {
-    if (gateState === 'disabled') navigate(FINANCES_PATH)
-    else connectStripe(BOOKING_PATH)
+    if (gateState === 'ready' || gateState === 'paused') navigate(FINANCES_PATH)
+    else if (gateState === 'none' || gateState === 'incomplete' || gateState === 'requiresInfo') {
+      // A deliberate continuation starts a new link attempt. Automatic refresh
+      // keeps its guard across page reloads to prevent expired-link loops.
+      try { sessionStorage.removeItem(STRIPE_REFRESH_KEY + getActiveContextKey()) } catch { /* optional storage */ }
+      connectStripe(BOOKING_PATH)
+    } else if (gateState !== 'loading') void refetch()
   }
-
-  // Возврат с формы Stripe (?stripe=return|refresh): статус уже перезапрошен
-  // монтированием useGateways — остаётся объяснить, что произошло.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const flag = params.get('stripe')
-    if (!flag) return
-    if (flag === 'refresh') toast.error(t('toasts.stripeLinkExpired'))
-    else toast.success(t('toasts.stripeReturned'))
-    params.delete('stripe')
-    const rest = params.toString()
-    window.history.replaceState({}, '', window.location.pathname + (rest ? `?${rest}` : ''))
-  }, [toast, t])
 
   return (
     <>
       <BookingChannels
         tgStatus={tgBot.connected ? 'connected' : null}
-        stripeStatus={stripeReady ? 'connected' : stripe?.account_id ? 'pending' : null}
+        stripeStatus={gateState === 'ready' ? 'connected' : stripe?.account_id ? 'pending' : null}
+        stripeState={gateState}
         miniappUrl={settings.settings?.miniapp_url ?? ''}
         onOpenTg={() => modals.open('telegram')}
         onOpenStripe={openStripe}
@@ -108,8 +90,12 @@ export default function Booking() {
       {gateOpen && (
         <StripeGateModal
           state={gateState}
+          gateway={stripe}
           isConnecting={isConnecting}
+          isRefreshing={isFetching}
+          connectError={connectError}
           onConnect={gateAction}
+          onRefresh={() => { void refetch() }}
           onClose={() => setGateOpen(false)}
         />
       )}
