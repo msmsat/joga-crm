@@ -11,7 +11,8 @@ type Props = {
   onIndex: (index: number) => void;
   materials: Map<number, PassMaterial>;
   /** Карта по номеру: витрина держит положение, рисунок — PassArt. */
-  renderCard: (plan: SubscriptionPackageInfo, index: number, offset: MotionValue<number>) => ReactNode;
+  /** `opening` — карта, с которой открылась витрина: только на ней цифра досчитывает. */
+  renderCard: (plan: SubscriptionPackageInfo, offset: MotionValue<number>, opening: boolean) => ReactNode;
   nameOf: (plan: SubscriptionPackageInfo) => string;
   label: string;
   prevLabel: string;
@@ -37,6 +38,8 @@ export default function PassCarousel({
   const track = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(0);
   const [current, setCurrent] = useState(initialIndex);
+  // Витрина монтируется вместе с листом: стартовая карта — та, с которой открыли.
+  const [first] = useState(initialIndex);
   const currentRef = useRef(initialIndex);
   const placed = useRef(false);
   const dotId = useId();
@@ -118,13 +121,13 @@ export default function PassCarousel({
             scrollX={scrollX}
             selected={index === current}
             // Карты «раздаются» от выбранной к краям — одна постановка на открытие.
-            delay={0.08 + Math.abs(index - initialIndex) * 0.07}
-            fanFrom={index - initialIndex}
+            delay={0.08 + Math.abs(index - first) * 0.07}
+            fanFrom={index - first}
             reduce={reduce}
             name={nameOf(plan)}
             onPick={() => go(index)}
           >
-            {(offset) => renderCard(plan, index, offset)}
+            {(offset) => renderCard(plan, offset, index === first)}
           </Slide>
         ))}
         <span aria-hidden="true" className="pass-track-edge shrink-0" />

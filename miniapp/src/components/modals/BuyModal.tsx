@@ -219,14 +219,14 @@ export default function BuyModal({
       prevLabel={t('buyModal.prev')}
       nextLabel={t('buyModal.next')}
       reduce={reduce}
-      renderCard={(plan, cardIndex, offset) => (
+      renderCard={(plan, offset, opening) => (
         <PassArt
           plan={plan}
           name={nameOf(plan)}
           material={materials.get(plan.id) ?? 'onyx'}
           studioName={studioName}
           offset={offset}
-          countUp={cardIndex === index}
+          countUp={opening}
           reduce={reduce}
         />
       )}
