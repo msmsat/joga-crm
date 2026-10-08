@@ -123,9 +123,14 @@ _ALLOWED_ORIGINS = [
 # Локально фронт открывают и через dev (5173), и через `npm run preview` (4173):
 # без второго источника собранная версия получает отказ CORS на каждый запрос, и
 # кабинет стоит пустым. На проде фронт живёт на своём домене — там это не нужно.
+# Мини-приложение бэкенд раздаёт сам (/s/{id}, ниже), но сборка ходит в API по
+# VITE_API_URL=http://127.0.0.1:8000: открытое как http://localhost:8000/s/…, оно
+# для браузера чужой источник — и главная стояла без названия студии и абонемента.
 if any(o.startswith(("http://localhost", "http://127.0.0.1")) for o in _ALLOWED_ORIGINS):
     for _origin in ("http://localhost:5173", "http://localhost:4173",
-                    "http://127.0.0.1:5173", "http://127.0.0.1:4173"):
+                    "http://127.0.0.1:5173", "http://127.0.0.1:4173",
+                    "http://localhost:5174", "http://127.0.0.1:5174",
+                    "http://localhost:8000", "http://127.0.0.1:8000"):
         if _origin not in _ALLOWED_ORIGINS:
             _ALLOWED_ORIGINS.append(_origin)
 

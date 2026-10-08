@@ -13,10 +13,14 @@ import { AnimatePresence, motion } from 'framer-motion';
  *
  * Зерно только на десктопе: на большой площади ровная заливка выдаёт цифру,
  * а в вебвью Telegram полноэкранная текстура — лишняя работа на каждый кадр.
+ *
+ * Высота — не больше окна: слой лежит в потоке документа, и на ноутбуке с
+ * окном ниже 640px он сам удлинял страницу — главная, которая помещалась в
+ * экран, получала прокрутку на пустой свет.
  */
 export default function AmbientBackdrop({ tint }: { tint: string }) {
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] overflow-hidden dt:h-[640px]">
+    <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] overflow-hidden dt:h-[min(640px,100dvh)]">
       <AnimatePresence mode="sync">
         <motion.div
           key={tint}

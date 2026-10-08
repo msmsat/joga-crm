@@ -194,6 +194,12 @@
   --breakpoint-dt: 760px;
 }
 
+/* Окно, где главной хватает высоты на билет абонемента крупнее (96px, а не
+   80px) вместе с названием и тремя входами в запись. Телефону — никогда;
+   ноутбук с окном ниже 700px (1280×720 при масштабе 150% — это ~600 по
+   высоте) получает тот же билет, что и телефон, а не прокрутку главной. */
+@custom-variant roomy (@media (min-width: 760px) and (min-height: 700px));
+
 @layer base {
   html,
   body {
@@ -296,24 +302,274 @@
   }
 }
 
-/* Главная подстраивается под измеренную высоту, включая панели вебвью.
-   Минимумы сохраняют читаемые подписи и удобные кнопки; совсем низкое окно
-   прокручивается, а общий --nav-clearance открывает последнюю карточку. */
+/* Главная — один экран без прокрутки: название, абонемент и все входы в запись
+   видны сразу, последняя карточка не уходит под капсулу меню. Размеры тянутся
+   от измеренной высоты, включая панели вебвью; минимумы сохраняют читаемые
+   подписи и удобные кнопки. Только совсем низкое окно (меньше ~600px на
+   телефоне) прокручивается, и общий --nav-clearance открывает последнюю карточку.
+   Сверка — замер прокрутки главной на ряде экранов (телефоны 568–932,
+   ноутбуки 600–960), а не глазом на одном. */
 .home-hero {
   --home-room: calc(var(--app-h, 100dvh) - var(--nav-clearance) - env(safe-area-inset-top, 0px));
-  --home-title-size: clamp(30px, calc(var(--home-room) * 0.066), 46px);
-  --home-title-gap: clamp(10px, calc(var(--home-room) * 0.025), 16px);
-  --home-stage-padding: clamp(12px, calc((var(--home-room) - 440px) * 0.16), 40px);
-  --home-card-padding: clamp(11px, calc(var(--home-room) * 0.022), 16px);
-  --home-card-gap: clamp(12px, calc(var(--home-room) * 0.026), 16px);
-  --home-icon-size: clamp(40px, calc(var(--home-room) * 0.073), 48px);
+  --home-top: clamp(8px, calc(var(--home-room) * 0.025), 16px);
+  --home-title-size: clamp(28px, calc(var(--home-room) * 0.062), 46px);
+  --home-title-gap: clamp(6px, calc(var(--home-room) * 0.02), 16px);
+  /* Минимумы зазоров сцены; остальной воздух раздаёт flex (HomeHero). */
+  --home-stage-padding: 6px;
+  --home-card-padding: clamp(10px, calc(var(--home-room) * 0.02), 16px);
+  --home-card-gap: clamp(10px, calc(var(--home-room) * 0.024), 16px);
+  --home-icon-size: clamp(38px, calc(var(--home-room) * 0.07), 48px);
   --home-icon-padding: calc(var(--home-icon-size) * 0.25);
   --home-card-title-size: clamp(15px, calc(var(--home-room) * 0.028), 17px);
   --home-hint-size: clamp(11.5px, calc(var(--home-room) * 0.022), 12.5px);
-  --home-cards-gap: clamp(8px, calc(var(--home-room) * 0.014), 10px);
-  /* Минимальная высота: длинные переводы и офлайн-покупка расширяют карту. */
-  --home-pass-h: 144px;
-  --home-pass-gap: clamp(12px, calc((var(--home-room) - 440px) * 0.12), 28px);
+  --home-cards-gap: clamp(6px, calc(var(--home-room) * 0.014), 10px);
+  /* Высота билета абонемента и его заглушки — одна, чтобы ответ сервера не
+     сдвигал входы в запись. Прежняя полная карта съедала четверть экрана
+     телефона и уводила третий вход под меню; билет держит высоту на любом
+     языке и при офлайн-покупке (PassCard.tsx). */
+  --home-pass-h: 80px;
+  --home-pass-gap-min: 10px;
+  --home-pass-gap: 24px;
+  /* Над капсулой меню уже есть воздух (--nav-clearance), поэтому на низком
+     экране свой нижний отступ главной уходит в ноль, а не удваивает его. */
+  --home-bottom: clamp(0px, calc((var(--home-room) - 520px) * 0.2), 16px);
+
+  /* Десктоп: меню сбоку, а не снизу; под главной — нижнее поле колонки (pb-20 в App). */
+  @variant dt {
+    --home-room: calc(var(--app-h, 100dvh) - 5rem);
+    --home-top: clamp(16px, calc(var(--home-room) * 0.05), 40px);
+    --home-title-size: clamp(48px, calc(var(--home-room) * 0.1), 72px);
+    --home-title-gap: clamp(8px, calc(var(--home-room) * 0.02), 16px);
+    --home-stage-padding: 12px;
+    --home-card-padding: clamp(16px, calc(var(--home-room) * 0.03), 24px);
+    --home-card-gap: clamp(10px, calc(var(--home-room) * 0.02), 16px);
+    --home-icon-size: clamp(40px, calc(var(--home-room) * 0.06), 48px);
+    --home-card-title-size: 17px;
+    --home-hint-size: 12.5px;
+    --home-cards-gap: 16px;
+    --home-pass-gap-min: 12px;
+    --home-pass-gap: 32px;
+    --home-bottom: 16px;
+  }
+
+  @variant roomy {
+    --home-pass-h: 96px;
+  }
+}
+
+/* Карта абонемента — билет (components/home/PassCard.tsx). Вырезы на линии
+   отрыва — маской, а не кружками цвета фона: под картой лежит свет студии, и
+   «заплатка» фона читалась бы на нём пятном. Маска срезает и box-shadow,
+   поэтому тень даёт обёртка (.pass-lift) через drop-shadow — он идёт по
+   контуру уже вырезанного билета. */
+.pass-ticket {
+  --pass-stub: 80px;
+  --pass-notch: 9px;
+  --pass-cut-top: radial-gradient(circle var(--pass-notch) at var(--pass-stub) 0, transparent 96%, #000 100%);
+  --pass-cut-bottom: radial-gradient(circle var(--pass-notch) at var(--pass-stub) 100%, transparent 96%, #000 100%);
+  -webkit-mask-image: var(--pass-cut-top), var(--pass-cut-bottom);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--pass-cut-top), var(--pass-cut-bottom);
+  mask-composite: intersect;
+
+  @variant roomy {
+    --pass-stub: 96px;
+  }
+}
+
+.pass-lift {
+  filter: drop-shadow(0 1px 1px rgba(26, 26, 26, 0.06)) drop-shadow(0 12px 16px rgba(26, 26, 26, 0.13));
+}
+
+.dark .pass-lift {
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.08)) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.5));
+}
+
+/* Свет студии на билете: на ониксе — тёплое зарево из угла, на белом — едва
+   заметный отсвет у кнопки. Цвет — переменная бренда, а не персик. */
+.pass-glow-dark {
+  background:
+    radial-gradient(160px 110px at 100% 0%, color-mix(in srgb, var(--v-brand) 42%, transparent), transparent 72%),
+    radial-gradient(120px 90px at 0% 100%, color-mix(in srgb, var(--v-brand) 16%, transparent), transparent 70%);
+}
+
+.pass-glow-light {
+  background:
+    radial-gradient(180px 120px at 100% 100%, color-mix(in srgb, var(--v-brand) 18%, transparent), transparent 72%),
+    linear-gradient(90deg, color-mix(in srgb, var(--v-brand) 6%, transparent), transparent 40%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Витрина абонементов (components/pass, лист BuyModal).
+
+   Размер карты тянется от высоты экрана: на телефоне под витриной ещё цена и
+   оплата, и карта не должна уводить их за край листа. Строка действующего
+   абонемента над витриной забирает свою высоту у карт (--pass-card-shrink,
+   ставит BuyModal). Пропорция карты — 5 × 7, как у клубной карты-пропуска.
+   ───────────────────────────────────────────────────────────── */
+.pass-stage {
+  --pass-card-h: clamp(170px, calc(var(--app-h, 100dvh) * 0.42 - 34px - var(--pass-card-shrink, 0px)), 300px);
+  --pass-card-w: calc(var(--pass-card-h) * 0.7);
+  --pass-gap: 18px;
+
+  /* Консоль на десктопе: строка абонемента — в левой колонке, карты не уступают. */
+  @variant dt {
+    --pass-card-h: clamp(190px, calc(100dvh * 0.52 - 92px), 330px);
+    --pass-gap: 28px;
+  }
+}
+
+.pass-details {
+  --pass-price-size: clamp(28px, calc(var(--app-h, 100dvh) * 0.05), 36px);
+
+  @variant dt {
+    --pass-price-size: 46px;
+  }
+}
+
+/* Поле над и под картами — под наклон, масштаб и тень выбранной: прокрутка
+   по горизонтали режет и вертикаль, и без поля тень обрывалась бы ножом. */
+.pass-track {
+  padding-top: calc(var(--pass-card-h) * 0.07);
+  padding-bottom: calc(var(--pass-card-h) * 0.13);
+}
+
+/* Края ленты — чтобы и первая, и последняя карта вставали в центр. */
+.pass-track-edge {
+  width: calc(50% - var(--pass-card-w) / 2 - var(--pass-gap) / 2);
+}
+
+.pass-slide {
+  width: var(--pass-card-w);
+  height: var(--pass-card-h);
+  margin-inline: calc(var(--pass-gap) / 2);
+}
+
+.pass-card {
+  border-radius: 22px;
+  box-shadow: 0 18px 30px -18px rgba(26, 26, 26, 0.45);
+  transition: box-shadow 0.4s ease;
+}
+
+.pass-card.is-selected {
+  box-shadow: 0 30px 50px -22px rgba(26, 26, 26, 0.55), 0 0 0 1px rgba(26, 26, 26, 0.04);
+}
+
+.dark .pass-card,
+.dark .pass-card.is-selected {
+  box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.8);
+}
+
+/* Свет сцены — пятно цвета материала за выбранной картой. Градиент, а не
+   blur: размытие крупного слоя дорого на телефоне при каждом кадре листания. */
+.pass-stage-glow {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: calc(var(--pass-card-w) * 2.6);
+  height: calc(var(--pass-card-h) * 1.25);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, var(--glow), transparent);
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.pass-stage-glow.is-on {
+  opacity: 1;
+}
+
+.pass-stage-glow[data-material='pearl'] { --glow: color-mix(in oklch, var(--v-brand) 26%, transparent); }
+.pass-stage-glow[data-material='brand'] { --glow: color-mix(in oklch, var(--v-brand) 42%, transparent); }
+.pass-stage-glow[data-material='smoke'] { --glow: color-mix(in oklch, #6B7280 36%, transparent); }
+.pass-stage-glow[data-material='onyx'] { --glow: color-mix(in oklch, var(--v-brand) 30%, rgba(26, 26, 26, 0.35)); }
+
+/* Материалы. Все — из цвета студии: у барбершопа медь, у йоги персик, и
+   оникс у каждой студии свой, а не общий «премиальный чёрный». */
+.pass-art {
+  --ink: #F5F5F5;
+  --ink-muted: rgba(245, 245, 245, 0.64);
+  --engrave: #FFFFFF;
+  --engrave-o: 0.16;
+  --foil: linear-gradient(105deg, #F5F5F5 0%, #F5F5F5 32%, color-mix(in oklch, var(--v-brand) 55%, #FFFFFF) 47%, #FFFFFF 53%, #F5F5F5 68%);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.pass-art[data-material='pearl'] {
+  --ink: #1A1A1A;
+  --ink-muted: rgba(26, 26, 26, 0.56);
+  --engrave: color-mix(in oklch, var(--v-brand) 72%, #1A1A1A);
+  --engrave-o: 0.24;
+  --foil: linear-gradient(105deg, #1A1A1A 0%, #1A1A1A 32%, color-mix(in oklch, var(--v-brand) 80%, #1A1A1A) 47%, color-mix(in oklch, var(--v-brand) 70%, #FFFFFF) 53%, #1A1A1A 68%);
+  background:
+    radial-gradient(120% 70% at 0% 0%, #FFFFFF 0%, transparent 62%),
+    linear-gradient(155deg, #FBF9F6 0%, color-mix(in oklch, var(--v-brand) 18%, #EDE8E1) 100%);
+  box-shadow: inset 0 0 0 1px rgba(26, 26, 26, 0.07), inset 0 1px 0 #FFFFFF;
+}
+
+.pass-art[data-material='brand'] {
+  --engrave-o: 0.2;
+  background:
+    radial-gradient(110% 70% at 100% 0%, color-mix(in oklch, var(--v-brand) 55%, #FFFFFF) 0%, transparent 56%),
+    linear-gradient(160deg, color-mix(in oklch, var(--v-brand) 88%, #1A1A1A) 0%, color-mix(in oklch, var(--v-brand) 52%, #1A1A1A) 100%);
+}
+
+.pass-art[data-material='smoke'] {
+  --engrave: color-mix(in oklch, var(--v-brand) 45%, #FFFFFF);
+  --engrave-o: 0.15;
+  background:
+    radial-gradient(90% 60% at 0% 100%, color-mix(in oklch, var(--v-brand) 30%, transparent), transparent 70%),
+    linear-gradient(160deg, #50545B 0%, #2A2C31 100%);
+}
+
+.pass-art[data-material='onyx'] {
+  --engrave: color-mix(in oklch, var(--v-brand) 70%, #FFFFFF);
+  --engrave-o: 0.17;
+  --foil: linear-gradient(105deg, color-mix(in oklch, var(--v-brand) 60%, #FFFFFF) 0%, #FFFFFF 24%, color-mix(in oklch, var(--v-brand) 85%, #FFFFFF) 46%, #FFFFFF 54%, color-mix(in oklch, var(--v-brand) 75%, #FFFFFF) 76%);
+  background:
+    radial-gradient(80% 55% at 100% 100%, color-mix(in oklch, var(--v-brand) 34%, transparent), transparent 70%),
+    linear-gradient(160deg, #2C2C2C 0%, #111111 100%);
+}
+
+.pass-art-engrave path {
+  fill: none;
+  stroke: var(--engrave);
+  stroke-opacity: var(--engrave-o);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.pass-art-muted {
+  color: var(--ink-muted);
+}
+
+/* Цифра визитов — фольгой: градиент в тексте, положение блика ведёт витрина. */
+.pass-art-numeral {
+  font-size: calc(var(--pass-card-h) * 0.4);
+  background-image: var(--foil);
+  background-size: 260% 100%;
+  background-position: 50% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Блик по всей карте — тот же свет, что на цифре, только шире и тише. */
+.pass-art-sheen {
+  background: linear-gradient(105deg, transparent 36%, rgba(255, 255, 255, 0.2) 47%, rgba(255, 244, 232, 0.08) 53%, transparent 62%);
+}
+
+/* Скидка — штамп, наклеенный на карту: круг с пунктиром, чуть набекрень. */
+.pass-art-sticker {
+  width: calc(var(--pass-card-h) * 0.17);
+  height: calc(var(--pass-card-h) * 0.17);
+  font-size: calc(var(--pass-card-h) * 0.044);
+  background: var(--v-brand);
+  color: var(--v-brand-foreground);
+  transform: rotate(-12deg);
+  outline: 1px dashed color-mix(in srgb, var(--v-brand-foreground) 40%, transparent);
+  outline-offset: -4px;
+  box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.45);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -369,6 +625,15 @@
   /* Открытый лист запирает прокручиваемое — на телефоне это оболочка. */
   .is-locked .app-scroll {
     overflow: hidden;
+  }
+
+  /* Совсем низкий телефон (вебвью на iPhone SE: Telegram, Instagram — ~600px):
+     приветствие на главной уступает место входам в запись. Оно украшение, а
+     вход, ушедший под меню, выглядит отсутствующим. */
+  @media (max-height: 620px) {
+    .home-welcome {
+      display: none;
+    }
   }
 }
 

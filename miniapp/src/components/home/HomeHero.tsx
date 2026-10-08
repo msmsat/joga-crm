@@ -26,6 +26,27 @@ type Props = {
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
+/** Слово без букв и цифр — разделитель в названии: «·», «|», «—», «&». */
+const isMark = (word: string) => !/[\p{L}\p{N}]/u.test(word);
+
+/**
+ * Слова вывески. Разделитель приклеен к следующему слову: «FIGARO Barber
+ * Club · Demo» иначе ломалось с точкой, висящей в конце строки.
+ */
+function signWords(name: string) {
+  const words: { mark: string; word: string }[] = [];
+  let mark = '';
+  for (const word of name.split(/\s+/).filter(Boolean)) {
+    if (isMark(word)) mark = mark ? `${mark} ${word}` : word;
+    else {
+      words.push({ mark, word });
+      mark = '';
+    }
+  }
+  if (mark) words.push({ mark, word: '' });
+  return words;
+}
+
 /**
  * Главная — одна сцена: название студии и три входа в запись.
  *
@@ -43,7 +64,7 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
   const [brokenLogo, setBrokenLogo] = useState(false);
   const studio = catalog?.studio;
   const branches = catalog?.branches ?? [];
-  const words = (studio?.name ?? '').split(/\s+/).filter(Boolean);
+  const words = signWords(studio?.name ?? '');
   // Под названием — адрес, куда человек идёт: выбранного филиала, а пока
   // выбраны все — их число. Один филиал выводится сам.
   const here = branches.length === 1 ? branches[0] : branches.find((row) => row.id === branch);
@@ -51,7 +72,7 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
     ? [here.city, here.address].filter(Boolean).join(', ')
     : branches.length > 1 ? t('hero.branches', { count: branches.length }) : '';
   const logo = !brokenLogo ? studio?.logo_url : null;
-  const monogram = words.map((word) => word[0]).join('').slice(0, 2).toUpperCase();
+  const monogram = words.filter(({ word }) => word).map(({ word }) => word[0]).join('').slice(0, 2).toUpperCase();
   const starts = catalog && catalog.staff.length < 2 ? SOLO_STARTS : STARTS;
 
   const rise = (delay: number) => (reduce ? {} : {
@@ -61,20 +82,24 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
   });
 
   return (
-    <section className="home-hero relative flex min-h-[calc(var(--app-h,100dvh)-var(--nav-clearance))] flex-col overflow-hidden px-5 pt-[calc(1rem+env(safe-area-inset-top,0px))] dt:min-h-[calc(100dvh-5rem)] dt:px-0 dt:pt-10">
-      {/* Кольца за названием — свет студии, а не картинка. */}
-      <div aria-hidden="true" className="pointer-events-none absolute -right-28 top-10 h-[360px] w-[360px] dt:-right-10 dt:h-[520px] dt:w-[520px]">
-        {[0, 1, 2].map((ring) => (
-          <motion.span
-            key={ring}
-            className="absolute rounded-full border border-brand/25"
-            style={{ inset: ring * 46 }}
-            initial={reduce ? false : { opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1 - ring * 0.25, scale: 1 }}
-            transition={{ duration: 1.1, delay: 0.1 + ring * 0.12, ease }}
-          />
-        ))}
-        <span className="absolute inset-[138px] rounded-full bg-brand/30 blur-2xl dt:inset-[180px]" />
+    <section className="home-hero relative flex min-h-[calc(var(--app-h,100dvh)-var(--nav-clearance))] flex-col px-5 pt-[calc(var(--home-top)+env(safe-area-inset-top,0px))] dt:min-h-[calc(100dvh-5rem)] dt:px-0">
+      {/* Кольца за названием — свет студии, а не картинка. Обрезает их своя
+          рамка, а не вся секция: у секции на низком экране нет нижнего поля,
+          и её обрезка срезала бы прямой линией тень последнего входа. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -right-28 top-10 h-[360px] w-[360px] dt:-right-10 dt:h-[520px] dt:w-[520px]">
+          {[0, 1, 2].map((ring) => (
+            <motion.span
+              key={ring}
+              className="absolute rounded-full border border-brand/25"
+              style={{ inset: ring * 46 }}
+              initial={reduce ? false : { opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1 - ring * 0.25, scale: 1 }}
+              transition={{ duration: 1.1, delay: 0.1 + ring * 0.12, ease }}
+            />
+          ))}
+          <span className="absolute inset-[138px] rounded-full bg-brand/30 blur-2xl dt:inset-[180px]" />
+        </div>
       </div>
 
       <div className="relative flex items-center justify-between gap-3">
@@ -95,26 +120,31 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
         </motion.div>
       </div>
 
-      {/* С картой абонемента сцена теснее: пустоту вокруг названия заняла она. */}
-      <div className={`relative flex flex-1 flex-col justify-center dt:py-10 ${pass ? 'py-[calc(var(--home-stage-padding)*0.5)]' : 'py-[var(--home-stage-padding)]'}`}>
-        <motion.div {...rise(0.08)} className="text-[12px] font-extrabold uppercase tracking-[0.24em] text-brand">
+      {/* Сцена забирает всю свободную высоту и ставит вывеску по центру. Отступ
+          здесь — только минимум: воздух вокруг названия даёт свободное место,
+          а не число, иначе длинное имя в две строки уводило бы входы под меню. */}
+      <div className="relative flex flex-1 flex-col justify-center py-[var(--home-stage-padding)]">
+        <motion.div {...rise(0.08)} className="home-welcome text-[12px] font-extrabold uppercase tracking-[0.24em] text-brand">
           {name ? t('hero.welcomeBack', { name }) : t('hero.welcome')}
         </motion.div>
-        <h1 className="mt-[var(--home-title-gap)] text-[length:var(--home-title-size)] font-extrabold leading-[0.95] tracking-[-0.05em] text-foreground dt:mt-4 dt:text-[72px]">
-          {words.map((word, index) => (
+        {/* Строки выровнены по длине: вывеска в две строки не оставляет одно
+            слово сиротой под длинной первой. Разделитель — цветом студии. */}
+        <h1 className="mt-[var(--home-title-gap)] text-balance text-[length:var(--home-title-size)] font-extrabold leading-[0.95] tracking-[-0.05em] text-foreground">
+          {words.map(({ mark, word }, index) => (
             <motion.span
-              key={`${word}-${index}`}
+              key={`${mark}${word}-${index}`}
               className="mr-[0.22em] inline-block max-w-full [overflow-wrap:anywhere]"
               initial={reduce ? false : { opacity: 0, y: 24, filter: 'blur(6px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.8, delay: 0.14 + index * 0.08, ease }}
             >
+              {mark && <span className="font-bold text-brand">{mark}{word ? ' ' : ''}</span>}
               {word}
             </motion.span>
           ))}
         </h1>
         {place && (
-          <motion.div {...rise(0.3)} className="mt-[var(--home-title-gap)] flex items-center gap-1.5 text-[13.5px] font-semibold text-muted-foreground dt:mt-4">
+          <motion.div {...rise(0.3)} className="mt-[var(--home-title-gap)] flex items-center gap-1.5 text-[13.5px] font-semibold text-muted-foreground">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
             </svg>
@@ -131,14 +161,17 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
             </motion.span>
           </motion.div>
         )}
+        {/* Зазор до карты сжимается первым, когда высоты мало, и растёт до
+            потолка, когда её много. */}
+        {pass && <div aria-hidden="true" className="min-h-[var(--home-pass-gap-min)] max-h-[var(--home-pass-gap)] flex-1" />}
         {pass && (
-          <motion.div {...rise(0.36)} className="mt-[var(--home-pass-gap)] max-w-[440px] dt:mt-8">
+          <motion.div {...rise(0.36)} className="max-w-[440px]">
             {pass}
           </motion.div>
         )}
       </div>
 
-      <div className="relative pb-4">
+      <div className="relative pb-[var(--home-bottom)]">
         {/* Филиал — справа от вопроса, а не отдельным шагом: он сужает все три
             входа сразу, и спрашивать его в каждом было бы трижды одно и то же. */}
         <motion.div {...rise(0.34)} className="flex items-center justify-between gap-3 pb-3">
@@ -151,7 +184,7 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
             </div>
           )}
         </motion.div>
-        <div className={`flex flex-col gap-[var(--home-cards-gap)] dt:grid dt:gap-4 ${starts.length === 3 ? 'dt:grid-cols-3' : 'dt:grid-cols-2'}`}>
+        <div className={`flex flex-col gap-[var(--home-cards-gap)] dt:grid ${starts.length === 3 ? 'dt:grid-cols-3' : 'dt:grid-cols-2'}`}>
           {starts.map((start, index) => (
             <motion.button
               key={start}
@@ -162,18 +195,18 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
               transition={{ duration: 0.6, delay: 0.4 + index * 0.08, ease }}
               whileTap={{ scale: 0.975 }}
               whileHover={{ y: -2 }}
-              className="home-start group flex items-center gap-[var(--home-card-gap)] rounded-[24px] bg-card p-[var(--home-card-padding)] text-left shadow-soft ring-1 ring-inset ring-border/60 transition-shadow duration-300 dt:flex-col dt:items-start dt:gap-4 dt:p-6 dt:hover:shadow-lift"
+              className="home-start group flex items-center gap-[var(--home-card-gap)] rounded-[24px] bg-card p-[var(--home-card-padding)] text-left shadow-soft ring-1 ring-inset ring-border/60 transition-shadow duration-300 dt:flex-col dt:items-start dt:hover:shadow-lift"
             >
-              <span className={`flex h-[var(--home-icon-size)] w-[var(--home-icon-size)] shrink-0 items-center justify-center rounded-[16px] p-[var(--home-icon-padding)] dt:h-12 dt:w-12 dt:p-3 ${
+              <span className={`flex h-[var(--home-icon-size)] w-[var(--home-icon-size)] shrink-0 items-center justify-center rounded-[16px] p-[var(--home-icon-padding)] ${
                 index === 0 ? 'bg-brand text-brand-foreground shadow-brand' : 'bg-brand/12 text-brand'
               }`}>
                 {STEP_ICONS[start]}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[length:var(--home-card-title-size)] font-extrabold tracking-[-0.02em] text-card-foreground dt:text-[17px]">{t(`hero.start.${start}`)}</span>
-                <span className="mt-0.5 block text-[length:var(--home-hint-size)] font-semibold leading-snug text-muted-foreground dt:text-[12.5px]">{t(`hero.startHint.${start}`)}</span>
+                <span className="block text-[length:var(--home-card-title-size)] font-extrabold tracking-[-0.02em] text-card-foreground">{t(`hero.start.${start}`)}</span>
+                <span className="mt-0.5 block text-[length:var(--home-hint-size)] font-semibold leading-snug text-muted-foreground">{t(`hero.startHint.${start}`)}</span>
               </span>
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-background text-foreground transition-transform duration-300 group-hover:translate-x-0.5 dt:hidden">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-background text-foreground transition-transform duration-300 group-hover:translate-x-0.5 dt:hidden">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>

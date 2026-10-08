@@ -1,9 +1,10 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { cn } from '../../lib/utils';
 
 export function PassEmblem({ className = '' }: { className?: string }) {
   return (
-    <span aria-hidden="true" className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-background shadow-button ${className}`}>
+    <span aria-hidden="true" className={cn('relative flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-background shadow-button', className)}>
       <svg viewBox="0 0 40 40" fill="none" className="h-10 w-10">
         <rect x="8" y="6" width="23" height="29" rx="6" transform="rotate(-12 8 6)" fill="var(--v-brand)" />
         <rect x="10" y="7" width="24" height="29" rx="6" fill="var(--v-card)" stroke="var(--v-foreground)" strokeOpacity=".16" />
