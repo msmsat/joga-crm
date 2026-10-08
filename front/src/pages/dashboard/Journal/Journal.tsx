@@ -31,7 +31,6 @@ import { DayControls } from './components/DayControls';
 import { RightPanel } from './components/RightPanel';
 import { Grid } from './components/ScheduleGrid/Grid';
 import { GridSkeleton } from './components/ScheduleGrid/GridSkeleton';
-import { LoadError } from './components/LoadError';
 import { BookingPopup } from './components/BookingPopup';
 import { EMPTY_DRAFT, type LessonDraft } from './components/lesson/editor/editorModel';
 import { NO_HALL_COLUMN } from './constants';
@@ -46,7 +45,7 @@ import { StudioTimeButton } from './components/StudioTimeButton';
 import { useStudioTime } from './hooks/useStudioTime';
 import { usePhone } from '../../../hooks/usePhone';
 import { AddClientModal } from './components/modals/AddClientModal';
-import { useToast, ConfirmModal, Button } from '../../../components/ui/index';
+import { useToast, ConfirmModal, Button, ErrorFallback } from '../../../components/ui/index';
 import { getUserRoleFromToken } from '../../../utils/auth';
 import { useAiIntent } from '../../../hooks/useAiIntent';
 import { useBusinessTerms } from '../../../hooks/useBusinessTerms';
@@ -1084,10 +1083,7 @@ export default function Journal() {
               }}
             >
               {isFirstLoadError ? (
-                <LoadError
-                  message={errorMessage(loadError, t)}
-                  onRetry={refetchAll}
-                />
+                <ErrorFallback description={errorMessage(loadError, t)} onRetry={refetchAll} />
               ) : isFirstLoad ? (
                 <GridSkeleton columns={columns.length || 4} />
               ) : (

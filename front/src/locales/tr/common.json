@@ -184,8 +184,13 @@
     "perHour": "/sa"
   },
   "errorBoundary": {
-    "title": "Bir şeyler ters gitti",
-    "description": "Bu sayfada bir hata oluştu. Yeniden yüklemeyi deneyin — uygulamanın geri kalanı çalışmaya devam ediyor.",
+    "title": "Hay aksi, bir şeyler ters gitti",
+    "status": "Nedenini şimdiden inceliyoruz",
+    "description": "Bu sayfa tökezledi — uygulamanın geri kalanı çalışmaya devam ediyor. Tekrar deneyin veya başka bir bölüme geçin.",
+    "offline": "Çalışma alanı yüklenemedi — sunucu henüz yanıt vermiyor. Geri döner dönmez kendimiz yeniden bağlanacağız.",
+    "retry": "Tekrar dene",
+    "retrying": "Tekrar deneniyor…",
+    "failedAgain": "Bu sefer de olmadı. Sayfayı yenileyin — genellikle işe yarar.",
     "reload": "Sayfayı yenile"
   },
   "qr": {

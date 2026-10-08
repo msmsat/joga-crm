@@ -184,8 +184,13 @@
     "perHour": "/óra"
   },
   "errorBoundary": {
-    "title": "Valami hiba történt",
-    "description": "Ezen az oldalon hiba lépett fel. Próbálja újratölteni — az alkalmazás többi része működik.",
+    "title": "Hoppá, valami hiba történt",
+    "status": "Már keressük az okát",
+    "description": "Az oldal megbotlott — az alkalmazás többi része működik. Próbálja újra, vagy váltson másik részre.",
+    "offline": "Nem sikerült betölteni a fiókot — a szerver még nem válaszol. Amint újra elérhető, magunktól újracsatlakozunk.",
+    "retry": "Újrapróbálás",
+    "retrying": "Újrapróbáljuk…",
+    "failedAgain": "Most sem sikerült. Töltse újra az oldalt — általában ez segít.",
     "reload": "Oldal újratöltése"
   },
   "qr": {

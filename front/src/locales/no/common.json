@@ -184,8 +184,13 @@
     "perHour": "/t"
   },
   "errorBoundary": {
-    "title": "Noe gikk galt",
-    "description": "Denne siden fikk en feil. Prøv å laste den på nytt — resten av appen fungerer fortsatt.",
+    "title": "Oi, noe gikk galt",
+    "status": "Vi ser allerede på årsaken",
+    "description": "Siden snublet — resten av appen fungerer fortsatt. Prøv igjen eller gå til en annen seksjon.",
+    "offline": "Kunne ikke laste arbeidsområdet — serveren svarer ikke ennå. Vi kobler til igjen automatisk så snart den er tilbake.",
+    "retry": "Prøv igjen",
+    "retrying": "Prøver igjen…",
+    "failedAgain": "Det gikk ikke denne gangen heller. Last siden på nytt — det hjelper som regel.",
     "reload": "Last siden på nytt"
   },
   "qr": {

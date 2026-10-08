@@ -184,8 +184,13 @@
     "perHour": "/h"
   },
   "errorBoundary": {
-    "title": "Jokin meni pieleen",
-    "description": "Tällä sivulla tapahtui virhe. Kokeile ladata uudelleen — muu sovellus toimii edelleen.",
+    "title": "Hups, jokin meni pieleen",
+    "status": "Selvitämme jo syytä",
+    "description": "Sivu kompastui — muu sovellus toimii edelleen. Yritä uudelleen tai siirry toiseen osioon.",
+    "offline": "Työtilaa ei voitu ladata — palvelin ei vielä vastaa. Yhdistämme automaattisesti heti, kun se palaa.",
+    "retry": "Yritä uudelleen",
+    "retrying": "Yritetään uudelleen…",
+    "failedAgain": "Ei onnistunut tälläkään kertaa. Lataa sivu uudelleen — se yleensä auttaa.",
     "reload": "Lataa sivu uudelleen"
   },
   "qr": {

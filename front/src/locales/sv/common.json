@@ -184,8 +184,13 @@
     "perHour": "/tim"
   },
   "errorBoundary": {
-    "title": "Något gick fel",
-    "description": "Den här sidan stötte på ett fel. Prova att ladda om — resten av appen fungerar fortfarande.",
+    "title": "Hoppsan, något gick fel",
+    "status": "Vi letar redan efter orsaken",
+    "description": "Sidan snubblade — resten av appen fungerar fortfarande. Försök igen eller gå till en annan sektion.",
+    "offline": "Det gick inte att läsa in arbetsytan — servern svarar inte än. Vi ansluter igen automatiskt så fort den är tillbaka.",
+    "retry": "Försök igen",
+    "retrying": "Försöker igen…",
+    "failedAgain": "Det gick inte den här gången heller. Ladda om sidan — det brukar hjälpa.",
     "reload": "Ladda om sidan"
   },
   "qr": {

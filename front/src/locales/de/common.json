@@ -184,8 +184,13 @@
     "perHour": "/Std."
   },
   "errorBoundary": {
-    "title": "Etwas ist schiefgelaufen",
-    "description": "Auf dieser Seite ist ein Fehler aufgetreten. Laden Sie sie neu — der Rest der App funktioniert weiter.",
+    "title": "Hoppla, etwas ist schiefgelaufen",
+    "status": "Wir suchen schon nach der Ursache",
+    "description": "Diese Seite ist gestolpert — der Rest der App funktioniert weiter. Versuchen Sie es erneut oder wechseln Sie in einen anderen Bereich.",
+    "offline": "Ihr Arbeitsbereich konnte nicht geladen werden — der Server antwortet noch nicht. Sobald er wieder da ist, verbinden wir uns automatisch.",
+    "retry": "Erneut versuchen",
+    "retrying": "Neuer Versuch…",
+    "failedAgain": "Auch beim zweiten Mal hat es nicht geklappt. Laden Sie die Seite neu — das hilft meistens.",
     "reload": "Seite neu laden"
   },
   "qr": {

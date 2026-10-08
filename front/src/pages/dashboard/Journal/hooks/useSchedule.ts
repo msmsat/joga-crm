@@ -157,7 +157,8 @@ export function useSchedule(
   // фоновая (данные в кэше уже есть, просто не удалось обновить — только тост).
   const loadError = staffError ?? hallsError ?? bookingsError ?? blocksError ?? sourceQuery.error ?? null;
   const isFirstLoadError = (isFirstLoad && loadError != null) || (sourceQuery.isError && !sourceQuery.data);
-  const refetchAll = () => { refetchStaff(); refetchHalls(); refetchBookings(); refetchBlocks(); sourceQuery.refetch(); };
+  // Промис — для экрана ошибки: он держит «пробуем», пока перезапросы не вернутся.
+  const refetchAll = () => Promise.all([refetchStaff(), refetchHalls(), refetchBookings(), refetchBlocks(), sourceQuery.refetch()]);
 
   // Префетч соседних дней/недель: после успешной загрузки текущего диапазона
   // тянем −1 и +1 заранее — листание вперёд-назад почти всегда без сети.

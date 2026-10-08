@@ -184,8 +184,13 @@
     "perHour": "/h"
   },
   "errorBoundary": {
-    "title": "Qualcosa è andato storto",
-    "description": "Questa pagina ha incontrato un errore. Prova a ricaricarla — il resto dell'app continua a funzionare.",
+    "title": "Ops, qualcosa è andato storto",
+    "status": "Stiamo già cercando la causa",
+    "description": "Questa pagina è inciampata — il resto dell'app continua a funzionare. Riprova o passa a un'altra sezione.",
+    "offline": "Impossibile caricare il tuo spazio — il server non risponde ancora. Ci ricollegheremo da soli appena torna disponibile.",
+    "retry": "Riprova",
+    "retrying": "Nuovo tentativo…",
+    "failedAgain": "Non ha funzionato nemmeno questa volta. Ricarica la pagina — di solito risolve.",
     "reload": "Ricarica la pagina"
   },
   "qr": {

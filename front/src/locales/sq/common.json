@@ -184,8 +184,13 @@
     "perHour": "/orë"
   },
   "errorBoundary": {
-    "title": "Diçka shkoi keq",
-    "description": "Kjo faqe hasi një gabim. Provoni ta rifreskoni — pjesa tjetër e aplikacionit vazhdon të punojë.",
+    "title": "Ups, diçka shkoi keq",
+    "status": "Po e kërkojmë tashmë shkakun",
+    "description": "Faqja u pengua — pjesa tjetër e aplikacionit vazhdon të punojë. Provoni sërish ose kaloni në një seksion tjetër.",
+    "offline": "Hapësira e punës nuk u ngarkua — serveri ende nuk përgjigjet. Do të rilidhemi vetë sapo të kthehet.",
+    "retry": "Provo sërish",
+    "retrying": "Po provojmë sërish…",
+    "failedAgain": "As këtë herë nuk funksionoi. Rifreskoni faqen — zakonisht ndihmon.",
     "reload": "Rifresko faqen"
   },
   "qr": {

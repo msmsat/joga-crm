@@ -184,8 +184,13 @@
     "perHour": "/t"
   },
   "errorBoundary": {
-    "title": "Noget gik galt",
-    "description": "Denne side stødte på en fejl. Prøv at genindlæse — resten af appen fungerer stadig.",
+    "title": "Ups, noget gik galt",
+    "status": "Vi kigger allerede på årsagen",
+    "description": "Siden snublede — resten af appen virker stadig. Prøv igen, eller gå til en anden sektion.",
+    "offline": "Dit arbejdsområde kunne ikke indlæses — serveren svarer ikke endnu. Vi forbinder igen automatisk, så snart den er tilbage.",
+    "retry": "Prøv igen",
+    "retrying": "Prøver igen…",
+    "failedAgain": "Det lykkedes heller ikke denne gang. Genindlæs siden — det plejer at hjælpe.",
     "reload": "Genindlæs siden"
   },
   "qr": {

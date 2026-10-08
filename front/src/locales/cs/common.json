@@ -184,8 +184,13 @@
     "perHour": "/h"
   },
   "errorBoundary": {
-    "title": "Něco se pokazilo",
-    "description": "Na této stránce došlo k chybě. Zkuste ji načíst znovu — zbytek aplikace funguje dál.",
+    "title": "Jejda, něco se pokazilo",
+    "status": "Už zjišťujeme příčinu",
+    "description": "Stránka zakopla — zbytek aplikace funguje dál. Zkuste to znovu nebo přejděte do jiné sekce.",
+    "offline": "Nepodařilo se načíst váš účet — server zatím neodpovídá. Jakmile se vrátí, připojíme se sami.",
+    "retry": "Zkusit znovu",
+    "retrying": "Zkoušíme znovu…",
+    "failedAgain": "Ani napodruhé to nevyšlo. Načtěte stránku znovu — obvykle to pomůže.",
     "reload": "Načíst stránku znovu"
   },
   "qr": {

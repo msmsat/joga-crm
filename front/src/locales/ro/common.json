@@ -184,8 +184,13 @@
     "perHour": "/oră"
   },
   "errorBoundary": {
-    "title": "Ceva nu a mers bine",
-    "description": "Această pagină a întâmpinat o eroare. Încercați să o reîncărcați — restul aplicației funcționează.",
+    "title": "Hopa, ceva nu a mers bine",
+    "status": "Căutăm deja cauza",
+    "description": "Pagina s-a împiedicat — restul aplicației funcționează. Încercați din nou sau treceți la altă secțiune.",
+    "offline": "Nu am putut încărca spațiul de lucru — serverul încă nu răspunde. Ne reconectăm singuri imediat ce revine.",
+    "retry": "Încearcă din nou",
+    "retrying": "Încercăm din nou…",
+    "failedAgain": "Nici de data aceasta nu a mers. Reîncărcați pagina — de obicei ajută.",
     "reload": "Reîncarcă pagina"
   },
   "qr": {

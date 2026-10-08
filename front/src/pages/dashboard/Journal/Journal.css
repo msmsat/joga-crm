@@ -1884,33 +1884,6 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   border-radius: 12px;
 }
 
-/* ─── ОШИБКА ЗАГРУЗКИ (сетки ещё нет — кэш пуст) ──────────────────────────── */
-.j-load-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  min-height: 320px;
-  padding: 32px;
-  text-align: center;
-}
-.j-load-error-title { font-size: 15px; font-weight: 700; color: var(--onyx); margin-top: 14px; }
-.j-load-error-msg { font-size: 13px; color: #AAAAAA; margin-top: 4px; max-width: 320px; }
-.j-load-error-retry {
-  margin-top: 16px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  background: var(--peach);
-  color: white;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-.j-load-error-retry:hover { opacity: 0.88; }
-
 /* Окно «Изменить время» индивидуальной записи (modals/MoveBookingModal).
    Сверху — как запись стоит сейчас: новое время сверяют со старым, не
    закрывая окна. Начало и окончание — одной строкой: это одна пара. */

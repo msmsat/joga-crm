@@ -184,8 +184,13 @@
     "perHour": "/h"
   },
   "errorBoundary": {
-    "title": "Nešto je pošlo po zlu",
-    "description": "Na ovoj je stranici došlo do greške. Pokušajte je osvježiti — ostatak aplikacije i dalje radi.",
+    "title": "Ups, nešto je pošlo po zlu",
+    "status": "Već tražimo uzrok",
+    "description": "Stranica je zapela — ostatak aplikacije i dalje radi. Pokušajte ponovno ili prijeđite u drugi odjeljak.",
+    "offline": "Radni prostor nije moguće učitati — poslužitelj još ne odgovara. Ponovno ćemo se povezati sami čim se vrati.",
+    "retry": "Pokušaj ponovno",
+    "retrying": "Pokušavamo ponovno…",
+    "failedAgain": "Ni ovaj put nije uspjelo. Osvježite stranicu — to obično pomaže.",
     "reload": "Osvježi stranicu"
   },
   "qr": {

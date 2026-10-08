@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import type { UserMe } from '../api/auth/auth.types'
 import { startSessionCheck } from '../lib/sessionCheck'
 import { getActiveToken } from '../utils/auth'
+import { ErrorFallback } from './ui/index'
 
 function subscribeToSession(onChange: () => void) {
   window.addEventListener('auth-context-changed', onChange)
@@ -28,11 +29,14 @@ function SessionRoute({ token, children, requireOnboarding = true }: Props & { t
   const [user, setUser] = useState<UserMe | null>(null)
   const [failed, setFailed] = useState(false)
   const retry = useRef<() => void>(() => {})
+  // Ручной повтор ждёт исхода проверки: экран держит «пробуем», пока запрос идёт.
+  // Если в этот момент уже летит автоповтор, ответ на него и закроет ожидание.
+  const settle = useRef<() => void>(() => {})
 
   useEffect(() => {
     const check = startSessionCheck(token, {
-      onSuccess: setUser,
-      onError: () => setFailed(true),
+      onSuccess: (me) => { settle.current(); setUser(me) },
+      onError: () => { settle.current(); setFailed(true) },
     })
     retry.current = check.retry
     window.addEventListener('online', check.retry)
@@ -42,13 +46,16 @@ function SessionRoute({ token, children, requireOnboarding = true }: Props & { t
     }
   }, [token])
 
-  if (!user) return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', gap: 16,
-      alignItems: 'center', justifyContent: 'center', padding: 24, background: 'var(--bg)' }}>
-      {failed ? <>
-        <p role="status">{t('errors.loadFailed')}</p>
-        <button className="btn-primary" onClick={() => retry.current()}>{t('errors.retry')}</button>
-      </> : <span className="spinner" role="status" aria-label={t('status.loading')} style={{ borderColor: 'var(--peach)' }} />}
+  if (!user) return failed ? (
+    <div style={{ minHeight: '100dvh', display: 'flex', background: 'var(--bg)' }}>
+      <ErrorFallback
+        description={t('errorBoundary.offline')}
+        onRetry={() => new Promise<void>(resolve => { settle.current = resolve; retry.current() })}
+      />
+    </div>
+  ) : (
+    <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
+      <span className="spinner" role="status" aria-label={t('status.loading')} style={{ borderColor: 'var(--peach)' }} />
     </div>
   )
   if (requireOnboarding && user.is_onboarded === false) return <Navigate to="/onboarding" replace />

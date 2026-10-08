@@ -184,8 +184,13 @@
     "perHour": "/h"
   },
   "errorBoundary": {
-    "title": "Algo correu mal",
-    "description": "Esta página encontrou um erro. Experimente recarregá-la — o resto da aplicação continua a funcionar.",
+    "title": "Ups, algo correu mal",
+    "status": "Já estamos a procurar a causa",
+    "description": "Esta página tropeçou — o resto da aplicação continua a funcionar. Tente novamente ou passe para outra secção.",
+    "offline": "Não foi possível carregar o seu espaço — o servidor ainda não responde. Voltamos a ligar automaticamente assim que regressar.",
+    "retry": "Tentar novamente",
+    "retrying": "A tentar novamente…",
+    "failedAgain": "Também não resultou desta vez. Recarregue a página — normalmente resolve.",
     "reload": "Recarregar a página"
   },
   "qr": {

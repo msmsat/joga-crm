@@ -184,8 +184,13 @@
     "perHour": "/h"
   },
   "errorBoundary": {
-    "title": "Une erreur est survenue",
-    "description": "Cette page a rencontré une erreur. Essayez de la recharger — le reste de l'application continue de fonctionner.",
+    "title": "Oups, une erreur est survenue",
+    "status": "Nous cherchons déjà la cause",
+    "description": "Cette page a trébuché — le reste de l'application fonctionne toujours. Réessayez ou passez à une autre section.",
+    "offline": "Impossible de charger votre espace — le serveur ne répond pas encore. Nous nous reconnecterons automatiquement dès son retour.",
+    "retry": "Réessayer",
+    "retrying": "Nouvelle tentative…",
+    "failedAgain": "Toujours pas cette fois-ci. Rechargez la page — cela suffit généralement.",
     "reload": "Recharger la page"
   },
   "qr": {

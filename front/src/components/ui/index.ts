@@ -31,6 +31,7 @@ export { Navbar } from './Navbar';
 export { QuickAdd } from './QuickAdd';
 export type { QuickAddProps } from './QuickAdd';
 export { ErrorBoundary } from './ErrorBoundary';
+export { ErrorFallback } from './errorScreen/ErrorFallback';
 export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
 export { Lightbox } from './Lightbox';

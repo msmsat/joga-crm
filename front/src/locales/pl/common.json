@@ -184,8 +184,13 @@
     "perHour": "/godz."
   },
   "errorBoundary": {
-    "title": "Coś poszło nie tak",
-    "description": "Na tej stronie wystąpił błąd. Spróbuj ją odświeżyć — reszta aplikacji działa dalej.",
+    "title": "Ups, coś poszło nie tak",
+    "status": "Już szukamy przyczyny",
+    "description": "Strona się potknęła — reszta aplikacji działa dalej. Spróbuj ponownie lub przejdź do innej sekcji.",
+    "offline": "Nie udało się wczytać panelu — serwer jeszcze nie odpowiada. Połączymy się ponownie sami, gdy tylko wróci.",
+    "retry": "Spróbuj ponownie",
+    "retrying": "Próbujemy ponownie…",
+    "failedAgain": "Tym razem też się nie udało. Odśwież stronę — zwykle to pomaga.",
     "reload": "Odśwież stronę"
   },
   "qr": {

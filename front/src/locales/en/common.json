@@ -184,8 +184,13 @@
     "perHour": "/h"
   },
   "errorBoundary": {
-    "title": "Something went wrong",
-    "description": "This page ran into an error. Try reloading — the rest of the app keeps working.",
+    "title": "Oops, something went wrong",
+    "status": "Already looking into the cause",
+    "description": "This page tripped up — the rest of the app keeps working. Try again or switch to another section.",
+    "offline": "Couldn't load your workspace — the server isn't responding yet. We'll reconnect on our own as soon as it's back.",
+    "retry": "Try again",
+    "retrying": "Trying again…",
+    "failedAgain": "Didn't work this time either. Reload the page — that usually fixes it.",
     "reload": "Reload page"
   },
   "qr": {
