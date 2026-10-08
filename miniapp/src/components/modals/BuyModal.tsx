@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState, type CSSProperties } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { motion, useReducedMotion, type MotionValue } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
 import PaymentModal from './PaymentModal';
@@ -8,6 +8,10 @@ import PassArt from '../pass/PassArt';
 import PassDetails from '../pass/PassDetails';
 import Ring from '../pass/Ring';
 import { materialsOf } from '../pass/material';
+import { createSelection, useSelection, type Selection } from '../pass/selection';
+import { guilloche } from '../pass/guilloche';
+import { whenIdle } from '../../lib/idle';
+import { money } from '../../lib/money';
 import { useTelegram } from '../../hooks/useTelegram';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
 import { useCheckoutCalc } from '../../hooks/useCheckoutCalc';
@@ -44,6 +48,8 @@ interface BuyModalProps {
   /** Витрину гость смотрит без входа; вход спрашивается у оплаты. */
   signedIn?: boolean;
   onNeedAuth?: (retry: () => void) => void;
+  /** Держать лист собранным, пока закрыт (см. Sheet и BuyModalHost). */
+  keepMounted?: boolean;
 }
 
 /**
@@ -67,44 +73,64 @@ export default function BuyModal({
   currency = 'EUR',
   signedIn = true,
   onNeedAuth,
+  keepMounted = false,
 }: BuyModalProps) {
   const { t, i18n } = useTranslation();
-  const { tg, vibrateLight } = useTelegram();
+  const { tg } = useTelegram();
   const isDesktop = useIsDesktop();
   const reduce = Boolean(useReducedMotion());
 
   // Выбрана всегда карта у центра витрины. Открывается на пакете из QR, иначе
-  // на первом; после закрытия витрина помнит, где её оставили.
-  const [index, setIndex] = useState(() => Math.max(0, packages.findIndex((plan) => plan.id === initialPackageId)));
-  const [dir, setDir] = useState(1);
-  const lastIndex = useRef(index);
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  // на первом; после закрытия витрина помнит, где её оставили. Выбор — во
+  // внешнем хранилище (pass/selection.ts): лист от листания не перерисовывается.
+  const [selection] = useState(() => createSelection(Math.max(0, packages.findIndex((plan) => plan.id === initialPackageId))));
+  // Пакет, который платят: фиксируется в момент «Оплатить» и держит лист оплаты.
+  const [paying, setPaying] = useState<SubscriptionPackageInfo | null>(null);
   const [options, setOptions] = useState<CheckoutOptions>(() => ({
     ...NO_OPTIONS,
     certificate_code: initialCertificate ?? '',
   }));
 
-  const selected = packages[Math.min(index, packages.length - 1)] ?? null;
+  // Гравировку карт считаем заранее, когда приложению нечем заняться: в кадре
+  // открытия её расчёт стоил ~70 мс при CPU ×4. Дальше она в кэше.
+  // Туда же — форматтер валюты: первое создание Intl.NumberFormat ~35 мс.
+  useEffect(() => whenIdle(() => {
+    packages.forEach((plan) => guilloche(plan.id));
+    money(0, currency, i18n.language);
+  }, 2500), [packages, currency, i18n.language]);
+
   const materials = useMemo(() => materialsOf(packages), [packages]);
-  const nameOf = (plan: SubscriptionPackageInfo) =>
-    t(`subscription.${plan.name}.name`, { defaultValue: plan.name });
+  const nameOf = useCallback(
+    (plan: SubscriptionPackageInfo) => t(`subscription.${plan.name}.name`, { defaultValue: plan.name }),
+    [t],
+  );
+  // Карта рисуется по пакету и положению; ссылка стабильна, чтобы листание
+  // перерисовывало только две карты, у которых сменился выбор.
+  const renderCard = useCallback((plan: SubscriptionPackageInfo, offset: MotionValue<number>, opening: boolean, tick: number) => (
+    <PassArt
+      plan={plan}
+      name={nameOf(plan)}
+      material={materials.get(plan.id) ?? 'onyx'}
+      studioName={studioName}
+      offset={offset}
+      countUp={opening}
+      tick={tick}
+      reduce={reduce}
+    />
+  ), [nameOf, materials, studioName, reduce]);
 
   // Расчёт запрашиваем только когда лист оплаты открыт: в витрине рычагов
   // ещё нет, и дёргать сервер на каждую пролистанную карту незачем.
-  const { calc, isCalculating } = useCheckoutCalc(canPayOnline && isPaymentOpen ? selected?.id ?? null : null, options);
+  const { calc, isCalculating } = useCheckoutCalc(canPayOnline && paying ? paying.id : null, options);
 
   const handleClose = () => {
-    setIsPaymentOpen(false);
+    setPaying(null);
     setOptions(NO_OPTIONS);
     onClose();
   };
 
-  const pick = (next: number) => {
-    setDir(next >= lastIndex.current ? 1 : -1);
-    lastIndex.current = next;
-    setIndex(next);
-    vibrateLight();
-  };
+  // Щелчок колеса выбора, а не удар: карта сменилась, ничего не нажато.
+  const onPicked = useCallback(() => tg?.HapticFeedback?.selectionChanged(), [tg]);
 
   // Пришли из Клуба: сертификат уже в оплате, но пакет клиент ещё не выбрал.
   // Показываем это прямо в витрине — иначе код «пропадает» на один экран, и
@@ -132,10 +158,10 @@ export default function BuyModal({
   };
 
   const startPayment = async () => {
-    if (!selected || !canPayOnline) return;
+    if (!paying || !canPayOnline) return;
 
     try {
-      const { url, paid } = await createCheckoutSession(selected.id, options);
+      const { url, paid } = await createCheckoutSession(paying.id, options);
 
       // Сертификат/депозит/баллы покрыли всё — Stripe не нужен, абонемент уже
       // начислен на сервере. Здесь мы ЗНАЕМ, что оплата прошла, поэтому
@@ -149,7 +175,7 @@ export default function BuyModal({
 
       if (tg?.openLink) tg.openLink(url);
       else window.open(url, '_blank');
-      setIsPaymentOpen(false);
+      setPaying(null);
       waitForReturnAndRefresh();
     } catch (error) {
       notify(error instanceof Error ? error.message : t('buyModal.activate_error'));
@@ -159,23 +185,30 @@ export default function BuyModal({
   // Гость платит после входа: вход поднимается поверх витрины, и оплата
   // открывается сама, как только он закончится.
   const openPayment = () => {
-    if (!signedIn && onNeedAuth) onNeedAuth(() => setIsPaymentOpen(true));
-    else setIsPaymentOpen(true);
+    const plan = packages[selection.get().index] ?? null;
+    if (!plan) return;
+    if (!signedIn && onNeedAuth) onNeedAuth(() => setPaying(plan));
+    else setPaying(plan);
   };
 
   const current = active && (
-    <div className="flex items-center gap-3.5 rounded-[20px] bg-foreground px-4 py-3 text-background dark:bg-muted dark:text-foreground">
-      <Ring left={Math.max(0, Math.min(active.classes_left, active.total_classes))} total={Math.max(0, active.total_classes)} reduce={reduce} />
-      <span className="min-w-0">
-        <span className="block text-[11.5px] font-semibold opacity-60">{t('profile.current_sub')}</span>
-        <span className="mt-0.5 block truncate text-[14.5px] font-extrabold tracking-[-0.02em]">
+    <div className="flex items-center gap-3 rounded-[18px] bg-foreground py-2.5 pl-2.5 pr-4 text-background dark:bg-muted dark:text-foreground">
+      <Ring
+        left={Math.max(0, Math.min(active.classes_left, active.total_classes))}
+        total={Math.max(0, active.total_classes)}
+        reduce={reduce}
+        className="h-11 w-11"
+      />
+      <span className="min-w-0 flex-1">
+        <span className="block text-[11px] font-semibold opacity-60">{t('profile.current_sub')}</span>
+        <span className="block truncate text-[14px] font-extrabold tracking-[-0.02em]">
           {t(`subscription.${active.type}.name`, { defaultValue: active.type })}
         </span>
-        <span className="block truncate text-[11.5px] font-semibold opacity-60">
-          {t(active.is_frozen ? 'profile.frozen' : 'profile.expires', {
-            date: new Date(active.expires_at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long' }),
-          })}
-        </span>
+      </span>
+      <span className="shrink-0 text-right text-[11px] font-semibold opacity-60">
+        {t(active.is_frozen ? 'profile.frozen' : 'profile.expires', {
+          date: new Date(active.expires_at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long' }),
+        })}
       </span>
     </div>
   );
@@ -199,9 +232,9 @@ export default function BuyModal({
     </motion.div>
   );
 
-  const details = selected && (
+  const details = packages.length > 0 && (
     <>
-      <PassDetails plan={selected} name={nameOf(selected)} dir={dir} currency={currency} reduce={reduce} />
+      <SelectedDetails selection={selection} packages={packages} nameOf={nameOf} currency={currency} reduce={reduce} />
       {!canPayOnline && (
         <p className="mt-4 text-[12.5px] font-medium leading-relaxed text-muted-foreground">{t('buyModal.pay_in_studio')}</p>
       )}
@@ -211,25 +244,16 @@ export default function BuyModal({
   const showcase = packages.length > 0 && (
     <PassCarousel
       packages={packages}
-      initialIndex={Math.min(index, packages.length - 1)}
-      onIndex={pick}
+      selection={selection}
+      onPicked={onPicked}
+      open={isOpen}
       materials={materials}
       nameOf={nameOf}
       label={t('buyModal.title')}
       prevLabel={t('buyModal.prev')}
       nextLabel={t('buyModal.next')}
       reduce={reduce}
-      renderCard={(plan, offset, opening) => (
-        <PassArt
-          plan={plan}
-          name={nameOf(plan)}
-          material={materials.get(plan.id) ?? 'onyx'}
-          studioName={studioName}
-          offset={offset}
-          countUp={opening}
-          reduce={reduce}
-        />
-      )}
+      renderCard={renderCard}
     />
   );
 
@@ -241,25 +265,26 @@ export default function BuyModal({
 
   // Над витриной строка действующего абонемента забирает высоту — карты
   // уступают её, а не уводят цену и оплату за край листа.
-  const stageStyle = { '--pass-card-shrink': active ? '72px' : '0px' } as CSSProperties;
+  const stageStyle = { '--pass-card-shrink': active ? '56px' : '0px' } as CSSProperties;
 
   return (
     <>
       <Sheet
         isOpen={isOpen}
         onClose={handleClose}
+        keepMounted={keepMounted}
         tall
         kicker={t('buyModal.tag')}
         title={t('buyModal.title')}
         aside={packages.length > 0 ? (
-          <div className="flex h-full flex-col gap-6 p-7 pt-9">
+          <div className="flex h-full flex-col gap-6 p-8 pt-10">
             {current}
-            <div className="mt-auto">{details}</div>
+            <div className="my-auto">{details}</div>
           </div>
         ) : undefined}
         footer={
-          canPayOnline && selected ? (
-            <SheetAction onClick={openPayment}>{t('buyModal.pay', { price: selected.final_price_str })}</SheetAction>
+          canPayOnline && packages.length > 0 ? (
+            <PayAction selection={selection} packages={packages} onPay={openPayment} />
           ) : (
             <SheetAction tone={packages.length > 0 ? 'ghost' : 'brand'} onClick={handleClose}>{t('buyModal.close')}</SheetAction>
           )
@@ -275,10 +300,10 @@ export default function BuyModal({
       </Sheet>
 
       <PaymentModal
-        isOpen={canPayOnline && isPaymentOpen}
-        onClose={() => setIsPaymentOpen(false)}
-        itemName={selected ? nameOf(selected) : ''}
-        amountStr={selected ? selected.final_price_str : ''}
+        isOpen={canPayOnline && paying !== null}
+        onClose={() => setPaying(null)}
+        itemName={paying ? nameOf(paying) : ''}
+        amountStr={paying ? paying.final_price_str : ''}
         calc={calc}
         isCalculating={isCalculating}
         options={options}
@@ -287,4 +312,30 @@ export default function BuyModal({
       />
     </>
   );
+}
+
+/** Что выбрано под картами — подписано на выбор, а не на состояние листа. */
+function SelectedDetails({ selection, packages, nameOf, currency, reduce }: {
+  selection: Selection;
+  packages: SubscriptionPackageInfo[];
+  nameOf: (plan: SubscriptionPackageInfo) => string;
+  currency: string;
+  reduce: boolean;
+}) {
+  const { index, dir } = useSelection(selection);
+  const plan = packages[Math.min(index, packages.length - 1)];
+  if (!plan) return null;
+  return <PassDetails plan={plan} name={nameOf(plan)} dir={dir} currency={currency} reduce={reduce} />;
+}
+
+/** Оплата выбранного пакета — цена в кнопке следует за листанием. */
+function PayAction({ selection, packages, onPay }: {
+  selection: Selection;
+  packages: SubscriptionPackageInfo[];
+  onPay: () => void;
+}) {
+  const { t } = useTranslation();
+  const { index } = useSelection(selection);
+  const plan = packages[Math.min(index, packages.length - 1)];
+  return <SheetAction onClick={onPay}>{t('buyModal.pay', { price: plan?.final_price_str ?? '' })}</SheetAction>;
 }

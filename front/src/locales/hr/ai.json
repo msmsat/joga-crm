@@ -347,5 +347,15 @@
     "stillEmpty_one": "Ostalo je {{count}} polje",
     "stillEmpty_few": "Ostala su {{count}} polja",
     "stillEmpty_other": "Ostalo je {{count}} polja"
+  },
+  "quick": {
+    "idle": "Zna koji vam je odjeljak otvoren",
+    "goToChat": "Idi u razgovor",
+    "planReady": "Radnja je spremna — potvrdite je u razgovoru",
+    "suggestions": {
+      "today": "Što imamo danas?",
+      "inactive": "Tko dugo nije dolazio?",
+      "revenue": "Koliko smo zaradili ovaj tjedan?"
+    }
   }
 }

@@ -408,7 +408,7 @@
    ставит BuyModal). Пропорция карты — 5 × 7, как у клубной карты-пропуска.
    ───────────────────────────────────────────────────────────── */
 .pass-stage {
-  --pass-card-h: clamp(170px, calc(var(--app-h, 100dvh) * 0.42 - 34px - var(--pass-card-shrink, 0px)), 300px);
+  --pass-card-h: clamp(146px, calc(var(--app-h, 100dvh) * 0.36 - 34px - var(--pass-card-shrink, 0px)), 290px);
   --pass-card-w: calc(var(--pass-card-h) * 0.7);
   --pass-gap: 18px;
 
@@ -421,9 +421,11 @@
 
 .pass-details {
   --pass-price-size: clamp(28px, calc(var(--app-h, 100dvh) * 0.05), 36px);
+  --pass-name-size: 16px;
 
   @variant dt {
-    --pass-price-size: 46px;
+    --pass-price-size: 52px;
+    --pass-name-size: 20px;
   }
 }
 
@@ -431,7 +433,7 @@
    по горизонтали режет и вертикаль, и без поля тень обрывалась бы ножом. */
 .pass-track {
   padding-top: calc(var(--pass-card-h) * 0.07);
-  padding-bottom: calc(var(--pass-card-h) * 0.13);
+  padding-bottom: calc(var(--pass-card-h) * 0.11);
 }
 
 /* Края ленты — чтобы и первая, и последняя карта вставали в центр. */
@@ -453,6 +455,12 @@
 
 .pass-card.is-selected {
   box-shadow: 0 30px 50px -22px rgba(26, 26, 26, 0.55), 0 0 0 1px rgba(26, 26, 26, 0.04);
+}
+
+/* Глянцевый пол: короткое отражение под картами. Только WebKit/Blink — это
+   и есть Telegram на iOS и Android; где свойства нет, пола просто нет. */
+.pass-card {
+  -webkit-box-reflect: below 6px linear-gradient(to bottom, rgba(255, 255, 255, 0.16), transparent 12%);
 }
 
 .dark .pass-card,
@@ -478,10 +486,10 @@
   opacity: 1;
 }
 
-.pass-stage-glow[data-material='pearl'] { --glow: color-mix(in oklch, var(--v-brand) 26%, transparent); }
-.pass-stage-glow[data-material='brand'] { --glow: color-mix(in oklch, var(--v-brand) 42%, transparent); }
-.pass-stage-glow[data-material='smoke'] { --glow: color-mix(in oklch, #6B7280 36%, transparent); }
-.pass-stage-glow[data-material='onyx'] { --glow: color-mix(in oklch, var(--v-brand) 30%, rgba(26, 26, 26, 0.35)); }
+.pass-stage-glow[data-material='pearl'] { --glow: color-mix(in oklch, var(--v-brand) 16%, transparent); }
+.pass-stage-glow[data-material='brand'] { --glow: color-mix(in oklch, var(--v-brand) 32%, transparent); }
+.pass-stage-glow[data-material='smoke'] { --glow: color-mix(in oklch, var(--v-brand) 20%, transparent); }
+.pass-stage-glow[data-material='onyx'] { --glow: color-mix(in oklch, var(--v-brand) 26%, transparent); }
 
 /* Материалы. Все — из цвета студии: у барбершопа медь, у йоги персик, и
    оникс у каждой студии свой, а не общий «премиальный чёрный». */

@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAIDrawer } from '../../contexts/AIDrawerContext';
 import { useAssistant } from '../../hooks/useAssistant';
 import { getStudioRole } from '../../utils/auth';
 import { QuickAdd } from './QuickAdd';
+import { AIQuickPanel } from './aiQuick/AIQuickPanel';
 
 export interface NavbarProps {
   title: string;
@@ -32,10 +33,32 @@ export function Navbar({ title, subtitle }: NavbarProps) {
   // самих разделов, и лишний выбор между ними ничего не экономит.
   const canCreate = getStudioRole() !== 'trainer';
   const [quickAdd, setQuickAdd] = useState(false);
+  const [quickAiX, setQuickAiX] = useState<number | null>(null);
   const handlePrimaryBtn = () => {
+    setQuickAiX(null);
     if (window.matchMedia('(max-width: 767px)').matches) setQuickAdd(true);
     else navigate('/dashboard/journal');
   };
+
+  // Кнопка «AI». На большом экране — панель чата, как и была. На ТЕЛЕФОНЕ —
+  // окно быстрого вопроса, свисающее из самой кнопки (AIQuickPanel): чат на
+  // весь экран уводил со страницы ради вопроса в одну строку. Весь разговор
+  // открывается из окна кнопкой «Перейти в чат». Если чат уже открыт, тот же
+  // тап его закрывает — кнопка видна над ним (дровер садится под топбар).
+  // Окно помнит центр кнопки: туда смотрит его хвостик (стейт объявлен выше —
+  // «+» тоже закрывает окно).
+  const handleAiBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isDrawerOpen && window.matchMedia('(max-width: 767px)').matches) {
+      const r = e.currentTarget.getBoundingClientRect();
+      setQuickAiX(x => (x == null ? r.left + r.width / 2 : null));
+      return;
+    }
+    setQuickAiX(null);
+    toggleDrawer();
+  };
+  const closeQuickAi = useCallback(() => setQuickAiX(null), []);
+  const quickAiToChat = () => { setQuickAiX(null); openDrawer(); };
+  const aiActive = isDrawerOpen || quickAiX != null;
 
   const [isAiFocused, setIsAiFocused] = useState(false); // Для Glow-эффекта
   const [aiQuery, setAiQuery] = useState(''); // Для текста в инпуте
@@ -341,9 +364,10 @@ export function Navbar({ title, subtitle }: NavbarProps) {
       <div className="topbar-actions" style={{ flex: '1 1 0%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
 
         <button
-          onClick={toggleDrawer}
+          onClick={handleAiBtn}
           className="topbar-action"
           aria-label="AI"
+          aria-expanded={aiActive}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -351,9 +375,9 @@ export function Navbar({ title, subtitle }: NavbarProps) {
             padding: '0 16px',
             height: 'var(--tb-btn-h, 38px)',
             borderRadius: '10px',
-            border: isDrawerOpen ? '1.5px solid rgba(249,160,139,0.5)' : '1.5px solid rgba(var(--ink),0.1)',
-            background: isDrawerOpen ? 'rgba(249,160,139,0.08)' : 'rgba(var(--ink),0.03)',
-            color: isDrawerOpen ? '#F9A08B' : 'var(--muted)',
+            border: aiActive ? '1.5px solid rgba(249,160,139,0.5)' : '1.5px solid rgba(var(--ink),0.1)',
+            background: aiActive ? 'rgba(249,160,139,0.08)' : 'rgba(var(--ink),0.03)',
+            color: aiActive ? '#F9A08B' : 'var(--muted)',
             fontSize: '13.5px',
             fontWeight: 700,
             fontFamily: 'var(--font)',
@@ -406,6 +430,10 @@ export function Navbar({ title, subtitle }: NavbarProps) {
       {/* Свой портал внутри ModalShell — иначе окно осталось бы в слое топбара
           (z-index: 100) и ушло под нижнюю панель телефона. */}
       {quickAdd && <QuickAdd onClose={() => setQuickAdd(false)} />}
+
+      {/* Смонтирован всегда, открыто только окно: закрытие не должно обрывать
+          ответ, который ещё пишется (см. AIQuickPanel). */}
+      <AIQuickPanel anchorX={quickAiX} onClose={closeQuickAi} onOpenChat={quickAiToChat} />
     </div>
   );
 }

@@ -342,5 +342,15 @@
     "title_other": "Hyväksy — {{count}} toimintoa",
     "stillEmpty_one": "{{count}} kenttä jäljellä",
     "stillEmpty_other": "{{count}} kenttää jäljellä"
+  },
+  "quick": {
+    "idle": "Tietää, mikä osio sinulla on auki",
+    "goToChat": "Siirry keskusteluun",
+    "planReady": "Toiminto on valmis — vahvista se keskustelussa",
+    "suggestions": {
+      "today": "Mitä tänään on ohjelmassa?",
+      "inactive": "Kuka ei ole käynyt pitkään aikaan?",
+      "revenue": "Paljonko tienasimme tällä viikolla?"
+    }
   }
 }

@@ -246,7 +246,11 @@
     "certificate_ready": "Der Gutschein wird beim Bezahlen angerechnet",
     "duration": "Gültig für {{count}} Tage",
     "no_plans": "Zurzeit sind keine Abos online erhältlich. Frage im Studio nach den Möglichkeiten.",
-    "offline_help": "Schreibe dem Studio eine Direktnachricht oder wende dich an das Team im Studio, um ein Abo auszuwählen."
+    "offline_help": "Schreibe dem Studio eine Direktnachricht oder wende dich an das Team im Studio, um ein Abo auszuwählen.",
+    "visits_label": "Besuche",
+    "per_visit": "{{price}} pro Besuch",
+    "prev": "Vorheriges Abo",
+    "next": "Nächstes Abo"
   },
   "successModal": {
     "title": "Sie sind angemeldet",

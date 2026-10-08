@@ -347,5 +347,15 @@
     "stillEmpty_one": "A rămas {{count}} câmp",
     "stillEmpty_few": "Au rămas {{count}} câmpuri",
     "stillEmpty_other": "Au rămas {{count}} de câmpuri"
+  },
+  "quick": {
+    "idle": "Știe ce secțiune ai deschisă",
+    "goToChat": "Mergi la chat",
+    "planReady": "Acțiunea e pregătită — confirm-o în chat",
+    "suggestions": {
+      "today": "Ce avem azi?",
+      "inactive": "Cine n-a mai venit de mult?",
+      "revenue": "Cât am câștigat săptămâna asta?"
+    }
   }
 }

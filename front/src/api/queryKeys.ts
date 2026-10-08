@@ -120,6 +120,9 @@ export const queryKeys = {
   // Открытый диалог — свой у страницы AI и свой у панели (шапка делит его с
   // панелью: «продолжить в чате» открывает именно её).
   aiActiveSession: (surface: 'page' | 'drawer') => ['ai', 'active-session', surface] as const,
+  // План действий, ждущий «Утверждаю», — по той же причине общий у поверхности:
+  // вопрос из окна шапки на телефоне подтверждают уже в панели.
+  aiProposal: (surface: 'page' | 'drawer') => ['ai', 'proposal', surface] as const,
   aiSettings: ['ai', 'settings'] as const,
   aiQuota: ['ai', 'quota'] as const,   // остаток обращений к ИИ за месяц (эпик AI-5)
   aiFacts: ['ai', 'facts'] as const,   // что ассистент помнит о студии (эпик AI-6)

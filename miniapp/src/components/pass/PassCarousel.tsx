@@ -1,18 +1,26 @@
-import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion';
+import { memo, useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
+import { motion, useMotionValueEvent, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion';
 import type { SubscriptionPackageInfo } from '../../api/studio';
 import { cn } from '../../lib/utils';
 import type { PassMaterial } from './material';
+import type { Selection } from './selection';
 
 type Props = {
   packages: SubscriptionPackageInfo[];
-  /** С какой карты открыть витрину. Дальше выбор — положение прокрутки. */
-  initialIndex: number;
-  onIndex: (index: number) => void;
+  /** Выбор витрины: открывается на нём, дальше его задаёт положение прокрутки. */
+  selection: Selection;
+  /** Карта сменилась — отклик пальцу (вибрация). */
+  onPicked: () => void;
   materials: Map<number, PassMaterial>;
   /** Карта по номеру: витрина держит положение, рисунок — PassArt. */
-  /** `opening` — карта, с которой открылась витрина: только на ней цифра досчитывает. */
-  renderCard: (plan: SubscriptionPackageInfo, offset: MotionValue<number>, opening: boolean) => ReactNode;
+  /**
+   * `opening` — карта, с которой открылась витрина: только на ней цифра
+   * досчитывает. `tick` — номер открытия: собранная заранее витрина
+   * открывается много раз, и постановка повторяется на каждом.
+   */
+  renderCard: (plan: SubscriptionPackageInfo, offset: MotionValue<number>, opening: boolean, tick: number) => ReactNode;
+  /** Лист открыт. Витрина может быть собрана заранее и стоять закрытой. */
+  open: boolean;
   nameOf: (plan: SubscriptionPackageInfo) => string;
   label: string;
   prevLabel: string;
@@ -33,42 +41,47 @@ const spring = { type: 'spring', stiffness: 260, damping: 26, mass: 0.9 } as con
  * отдельного состояния «выбрано», способного разойтись с тем, что видно, нет.
  */
 export default function PassCarousel({
-  packages, initialIndex, onIndex, materials, renderCard, nameOf, label, prevLabel, nextLabel, reduce,
+  packages, selection, onPicked, materials, renderCard, nameOf, label, prevLabel, nextLabel, reduce, open,
 }: Props) {
+  const initialIndex = Math.min(selection.get().index, Math.max(packages.length - 1, 0));
   const track = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(0);
+  const stepRef = useRef(0);
   const [current, setCurrent] = useState(initialIndex);
-  // Витрина монтируется вместе с листом: стартовая карта — та, с которой открыли.
-  const [first] = useState(initialIndex);
+  // Постановка открытия: от какой карты «раздаются» остальные и на какой
+  // досчитывает цифра. Привязана к открытию, а не к монтированию: на главной
+  // витрина собрана заранее и открывается готовой (BuyModalHost).
+  const [session, setSession] = useState({ open: false, at: initialIndex, tick: 0 });
+  if (open !== session.open) {
+    setSession({ open, at: open ? current : session.at, tick: open ? session.tick + 1 : session.tick });
+  }
   const currentRef = useRef(initialIndex);
   const placed = useRef(false);
-  const dotId = useId();
   const { scrollX } = useScroll({ container: track, axis: 'x' });
 
   // Шаг — расстояние между центрами соседних карт; его задаёт CSS (размер
   // карты тянется от высоты экрана), поэтому меряется, а не дублируется числом.
-  useLayoutEffect(() => {
+  // Меряет ResizeObserver — после раскладки, которую браузер и так делает в
+  // кадре. Замер прямо в эффекте заставлял считать раскладку всего листа
+  // посреди тапа, второй раз за кадр: ~130 мс при CPU ×4. Кадр без шага не
+  // виден — карты в нём ещё прозрачны, они только начинают «раздаваться».
+  useEffect(() => {
     const element = track.current;
     if (!element) return;
-    const measure = () => {
+    const observer = new ResizeObserver(() => {
       const slides = element.querySelectorAll<HTMLElement>('[data-slide]');
-      if (slides.length > 1) setStep(slides[1].offsetLeft - slides[0].offsetLeft);
-      else if (slides[0]) setStep(slides[0].offsetWidth);
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
+      const next = slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : slides[0]?.offsetWidth ?? 0;
+      stepRef.current = next;
+      setStep(next);
+      // Первая расстановка — без анимации: витрина открывается уже на нужной карте.
+      if (!placed.current && next) {
+        placed.current = true;
+        element.scrollLeft = currentRef.current * next;
+      }
+    });
     observer.observe(element);
     return () => observer.disconnect();
   }, [packages.length]);
-
-  // Первая расстановка — без анимации: витрина открывается уже на нужной карте.
-  useLayoutEffect(() => {
-    if (!step || !track.current) return;
-    if (!placed.current) {
-      placed.current = true;
-      track.current.scrollLeft = currentRef.current * step;
-    }
-  }, [step]);
 
   useMotionValueEvent(scrollX, 'change', (value) => {
     if (!step) return;
@@ -76,15 +89,19 @@ export default function PassCarousel({
     if (next === currentRef.current) return;
     currentRef.current = next;
     setCurrent(next);
-    onIndex(next);
+    selection.set(next);
+    onPicked();
   });
 
-  const go = (index: number) => {
+  // Стабильная ссылка: карты мемоизированы, и новая функция на каждый шаг
+  // листания перерисовывала бы все шесть — ~200 мс при CPU ×4 на каждой смене.
+  const go = useCallback((index: number) => {
     const element = track.current;
-    if (!element || !step) return;
+    const size = stepRef.current;
+    if (!element || !size) return;
     const target = Math.max(0, Math.min(packages.length - 1, index));
-    element.scrollTo({ left: target * step, behavior: reduce ? 'auto' : 'smooth' });
-  };
+    element.scrollTo({ left: target * size, behavior: reduce ? 'auto' : 'smooth' });
+  }, [packages.length, reduce]);
 
   const onKey = (event: KeyboardEvent) => {
     if (event.key === 'ArrowRight') { event.preventDefault(); go(currentRef.current + 1); }
@@ -121,14 +138,17 @@ export default function PassCarousel({
             scrollX={scrollX}
             selected={index === current}
             // Карты «раздаются» от выбранной к краям — одна постановка на открытие.
-            delay={0.08 + Math.abs(index - first) * 0.07}
-            fanFrom={index - first}
+            delay={0.08 + Math.abs(index - session.at) * 0.07}
+            fanFrom={index - session.at}
+            open={session.open}
+            tick={session.tick}
             reduce={reduce}
             name={nameOf(plan)}
-            onPick={() => go(index)}
-          >
-            {(offset) => renderCard(plan, offset, index === first)}
-          </Slide>
+            onPick={go}
+            plan={plan}
+            opening={index === session.at}
+            renderCard={renderCard}
+          />
         ))}
         <span aria-hidden="true" className="pass-track-edge shrink-0" />
       </div>
@@ -152,10 +172,12 @@ export default function PassCarousel({
               onClick={() => go(index)}
               className="relative flex h-6 items-center justify-center px-0.5"
             >
-              <span className={cn('block h-1.5 rounded-full bg-foreground/15 transition-[width] duration-300', index === current ? 'w-6' : 'w-1.5')} />
-              {index === current && (
-                <motion.span layoutId={`pass-dot-${dotId}`} transition={spring} className="absolute inset-x-0.5 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-foreground" />
-              )}
+              {/* Без общего layoutId: «переезд» пилюли заставлял framer мерить
+                  раскладку на каждом шаге; ширина и цвет переходят CSS. */}
+              <span className={cn(
+                'block h-1.5 rounded-full transition-[width,background-color] duration-300 ease-out',
+                index === current ? 'w-6 bg-foreground' : 'w-1.5 bg-foreground/15',
+              )} />
             </button>
           ))}
         </div>
@@ -164,21 +186,31 @@ export default function PassCarousel({
   );
 }
 
-function Slide({ index, step, scrollX, selected, delay, fanFrom, reduce, name, onPick, children }: {
+const Slide = memo(function Slide({ index, step, scrollX, selected, delay, fanFrom, open, tick, reduce, name, onPick, plan, opening, renderCard }: {
   index: number;
   step: number;
   scrollX: MotionValue<number>;
   selected: boolean;
   delay: number;
   fanFrom: number;
+  open: boolean;
+  tick: number;
   reduce: boolean;
   name: string;
-  onPick: () => void;
-  children: (offset: MotionValue<number>) => ReactNode;
+  onPick: (index: number) => void;
+  plan: SubscriptionPackageInfo;
+  opening: boolean;
+  renderCard: Props['renderCard'];
 }) {
   // > 0 — карта левее центра, < 0 — правее, 0 — в центре.
   const offset = useTransform(scrollX, (value) => (step ? (value - index * step) / step : 0));
-  const rotateY = useTransform(offset, [-2, -1, 0, 1, 2], [-38, -26, 0, 26, 38]);
+  const turn = useTransform(offset, [-2, -1, 0, 1, 2], [-38, -26, 0, 26, 38]);
+  // Мышь наклоняет выбранную карту к себе, и свет на фольге едет вместе с
+  // наклоном. Палец — нет: у него свайп, и наклон под ним спорил бы с листанием.
+  const tiltX = useSpring(0, { stiffness: 220, damping: 22 });
+  const tiltY = useSpring(0, { stiffness: 220, damping: 22 });
+  const rotateY = useTransform([turn, tiltY], ([scroll, tilt]: number[]) => scroll + tilt);
+  const light = useTransform([offset, tiltY], ([place, tilt]: number[]) => place - tilt / 24);
   const scale = useTransform(offset, [-1.5, 0, 1.5], [0.78, 1, 0.78]);
   // Соседние карты подтянуты к центру и уходят под выбранную — колода, а не ряд.
   const x = useTransform(offset, [-2, -1, 0, 1, 2], ['-34%', '-16%', '0%', '16%', '34%']);
@@ -192,25 +224,40 @@ function Slide({ index, step, scrollX, selected, delay, fanFrom, reduce, name, o
       aria-label={name}
       aria-current={selected || undefined}
       tabIndex={-1}
-      onClick={onPick}
+      onClick={() => onPick(index)}
+      onPointerMove={(event: PointerEvent<HTMLButtonElement>) => {
+        if (event.pointerType !== 'mouse' || !selected || reduce) return;
+        const box = event.currentTarget.getBoundingClientRect();
+        tiltY.set(((event.clientX - box.left) / box.width - 0.5) * 16);
+        tiltX.set(-((event.clientY - box.top) / box.height - 0.5) * 12);
+      }}
+      onPointerLeave={() => {
+        tiltX.set(0);
+        tiltY.set(0);
+      }}
       style={{ zIndex }}
-      initial={reduce ? false : { opacity: 0, y: 80, rotate: fanFrom * 6 }}
-      animate={{ opacity: 1, y: 0, rotate: 0 }}
-      transition={{ ...spring, delay }}
+      // Закрытая витрина возвращает карты в колоду не сразу, а когда лист
+      // уже уехал за край: иначе они разлетались бы у него на глазах.
+      variants={{
+        out: { opacity: 0, y: 80, rotate: fanFrom * 6, transition: { duration: 0, delay: 0.3 } },
+        in: { opacity: 1, y: 0, rotate: 0, transition: { ...spring, delay } },
+      }}
+      initial={reduce ? false : 'out'}
+      animate={reduce || open ? 'in' : 'out'}
       className="pass-slide relative shrink-0 snap-center focus-visible:outline-none"
     >
       <motion.div
-        style={reduce ? undefined : { rotateY, scale, x, transformPerspective: 1100 }}
+        style={reduce ? undefined : { rotateY, rotateX: tiltX, scale, x, transformPerspective: 1100 }}
         className={cn('pass-card relative h-full w-full will-change-transform', selected && 'is-selected')}
       >
-        {children(offset)}
+        {renderCard(plan, light, opening, tick)}
         {/* Глубина соседей — затемнением, а не прозрачностью: сквозь
             полупрозрачную карту просвечивала бы соседняя. */}
         {!reduce && <motion.span aria-hidden="true" style={{ opacity: dim }} className="pointer-events-none absolute inset-0 rounded-[22px] bg-[#0f0f0f]" />}
       </motion.div>
     </motion.button>
   );
-}
+});
 
 function Arrow({ side, label, disabled, onClick }: { side: 'left' | 'right'; label: string; disabled: boolean; onClick: () => void }) {
   return (

@@ -342,5 +342,15 @@
     "title_other": "Konfirmoni — {{count}} veprime",
     "stillEmpty_one": "Ka mbetur {{count}} fushë",
     "stillEmpty_other": "Kanë mbetur {{count}} fusha"
+  },
+  "quick": {
+    "idle": "E di cilin seksion keni hapur",
+    "goToChat": "Shko te biseda",
+    "planReady": "Veprimi është gati — konfirmojeni në bisedë",
+    "suggestions": {
+      "today": "Çfarë kemi sot?",
+      "inactive": "Kush nuk ka ardhur prej kohësh?",
+      "revenue": "Sa fituam këtë javë?"
+    }
   }
 }

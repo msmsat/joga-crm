@@ -342,5 +342,15 @@
     "title_other": "Approuver — {{count}} actions",
     "stillEmpty_one": "Il reste {{count}} champ",
     "stillEmpty_other": "Il reste {{count}} champs"
+  },
+  "quick": {
+    "idle": "Sait quelle section vous avez ouverte",
+    "goToChat": "Aller à la discussion",
+    "planReady": "Action prête — confirmez-la dans la discussion",
+    "suggestions": {
+      "today": "Qu’avons-nous aujourd’hui ?",
+      "inactive": "Qui n’est pas venu depuis longtemps ?",
+      "revenue": "Combien avons-nous gagné cette semaine ?"
+    }
   }
 }

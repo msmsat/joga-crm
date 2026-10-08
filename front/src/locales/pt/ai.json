@@ -342,5 +342,15 @@
     "title_other": "Aprovar — {{count}} ações",
     "stillEmpty_one": "Falta {{count}} campo",
     "stillEmpty_other": "Faltam {{count}} campos"
+  },
+  "quick": {
+    "idle": "Sabe que página está aberta",
+    "goToChat": "Ir para a conversa",
+    "planReady": "Ação pronta — confirme-a na conversa",
+    "suggestions": {
+      "today": "O que temos hoje?",
+      "inactive": "Quem não vem há muito tempo?",
+      "revenue": "Quanto ganhamos esta semana?"
+    }
   }
 }

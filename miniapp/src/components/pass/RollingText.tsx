@@ -18,8 +18,10 @@ export default function RollingText({ text, dir, reduce, className }: {
   return (
     <span className={cn('inline-flex', className)} aria-label={text}>
       {[...text].map((char, index) => (
-        <span key={index} aria-hidden="true" className="relative inline-flex overflow-hidden">
-          <AnimatePresence mode="popLayout" initial={false} custom={dir}>
+        // Старый и новый символ стоят в одной ячейке сетки, а не вытесняют
+        // друг друга (`popLayout`): так смена не требует замеров раскладки.
+        <span key={index} aria-hidden="true" className="inline-grid overflow-hidden">
+          <AnimatePresence initial={false} custom={dir}>
             <motion.span
               key={char}
               custom={dir}
@@ -32,7 +34,7 @@ export default function RollingText({ text, dir, reduce, className }: {
               animate="center"
               exit="leave"
               transition={{ duration: 0.42, delay: index * 0.022, ease }}
-              className="inline-block whitespace-pre"
+              className="inline-block whitespace-pre [grid-area:1/1]"
             >
               {char}
             </motion.span>

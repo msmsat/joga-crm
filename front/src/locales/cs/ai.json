@@ -337,5 +337,15 @@
     },
     "title": "Potvrzení — {{count}} akcí",
     "stillEmpty": "zbývá {{count}} pole"
+  },
+  "quick": {
+    "idle": "Ví, kterou sekci máte otevřenou",
+    "goToChat": "Přejít do chatu",
+    "planReady": "Akce je připravena — potvrďte ji v chatu",
+    "suggestions": {
+      "today": "Co nás dnes čeká?",
+      "inactive": "Kdo už dlouho nepřišel?",
+      "revenue": "Kolik jsme vydělali za týden?"
+    }
   }
 }

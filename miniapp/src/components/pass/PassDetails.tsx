@@ -28,8 +28,8 @@ export default function PassDetails({ plan, name, dir, currency, reduce }: {
 
   return (
     <div aria-live="polite" className="pass-details relative">
-      <div className="relative min-h-[22px] overflow-hidden">
-        <AnimatePresence mode="popLayout" initial={false} custom={dir}>
+      <div className="grid overflow-hidden">
+        <AnimatePresence initial={false} custom={dir}>
           <motion.h3
             key={plan.id}
             custom={dir}
@@ -42,7 +42,7 @@ export default function PassDetails({ plan, name, dir, currency, reduce }: {
             animate="center"
             exit="leave"
             transition={{ duration: 0.38, ease }}
-            className="truncate text-[16px] font-extrabold tracking-[-0.025em] text-card-foreground"
+            className="truncate [grid-area:1/1] text-[length:var(--pass-name-size)] font-extrabold leading-tight tracking-[-0.025em] text-card-foreground dt:line-clamp-2 dt:whitespace-normal"
           >
             {name}
           </motion.h3>

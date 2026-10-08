@@ -367,6 +367,7 @@ export default function App() {
         catalog={catalog}
         onNavigate={switchTab}
         onBuySubscription={goBuySubscription}
+        onCatalogRefresh={loadCatalog}
         onNeedAuth={requireAuth}
         focus={linkFocus ?? null}
         onFocusUsed={() => setLinkFocus(null)}

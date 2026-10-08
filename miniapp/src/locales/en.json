@@ -246,7 +246,11 @@
     "certificate_ready": "The certificate will be applied at checkout",
     "duration": "Valid for {{count}} days",
     "no_plans": "No subscriptions are available to buy online right now. Ask the studio about your options.",
-    "offline_help": "Send the studio a direct message or speak to the team at the studio for help choosing a subscription."
+    "offline_help": "Send the studio a direct message or speak to the team at the studio for help choosing a subscription.",
+    "visits_label": "visits",
+    "per_visit": "{{price}} per visit",
+    "prev": "Previous subscription",
+    "next": "Next subscription"
   },
   "successModal": {
     "title": "You are booked",

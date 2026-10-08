@@ -342,5 +342,15 @@
     "title_other": "Jóváhagyás — {{count}} művelet",
     "stillEmpty_one": "{{count}} mező maradt",
     "stillEmpty_other": "{{count}} mező maradt"
+  },
+  "quick": {
+    "idle": "Tudja, melyik rész van megnyitva",
+    "goToChat": "Ugrás a csevegésre",
+    "planReady": "A művelet kész — erősítse meg a csevegésben",
+    "suggestions": {
+      "today": "Mi van ma?",
+      "inactive": "Ki nem jött már régóta?",
+      "revenue": "Mennyit kerestünk ezen a héten?"
+    }
   }
 }

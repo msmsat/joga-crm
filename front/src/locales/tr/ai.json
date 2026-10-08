@@ -342,5 +342,15 @@
     "title_other": "Onayla — {{count}} işlem",
     "stillEmpty_one": "{{count}} alan kaldı",
     "stillEmpty_other": "{{count}} alan kaldı"
+  },
+  "quick": {
+    "idle": "Hangi bölümün açık olduğunu bilir",
+    "goToChat": "Sohbete git",
+    "planReady": "İşlem hazır — sohbette onaylayın",
+    "suggestions": {
+      "today": "Bugün neler var?",
+      "inactive": "Kim uzun süredir gelmiyor?",
+      "revenue": "Bu hafta ne kadar kazandık?"
+    }
   }
 }

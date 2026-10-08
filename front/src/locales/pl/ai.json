@@ -347,5 +347,15 @@
     "stillEmpty_one": "Pozostało {{count}} pole",
     "stillEmpty_few": "Pozostały {{count}} pola",
     "stillEmpty_many": "Pozostało {{count}} pól"
+  },
+  "quick": {
+    "idle": "Wie, którą sekcję masz otwartą",
+    "goToChat": "Przejdź do czatu",
+    "planReady": "Akcja gotowa — potwierdź ją na czacie",
+    "suggestions": {
+      "today": "Co mamy dzisiaj?",
+      "inactive": "Kto dawno nie przychodził?",
+      "revenue": "Ile zarobiliśmy w tym tygodniu?"
+    }
   }
 }

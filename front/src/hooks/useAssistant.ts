@@ -154,7 +154,24 @@ export function useAssistant(surface: AISurface = 'drawer') {
   // Имя инструмента, который ассистент дёргает прямо сейчас («get_schedule») —
   // под строкой ввода из него делается «Смотрю расписание…».
   const [toolStatus, setToolStatus] = useState<string | null>(null);
-  const [proposal, setProposal] = useState<AIPlanProposal | null>(null);
+  // План, ждущий подтверждения, — в кэше, а не в useState, по той же причине,
+  // что и открытый диалог: у панели несколько вызовов хука. Вопрос, заданный в
+  // окне шапки на телефоне, получал план в СВОЙ стейт, «Перейти в чат»
+  // открывало панель без карточки «Утверждаю», и действие терялось молча.
+  // queryFn отдаёт то, что уже лежит: общий invalidateQueries() после отката
+  // действия иначе обнулил бы план чужой поверхности.
+  const proposalKey = useMemo(() => queryKeys.aiProposal(surface), [surface]);
+  const { data: proposal = null } = useQuery<AIPlanProposal | null>({
+    queryKey: proposalKey,
+    queryFn: () => qc.getQueryData<AIPlanProposal | null>(proposalKey) ?? null,
+    initialData: null,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+  const setProposal = useCallback(
+    (plan: AIPlanProposal | null) => qc.setQueryData(proposalKey, plan),
+    [qc, proposalKey],
+  );
   // Защита от дубля при двойном Enter: закрывает и разрыв "создаём сессию" (до
   // старта мутации isPending ещё false), и сам полёт мутации.
   const sendingRef = useRef(false);
@@ -302,7 +319,7 @@ export function useAssistant(surface: AISurface = 'drawer') {
     // черновик с id -1 иначе столкнулся бы со следующим ответом.
     if (!saved) await qc.invalidateQueries({ queryKey: key });
     qc.invalidateQueries({ queryKey: queryKeys.aiSessions });   // изменился preview
-  }, [navigate, currentPage, qc]);
+  }, [navigate, currentPage, qc, setProposal]);
 
   const sendMessage = useCallback(async (text: string) => {
     const trimmed = text.trim();
@@ -367,13 +384,13 @@ export function useAssistant(surface: AISurface = 'drawer') {
     // сообщения — он остаётся в кэше под этим ключом.
     qc.setQueryData(queryKeys.aiMessages(noSessionKey), []);
     setActiveSessionId(null);
-  }, [qc, noSessionKey, setActiveSessionId]);
+  }, [qc, noSessionKey, setActiveSessionId, setProposal]);
 
   const loadSession = useCallback((sessionId: number) => {
     abortRef.current?.abort();
     setProposal(null);
     setActiveSessionId(sessionId);
-  }, [setActiveSessionId]);
+  }, [setActiveSessionId, setProposal]);
 
   // Что перечитать после исполненного действия. Ключи ТОЧНЫЕ: queryKeys.schedule
   // в проекте не существует, а queryKeys.clients — функция (search, category),
@@ -444,7 +461,7 @@ export function useAssistant(surface: AISurface = 'drawer') {
   );
 
   // Отказ: окно исчезает, токен протухает сам через полчаса.
-  const cancelAction = useCallback(() => setProposal(null), []);
+  const cancelAction = useCallback(() => setProposal(null), [setProposal]);
 
   const deleteMut = useMutation({
     mutationFn: (sessionId: number) => aiApi.deleteSession(sessionId),

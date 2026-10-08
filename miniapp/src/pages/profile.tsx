@@ -471,6 +471,9 @@ export default function Profile({
         initialPackageId={initialPackageId}
         canPayOnline={catalog?.can_pay_online ?? false}
         initialCertificate={pendingCertificate ?? null}
+        active={activeSub ?? null}
+        studioName={catalog?.studio.name}
+        currency={catalog?.studio.currency}
       />
     </div>
   );

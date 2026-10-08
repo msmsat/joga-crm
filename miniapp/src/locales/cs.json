@@ -246,7 +246,11 @@
     "certificate_ready": "Certifikát bude uplatněn při platbě",
     "duration": "Platnost: {{count}} dní",
     "no_plans": "Momentálně nejsou k dispozici předplatná k nákupu online. Zeptejte se ve studiu na možnosti.",
-    "offline_help": "Napište studiu přímou zprávu nebo se obraťte na tým ve studiu, který vám pomůže vybrat předplatné."
+    "offline_help": "Napište studiu přímou zprávu nebo se obraťte na tým ve studiu, který vám pomůže vybrat předplatné.",
+    "visits_label": "návštěvy",
+    "per_visit": "{{price}} za návštěvu",
+    "prev": "Předchozí předplatné",
+    "next": "Další předplatné"
   },
   "successModal": {
     "title": "Jste zapsáni",

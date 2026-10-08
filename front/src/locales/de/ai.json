@@ -337,5 +337,15 @@
     },
     "title": "Bestätigen — {{count}} Aktionen",
     "stillEmpty": "Noch {{count}} Feld(er) offen"
+  },
+  "quick": {
+    "idle": "Weiß, welchen Bereich Sie geöffnet haben",
+    "goToChat": "Zum Chat",
+    "planReady": "Aktion bereit — bestätigen Sie sie im Chat",
+    "suggestions": {
+      "today": "Was steht heute an?",
+      "inactive": "Wer war lange nicht mehr da?",
+      "revenue": "Wie viel haben wir diese Woche verdient?"
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { animate, motion, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { SubscriptionPackageInfo } from '../../api/studio';
@@ -12,8 +12,10 @@ type Props = {
   studioName: string;
   /** Положение карты относительно центра витрины: 0 — в центре, ±1 — соседняя. */
   offset: MotionValue<number>;
-  /** Досчитать число визитов с нуля — один раз, у карты, с которой открылась витрина. */
+  /** Досчитать число визитов с нуля — у карты, с которой открылась витрина. */
   countUp: boolean;
+  /** Номер открытия витрины: постановка повторяется на каждом. */
+  tick: number;
   reduce: boolean;
 };
 
@@ -27,24 +29,41 @@ type Props = {
  * Размер задаёт витрина (`--pass-card-h`), всё внутри — доли от него, чтобы
  * карта одинаково держала пропорции на телефоне и в консоли на десктопе.
  */
-export default function PassArt({ plan, name, material, studioName, offset, countUp, reduce }: Props) {
+export default memo(function PassArt({ plan, name, material, studioName, offset, countUp, tick, reduce }: Props) {
   const { t } = useTranslation();
-  const paths = useMemo(() => guilloche(plan.id), [plan.id]);
-  const sheen = useTransform(offset, [-1.5, 1.5], ['-70%', '70%']);
-  const foil = useTransform(offset, [-1.5, 1.5], ['0% 50%', '100% 50%']);
+  // Вся гравировка — одним контуром: десятки отдельных <path> на каждой
+  // карте удлиняли сборку листа в кадре открытия, а рисунок от этого не меняется.
+  const engraving = useMemo(() => guilloche(plan.id).join(''), [plan.id]);
+  // Карта, с которой открылась витрина, ловит свет при приземлении: блик
+  // проходит по ней один раз и встаёт туда, где его держит положение карты.
+  const sweep = useMotionValue(0);
+  const light = useTransform([offset, sweep], ([place, pass]: number[]) => place + pass);
+  const sheen = useTransform(light, [-1.5, 1.5], ['-70%', '70%']);
+  const foil = useTransform(light, [-1.5, 1.5], ['0% 50%', '100% 50%']);
 
-  const count = useMotionValue(countUp && !reduce ? 0 : plan.class_count);
+  const count = useMotionValue(plan.class_count);
   const shown = useTransform(count, (value) => Math.round(value));
   useEffect(() => {
-    if (!countUp || reduce) return;
-    const run = animate(count, plan.class_count, { duration: 1.1, delay: 0.35, ease: [0.16, 1, 0.3, 1] });
-    return () => run.stop();
-  }, [countUp, reduce, count, plan.class_count]);
+    if (!countUp || reduce || tick === 0) return;
+    // Карта в этот кадр ещё прозрачна — сброс в ноль не мелькает.
+    count.set(0);
+    sweep.set(-1.8);
+    const runs = [
+      animate(count, plan.class_count, { duration: 1.1, delay: 0.35, ease: [0.16, 1, 0.3, 1] }),
+      animate(sweep, 0, { duration: 1.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }),
+    ];
+    return () => {
+      runs.forEach((run) => run.stop());
+      // Прерванная постановка не оставляет на карте недосчитанную цифру.
+      count.set(plan.class_count);
+      sweep.set(0);
+    };
+  }, [tick, countUp, reduce, count, sweep, plan.class_count]);
 
   return (
     <div data-material={material} className="pass-art relative h-full w-full overflow-hidden rounded-[22px]">
       <svg aria-hidden="true" viewBox={`0 0 ${ART_W} ${ART_H}`} preserveAspectRatio="xMidYMid slice" className="pass-art-engrave absolute inset-0 h-full w-full">
-        {paths.map((d, index) => <path key={index} d={d} />)}
+        <path d={engraving} />
       </svg>
       {!reduce && <motion.span aria-hidden="true" style={{ x: sheen }} className="pass-art-sheen absolute inset-y-[-20%] left-[-30%] w-[160%]" />}
 
@@ -63,7 +82,7 @@ export default function PassArt({ plan, name, material, studioName, offset, coun
             style={reduce ? undefined : { backgroundPosition: foil }}
             className="pass-art-numeral block font-extrabold leading-[0.82] tabular-nums tracking-[-0.07em]"
           >
-            {countUp && !reduce ? <motion.span>{shown}</motion.span> : plan.class_count}
+            {reduce ? plan.class_count : <motion.span>{shown}</motion.span>}
           </motion.span>
           <span className="pass-art-muted mt-[calc(var(--pass-card-h)*0.025)] block text-[length:calc(var(--pass-card-h)*0.045)] font-bold">
             {t('buyModal.visits_label')}
@@ -75,4 +94,4 @@ export default function PassArt({ plan, name, material, studioName, offset, coun
       </div>
     </div>
   );
-}
+});

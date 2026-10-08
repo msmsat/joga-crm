@@ -1,0 +1,412 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   БЫСТРЫЙ ВОПРОС АССИСТЕНТУ (телефон, <768px)
+   Окно свисает из кнопки «✦ AI» верхней панели: хвостик смотрит на кнопку,
+   поле ввода — сразу под ним. Сверху, а не шитом снизу, намеренно: снизу
+   поднимается клавиатура, и шит с полем ввода оказывался бы ровно под ней.
+   Этаж 160–161: над нижней панелью (150), под дровером ассистента (200) и
+   модалками — «Перейти в чат» открывает дровер поверх уже закрытого окна.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.scrim {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--topbar-h, 56px);
+  bottom: 0;
+  z-index: 160;
+  /* Без backdrop-filter: блюр во весь вьюпорт роняет кадры (см. .v-overlay). */
+  background: rgba(0, 0, 0, 0.3);
+  -webkit-tap-highlight-color: transparent;
+}
+:global(:root.dark) .scrim { background: rgba(0, 0, 0, 0.55); }
+
+.panel {
+  position: fixed;
+  top: calc(var(--topbar-h, 56px) + 10px);
+  left: 10px;
+  right: 10px;
+  z-index: 161;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  min-height: 0;
+  background-color: var(--bg-card);
+  /* Тёплый отсвет из угла с шаром — единственная «декорация» окна: он
+     связывает шар с поверхностью, как будто свет идёт от него. */
+  background-image: radial-gradient(120% 60% at 0% 0%, rgba(252, 174, 145, 0.17), transparent 62%);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow:
+    0 30px 70px -20px rgba(0, 0, 0, 0.34),
+    0 8px 20px -8px rgba(0, 0, 0, 0.12);
+  font-family: var(--font, Manrope, sans-serif);
+  touch-action: pan-y;
+}
+:global(:root.dark) .panel {
+  background-image: radial-gradient(120% 60% at 0% 0%, rgba(249, 160, 139, 0.10), transparent 62%);
+  box-shadow:
+    0 30px 70px -20px rgba(0, 0, 0, 0.8),
+    0 8px 20px -8px rgba(0, 0, 0, 0.5);
+}
+
+/* Хвостик-указатель: ромб под кнопкой «AI», X считает Navbar по самой кнопке. */
+.notch {
+  position: absolute;
+  top: -7px;
+  left: calc(var(--aiq-notch-x, 85%) - 7px);
+  width: 14px;
+  height: 14px;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  border-top-left-radius: 4px;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+/* ─── Шапка: шар, имя, закрыть. За неё же окно тянут вверх. ────────────── */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 14px 12px 16px;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.headText { flex: 1; min-width: 0; }
+.title {
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: var(--onyx);
+  line-height: 1.2;
+}
+.subtitle {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.close {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(var(--ink), 0.05);
+  color: var(--text2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.16s ease, background 0.2s ease;
+}
+.close:active { transform: scale(0.9); background: rgba(var(--ink), 0.09); }
+
+/* ─── Шар Velora ──────────────────────────────────────────────────────────
+   Персиковая сфера с бликом; по ней медленно идёт отсвет. Пока ассистент
+   работает — отсвет ускоряется и от шара расходится кольцо: это и есть
+   индикатор, отдельного спиннера в шапке нет. */
+.orb {
+  position: relative;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #FFFFFF;
+  background: radial-gradient(circle at 32% 26%, #FFF3EC 0%, #FDC6AE 28%, #F9A08B 62%, #EC8A72 100%);
+  box-shadow:
+    inset 0 -3px 8px rgba(206, 104, 80, 0.32),
+    0 6px 16px -6px rgba(249, 160, 139, 0.8);
+  isolation: isolate;
+}
+.orb::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 52%, rgba(255, 255, 255, 0.7) 68%, transparent 84%);
+  mix-blend-mode: soft-light;
+  animation: aiq-spin 7s linear infinite;
+}
+.orb svg {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 1px 1px rgba(180, 84, 62, 0.35));
+}
+.orbBusy::before { animation-duration: 1.1s; }
+.orbBusy::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid rgba(249, 160, 139, 0.6);
+  animation: aiq-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ─── Поле ввода ──────────────────────────────────────────────────────── */
+.composer {
+  margin: 0 12px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 5px 5px 5px 14px;
+  border-radius: 18px;
+  background: rgba(var(--ink), 0.035);
+  border: 1px solid rgba(var(--ink), 0.07);
+  transition: border-color 0.2s ease, box-shadow 0.25s ease, background 0.2s ease;
+}
+.composer:focus-within {
+  background: var(--bg-card);
+  border-color: rgba(249, 160, 139, 0.75);
+  box-shadow: 0 0 0 4px rgba(249, 160, 139, 0.14), 0 8px 24px -8px rgba(26, 26, 26, 0.10);
+}
+.textarea {
+  flex: 1;
+  min-width: 0;
+  /* 16px — не косметика: при меньшем кегле Safari на iPhone увеличивает
+     страницу при фокусе, и окно уезжает за край. */
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--onyx);
+  padding: 7px 0;
+  max-height: 110px;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+}
+.textarea::placeholder { color: var(--text3); }
+
+.send {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+  box-shadow: 0 6px 16px -4px rgba(249, 160, 139, 0.65);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease;
+}
+.send:active:not(:disabled) { transform: scale(0.88); }
+.send:disabled {
+  cursor: default;
+  color: var(--text3);
+  background: rgba(var(--ink), 0.07);
+  box-shadow: none;
+}
+.sendBusy:disabled { background: rgba(249, 160, 139, 0.16); color: #F9A08B; }
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(249, 160, 139, 0.3);
+  border-top-color: #F9A08B;
+  animation: aiq-spin 0.7s linear infinite;
+}
+
+/* ─── Лента: подсказки или вопрос с ответом ───────────────────────────── */
+.body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 12px 6px;
+}
+
+.suggestions { display: flex; flex-direction: column; gap: 2px; }
+.suggestion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--onyx);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease;
+  animation: aiq-rise 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 50ms + 110ms);
+}
+.suggestion:active { background: rgba(252, 174, 145, 0.14); }
+.suggestionIcon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(249, 160, 139, 0.13);
+  color: #F9A08B;
+}
+
+.exchange { display: flex; flex-direction: column; padding: 2px 4px 0; }
+.question {
+  align-self: flex-end;
+  max-width: 86%;
+  padding: 9px 14px;
+  border-radius: 18px 18px 5px 18px;
+  background: var(--onyx);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  animation: aiq-rise 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+.answer {
+  margin-top: 14px;
+  font-size: 14.5px;
+  line-height: 1.62;
+  font-weight: 500;
+  color: var(--onyx);
+  overflow-wrap: anywhere;
+}
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 15px;
+  margin-left: 2px;
+  vertical-align: -2px;
+  border-radius: 1px;
+  background: #F9A08B;
+  animation: aiq-blink 0.9s step-end infinite;
+}
+
+.thinking {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.shimmer {
+  background: linear-gradient(90deg, var(--text3) 0%, var(--onyx) 50%, var(--text3) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: aiq-shimmer 1.8s linear infinite;
+}
+.dots { display: inline-flex; gap: 3px; }
+.dots i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #F9A08B;
+  animation: aiq-dot 1s ease-in-out infinite;
+}
+.dots i:nth-child(2) { animation-delay: 0.15s; }
+.dots i:nth-child(3) { animation-delay: 0.3s; }
+
+.plan {
+  margin-top: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(249, 160, 139, 0.12);
+  color: var(--onyx);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  animation: aiq-rise 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+.plan svg { flex-shrink: 0; color: #F9A08B; margin-top: 1px; }
+
+.failed {
+  margin-top: 12px;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(var(--ink), 0.05);
+  color: var(--text2);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.disclaimer {
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text3);
+}
+
+/* ─── Низ: «Перейти в чат» и ручка ────────────────────────────────────── */
+.foot { padding: 8px 12px 0; }
+.grip {
+  height: 20px;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  cursor: grab;
+}
+.grip span {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(var(--ink), 0.16);
+}
+
+/* Окно существует только на телефоне. Повернули экран в планшетную ширину —
+   прячем тем же приёмом, что и панель «Ещё»; Navbar заодно закрывает его. */
+@media (min-width: 768px) {
+  .scrim, .panel { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb::before, .orbBusy::after, .spinner, .caret, .shimmer, .dots i,
+  .suggestion, .question, .plan { animation: none; }
+}
+
+@keyframes aiq-spin { to { transform: rotate(360deg); } }
+@keyframes aiq-ping {
+  0% { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes aiq-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes aiq-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+@keyframes aiq-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes aiq-dot {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+  40% { transform: translateY(-3px); opacity: 1; }
+}

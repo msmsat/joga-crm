@@ -30,6 +30,8 @@ export { MobileNav } from './MobileNav';
 export { Navbar } from './Navbar';
 export { QuickAdd } from './QuickAdd';
 export type { QuickAddProps } from './QuickAdd';
+export { AIQuickPanel } from './aiQuick/AIQuickPanel';
+export type { AIQuickPanelProps } from './aiQuick/AIQuickPanel';
 export { ErrorBoundary } from './ErrorBoundary';
 export { ErrorFallback } from './errorScreen/ErrorFallback';
 export { EmptyState } from './EmptyState';

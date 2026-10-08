@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import HomeHero, { type BookingStart } from '../components/home/HomeHero';
 import PickSheet, { type PickItem } from '../components/home/PickSheet';
 import PassCard from '../components/home/PassCard';
+import { BuyModalHost, type BuyModalHandle } from '../components/modals/BuyModalHost';
 import {
   BookingWizardHost, GroupWizardHost, type BookingWizardHandle, type GroupWizardHandle,
 } from '../components/wizard/WizardHosts';
@@ -19,6 +20,8 @@ interface HomeProps {
   onNavigate: (tab: string) => void;
   /** Отказ 402 ведёт в покупку абонемента — она живёт во вкладке профиля. */
   onBuySubscription: () => void;
+  /** Абонемент куплен — каталог перечитывается (цены и скидки у клиента свои). */
+  onCatalogRefresh?: () => void;
   /** Бронь гостя: поднять существующий вход и продолжить ту же запись. */
   onNeedAuth: (retry: () => void) => void;
   /** QR-код студии: открыть нужный мастер записи с тем, что в нём названо (`wizardFocusOf`). */
@@ -40,7 +43,7 @@ interface HomeProps {
  * Сами мастера живут в своих компонентах (`WizardHosts`): главная держит
  * только пульт, и выбор внутри листа не перерисовывает её.
  */
-export default function Home({ user, catalog, onNavigate, onBuySubscription, onNeedAuth, focus, onFocusUsed }: HomeProps) {
+export default function Home({ user, catalog, onNavigate, onBuySubscription, onCatalogRefresh, onNeedAuth, focus, onFocusUsed }: HomeProps) {
   const { t } = useTranslation();
   const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
   // Филиал с главной — на весь сеанс, открывается на «Все». Каталог мог
@@ -51,6 +54,9 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
   const groupWizard = useRef<GroupWizardHandle>(null);
   // Гибридная студия: вход выбран, ждём ответа «индивидуально или в группе».
   const [asking, setAsking] = useState<BookingStart | null>(null);
+  // Витрина абонементов — листом поверх главной, а не переходом в профиль:
+  // человек смотрит пакеты там же, где собирался записаться.
+  const showcase = useRef<BuyModalHandle>(null);
   // Каталог перечитывается после покупки абонемента — и карта спрашивает заново.
   const subscription = useMySubscription(Boolean(user), catalog);
   // Карта — когда есть что на ней сказать: абонемент человека или пакеты
@@ -102,8 +108,8 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
             loading={subscription.loading}
             packages={catalog?.packages ?? []}
             canPayOnline={catalog?.can_pay_online ?? false}
-            onOpen={() => onNavigate('prof')}
-            onBuy={onBuySubscription}
+            onOpen={() => showcase.current?.open()}
+            onBuy={() => showcase.current?.open()}
           />
         ) : null}
       />
@@ -122,6 +128,19 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
           if (id === 'resource') wizard.current?.open(choice, branch);
           else groupWizard.current?.open(choice, branch);
         }}
+      />
+
+      <BuyModalHost
+        ref={showcase}
+        prebuild={showPass}
+        onSuccess={onCatalogRefresh}
+        packages={catalog?.packages ?? []}
+        canPayOnline={catalog?.can_pay_online ?? false}
+        active={subscription.active}
+        studioName={catalog?.studio.name}
+        currency={catalog?.studio.currency}
+        signedIn={Boolean(user)}
+        onNeedAuth={onNeedAuth}
       />
 
       <BookingWizardHost

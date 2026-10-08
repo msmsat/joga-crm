@@ -335,5 +335,15 @@
     },
     "title": "Confirm — {{count}} actions",
     "stillEmpty": "{{count}} field(s) left"
+  },
+  "quick": {
+    "idle": "Knows which section you have open",
+    "goToChat": "Go to chat",
+    "planReady": "Action ready — confirm it in the chat",
+    "suggestions": {
+      "today": "What's on today?",
+      "inactive": "Who hasn't come in lately?",
+      "revenue": "How much did we earn this week?"
+    }
   }
 }

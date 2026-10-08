@@ -342,5 +342,15 @@
     "title_other": "Godkend — {{count}} handlinger",
     "stillEmpty_one": "{{count}} felt tilbage",
     "stillEmpty_other": "{{count}} felter tilbage"
+  },
+  "quick": {
+    "idle": "Ved, hvilken sektion du har åben",
+    "goToChat": "Gå til chat",
+    "planReady": "Handlingen er klar — bekræft den i chatten",
+    "suggestions": {
+      "today": "Hvad sker der i dag?",
+      "inactive": "Hvem har ikke været her længe?",
+      "revenue": "Hvor meget har vi tjent i denne uge?"
+    }
   }
 }

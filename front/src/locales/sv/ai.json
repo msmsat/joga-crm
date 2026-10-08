@@ -342,5 +342,15 @@
     "title_other": "Godkänn — {{count}} åtgärder",
     "stillEmpty_one": "{{count}} fält återstår",
     "stillEmpty_other": "{{count}} fält återstår"
+  },
+  "quick": {
+    "idle": "Vet vilken del du har öppen",
+    "goToChat": "Gå till chatten",
+    "planReady": "Åtgärden är klar — bekräfta den i chatten",
+    "suggestions": {
+      "today": "Vad händer i dag?",
+      "inactive": "Vem har inte varit här på länge?",
+      "revenue": "Hur mycket tjänade vi den här veckan?"
+    }
   }
 }
