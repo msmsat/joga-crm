@@ -11,6 +11,8 @@ RUN pip install --no-cache-dir -r /requirements/requirements.txt -r /requirement
 COPY miniapp/package.json miniapp/package-lock.json /release/miniapp/
 RUN cd miniapp && npm ci && npx playwright install --with-deps chromium
 COPY back /release/back
+# Backend notification contract tests also verify the CRM's event labels.
+COPY front/src/locales /release/front/src/locales
 COPY miniapp /release/miniapp
 COPY scripts /release/scripts
 ENV CI=true MINIAPP_E2E_PYTHON=/usr/local/bin/python MINIAPP_RELEASE_EVIDENCE=/evidence

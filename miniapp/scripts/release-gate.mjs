@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -77,8 +78,14 @@ try {
     if (!tests.includes(required)) throw new Error(`Release blocked: required suite ${required} is missing`);
   }
   writeFileSync(join(evidence, 'backend-selection.json'), JSON.stringify(tests, null, 2));
-  const testTemp = mkdtempSync(join(evidence, 'backend-temp-'));
-  run(python, ['-m', 'pytest', ...tests.map(name => `tests/${name}`), '-k', 'not browser_server', '-q', '-rA', '--maxfail=1', '-p', 'no:cacheprovider', `--basetemp=${testTemp}`, '--strict-markers', '--strict-config', `--junitxml=${join(evidence, 'backend.xml')}`], backend);
+  // pytest's basetemp is private (0700). It must not enter the host user's
+  // uploaded evidence when verification runs as root inside Docker.
+  const testTemp = mkdtempSync(join(tmpdir(), 'velora-release-backend-'));
+  try {
+    run(python, ['-m', 'pytest', ...tests.map(name => `tests/${name}`), '-k', 'not browser_server', '-q', '-rA', '--maxfail=1', '-p', 'no:cacheprovider', `--basetemp=${testTemp}`, '--strict-markers', '--strict-config', `--junitxml=${join(evidence, 'backend.xml')}`], backend);
+  } finally {
+    rmSync(testTemp, { recursive: true, force: true });
+  }
   run(python, [join(repository, 'scripts', 'release_artifacts.py'), 'junit', join(evidence, 'backend.xml')], repository);
   run(npm, ['run', 'test:browser', '--', '--reporter=list,junit', `--output=${join(evidence, 'browser-results')}`], miniapp, {
     MINIAPP_E2E_PYTHON: python, PLAYWRIGHT_JUNIT_OUTPUT_FILE: join(evidence, 'browser.xml'),

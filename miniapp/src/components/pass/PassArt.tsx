@@ -2,6 +2,7 @@ import { memo, useEffect, useMemo } from 'react';
 import { animate, motion, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { SubscriptionPackageInfo } from '../../api/studio';
+import { cn } from '../../lib/utils';
 import { ART_H, ART_W, guilloche } from './guilloche';
 import type { PassMaterial } from './material';
 
@@ -10,8 +11,10 @@ type Props = {
   name: string;
   material: PassMaterial;
   studioName: string;
-  /** Положение карты относительно центра витрины: 0 — в центре, ±1 — соседняя. */
-  offset: MotionValue<number>;
+  /** Положение карты относительно центра витрины: 0 — в центре, ±1 — соседняя.
+   *  `null` — блик и фольгу ведёт браузер от прокрутки (кадры `pass-sd-sheen`,
+   *  `pass-sd-foil` в index.css), JS на кадр листания здесь не нужен. */
+  offset: MotionValue<number> | null;
   /** Досчитать число визитов с нуля — у карты, с которой открылась витрина. */
   countUp: boolean;
   /** Номер открытия витрины: постановка повторяется на каждом. */
@@ -26,6 +29,10 @@ type Props = {
  * а не к таймеру: свет едет ровно настолько, насколько человек сдвинул
  * пальцем, — карта поворачивается под ним, как настоящая.
  *
+ * Блик и цифра — каждый своим слоем (`will-change` в index.css). Двигайся они
+ * внутри общего слоя карты, браузер на каждом кадре листания перерисовывал бы
+ * всю карту — гравировку из сотен отрезков и её отражение — у всех шести карт.
+ *
  * Размер задаёт витрина (`--pass-card-h`), всё внутри — доли от него, чтобы
  * карта одинаково держала пропорции на телефоне и в консоли на десктопе.
  */
@@ -37,8 +44,11 @@ export default memo(function PassArt({ plan, name, material, studioName, offset,
   // Карта, с которой открылась витрина, ловит свет при приземлении: блик
   // проходит по ней один раз и встаёт туда, где его держит положение карты.
   const sweep = useMotionValue(0);
-  const light = useTransform([offset, sweep], ([place, pass]: number[]) => place + pass);
-  const sheen = useTransform(light, [-1.5, 1.5], ['-70%', '70%']);
+  // Проход блика — внешним слоем, положение карты — внутренним: два движения
+  // складываются, и браузерный путь не теряет прохода на открытии.
+  const sweepX = useTransform(sweep, [-1.5, 1.5], ['-70%', '70%']);
+  const light = useTransform(() => (offset ? offset.get() : 0) + sweep.get());
+  const sheen = useTransform(offset ?? sweep, [-1.5, 1.5], ['-70%', '70%']);
   const foil = useTransform(light, [-1.5, 1.5], ['0% 50%', '100% 50%']);
 
   const count = useMotionValue(plan.class_count);
@@ -65,7 +75,14 @@ export default memo(function PassArt({ plan, name, material, studioName, offset,
       <svg aria-hidden="true" viewBox={`0 0 ${ART_W} ${ART_H}`} preserveAspectRatio="xMidYMid slice" className="pass-art-engrave absolute inset-0 h-full w-full">
         <path d={engraving} />
       </svg>
-      {!reduce && <motion.span aria-hidden="true" style={{ x: sheen }} className="pass-art-sheen absolute inset-y-[-20%] left-[-30%] w-[160%]" />}
+      {!reduce && (
+        <motion.span aria-hidden="true" style={{ x: sweepX }} className="pass-art-layer absolute inset-y-[-20%] left-[-30%] w-[160%]">
+          <motion.span
+            style={offset ? { x: sheen } : undefined}
+            className={offset ? 'pass-art-sheen pass-art-layer absolute inset-0' : 'pass-art-sheen pass-sd-sheen absolute inset-0'}
+          />
+        </motion.span>
+      )}
 
       <div className="relative flex h-full flex-col p-[calc(var(--pass-card-h)*0.07)]">
         <div className="flex items-start justify-between gap-2">
@@ -79,8 +96,8 @@ export default memo(function PassArt({ plan, name, material, studioName, offset,
 
         <div className="mt-auto">
           <motion.span
-            style={reduce ? undefined : { backgroundPosition: foil }}
-            className="pass-art-numeral block font-extrabold leading-[0.82] tabular-nums tracking-[-0.07em]"
+            style={reduce || !offset ? undefined : { backgroundPosition: foil }}
+            className={cn('pass-art-numeral block font-extrabold leading-[0.82] tabular-nums tracking-[-0.07em]', !reduce && !offset && 'pass-sd-foil')}
           >
             {reduce ? plan.class_count : <motion.span>{shown}</motion.span>}
           </motion.span>

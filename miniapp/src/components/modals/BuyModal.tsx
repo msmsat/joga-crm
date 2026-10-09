@@ -113,7 +113,7 @@ export default function BuyModal({
   );
   // Карта рисуется по пакету и положению; ссылка стабильна, чтобы листание
   // перерисовывало только две карты, у которых сменился выбор.
-  const renderCard = useCallback((plan: SubscriptionPackageInfo, offset: MotionValue<number>, opening: boolean, tick: number) => (
+  const renderCard = useCallback((plan: SubscriptionPackageInfo, offset: MotionValue<number> | null, opening: boolean, tick: number) => (
     <PassArt
       plan={plan}
       name={nameOf(plan)}
@@ -345,9 +345,10 @@ function SelectedDetails({ selection, packages, nameOf, currency, reduce }: {
   reduce: boolean;
 }) {
   const { index, dir } = useSelection(selection);
+  const prices = useMemo(() => packages.map((row) => row.final_price), [packages]);
   const plan = packages[Math.min(index, packages.length - 1)];
   if (!plan) return null;
-  return <PassDetails plan={plan} name={nameOf(plan)} dir={dir} currency={currency} reduce={reduce} />;
+  return <PassDetails plan={plan} prices={prices} name={nameOf(plan)} dir={dir} currency={currency} reduce={reduce} />;
 }
 
 /** Оплата выбранного пакета — цена в кнопке следует за листанием. */

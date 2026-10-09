@@ -2,21 +2,23 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { SubscriptionPackageInfo } from '../../api/studio';
 import { money } from '../../lib/money';
-import RollingText from './RollingText';
+import PriceRoll from './PriceRoll';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 /**
  * Что выбрано в витрине — простым набором, без плашек: карта над ним уже
- * предмет, второй предмет рядом спорил бы с ней. Цена прокручивается
- * посимвольно в сторону листания, название въезжает оттуда же.
+ * предмет, второй предмет рядом спорил бы с ней. Цена крутится барабанами по
+ * разрядам (PriceRoll), название въезжает со стороны листания.
  *
  * Цена визита считается здесь: сервер её не присылает, а без неё пакеты
  * разного размера не сравнить — «5 за 2 900» и «3 за 1 890» человек в уме
  * не делит.
  */
-export default function PassDetails({ plan, name, dir, currency, reduce }: {
+export default function PassDetails({ plan, prices, name, dir, currency, reduce }: {
   plan: SubscriptionPackageInfo;
+  /** Цены всех пакетов витрины: барабанов цены — под самую длинную. */
+  prices: number[];
   name: string;
   dir: number;
   currency: string;
@@ -50,9 +52,11 @@ export default function PassDetails({ plan, name, dir, currency, reduce }: {
       </div>
 
       <div className="mt-1 flex flex-wrap items-baseline gap-x-3">
-        <RollingText
-          text={plan.final_price_str}
-          dir={dir}
+        <PriceRoll
+          value={plan.final_price}
+          set={prices}
+          currency={currency}
+          locale={i18n.language}
           reduce={reduce}
           className="text-[length:var(--pass-price-size)] font-extrabold leading-none tabular-nums tracking-[-0.05em] text-card-foreground"
         />

@@ -4,12 +4,13 @@ import { useTranslation } from 'react-i18next';
 import type { Studio } from '../../api/studio';
 import { useTelegram } from '../../hooks/useTelegram';
 import { cn } from '../../lib/utils';
+import { useBranch, type BranchStore } from './branchStore';
 
 type Props = {
   branches: Studio[];
-  /** Выбранный филиал; `null` — «Все филиалы». */
-  value: number | null;
-  onChange: (id: number | null) => void;
+  /** Выбранный филиал (`null` — «Все филиалы») — во внешнем хранилище: выбор
+   *  перерисовывает только капсулу, а не главную (branchStore.ts). */
+  store: BranchStore;
 };
 
 const PIN = (
@@ -52,9 +53,15 @@ const Icon = ({ children, className }: { children: ReactNode; className?: string
  * утапливается, пока нажата и пока список открыт: нажимаемость читается формой,
  * а не цветом. Персик в ней — только у значка, и он загорается целиком, когда
  * выбран конкретный адрес: видно, что запись сужена.
+ *
+ * Загорается — наплывом двух слоёв по прозрачности и масштабу, а не переходом
+ * цвета фона: фон перекрашивает главный поток кадр за кадром, и любая работа
+ * рядом (сборка листов, ответ сети) заставляла цвет заикаться. Прозрачность и
+ * масштаб ведёт видеокарта — значок наливается ровно при любой нагрузке.
  */
-export default function BranchPicker({ branches, value, onChange }: Props) {
+export default function BranchPicker({ branches, store }: Props) {
   const { t } = useTranslation();
+  const value = useBranch(store, branches);
   const { tg, vibrateLight } = useTelegram();
   const [isOpen, setIsOpen] = useState(false);
   const anchor = useRef<HTMLDivElement>(null);
@@ -99,7 +106,7 @@ export default function BranchPicker({ branches, value, onChange }: Props) {
 
   const choose = (id: number | null) => {
     if (id !== value && tg) tg.HapticFeedback.selectionChanged();
-    onChange(id);
+    store.set(id);
     setIsOpen(false);
   };
 
@@ -119,13 +126,13 @@ export default function BranchPicker({ branches, value, onChange }: Props) {
           isOpen ? 'shadow-button-press' : 'shadow-button',
         )}
       >
-        <span
-          className={cn(
-            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300',
-            current ? 'bg-brand text-brand-foreground shadow-brand' : 'bg-brand/14 text-brand',
-          )}
-        >
-          <Icon className="h-[15px] w-[15px]">{current ? PIN : LAYERS}</Icon>
+        {/* Ложе тоном студии стоит всегда; адрес наливает его диском цвета
+            студии, а значок «все» уходит под булавку. Только opacity и
+            transform — см. комментарий к компоненту. */}
+        <span aria-hidden="true" className="branch-badge relative grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand/14" data-on={current ? '' : undefined}>
+          <span className="branch-badge-fill absolute inset-0 rounded-full bg-brand shadow-brand" />
+          <Icon className="branch-badge-all absolute h-[15px] w-[15px] text-brand">{LAYERS}</Icon>
+          <Icon className="branch-badge-pin absolute h-[15px] w-[15px] text-brand-foreground">{PIN}</Icon>
         </span>
 
         <span className="min-w-0 truncate text-[13px] font-extrabold tracking-[-0.015em] text-card-foreground">

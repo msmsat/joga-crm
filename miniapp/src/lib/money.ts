@@ -9,17 +9,23 @@
 // каждой пролистанной карте.
 const formats = new Map<string, Intl.NumberFormat>();
 
+/** Форматтер суммы: символ валюты узкий («€», «Kč»), копеек — `fraction` знаков.
+ *  Неизвестный код валюты — исключение (его ловят вызывающие). */
+export function moneyFormat(currency: string, locale: string, fraction = 0): Intl.NumberFormat {
+  const key = `${locale}|${currency}|${fraction}`;
+  let format = formats.get(key);
+  if (!format) {
+    format = new Intl.NumberFormat(locale, {
+      style: 'currency', currency, currencyDisplay: 'narrowSymbol', maximumFractionDigits: fraction, minimumFractionDigits: fraction,
+    });
+    formats.set(key, format);
+  }
+  return format;
+}
+
 export function money(amount: number, currency: string, locale: string): string {
   try {
-    const key = `${locale}|${currency}`;
-    let format = formats.get(key);
-    if (!format) {
-      format = new Intl.NumberFormat(locale, {
-        style: 'currency', currency, currencyDisplay: 'narrowSymbol', maximumFractionDigits: 0, minimumFractionDigits: 0,
-      });
-      formats.set(key, format);
-    }
-    return format.format(amount);
+    return moneyFormat(currency, locale).format(amount);
   } catch {
     // Неизвестный код валюты — число и код как есть, а не пустота.
     return `${amount} ${currency}`;

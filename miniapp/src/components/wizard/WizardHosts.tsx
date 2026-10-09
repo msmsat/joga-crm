@@ -4,6 +4,7 @@ import { useBookingWizard } from '../../hooks/useBookingWizard';
 import { useGroupWizard } from '../../hooks/useGroupWizard';
 import type { GroupFocus, ResourceFocus } from '../../lib/entry';
 import { whenIdle } from '../../lib/idle';
+import { useBranchLater, type BranchStore } from '../home/branchStore';
 import type { WizardStep } from '../../lib/wizard';
 import BookingWizardSheet from './BookingWizardSheet';
 import GroupWizardSheet from './GroupWizardSheet';
@@ -43,13 +44,16 @@ export function BookingWizardHost({ ref, catalog, onNeedAuth, onBuySubscription,
   return <BookingWizardSheet flow={flow} catalog={catalog} onBuySubscription={onBuySubscription} onMyLessons={onMyLessons} />;
 }
 
-export function GroupWizardHost({ ref, catalog, onNeedAuth, onBuySubscription, enabled, branch }: Common & {
+export function GroupWizardHost({ ref, catalog, onNeedAuth, onBuySubscription, enabled, branches }: Common & {
   ref?: Ref<GroupWizardHandle>;
   /** У студии есть группы — сводку дней и первый день мастер берёт заранее. */
   enabled: boolean;
-  /** Филиал, выбранный на главной сейчас. */
-  branch: number | null;
+  /** Филиал, выбранный на главной сейчас (branchStore.ts). */
+  branches: BranchStore;
 }) {
+  // Дни под новый адрес — переходом: собранный лист перерисовывается не в
+  // кадре касания капсулы, а следом, уступая кадры её анимации.
+  const branch = useBranchLater(branches, catalog?.branches);
   const flow = useGroupWizard({ catalog, onNeedAuth, enabled, branch });
   useImperativeHandle(ref, () => ({ open: flow.open }));
 

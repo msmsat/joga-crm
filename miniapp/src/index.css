@@ -448,6 +448,30 @@
     linear-gradient(90deg, color-mix(in srgb, var(--v-brand) 6%, transparent), transparent 40%);
 }
 
+/* Значок капсулы филиала (components/home/BranchPicker.tsx). Выбран адрес —
+   диск цвета студии наливается из центра поверх ложа, значок «все» уходит,
+   булавка падает на место. Только opacity и transform: их ведёт видеокарта,
+   и смена не заикается, даже когда главный поток занят. */
+.branch-badge-fill,
+.branch-badge-all,
+.branch-badge-pin {
+  transition:
+    opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.46s cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+
+.branch-badge-fill { opacity: 0; transform: scale(0.45); }
+.branch-badge-pin { opacity: 0; transform: translateY(-5px) scale(0.7); }
+.branch-badge[data-on] .branch-badge-fill { opacity: 1; transform: none; }
+.branch-badge[data-on] .branch-badge-pin { opacity: 1; transform: none; transition-delay: 0.04s; }
+.branch-badge[data-on] .branch-badge-all { opacity: 0; transform: scale(0.6) rotate(-24deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .branch-badge-fill,
+  .branch-badge-all,
+  .branch-badge-pin { transition: opacity 0.15s linear; }
+}
+
 /* ─────────────────────────────────────────────────────────────
    Витрина абонементов (components/pass, лист BuyModal).
 
@@ -460,6 +484,8 @@
   --pass-card-h: clamp(146px, calc(var(--app-h, 100dvh) * 0.36 - 34px - var(--pass-card-shrink, 0px)), 290px);
   --pass-card-w: calc(var(--pass-card-h) * 0.7);
   --pass-gap: 18px;
+  /* Шаг ленты — от центра карты до центра соседней (ширина + поля слайда). */
+  --pass-step: calc(var(--pass-card-w) + var(--pass-gap));
 
   /* Консоль на десктопе: строка абонемента — в левой колонке, карты не уступают. */
   @variant dt {
@@ -476,6 +502,105 @@
     --pass-price-size: 52px;
     --pass-name-size: 20px;
   }
+}
+
+/* Цена барабанами (components/pass/PriceRoll.tsx).
+   Строка — inline-flex с выравниванием по верху: у всех частей один кегль и
+   межстрочный 1, поэтому верх совпадает и базовые линии — тоже, без опоры на
+   базовую линию ячеек с обрезкой. */
+.price-roll {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.price-roll-line {
+  display: inline-flex;
+  align-items: flex-start;
+}
+
+.price-roll-lit {
+  white-space: pre;
+}
+
+/* Разряд: ширина раскрывается сеткой (0fr ↔ 1fr) — новая тысяча расталкивает
+   соседей плавно, и знак валюты едет, а не прыгает. Трекинг цены — внешним
+   полем разряда, а не сжатием ячейки: сжатая ячейка резала край цифры. */
+.price-roll-slot,
+.price-roll-sep {
+  display: inline-grid;
+  grid-template-columns: 1fr;
+  transition:
+    grid-template-columns 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    margin 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.35s ease;
+}
+
+.price-roll-slot {
+  margin-inline-end: -0.05em;
+}
+
+.price-roll-slot[data-off],
+.price-roll-sep[data-off] {
+  grid-template-columns: 0fr;
+  margin-inline-end: 0;
+  opacity: 0;
+}
+
+/* Окно разряда выше строки на --pr-pad сверху и снизу (отрицательное поле
+   прячет это от раскладки): цифры на ходу не режутся кромкой строки, а
+   растворяются в мягких краях окна — как в глубине настоящего барабана.
+   По горизонтали окно — ровно ширина цифры: трекинг вынесен в поле разряда,
+   и сжатая ячейка больше не срезает край цифры. */
+.price-roll-cell {
+  --pr-pad: 0.22em;
+  position: relative;
+  min-width: 0;
+  padding-block: var(--pr-pad);
+  margin-block: calc(var(--pr-pad) * -1);
+  overflow: hidden;
+  overflow: clip;
+  letter-spacing: 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--pr-pad), #000 calc(100% - var(--pr-pad)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--pr-pad), #000 calc(100% - var(--pr-pad)), transparent 100%);
+}
+
+.price-roll-ghost {
+  display: block;
+  visibility: hidden;
+}
+
+/* Барабан: цифры с шагом 1.3 строки — в покое соседние не заходят даже в
+   мягкий край окна. Едет transform-ом (видеокарта): 10 цифр — 10% высоты
+   барабана на шаг. */
+.price-roll-reel {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--pr-pad);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(calc(var(--d, 0) * -10%));
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--i, 0) * 28ms);
+  will-change: transform;
+}
+
+.price-roll-reel > span {
+  display: block;
+  height: 1.3em;
+}
+
+.price-roll-sep-in {
+  min-width: 0;
+  overflow: hidden;
+  overflow: clip;
+  white-space: pre;
+}
+
+.price-roll[data-still] .price-roll-slot,
+.price-roll[data-still] .price-roll-sep,
+.price-roll[data-still] .price-roll-reel {
+  transition: none;
 }
 
 /* Поле над и под картами — под наклон, масштаб и тень выбранной: прокрутка
@@ -499,11 +624,26 @@
 .pass-card {
   border-radius: 22px;
   box-shadow: 0 18px 30px -18px rgba(26, 26, 26, 0.45);
-  transition: box-shadow 0.4s ease;
 }
 
-.pass-card.is-selected {
+/* Тень выбранной — отдельным слоем, который проявляется прозрачностью. Переход
+   самой box-shadow перерисовывал бы обе карты (с гравировкой и отражением)
+   все 0.4 с на каждой смене выбора — посреди листания. */
+.pass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
   box-shadow: 0 30px 50px -22px rgba(26, 26, 26, 0.55), 0 0 0 1px rgba(26, 26, 26, 0.04);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  will-change: opacity;
+  pointer-events: none;
+}
+
+.pass-card.is-selected::before {
+  opacity: 1;
 }
 
 /* Глянцевый пол: короткое отражение под картами. Только WebKit/Blink — это
@@ -512,9 +652,12 @@
   -webkit-box-reflect: below 6px linear-gradient(to bottom, rgba(255, 255, 255, 0.16), transparent 12%);
 }
 
-.dark .pass-card,
-.dark .pass-card.is-selected {
+.dark .pass-card {
   box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.8);
+}
+
+.dark .pass-card::before {
+  display: none;
 }
 
 /* Свет сцены — пятно цвета материала за выбранной картой. Градиент, а не
@@ -600,7 +743,8 @@
   color: var(--ink-muted);
 }
 
-/* Цифра визитов — фольгой: градиент в тексте, положение блика ведёт витрина. */
+/* Цифра визитов — фольгой: градиент в тексте, положение блика ведёт витрина.
+   Своим слоем: сдвиг фольги перерисовывает только цифру, а не карту. */
 .pass-art-numeral {
   font-size: calc(var(--pass-card-h) * 0.4);
   background-image: var(--foil);
@@ -609,11 +753,117 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  will-change: transform;
+}
+
+/* Блик и его проход — своими слоями: двигает их видеокарта, карта под ними
+   не перерисовывается. */
+.pass-art-layer {
+  will-change: transform;
 }
 
 /* Блик по всей карте — тот же свет, что на цифре, только шире и тише. */
 .pass-art-sheen {
   background: linear-gradient(105deg, transparent 36%, rgba(255, 255, 255, 0.2) 47%, rgba(255, 244, 232, 0.08) 53%, transparent 62%);
+}
+
+/* ── Поза карт от прокрутки (PassCarousel: CssSlide, PassArt без offset) ──
+   Браузер ведёт поворот, масштаб, сдвиг, затемнение, блик и фольгу прямо от положения карты в ленте — в потоке прокрутки, кадр в
+   кадр с пальцем, без JS на кадр. Таймлайн — сама карта (`view-timeline`),
+   диапазон — две карты в обе стороны от центра: 0% — карта правее центра на
+   два шага, 50% — в центре, 100% — левее на два. Кадры поворота, масштаба,
+   сдвига и затемнения — те же кривые, что в components/pass/pose.ts
+   (17 точек через 0.25 шага): правишь кривую там — пересобери кадры здесь. */
+.pass-sd-dim {
+  opacity: 0;
+}
+
+@supports (animation-timeline: view()) {
+  .pass-sd {
+    --pass-range: cover calc(50% - var(--pass-step) * 2) cover calc(50% + var(--pass-step) * 2);
+  }
+
+  /* Порядок наложения — не здесь: z-index не анимируется на видеокарте и
+     гонял бы пересчёт стилей каждый кадр. Его ставит витрина по выбранной
+     карте — он меняется на той же середине пути, что и раньше. */
+  .pass-sd .pass-slide {
+    view-timeline: --pass-slide inline;
+  }
+
+  .pass-sd .pass-card {
+    animation: pass-sd-card linear both;
+    animation-timeline: --pass-slide;
+    animation-range: var(--pass-range);
+  }
+
+  .pass-sd .pass-sd-dim {
+    animation: pass-sd-dim linear both;
+    animation-timeline: --pass-slide;
+    animation-range: var(--pass-range);
+  }
+
+  .pass-sd .pass-sd-sheen {
+    animation: pass-sd-sheen linear both;
+    animation-timeline: --pass-slide;
+    animation-range: var(--pass-range);
+  }
+
+  .pass-sd .pass-sd-foil {
+    animation: pass-sd-foil linear both;
+    animation-timeline: --pass-slide;
+    animation-range: var(--pass-range);
+  }
+}
+
+@keyframes pass-sd-card {
+  0% { transform: perspective(1100px) translateX(-34%) scale(0.78) rotateY(-38deg); }
+  6.25% { transform: perspective(1100px) translateX(-29.2%) scale(0.78) rotateY(-37.27deg); }
+  12.5% { transform: perspective(1100px) translateX(-24.63%) scale(0.78) rotateY(-35.11deg); }
+  18.75% { transform: perspective(1100px) translateX(-20.23%) scale(0.796) rotateY(-31.6deg); }
+  25% { transform: perspective(1100px) translateX(-16%) scale(0.837) rotateY(-26.87deg); }
+  31.25% { transform: perspective(1100px) translateX(-11.89%) scale(0.89) rotateY(-21.11deg); }
+  37.5% { transform: perspective(1100px) translateX(-7.88%) scale(0.943) rotateY(-14.54deg); }
+  43.75% { transform: perspective(1100px) translateX(-3.92%) scale(0.984) rotateY(-7.41deg); }
+  50% { transform: perspective(1100px) translateX(0%) scale(1) rotateY(0deg); }
+  56.25% { transform: perspective(1100px) translateX(3.92%) scale(0.984) rotateY(7.41deg); }
+  62.5% { transform: perspective(1100px) translateX(7.88%) scale(0.943) rotateY(14.54deg); }
+  68.75% { transform: perspective(1100px) translateX(11.89%) scale(0.89) rotateY(21.11deg); }
+  75% { transform: perspective(1100px) translateX(16%) scale(0.837) rotateY(26.87deg); }
+  81.25% { transform: perspective(1100px) translateX(20.23%) scale(0.796) rotateY(31.6deg); }
+  87.5% { transform: perspective(1100px) translateX(24.63%) scale(0.78) rotateY(35.11deg); }
+  93.75% { transform: perspective(1100px) translateX(29.2%) scale(0.78) rotateY(37.27deg); }
+  100% { transform: perspective(1100px) translateX(34%) scale(0.78) rotateY(38deg); }
+}
+@keyframes pass-sd-dim {
+  0% { opacity: 0.55; }
+  6.25% { opacity: 0.55; }
+  12.5% { opacity: 0.544; }
+  18.75% { opacity: 0.483; }
+  25% { opacity: 0.376; }
+  31.25% { opacity: 0.249; }
+  37.5% { opacity: 0.128; }
+  43.75% { opacity: 0.036; }
+  50% { opacity: 0; }
+  56.25% { opacity: 0.036; }
+  62.5% { opacity: 0.128; }
+  68.75% { opacity: 0.249; }
+  75% { opacity: 0.376; }
+  81.25% { opacity: 0.483; }
+  87.5% { opacity: 0.544; }
+  93.75% { opacity: 0.55; }
+  100% { opacity: 0.55; }
+}
+
+/* Блик: −70% → 70% своей ширины на участке ±1.5 шага, дальше стоит. */
+@keyframes pass-sd-sheen {
+  0%, 12.5% { transform: translateX(-70%); }
+  87.5%, 100% { transform: translateX(70%); }
+}
+
+/* Фольга цифры — тот же свет, что у блика. */
+@keyframes pass-sd-foil {
+  0%, 12.5% { background-position: 0% 50%; }
+  87.5%, 100% { background-position: 100% 50%; }
 }
 
 /* Скидка — штамп, наклеенный на карту: круг с пунктиром, чуть набекрень. */

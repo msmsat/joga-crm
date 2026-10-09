@@ -8,6 +8,7 @@ import {
   BookingWizardHost, GroupWizardHost, type BookingWizardHandle, type GroupWizardHandle,
 } from '../components/wizard/WizardHosts';
 import { STEP_ICONS } from '../components/wizard/stepIcons';
+import { createBranchStore, knownBranch } from '../components/home/branchStore';
 import { useMySubscription } from '../hooks/useMySubscription';
 import { type UserResponse } from '../api/auth';
 import type { StudioCatalog } from '../api/studio';
@@ -46,10 +47,11 @@ interface HomeProps {
 export default function Home({ user, catalog, onNavigate, onBuySubscription, onCatalogRefresh, onNeedAuth, focus, onFocusUsed }: HomeProps) {
   const { t } = useTranslation();
   const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
-  // Филиал с главной — на весь сеанс, открывается на «Все». Каталог мог
-  // перечитаться без выбранного адреса: тогда снова «все», а не пустая запись.
-  const [branchPick, setBranchPick] = useState<number | null>(null);
-  const branch = catalog?.branches.some((row) => row.id === branchPick) ? branchPick : null;
+  // Филиал с главной — на весь сеанс, открывается на «Все». Живёт во внешнем
+  // хранилище (branchStore.ts): выбор адреса не перерисовывает главную с её
+  // собранными листами. Главная читает его в момент нажатия на вход.
+  const [branches] = useState(createBranchStore);
+  const branchNow = () => knownBranch(branches.get(), catalog?.branches);
   const wizard = useRef<BookingWizardHandle>(null);
   const groupWizard = useRef<GroupWizardHandle>(null);
   // Гибридная студия: вход выбран, ждём ответа «индивидуально или в группе».
@@ -78,8 +80,8 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onC
   }, [focus]);
 
   const start = (choice: BookingStart) => {
-    if (mode === 'resource') wizard.current?.open(choice, branch);
-    else if (mode === 'event') groupWizard.current?.open(choice, branch);
+    if (mode === 'resource') wizard.current?.open(choice, branchNow());
+    else if (mode === 'event') groupWizard.current?.open(choice, branchNow());
     else setAsking(choice);
   };
 
@@ -99,8 +101,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onC
       <HomeHero
         catalog={catalog}
         name={user?.name ?? ''}
-        branch={branch}
-        onBranch={setBranchPick}
+        branches={branches}
         onStart={start}
         pass={showPass ? (
           <PassCard
@@ -125,8 +126,8 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onC
           const choice = asking;
           setAsking(null);
           if (!choice) return;
-          if (id === 'resource') wizard.current?.open(choice, branch);
-          else groupWizard.current?.open(choice, branch);
+          if (id === 'resource') wizard.current?.open(choice, branchNow());
+          else groupWizard.current?.open(choice, branchNow());
         }}
       />
 
@@ -159,7 +160,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onC
         onNeedAuth={onNeedAuth}
         onBuySubscription={onBuySubscription}
         enabled={mode !== 'resource'}
-        branch={branch}
+        branches={branches}
       />
     </div>
   );

@@ -1,10 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import type { StudioCatalog } from '../../api/studio';
+import type { Studio, StudioCatalog } from '../../api/studio';
 import { STEP_ICONS } from '../wizard/stepIcons';
 import LanguagePopover from '../profile/LanguagePopover';
 import BranchPicker from './BranchPicker';
+import { useBranch, type BranchStore } from './branchStore';
 
 /** С чего человек начинает запись. */
 export type BookingStart = 'time' | 'master' | 'service';
@@ -16,9 +17,9 @@ type Props = {
   catalog: StudioCatalog | null;
   /** Имя клиента; гость — пусто. */
   name: string;
-  /** Филиал, выбранный на главной; `null` — все. */
-  branch: number | null;
-  onBranch: (id: number | null) => void;
+  /** Филиал, выбранный на главной (branchStore.ts). Шапка на него не
+   *  подписана: перерисовываются только капсула и строка адреса. */
+  branches: BranchStore;
   onStart: (start: BookingStart) => void;
   /** Карта абонемента — под названием и адресом, частью вывески. */
   pass?: ReactNode;
@@ -58,19 +59,13 @@ function signWords(name: string) {
  * раздела. Свет за ним — фирменный цвет студии (как и у всего приложения),
  * кольца — тонкие, чтобы сцена не превращалась в баннер.
  */
-export default function HomeHero({ catalog, name, branch, onBranch, onStart, pass }: Props) {
+export default function HomeHero({ catalog, name, branches: branchStore, onStart, pass }: Props) {
   const { t } = useTranslation();
   const reduce = useReducedMotion();
   const [brokenLogo, setBrokenLogo] = useState(false);
   const studio = catalog?.studio;
   const branches = catalog?.branches ?? [];
   const words = signWords(studio?.name ?? '');
-  // Под названием — адрес, куда человек идёт: выбранного филиала, а пока
-  // выбраны все — их число. Один филиал выводится сам.
-  const here = branches.length === 1 ? branches[0] : branches.find((row) => row.id === branch);
-  const place = here
-    ? [here.city, here.address].filter(Boolean).join(', ')
-    : branches.length > 1 ? t('hero.branches', { count: branches.length }) : '';
   const logo = !brokenLogo ? studio?.logo_url : null;
   const monogram = words.filter(({ word }) => word).map(({ word }) => word[0]).join('').slice(0, 2).toUpperCase();
   const starts = catalog && catalog.staff.length < 2 ? SOLO_STARTS : STARTS;
@@ -143,24 +138,7 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
             </motion.span>
           ))}
         </h1>
-        {place && (
-          <motion.div {...rise(0.3)} className="mt-[var(--home-title-gap)] flex items-center gap-1.5 text-[13.5px] font-semibold text-muted-foreground">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
-            </svg>
-            {/* Ключ — сам адрес: смена филиала проявляет новый, а не
-                подменяет буквы на месте. */}
-            <motion.span
-              key={place}
-              initial={reduce ? false : { opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease }}
-              className="truncate"
-            >
-              {place}
-            </motion.span>
-          </motion.div>
-        )}
+        <HeroPlace store={branchStore} branches={branches} reduce={reduce} />
         {/* Зазор до карты сжимается первым, когда высоты мало, и растёт до
             потолка, когда её много. */}
         {pass && <div aria-hidden="true" className="min-h-[var(--home-pass-gap-min)] max-h-[var(--home-pass-gap)] flex-1" />}
@@ -180,7 +158,7 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
           </span>
           {branches.length > 1 && (
             <div className="min-w-0 max-w-[58%] shrink-0">
-              <BranchPicker branches={branches} value={branch} onChange={onBranch} />
+              <BranchPicker branches={branches} store={branchStore} />
             </div>
           )}
         </motion.div>
@@ -216,5 +194,41 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart, pas
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Адрес под названием — куда человек идёт: выбранного филиала, а пока выбраны
+ * все — их число. Один филиал выводится сам. Подписан на выбор сам, чтобы
+ * смена адреса не перерисовывала шапку.
+ */
+function HeroPlace({ store, branches, reduce }: { store: BranchStore; branches: Studio[]; reduce: boolean | null }) {
+  const { t } = useTranslation();
+  const branch = useBranch(store, branches);
+  const here = branches.length === 1 ? branches[0] : branches.find((row) => row.id === branch);
+  const place = here
+    ? [here.city, here.address].filter(Boolean).join(', ')
+    : branches.length > 1 ? t('hero.branches', { count: branches.length }) : '';
+  if (!place) return null;
+  return (
+    <motion.div
+      {...(reduce ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.7, delay: 0.3, ease } })}
+      className="mt-[var(--home-title-gap)] flex items-center gap-1.5 text-[13.5px] font-semibold text-muted-foreground"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+      </svg>
+      {/* Ключ — сам адрес: смена филиала проявляет новый, а не подменяет
+          буквы на месте. */}
+      <motion.span
+        key={place}
+        initial={reduce ? false : { opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease }}
+        className="truncate"
+      >
+        {place}
+      </motion.span>
+    </motion.div>
   );
 }
