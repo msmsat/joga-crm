@@ -33,12 +33,13 @@ async function setup(file, extra = {}, environment = {}) {
   };
   const jsx = (type, props) => ({ type, props });
   const dependencies = {
+    paymentSync: { rememberCheckout() {} },
     react, 'react/jsx-runtime': { jsx, jsxs: jsx, Fragment: 'fragment' },
     'react-i18next': { useTranslation: () => ({ t: key => key, i18n: { language: 'en' } }) },
     Sheet: { Sheet: 'sheet', SheetAction: 'action' }, CheckoutBreakdown: { default: 'breakdown' }, CheckoutOptions: { default: 'options' },
     PaymentModal: { default: 'payment' }, useCheckoutCalc: { useCheckoutCalc: () => ({ calc: quote, isCalculating: false }) },
     useTelegram: { useTelegram: () => ({ tg: null, vibrateLight() {} }) },
-    user: { calculateCheckout: async () => quote }, money: { money: value => `€${value}` },
+    user: { calculateCheckout: async () => quote }, money: { money: value => `€${value}`, fractionOf: () => 0 },
     utils: { cn: (...items) => items.filter(Boolean).join(' ') },
     'framer-motion': { motion: { button: 'button', div: 'div' }, useReducedMotion: () => true },
     SettingRow: { default: 'setting' }, ...extra,

@@ -10,6 +10,7 @@ import { ANY, isBookableResource, offeredServices } from '../lib/bookingPage';
 import type { ResourceFocus } from '../lib/entry';
 import { bumpLessons } from '../lib/revision';
 import { spawnPetals } from '../lib/petals';
+import { rememberCheckout } from '../lib/paymentSync';
 import { getSession } from '../lib/session';
 import { availabilityQuery, dayList, lastBookableDay, studioToday, timeOf, type IsoDay } from '../lib/slots';
 import {
@@ -279,7 +280,8 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
       const result = await hybridApi.confirm(current.data.quote_id, payment ?? undefined);
       setBooking(result);
       bumpLessons();
-      spawnPetals();
+      if (result.payment_url) rememberCheckout({ reservation_id: result.reservation_id });
+      else spawnPetals();
       if (tg) tg.HapticFeedback.notificationOccurred('success');
       // Telegram can open its browser after a request. In a regular browser,
       // WizardDone provides a direct link and keeps this booking tab available.

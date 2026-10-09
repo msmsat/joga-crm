@@ -1,4 +1,4 @@
-import { useEffect, useImperativeHandle, useState, type ComponentProps, type Ref } from 'react';
+import { startTransition, useEffect, useImperativeHandle, useState, type ComponentProps, type Ref } from 'react';
 import { whenIdle } from '../../lib/idle';
 import BuyModal from './BuyModal';
 
@@ -23,9 +23,10 @@ export function BuyModalHost({ ref, prebuild = false, ...props }: Omit<Component
   // Лист собирается заранее — невидимым, когда главная уже показана и
   // приложению нечем заняться, как у мастеров записи. Тогда тап по билету —
   // только выезд готового листа: сборка шести карт в момент тапа стоила
-  // ~550 мс при CPU ×4. Переключается только закрытый лист.
+  // ~550 мс при CPU ×4. Переключается только закрытый лист. Переходом — чтобы
+  // эта сборка не стала одной длинной задачей (см. WizardHosts).
   const [warm, setWarm] = useState(false);
-  useEffect(() => (prebuild ? whenIdle(() => setWarm(true), PREBUILD_DELAY_MS) : undefined), [prebuild]);
+  useEffect(() => (prebuild ? whenIdle(() => startTransition(() => setWarm(true)), PREBUILD_DELAY_MS) : undefined), [prebuild]);
   const [keep, setKeep] = useState(false);
   if (warm && !keep && !isOpen) setKeep(true);
 

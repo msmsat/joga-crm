@@ -38,10 +38,11 @@ const tg = (window as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Tel
 /**
  * Мы действительно внутри Telegram, а не просто на странице с его скриптом.
  *
- * `telegram-web-app.js` подключён в index.html безусловно и создаёт
- * `window.Telegram.WebApp` в ЛЮБОМ браузере — значит `tg` истинен всегда, и
- * `if (tg)` не отличает Telegram от вкладки Chrome. Настоящий признак —
- * непустой initData: его проставляет только сам клиент Telegram при запуске.
+ * `telegram-web-app.js` index.html подключает только при запуске из Telegram,
+ * но признак там — по адресу, и скрипт, раз загрузившись, создаёт
+ * `window.Telegram.WebApp` в любом окружении. Поэтому `if (tg)` — лишь «SDK
+ * есть», а не «мы в Telegram». Настоящий признак — непустой initData: его
+ * проставляет только сам клиент Telegram при запуске.
  *
  * Отличие не косметическое: вне Telegram `tg.close()` молча ничего не делает.
  * Код вида `if (tg) tg.close(); else закрытьМодалку()` в браузере попадал в
@@ -49,6 +50,19 @@ const tg = (window as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Tel
  * блокировал всё приложение.
  */
 export const isInTelegram = Boolean(tg?.initData);
+
+/**
+ * Те же отклики, что у `useTelegram()`, но постоянными функциями модуля: хук
+ * отдаёт новые стрелки на каждый рендер, и компонент под `memo`, получивший
+ * такую в пропсах, перерисовывался бы вместе с родителем.
+ */
+export const haptic = {
+  light: () => tg?.HapticFeedback?.impactOccurred('light'),
+  medium: () => tg?.HapticFeedback?.impactOccurred('medium'),
+  selection: () => tg?.HapticFeedback?.selectionChanged(),
+  success: () => tg?.HapticFeedback?.notificationOccurred('success'),
+  error: () => tg?.HapticFeedback?.notificationOccurred('error'),
+};
 
 export function useTelegram() {
   // Вытаскиваем юзера, если мы внутри Telegram

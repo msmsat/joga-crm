@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { resolveImageUrl } from '../../api/client';
 import type { ResourceStaffMember } from '../../api/hybrid.types';
+import type { StudioCatalog } from '../../api/studio';
 import { useServicePrice } from '../../hooks/useServicePrice';
 import { useServiceDuration } from '../../hooks/useServiceDuration';
 import type { BookingWizardFlow } from '../../hooks/useBookingWizard';
@@ -26,7 +27,7 @@ export type Preview = (pick: WizardPick | null) => void;
  */
 function ChoiceList({ children, onPreview }: { children: React.ReactNode; onPreview?: Preview }) {
   return (
-    <div className="grid gap-2.5 @xl:grid-cols-2" onPointerLeave={onPreview ? () => onPreview(null) : undefined}>
+    <div className="grid items-start gap-2.5 @xl:grid-cols-2" onPointerLeave={onPreview ? () => onPreview(null) : undefined}>
       {children}
     </div>
   );
@@ -72,6 +73,8 @@ export function WizardServices({ flow, onPreview }: { flow: BookingWizardFlow; o
               }
               title={t(`lesson.name.${service.name}`, { defaultValue: service.name })}
               hint={durationOf(service, flow.master)}
+              rating={service.rating_avg}
+              more={service.description}
               aside={priceOf(service, flow.master)}
               onClick={() => flow.pickService(service.id)}
               onHover={onPreview && (() => onPreview(onService(pick, service.id, flow.staff)))}
@@ -96,10 +99,13 @@ export function Avatar({ member, size = 48 }: { member: ResourceStaffMember; siz
   );
 }
 
-/** Раздел «Мастер»: кто делает выбранную услугу и свободен в названный час. */
-export function WizardMasters({ flow, onPreview }: { flow: BookingWizardFlow; onPreview?: Preview }) {
+/** Раздел «Мастер»: кто делает выбранную услугу и свободен в названный час.
+ *  «О себе» и оценка мастера — из каталога студии: список мастеров записи
+ *  (`resource-staff`) про них не знает. */
+export function WizardMasters({ flow, onPreview, catalog }: { flow: BookingWizardFlow; onPreview?: Preview; catalog: StudioCatalog | null }) {
   const { t } = useTranslation();
   const { pick } = flow;
+  const aboutOf = (member: ResourceStaffMember) => catalog?.staff.find((row) => row.id === member.teacher_id);
   if (flow.staffError) return <WizardEmpty title={t('wizard.loadError')} action={t('booking.retry')} onAction={flow.retryStaff} />;
   if (pick.time !== null && flow.dayError) return <WizardEmpty title={t('wizard.loadError')} action={t('booking.retry')} onAction={flow.retryDay} />;
   if (flow.staffLoading || (pick.time !== null && flow.dayLoading)) return <RowSkeleton />;
@@ -145,6 +151,8 @@ export function WizardMasters({ flow, onPreview }: { flow: BookingWizardFlow; on
               lead={<Avatar member={member} />}
               title={fullName(member)}
               hint={member.department ?? undefined}
+              rating={aboutOf(member)?.rating_avg}
+              more={aboutOf(member)?.bio}
               aside={priceAt(member)}
               onClick={() => flow.pickMaster(member.teacher_id)}
               onHover={onPreview && (() => onPreview({ ...pick, master: member.teacher_id }))}

@@ -30,10 +30,12 @@ export function guilloche(seed: number): string[] {
   return paths;
 }
 
-function rosette({ cx, cy, r, a, b, k, m, copies }: {
+/** Розетка отдельно — ею же гравирована печать экрана оплаты. */
+export function rosette({ cx, cy, r, a, b, k, m, copies, points = 120 }: {
   cx: number; cy: number; r: number; a: number; b: number; k: number; m: number; copies: number;
+  /** Точек на оборот: частой волне (большое k) нужно больше, иначе она ломаная. */
+  points?: number;
 }) {
-  const points = 120;
   const out: string[] = [];
   for (let copy = 0; copy < copies; copy += 1) {
     const turn = (copy / copies) * ((2 * Math.PI) / k);

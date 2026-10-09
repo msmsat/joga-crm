@@ -335,6 +335,7 @@ class CheckoutSessionResponse(BaseSchema):
     # открывать Stripe не нужно.
     url: Optional[str] = None
     paid: bool = False
+    checkout_id: Optional[int] = None
 
 
 async def _checkout_return_base(
@@ -579,6 +580,7 @@ async def create_checkout_session(
         presentation=presentation,
     )
 
+    checkout_id = checkout.id
     try:
         if needs_session:
             session_id, url = await stripe_connect.create_hosted_checkout_session(
@@ -592,8 +594,8 @@ async def create_checkout_session(
                     "package_id": str(package_id),
                     ATTEMPT_KEY: checkout.attempt_id,
                 },
-                success_url=f"{return_base}paysuccess",
-                cancel_url=f"{return_base}paycancel",
+                success_url=stripe_connect.checkout_return_url(return_base, "paysuccess", checkout_id),
+                cancel_url=stripe_connect.checkout_return_url(return_base, "paycancel", checkout_id),
                 application_fee_minor=checkout.application_fee,
                 # Квитанцию клиенту отправит сам Stripe от лица студии. Почты у
                 # клиента может не быть (вход по Telegram) — тогда просто без чека.
@@ -621,4 +623,4 @@ async def create_checkout_session(
         # (stripe_pay.reconcile_pending) — по client_reference_id.
         raise HTTPException(status_code=502, detail="Stripe отклонил запрос") from exc
 
-    return CheckoutSessionResponse(url=url)
+    return CheckoutSessionResponse(url=url, checkout_id=checkout_id)

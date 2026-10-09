@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "E-post og telefon tilhører den ansattes konto — de endres i personens egen profil.",
       "color": "Farge i timeplanen",
       "colorHint": "Med denne fargen vises kolonnen og øktene til den ansatte i timeplanen. En prikk markerer farger som andre allerede har.",
-      "colorTakenBy": "Brukes allerede av: {{names}}"
+      "colorTakenBy": "Brukes allerede av: {{names}}",
+      "bio": "Om meg — vises for kunder",
+      "bioPlaceholder": "For eksempel: Jeg har undervist i hatha yoga i 8 år og hjelper ryggen med å få tilbake bevegeligheten på en skånsom måte",
+      "bioHint": "Kundene ser teksten i mini-appen: i detaljene om en time og ved bestilling."
     },
     "role": {
       "heading": "Rolle og spesialisering",

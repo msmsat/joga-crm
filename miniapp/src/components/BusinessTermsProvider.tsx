@@ -1,4 +1,4 @@
-import { useEffect, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getStudioCatalog, type StudioCatalog } from '../api/studio';
 import type { Terminology } from '../api/hybrid.types';
@@ -15,12 +15,27 @@ function subscribe(callback: () => void) {
 }
 const snapshot = () => getSession()?.token ?? '';
 
+/** Тот же словарь — значит, и тот же объект: новый перерисовал бы всех, кто его читает. */
+const sameTerms = (a: Terminology | null | undefined, b: Terminology | null | undefined) =>
+  a != null && b != null && JSON.stringify(a) === JSON.stringify(b);
+
 export default function BusinessTermsProvider({ catalog, children }: { catalog: StudioCatalog | null; children: ReactNode }) {
   const { i18n } = useTranslation();
   const session = useSyncExternalStore(subscribe, snapshot);
   const studioId = catalog?.studio.id;
   const locale = i18n.language;
-  const [loaded, setLoaded] = useState<{ studioId: number; locale: string; session: string; config: Terminology } | null>(null);
+  // Каталог App уже несёт словарь — запрошен на том же языке. Он годится с
+  // первого кадра: без него до ответа собственного запроса (ещё один круг до
+  // сервера) все слова студии стояли «…» и потом подменялись — вторая
+  // перерисовка всего, что их читает, и прыжок текста на глазах.
+  const seed = catalog?.terminology?.locale === locale ? catalog.terminology : null;
+  const seedRef = useRef(seed);
+  useEffect(() => { seedRef.current = seed; }, [seed]);
+  // `base` — словарь каталога, поверх которого получен ответ. Пришёл новый
+  // каталог (покупка, вход) — его словарь свежее любой прошлой сверки.
+  const [loaded, setLoaded] = useState<{
+    studioId: number; locale: string; session: string; base: Terminology | null; config: Terminology;
+  } | null>(null);
   useEffect(() => {
     if (!studioId) return;
     let alive = true;
@@ -30,16 +45,30 @@ export default function BusinessTermsProvider({ catalog, children }: { catalog: 
       try {
         const data = await getStudioCatalog(locale);
         if (alive && request === sequence && snapshot() === session && data.studio.id === studioId) {
-          setLoaded({ studioId, locale, session, config: data.terminology });
+          // Сверка раз в минуту и на каждый возврат фокуса чаще всего
+          // приносит тот же словарь. Новый объект с тем же содержимым
+          // перерисовывал бы всё приложение — поэтому прежний остаётся.
+          setLoaded((prev) => {
+            const base = seedRef.current;
+            const current = prev?.studioId === studioId && prev.locale === locale && prev.session === session
+              && prev.base === base ? prev.config : base;
+            if (sameTerms(current, data.terminology)) {
+              return prev && prev.config === current ? prev : { studioId, locale, session, base, config: current! };
+            }
+            return { studioId, locale, session, base, config: data.terminology };
+          });
         }
       } catch { /* Keep the last verified configuration for this context. */ }
     };
     const visible = () => { if (document.visibilityState === 'visible') void refresh(); };
-    void refresh();
+    // Свежий словарь из каталога — сверять сразу нечего: тот же ответ сервера
+    // пришёл только что. Нет его (другой язык) — спрашиваем немедленно.
+    if (!seedRef.current) void refresh();
     const timer = window.setInterval(visible, 60_000);
     window.addEventListener('focus', visible);
     return () => { alive = false; clearInterval(timer); window.removeEventListener('focus', visible); };
   }, [studioId, locale, session, catalog?.booking_capabilities.booking_config_version]);
-  const valid = loaded?.studioId === studioId && loaded?.locale === locale && loaded?.session === session;
-  return <BusinessTermsContext.Provider value={valid ? loaded!.config : null}>{children}</BusinessTermsContext.Provider>;
+  const valid = loaded?.studioId === studioId && loaded?.locale === locale && loaded?.session === session
+    && loaded?.base === seed;
+  return <BusinessTermsContext.Provider value={valid ? loaded!.config : seed}>{children}</BusinessTermsContext.Provider>;
 }

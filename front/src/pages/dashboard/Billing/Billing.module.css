@@ -250,7 +250,8 @@
   from { opacity: 0; transform: translateY(7px); }
   to { opacity: 1; transform: none; }
 }
-.calcPriceNum, .calcTotalValue { animation: calcBump 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+/* Итог не подпрыгивает: его цифры крутятся барабаном (RollingAmount). */
+.calcPriceNum { animation: calcBump 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
 
 /* Полоса «сколько платите / сколько экономите»: доли едут шириной, поэтому
    разница между 3 и 12 месяцами читается движением, а не сравнением чисел.
@@ -290,16 +291,26 @@
    Кнопка стоит в панели цены — платят ровно за то, что в ней написано.
    Отдельной карточки с графиком платежей больше нет: список из «мар. 2026 —
    33 €» повторял одну и ту же сумму столько раз, сколько месяцев в периоде. */
-.calcCta { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-.calcTotal { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.calcCta {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* Обёртка итога с кнопкой нужна только телефону (там она — капсула над
+   доком); здесь её нет, и итог, сноска и кнопка стоят прежним порядком. */
+.calcBar { display: contents; }
+.calcTotal { order: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .calcTotalLabel { font-size: 12.5px; color: rgba(255, 255, 255, 0.4); }
 .calcTotalValue { font-size: 20px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+.calcTotalOff { display: none; }
 /* Две строки места всегда: текст под итогом зависит от налогового режима, и
    по-чешски «до НДС» умещается в строку, а «с НДС» — нет. Без запаса панель
    меняла высоту, едва приезжал расчёт, и дёргала за собой всю карточку. */
-.calcVat { margin: 6px 0 0; min-height: 3em; font-size: 11px; line-height: 1.5; color: rgba(255, 255, 255, 0.35); }
+.calcVat { order: 1; margin: 6px 0 0; min-height: 3em; font-size: 11px; line-height: 1.5; color: rgba(255, 255, 255, 0.35); }
 .calcPriceHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.calcPay { margin-top: 16px; }
+.calcPay { order: 2; flex: none; margin-top: 16px; }
 .calcNextPrice { margin: 12px 0 0; color: rgb(255 255 255 / 65%); font-size: 11px; line-height: 1.6; }
 .calcPromoSaving { color: var(--peach); }
 
@@ -324,7 +335,7 @@
 
 /* «Уменьшить движение» в системе — оставляем только смену цифр. */
 @media (prefers-reduced-motion: reduce) {
-  .calcPriceNum, .calcTotalValue, .calcCard[data-pending] .calcFill { animation: none; }
+  .calcPriceNum, .calcCard[data-pending] .calcFill { animation: none; }
   .calcMeterPaid, .calcMeterSaved,
   .teamGhost, .teamPerson, .teamFloor, .teamExtra,
   .calcRange::-webkit-slider-thumb { transition: none; }
@@ -486,36 +497,105 @@
     align-items: stretch !important;
   }
 
-  /* ── Итог и оплата: липкая полоса над нижней навигацией ──────────────────
-     Тот же узел, что стоит в панели цены на десктопе, — и остаётся тёмным:
-     полоса выглядит куском той же карточки, который просто не уехал вверх
-     вместе с прокруткой. z-index ниже .mnav (150) и модалок (1000): полоса
-     стоит НАД контентом, но под ними. */
+  /* ── Итог и оплата: второй этаж дока ─────────────────────────────────────
+     Не полоса во всю ширину, а капсула из материала нижней панели (токены
+     --nv-* приходят классом mnav-kin): та же ширина, та же высота 60px,
+     то же скругление и тот же зазор над доком, что у дока над краем экрана.
+     Справа — персиковая кнопка, как бусина текущего раздела этажом ниже;
+     когда открыт раздел у правого края, две бусины встают столбиком.
+     Прежняя тёмная плита с плоским дном висела над парящей капсулой куском
+     другого предмета — в светлой теме особенно.
+     z-index ниже .mnav (150): на входе капсула выезжает ИЗ-ЗА дока. */
   .blPane :global(.bl-pay-cta) {
     position: fixed;
-    left: 0;
-    right: 0;
+    left: var(--mnav-side);
+    right: var(--mnav-side);
     bottom: var(--mnav-safe);
     z-index: 140;
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    column-gap: 12px;
-    margin: 0;
-    padding: 11px var(--content-pad) 13px;
-    border-top: none;
-    border-radius: 18px 18px 0 0;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.28);
+    column-gap: 10px;
+    max-width: 480px;
+    height: var(--mnav-dock);
+    margin: 0 auto;
+    padding: 6px 6px 6px 20px;
+    /* Кнопка светит на материал вокруг себя, и свечение остаётся внутри
+       капсулы — как жар бусины в тёмном доке. */
+    overflow: hidden;
+    border-radius: 999px;
+    background:
+      radial-gradient(55% 150% at 100% 50%, var(--nv-bead-light), transparent 72%),
+      var(--nv-dock);
+    box-shadow: var(--nv-dock-shadow);
+    animation: calcBarRise 0.62s cubic-bezier(0.2, 0.9, 0.25, 1.04) 0.1s backwards;
   }
-  /* Итог — строкой слева, налоговая сноска под ним, кнопка справа во всю высоту. */
-  .calcTotal { grid-area: 1 / 1; justify-content: flex-start; gap: 8px; }
-  .calcVat { grid-area: 2 / 1; margin-top: 1px; min-height: 0; font-size: 10px; }
-  .calcPay { grid-area: 1 / 2 / 3 / 3; width: auto; margin: 0; max-width: 190px; }
-  /* Место под панель — только когда она есть: у процентной модели её не рисуют.
-     К этим 44px снизу добавляются 60px самой страницы (Billing.tsx) — вместе
-     они и есть высота полосы плюс воздух под последней карточкой. */
-  .blPane :global(.bl-plans:has(.bl-pay-cta)) { padding-bottom: 44px !important; }
+  @keyframes calcBarRise {
+    from { opacity: 0; transform: translateY(calc(100% + var(--mnav-gap))) scale(0.94); }
+  }
+
+  /* Сумма — крупно, под ней что за сумма и скидка. Строкой ниже, а не рядом
+     с суммой: на 360px рядом с кнопкой «Оплатить 3 мес.» им двоим тесно. */
+  .calcTotal {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    column-gap: 6px;
+    row-gap: 1px;
+    min-width: 0;
+  }
+  .calcTotalValue {
+    order: -1;
+    flex: 0 0 100%;
+    font-size: 21px;
+    letter-spacing: -0.5px;
+    color: var(--nv-title);
+  }
+  .calcTotalLabel {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--nv-sub);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .calcTotalOff {
+    display: inline-block;
+    flex: none;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--nv-gain-bg);
+    color: var(--nv-gain);
+    font-size: 10.5px;
+    font-weight: 800;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Заглушка, пока цены едут, — из того же материала: белое мерцание тёмной
+     карточки на фарфоре не видно. */
+  .calcCard[data-pending] .calcBar .calcFill {
+    background: linear-gradient(90deg, var(--nv-glass) 25%, var(--nv-press) 50%, var(--nv-glass) 75%) 0 0 / 200% 100%;
+  }
+  /* Кнопка — высотой с бусину дока (48px) и такой же капсулой. */
+  .calcPay { width: auto; max-width: 200px; margin: 0; --pay-radius: 999px; }
+
+  /* Сноска о налоге не едет в капсулу: в одну строку рядом с кнопкой она не
+     помещается, а две строки делали полосу выше дока. Читается в панели
+     последней строкой расчёта. */
+  .calcCta { margin-top: 14px; padding-top: 12px; }
+  .calcVat { margin-top: 0; min-height: 0; }
+
+  /* Место под капсулу — только когда она есть: у процентной модели её не
+     рисуют. Капсула 60px + зазор 10px над доком + воздух; поле .content под
+     сам док уже есть. Иначе ссылки на условия внизу уходили под неё. */
+  .blPane:has(:global(.bl-pay-cta)) { padding-bottom: 96px !important; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blPane :global(.bl-pay-cta) { animation: none; }
+  }
 
   /* ── Отзывы: рельс вбок вместо трёх карточек друг под другом ────────────── */
   .blPane :global(.bl-trust) { padding: 13px !important; border-radius: 14px !important; }

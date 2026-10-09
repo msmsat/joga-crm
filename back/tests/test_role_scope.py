@@ -130,6 +130,9 @@ async def _run():
             marked = await attend_reservation(reservation_id=ids["res_mine"], ctx=trainer, db=db)
             assert marked.status == "attended", marked
             # ...на чужом — 403 (get_scoped_lesson).
+            # A new HTTP request reloads the authenticated user. The preceding
+            # attendance may roll back a no-op settlement, expiring ORM state.
+            await db.refresh(a_user)
             try:
                 await attend_reservation(reservation_id=ids["res_other"], ctx=trainer, db=db)
                 raise AssertionError("тренер отметил приход на чужом занятии")

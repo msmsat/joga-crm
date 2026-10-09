@@ -12,6 +12,7 @@ from slowapi import _rate_limit_exceeded_handler
 from ratelimit import limiter
 from database import async_session_maker, engine
 from services.schema_readiness import ensure_database_schema
+from services import schedule_guard
 from services.legal_pages import register_legal_pages
 from services.alerts import alert_on_server_error, install as install_alerts
 from services.scenario_runner import start_scenario_loop
@@ -62,6 +63,7 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    schedule_guard.check_payment_lock_safety()
     await ensure_database_schema(engine)
     # Мастер в цвете перерыва, выходного или «времени студии» делает журнал
     # нечитаемым — такие цвета меняются на свободные (services/staff_colors.py).

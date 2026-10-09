@@ -101,7 +101,7 @@ export function ClientQuickCard({ clientId, onClose }: { clientId: number; onClo
               </div>
               <div className="cq-col">
                 <ClientNotesList notes={client.notes ?? []} zIndex={FLOOR + 100} />
-                <ClientHistory digest={digest ?? null} currency={currency} />
+                <ClientHistory digest={digest ?? null} currency={currency} zIndex={FLOOR + 100} />
                 {digest && digest.reviews.length > 0 && <ClientReviews reviews={digest.reviews} />}
               </div>
             </div>

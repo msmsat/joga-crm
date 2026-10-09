@@ -161,6 +161,8 @@ class StaffProfileResponse(BaseSchema):
     phone: Optional[str] = None
     role: str
     department: Optional[str] = None
+    # «О себе» — текст для клиентов мини-приложения.
+    bio: Optional[str] = None
     is_online: bool
     is_active: bool
     # То же, что в StaffListItem, и по той же причине: по одной роли не видно,

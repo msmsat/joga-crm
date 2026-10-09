@@ -82,6 +82,13 @@ export interface StudioService {
   duration_from: number;
   duration_to: number;
   color: string | null;
+  /** Описание владельца (CRM → Каталог → услуга); null — не написано. */
+  description: string | null;
+  /** Средняя оценка клиентов по всем занятиям направления. null — оценок
+   *  меньше трёх: порог держит сервер (catalog.MIN_RATINGS), экраны его не
+   *  решают. Тексты отзывов сервер не отдаёт — их писали «для тренера и студии». */
+  rating_avg: number | null;
+  rating_count: number;
 }
 
 export interface SubscriptionPackageInfo {
@@ -100,14 +107,21 @@ export interface SubscriptionPackageInfo {
 }
 
 /**
- * Мастер студии — справочник имён, а не витрина. Нужен там, где у приложения
- * есть номер сотрудника, а имени взять неоткуда: QR-код сотрудника ведёт на
- * `?staff=<id>`, и чип фильтра обязан назвать его даже в день, когда занятий
- * у него нет. `id` — тот же номер, что в `LessonResponse.teacher_id`.
+ * Мастер студии. Справочник имён там, где у приложения есть номер сотрудника,
+ * а имени взять неоткуда: QR-код сотрудника ведёт на `?staff=<id>`, и чип
+ * фильтра обязан назвать его даже в день, когда занятий у него нет. И витрина
+ * для «Подробнее» у занятия и в мастере записи: фото, должность, «О себе» и
+ * средняя оценка (порог — как у услуги). `id` — тот же номер, что в
+ * `LessonResponse.teacher_id`.
  */
 export interface StudioStaff {
   id: number;
   name: string;
+  photo_url: string | null;
+  department: string | null;
+  bio: string | null;
+  rating_avg: number | null;
+  rating_count: number;
 }
 
 export interface StudioCatalog {
@@ -134,5 +148,6 @@ export const getStudioCatalog = async (locale = i18n.language): Promise<StudioCa
     ...catalog,
     studio: { ...catalog.studio, logo_url: resolveImageUrl(catalog.studio.logo_url) ?? null },
     branches: catalog.branches.map(b => ({ ...b, photo_url: resolveImageUrl(b.photo_url) ?? null })),
+    staff: catalog.staff.map(s => ({ ...s, photo_url: resolveImageUrl(s.photo_url) ?? null })),
   };
 };

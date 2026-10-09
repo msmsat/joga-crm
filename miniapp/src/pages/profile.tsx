@@ -13,6 +13,7 @@ import LogoutButton from '../components/profile/LogoutButton';
 import { SectionLabel } from '../components/ui/SectionLabel';
 import { Sheet, SheetAction } from '../components/ui/Sheet';
 import { signOut } from '../lib/session';
+import { useLessonsVersion } from '../lib/revision';
 import { EmptyState } from '../components/ui/EmptyState';
 import { useTelegram } from '../hooks/useTelegram';
 import {
@@ -63,6 +64,7 @@ export default function Profile({
   const [profileError, setProfileError] = useState<string | null>(null);
   const [subError, setSubError] = useState<string | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
+  const lessonsVersion = useLessonsVersion();
 
   const [notifs, setNotifs] = useState(true);
   const [reminders, setReminders] = useState(false);
@@ -113,7 +115,7 @@ export default function Profile({
 
     fetchProfileData();
     fetchSubscriptionData();
-  }, [refreshTick, t]);
+  }, [refreshTick, t, lessonsVersion]);
 
   const toggleNotifs = async () => {
     const next = !notifs;
@@ -228,11 +230,8 @@ export default function Profile({
       >
         <div className="flex flex-col items-center pt-10 text-center dt:flex-row dt:items-center dt:gap-7 dt:pt-20 dt:text-left">
           <div className="relative flex h-[92px] w-[92px] shrink-0 items-center justify-center dt:h-[104px] dt:w-[104px]">
-            <motion.span
-              animate={{ scale: [1, 1.06, 1], opacity: [0.35, 0.15, 0.35] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute inset-0 rounded-full bg-brand/30"
-            />
+            {/* Пульс — CSS (`.pulse-halo`, index.css), не framer: см. там. */}
+            <span className="pulse-halo absolute inset-0 rounded-full bg-brand/30" />
             <span className="absolute inset-[7px] rounded-full ring-1 ring-brand/40" />
             <span className="relative flex h-[70px] w-[70px] items-center justify-center rounded-full bg-brand text-[26px] font-extrabold text-brand-foreground shadow-brand dt:h-[80px] dt:w-[80px] dt:text-[30px]">
               {avatarLetter}

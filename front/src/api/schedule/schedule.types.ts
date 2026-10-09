@@ -113,6 +113,8 @@ export interface BookedClient {
   // Оценка и отзыв клиента об этом занятии.
   rating: number | null
   review_text: string | null
+  // Снимки к отзыву (/static/reviews/…) — клиент прикладывает их в мини-приложении.
+  review_photos: string[]
   // «Кофе после занятия».
   coffee: boolean
   // Абонемент, с которого списано занятие.

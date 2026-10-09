@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { BookedClient } from '../../../../../api/schedule/schedule.types';
 import { errorMessage } from '../../../../../api/errorMessage';
-import { useToast } from '../../../../../components/ui/index';
+import { NotePhotos, useToast } from '../../../../../components/ui/index';
 import type { useJournalMutations } from '../../hooks/useJournalMutations';
 import { ReservationPayModal } from './ReservationPayModal';
 import { PaidSheet } from './PaidSheet';
@@ -175,6 +175,10 @@ export function BookedClients({ clients, canPay, removable, started, currency, p
                 что сняло деньги с цены (скидки, баллы, депозит, сертификат). */}
             <LessonBill funding={fundingOf(c, price)} currency={currency} />
             {c.review_text && <div className="lc-review">«{c.review_text}»</div>}
+            {/* Снимки, которые клиент приложил к отзыву в мини-приложении. */}
+            {c.review_photos?.length > 0 && (
+              <div className="lc-review-photos"><NotePhotos photos={c.review_photos} compact zIndex={9600} /></div>
+            )}
           </div>
         ))}
       </div>

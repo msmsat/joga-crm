@@ -43,6 +43,9 @@ class StudioMember(Base):
     photo_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     department: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    # «О себе» — текст для клиентов: мини-приложение показывает его в «Подробнее»
+    # у занятия и у мастера. Свой в каждой студии, как имя и должность.
+    bio: Mapped[Optional[str]] = mapped_column(String(600), nullable=True)
     salary: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     rate_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)

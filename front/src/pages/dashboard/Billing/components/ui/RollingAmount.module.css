@@ -1,0 +1,45 @@
+/* Строка — окно высотой --row, лента — десять таких строк столбиком; сдвиг
+   на --d строк ставит в окно нужную цифру (10% высоты ленты = одна строка). */
+.roll { --row: 1.15em; position: relative; display: inline-flex; }
+.face { display: inline-flex; }
+
+/* overflow: clip, а не hidden: hidden делает окно контейнером прокрутки, и его
+   базовая линия падает на нижний край — сумма на десктопе вставала бы выше
+   подписи, с которой выровнена по базовой линии. */
+.cell {
+  display: inline-block;
+  height: var(--row);
+  overflow: clip;
+  /* Ленты гаснут к краям окна — цифра въезжает из ниоткуда, а не из-под
+     срезанной кромки. Глифу места хватает: поле 14% меньше полуинтерлиньяжа. */
+  -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+}
+.reel {
+  display: flex;
+  flex-direction: column;
+  line-height: var(--row);
+  transform: translateY(calc(var(--d, 0) * -10%));
+  /* Лёгкий перелёт — барабан доезжает и садится, как механический счётчик.
+     Разряды трогаются по очереди слева направо, на 28 мс друг за другом. */
+  transition: transform 0.72s cubic-bezier(0.2, 1.12, 0.3, 1) calc(var(--i, 0) * 28ms);
+  will-change: transform;
+}
+/* Первое появление — ленты прокручиваются от нуля до суммы. */
+@starting-style {
+  .reel { transform: translateY(0); }
+}
+.sign { display: inline-block; line-height: var(--row); white-space: pre; }
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel { transition: none; }
+}

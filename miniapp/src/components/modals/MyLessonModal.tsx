@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
+import PaidBadge from '../payment/PaidBadge';
 import CoffeeStrip from '../mylessons/CoffeeStrip';
-import RatingStars from '../mylessons/RatingStars';
+import ReviewBlock from '../mylessons/review/ReviewBlock';
 import type {
   CoffeeState,
   PastLessonResponse,
@@ -22,15 +23,14 @@ type Props = {
   dateLabel: string;
   /** «Залишилось 2г 15хв» — тикает на странице, здесь только показываем. */
   countdown?: string;
-  rating?: number;
-  bouncing?: Record<string, boolean>;
-  onRate?: (star: number) => void;
   isProcessing?: boolean;
   onCancel?: () => void;
   /** HB-21: перенос индивидуальной записи. Кнопки нет, пока сервер не
    *  положил `reschedule` в allowed_actions этой брони. */
   onReschedule?: () => void;
   onCoffeeChange?: (state: CoffeeState) => void;
+  onCheckPayment?: () => void;
+  checkingPayment?: boolean;
 };
 
 /**
@@ -53,13 +53,12 @@ export default function MyLessonModal({
   title,
   dateLabel,
   countdown,
-  rating = 0,
-  bouncing = {},
-  onRate,
   isProcessing = false,
   onCancel,
   onReschedule,
   onCoffeeChange,
+  onCheckPayment,
+  checkingPayment = false,
 }: Props) {
   const { t } = useTranslation();
 
@@ -187,7 +186,7 @@ export default function MyLessonModal({
       {/* Долг за занятие и подарок студии — те же две метки, что на карточке
           списка. Без них лист занятия был единственным местом, где «Не
           оплачено» пропадало ровно тогда, когда человек открыл подробности. */}
-      {lesson && lesson.debt > 0 && (
+      {lesson && !lesson.paid_online && lesson.debt > 0 && (
         <div className="mt-3 rounded-[18px] bg-danger/12 px-4 py-3.5 text-[13px] font-bold text-danger">
           {t('mylessons.unpaid', { amount: lesson.debt_str })}
         </div>
@@ -212,19 +211,28 @@ export default function MyLessonModal({
         </div>
       )}
 
-      {isPast && lesson && onRate && (
-        <div className="mt-3 rounded-[18px] bg-background px-4 pb-2 pt-3.5">
-          <div className="text-[9.5px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
-            {t('mylessons.your_rating')}
-          </div>
-          <div className="mt-0.5">
-            <RatingStars
-              lessonId={lesson.reservation_id}
-              rating={rating}
-              bouncing={bouncing}
-              onRate={onRate}
-            />
-          </div>
+      {lesson?.paid_online && <PaidBadge detail />}
+      {lesson?.status === 'hold' && onCheckPayment && (
+        <div className="mt-3 rounded-[18px] bg-background p-4">
+          <p className="mb-3 text-[12px] leading-relaxed text-muted-foreground">{t('payment.sync.pending')}</p>
+          <SheetAction disabled={checkingPayment} onClick={onCheckPayment}>
+            {t(checkingPayment ? 'payment.sync.checking' : 'payment.sync.check')}
+          </SheetAction>
+        </div>
+      )}
+
+      {/* Впечатление — тот же блок, что в карточке списка, из той же записи
+          хранилища: оценка здесь сразу видна там, и наоборот. В листе сердца
+          крупнее, а текст записки — без обрезки. */}
+      {isPast && lesson && 'review_photos' in lesson && (
+        <div className="mt-4">
+          <ReviewBlock
+            variant="sheet"
+            reservationId={lesson.reservation_id}
+            canRate={lesson.allowed_actions.includes('rate')}
+            teacher={lesson.teacher}
+            color={lesson.color}
+          />
         </div>
       )}
     </Sheet>

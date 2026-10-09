@@ -822,6 +822,7 @@ export default function Staff() {
           // является и в форму как «своё» попасть не должно.
           ...ownServiceTerms(profile),
           photo_url: profile.photo_url ?? undefined,
+          bio: profile.bio ?? undefined,
           schedule: workingHoursToSchedule(weekHoursOf(profile)),
           branch_ids: profile.branches?.map(b => b.id) ?? [],
         } : null}
@@ -846,6 +847,9 @@ export default function Staff() {
               service_prices: servicePricesPayload(
                 updated.service_prices ?? {}, updated.service_durations ?? {}),
               photo_url: updated.photo_url,
+              // Только когда форма его показывала (мастер): сервер не трогает
+              // «О себе», если поля нет в запросе.
+              ...(updated.bio !== undefined ? { bio: updated.bio } : {}),
               color: updated.color || undefined,
               schedule: scheduleToWorkingHours(updated.schedule, profile?.week_working_hours),
               // Присылаем ТОЛЬКО когда список пришёл из формы: сервер отличает

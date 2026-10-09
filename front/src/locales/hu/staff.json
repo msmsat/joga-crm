@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "Az e-mail és a telefon a munkatárs fiókjához tartozik — a saját profiljában módosítja őket.",
       "color": "Szín a naplóban",
       "colorHint": "Ezzel a színnel jelenik meg a munkatárs oszlopa és órái a naplóban. Ponttal jelöljük a mások által már használt színeket.",
-      "colorTakenBy": "Már használja: {{names}}"
+      "colorTakenBy": "Már használja: {{names}}",
+      "bio": "Rólam — az ügyfelek látják",
+      "bioPlaceholder": "Például: 8 éve tanítok hatha jógát, és segítek kíméletesen visszaadni a hát mozgékonyságát",
+      "bioHint": "Az ügyfelek a miniappban látják ezt a szöveget: az óra részleteinél és foglaláskor."
     },
     "role": {
       "heading": "Szerepkör és szakterület",

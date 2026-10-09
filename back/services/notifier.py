@@ -619,6 +619,8 @@ def _values(context: dict[str, Any], lang: str, currency: str) -> dict[str, str]
     prev = context.get("revenue_prev")      # вчерашняя выручка в дневной сводке
     spots = context.get("spots") or ""      # места для кофе (c13) — необязательны
     description = context.get("description") or ""
+    comment = str(context.get("comment") or "").strip()
+    photo_count = context.get("photo_count") or 0
     count = context.get("count")
     role = str(context.get("role") or "")
     resource = str(context.get("resource") or "")
@@ -667,6 +669,12 @@ def _values(context: dict[str, Any], lang: str, currency: str) -> dict[str, str]
         "bday": (pick(notify_texts.BDAY_NAMED, lang).format(name=client_name) if client_name
                  else pick(notify_texts.BDAY_PLAIN, lang)),
         "spots": pick(notify_texts.SPOTS, lang).format(spots=spots) if spots else "",
+        # Отзыв к оценке (t7): слова клиента и сколько снимков он приложил.
+        "review": (
+            (pick(notify_texts.REVIEW_QUOTE, lang).format(text=comment) if comment else "")
+            + (pick(notify_texts.REVIEW_PHOTOS, lang).format(count=num(photo_count))
+               if photo_count else "")
+        ),
         # Что поменялось в занятии (c14) — строка на изменение.
         "changes": "\n".join(change_lines(context.get("changes"), lang, currency)) or "—",
         "description": f" {description}" if description else "",

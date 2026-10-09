@@ -7,13 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from models import Client, Studio
 from ratelimit import limiter
-from schemas.schedule.hybrid import (PublicAvailabilityQuery, AvailabilityRead, BookingQuoteRequest,
-    BookingRead, ClientConfirmRequest, ClientPaymentCodes, PaymentPreviewRead, PublicResourceStaffQuery,
+from schemas.schedule.hybrid import (PublicAvailabilityQuery, AvailabilityRead, BookingPayRead,
+    BookingPayRequest, BookingQuoteRequest, BookingRead, ClientConfirmRequest, ClientPaymentCodes, PaymentPreviewRead, PublicResourceStaffQuery,
     PublicServicesDayQuery, PublicStaffDayQuery, QuoteRead, RescheduleConfirmRequest, ResourceQuoteRequest,
     ResourceStaffMemberRead, ResourceStaffRead, ServiceDayRead, ServicesDayRead, StaffDayMemberRead,
     StaffDayRead)
-from services import (booking_checkout, booking_quotes as quotes, hybrid_http, resource_availability,
-                      resource_booking, resource_reschedule)
+from services import (booking_checkout, booking_payment, booking_quotes as quotes, hybrid_http,
+                      resource_availability, resource_booking, resource_reschedule)
 from services.notifier import _fmt_amount
 from .miniapp import Viewer, get_current_client, get_viewer
 
@@ -156,6 +156,29 @@ async def confirm(request: Request, body: ClientConfirmRequest, background: Back
 async def cancel(reservation_id: int, background: BackgroundTasks,
                  client: Client = Depends(get_current_client), db: AsyncSession = Depends(get_db)):
     return await hybrid_http.cancel(db, _actor(client), reservation_id, background)
+
+
+@router.post("/bookings/{reservation_id}/pay", response_model=BookingPayRead)
+@limiter.limit("10/minute")
+async def pay(request: Request, reservation_id: int, body: BookingPayRequest,
+              client: Client = Depends(get_current_client), db: AsyncSession = Depends(get_db)):
+    """«Оплатить» в «Моих занятиях»: ссылка на форму Stripe за свою бронь.
+
+    Два случая, оба решает `booking_payment.pay_link` — единственное место,
+    где заводится форма оплаты занятия: бронь держит место под незаконченную
+    оплату картой, либо человек выбрал «на месте» и передумал. Чужая бронь,
+    оплаченная, отменённая или уже начавшаяся — `stale`, а не ошибка: экран
+    перечитает занятия и покажет, как есть.
+    """
+    from .miniapp_users import _checkout_return_base
+
+    return_to = await _checkout_return_base(db, client, body.in_telegram, request)
+    payable = await booking_payment.pay_link(
+        db, studio_id=client.studio_id, reservation_id=reservation_id, client_id=client.id,
+        channel="telegram" if body.in_telegram else "web", return_to=return_to)
+    return BookingPayRead(
+        outcome=payable.outcome.value.lower(), url=payable.url, checkout_id=payable.checkout_id,
+        amount_str=_fmt_amount(payable.amount, payable.currency) if payable.amount else "")
 
 
 @router.post("/reservations/{reservation_id}/reschedule-quotes", response_model=QuoteRead, status_code=201)

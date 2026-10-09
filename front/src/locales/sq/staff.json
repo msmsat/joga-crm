@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "Email-i dhe telefoni i përkasin llogarisë së punonjësit — i ndryshon vetë te profili i tij.",
       "color": "Ngjyra në ditar",
       "colorHint": "Me këtë ngjyrë shfaqen në ditar kolona dhe seancat e punonjësit. Pika shënon ngjyrat që i kanë tashmë të tjerët.",
-      "colorTakenBy": "E përdor tashmë: {{names}}"
+      "colorTakenBy": "E përdor tashmë: {{names}}",
+      "bio": "Rreth meje — e shohin klientët",
+      "bioPlaceholder": "Për shembull: jap mësim hatha joga prej 8 vitesh dhe ndihmoj shpinën të rifitojë butësisht lëvizshmërinë",
+      "bioHint": "Klientët e shohin këtë tekst në mini aplikacion: te detajet e seancës dhe gjatë rezervimit."
     },
     "role": {
       "heading": "Roli dhe specializimi",

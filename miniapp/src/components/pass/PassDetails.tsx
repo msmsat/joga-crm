@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { SubscriptionPackageInfo } from '../../api/studio';
-import { money } from '../../lib/money';
+import { fractionOf, money } from '../../lib/money';
 import PriceRoll from './PriceRoll';
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -60,8 +60,13 @@ export default function PassDetails({ plan, prices, name, dir, currency, reduce 
           reduce={reduce}
           className="text-[length:var(--pass-price-size)] font-extrabold leading-none tabular-nums tracking-[-0.05em] text-card-foreground"
         />
-        {plan.discount_label && plan.price_str !== plan.final_price_str && (
-          <span className="text-[13px] font-semibold tabular-nums text-muted-foreground line-through">{plan.price_str}</span>
+        {/* Прежняя цена — тем же форматом, что и новая рядом: строка сервера
+            набрана языком студии, и на английском встала бы «€64» рядом с
+            зачёркнутым «70 €». */}
+        {plan.discount_label && plan.price !== plan.final_price && (
+          <span className="text-[13px] font-semibold tabular-nums text-muted-foreground line-through">
+            {money(plan.price, currency, i18n.language, fractionOf([plan.price, ...prices]))}
+          </span>
         )}
       </div>
 

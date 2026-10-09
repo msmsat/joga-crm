@@ -159,6 +159,9 @@ class Reservation(Base):
     status: Mapped[str] = mapped_column(String(20), default="active")
     rating: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     review_text: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    # Снимки к отзыву — пути из загрузки POST /global/bookings/{id}/review-photos
+    # (/static/reviews/…), до REVIEW_PHOTOS_MAX штук (schemas/photos.ReviewPhotos).
+    review_photos: Mapped[list] = mapped_column(JSON, default=list, server_default="[]", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
     booking_channel: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     # Абонемент, с которого списано занятие при записи. Отмена возвращает занятие

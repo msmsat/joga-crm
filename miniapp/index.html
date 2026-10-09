@@ -24,8 +24,29 @@
     <!-- SDK Telegram: обычный (не module) скрипт, поэтому выполняется ДО main.tsx —
          hooks/useTelegram.ts читает window.Telegram.WebApp на импорте модуля.
          Без него внутри Telegram нет ни initData, ни ready()/expand(): приложение
-         считает, что открыто в браузере, и просит вход по почте. -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+         считает, что открыто в браузере, и просит вход по почте.
+
+         Подключается ТОЛЬКО при запуске из Telegram. Скрипт блокирует разбор
+         страницы, пока не скачается с telegram.org (отдельное TLS-соединение,
+         ~120 КБ): замерено 0,56–1,26 с на холодном кэше, и всё это время
+         приложение не начинало даже грузиться. В браузере (ссылка студии из
+         Instagram, с сайта) он не делает ничего полезного — initData там нет,
+         а openLink вне Telegram — тот же window.open, — но держал каждое такое
+         открытие. Признак запуска — тот же, по которому его ищет сам SDK:
+         tgWebAppData в хэше адреса, а после перезагрузки внутри Telegram —
+         в sessionStorage, куда SDK сохраняет параметры запуска. -->
+    <script>
+      (function () {
+        // Хэш — «#tgWebAppData=…&…» или «#путь?tgWebAppData=…» (urlParseHashParams в SDK).
+        var launched = /[#?&]tgWebAppData=/.test(location.hash);
+        if (!launched) {
+          try {
+            launched = Boolean(JSON.parse(sessionStorage.getItem('__telegram__initParams') || '{}').tgWebAppData);
+          } catch (e) { /* хранилище закрыто — значит, и сохранённого запуска нет */ }
+        }
+        if (launched) document.write('<script src="https://telegram.org/js/telegram-web-app.js"><\/script>');
+      })();
+    </script>
     <!-- Шрифт Manrope подключён в src/main.tsx (@fontsource), а не отсюда с
          CDN Google: тот получал IP каждого клиента без согласия. -->
   </head>

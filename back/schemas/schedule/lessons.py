@@ -136,6 +136,7 @@ class BookedClient(BaseSchema):
     # Оценка и отзыв клиента об ЭТОМ занятии (мини-приложение после визита).
     rating: Optional[int] = None
     review_text: Optional[str] = None
+    review_photos: list[str] = []
     # «Кофе после занятия»: клиент согласился остаться с группой.
     coffee: bool = False
     # Название абонемента, с которого списано занятие.

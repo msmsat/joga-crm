@@ -1,4 +1,4 @@
-import { useEffect, useImperativeHandle, useState, type Ref } from 'react';
+import { startTransition, useEffect, useImperativeHandle, useState, type Ref } from 'react';
 import type { StudioCatalog } from '../../api/studio';
 import { useBookingWizard } from '../../hooks/useBookingWizard';
 import { useGroupWizard } from '../../hooks/useGroupWizard';
@@ -62,8 +62,12 @@ export function GroupWizardHost({ ref, catalog, onNeedAuth, onBuySubscription, e
   // листа: замерено, что сборка содержимого в момент тапа давала первый кадр
   // в 600+ мс при CPU ×4 (первая компиляция кода листа, первая укладка строк).
   // Переключается только закрытый лист: открытый так и доживёт до закрытия.
+  // Переходом (`startTransition`): сборка листа — сотни миллисекунд рендера при
+  // CPU ×4, и обычным обновлением это была одна длинная задача — тап по
+  // главной, пришедшийся на неё, ждал её конца. Переход React режет на куски
+  // и уступает касанию.
   const [warm, setWarm] = useState(false);
-  useEffect(() => (enabled ? whenIdle(() => setWarm(true), PREBUILD_DELAY_MS) : undefined), [enabled]);
+  useEffect(() => (enabled ? whenIdle(() => startTransition(() => setWarm(true)), PREBUILD_DELAY_MS) : undefined), [enabled]);
   const [keep, setKeep] = useState(false);
   if (warm && !keep && !flow.isOpen) setKeep(true);
 

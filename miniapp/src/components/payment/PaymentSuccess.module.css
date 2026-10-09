@@ -1,0 +1,179 @@
+.scrollLock :global(.app-scroll) { overflow: hidden !important; }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px;
+  background: rgb(18 18 18 / 52%);
+  animation: fade-in 280ms ease-out both;
+}
+
+/* Фарфоровая карточка с зерном — та же поверхность, что у подноса капсулы.
+   В миг удара печати карточка чуть проседает под ней (translate отдельно от
+   transform входа: два движения не перебивают друг друга). */
+.dialog {
+  position: relative;
+  width: min(100%, 468px);
+  flex-shrink: 0;
+  margin: auto;
+  padding: 24px 30px 20px;
+  overflow: hidden;
+  border-radius: 28px;
+  background: var(--grain-tray) 0 0 / 140px 140px, var(--v-card, #fff);
+  color: var(--v-foreground, #1a1a1a);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 6%) inset, 0 32px 96px -32px rgb(0 0 0 / 38%);
+  font-family: Manrope, sans-serif;
+  outline: none;
+  isolation: isolate;
+  animation:
+    dialog-in 620ms cubic-bezier(.16, 1, .3, 1) both,
+    thud 420ms var(--impact) cubic-bezier(.3, .7, .3, 1) both;
+}
+
+.header { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.studio { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.studioMark {
+  display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0;
+  overflow: hidden; border-radius: 50%; background: var(--v-background); font-size: 16px; font-weight: 800;
+}
+.studioMark img { width: 100%; height: 100%; object-fit: cover; }
+.studioName { font-size: 13px; font-weight: 750; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.close {
+  display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0;
+  margin-right: -10px; border: 0; border-radius: 50%; cursor: pointer;
+  background: transparent; color: var(--v-muted-foreground); transition: background 160ms;
+}
+.close:hover { background: var(--v-background); }
+.close svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.close:focus-visible, .continue:focus-visible { outline: 3px solid var(--v-foreground); outline-offset: 4px; }
+
+.message { position: relative; z-index: 1; text-align: center; }
+.message h1 { margin: 0; font-size: clamp(28px, 7.6vw, 34px); line-height: 1.12; font-weight: 800; letter-spacing: -.05em; }
+.message p {
+  max-width: 290px; margin: 12px auto 0; color: var(--v-muted-foreground); font-size: 14px; line-height: 1.65; font-weight: 500;
+  animation: rise 700ms calc(var(--impact) + 260ms) cubic-bezier(.16, 1, .3, 1) both;
+}
+
+/* Слово выходит из-под строки. Окно — с запасом по бокам и снизу: отрицательный
+   трекинг и хвост «р» не режутся кромкой. */
+.word {
+  display: inline-block;
+  overflow: hidden;
+  overflow: clip;
+  padding: .04em .14em .18em;
+  margin: -.04em -.14em -.18em;
+  vertical-align: top;
+}
+.word > span {
+  display: inline-block;
+  animation: word-rise 780ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+/* Чек — фарфоровый билет с перфорацией: вырезы по краям линии отрыва делит
+   пополам каждая часть своей маской, и они сходятся при любой высоте текста. */
+.ticket {
+  --notch: 9px;
+  --ticket-bg: var(--v-background, #fdfcfb);
+  position: relative;
+  z-index: 1;
+  margin-top: 26px;
+  animation: ticket-in 820ms calc(var(--impact) + 320ms) cubic-bezier(.16, 1, .3, 1) both;
+}
+.ticketMain,
+.ticketStub {
+  background: var(--grain-tray) 0 0 / 140px 140px, var(--ticket-bg);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.ticketMain {
+  padding: 22px 22px 20px;
+  border-radius: 18px 18px 0 0;
+  -webkit-mask-image:
+    radial-gradient(circle var(--notch) at 0 100%, transparent 96%, #000),
+    radial-gradient(circle var(--notch) at 100% 100%, transparent 96%, #000);
+  mask-image:
+    radial-gradient(circle var(--notch) at 0 100%, transparent 96%, #000),
+    radial-gradient(circle var(--notch) at 100% 100%, transparent 96%, #000);
+}
+.ticketStub {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding: 18px 22px 19px;
+  border-radius: 0 0 18px 18px;
+  -webkit-mask-image:
+    radial-gradient(circle var(--notch) at 0 0, transparent 96%, #000),
+    radial-gradient(circle var(--notch) at 100% 0, transparent 96%, #000);
+  mask-image:
+    radial-gradient(circle var(--notch) at 0 0, transparent 96%, #000),
+    radial-gradient(circle var(--notch) at 100% 0, transparent 96%, #000);
+}
+.ticketStub::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(var(--notch) + 7px);
+  right: calc(var(--notch) + 7px);
+  height: 1.5px;
+  background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--v-foreground) 17%, transparent) 0 5px, transparent 5px 10px);
+}
+
+.ticketTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.purchaseLabel { font-size: 12px; font-weight: 600; color: var(--v-muted-foreground); }
+.paid {
+  --paid-ink: #28533d;
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 8px; border-radius: 100px;
+  background: color-mix(in srgb, var(--v-success, #a3c9a8) 26%, transparent); color: var(--paid-ink);
+  font-size: 11px; font-weight: 750; line-height: 1.3; white-space: nowrap;
+}
+.paid span { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+:global(.dark) .paid { --paid-ink: #b8dfc2; background: color-mix(in srgb, var(--v-success, #a3c9a8) 14%, transparent); }
+.ticketMain h2 { margin: 12px 0 0; font-size: 19px; line-height: 1.35; font-weight: 800; letter-spacing: -.035em; overflow-wrap: anywhere; }
+.date { display: flex; align-items: center; gap: 7px; margin: 9px 0 0; font-size: 12px; line-height: 1.5; color: var(--v-muted-foreground); font-weight: 600; }
+.date svg { width: 16px; height: 16px; flex-shrink: 0; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.ticketStub > span { font-size: 12px; font-weight: 600; color: var(--v-muted-foreground); }
+.ticketStub strong { margin-left: auto; font-size: 26px; font-weight: 800; letter-spacing: -.045em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+.footer { position: relative; z-index: 1; margin-top: 22px; animation: rise 700ms calc(var(--impact) + 520ms) cubic-bezier(.16, 1, .3, 1) both; }
+.continue {
+  display: block; width: 100%; min-height: 54px; padding: 16px 22px; border: 0; border-radius: 16px;
+  background: var(--v-brand, #fcae91); color: var(--v-brand-foreground, #1a1a1a);
+  font: inherit; font-size: 14px; font-weight: 800; line-height: 1.4; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 26%), 0 6px 14px -9px color-mix(in srgb, var(--v-brand) 60%, transparent);
+  transition: transform 160ms, box-shadow 160ms;
+}
+.continue:active { transform: scale(.98); box-shadow: none; }
+.footer p { margin: 16px 0 0; text-align: center; color: var(--v-muted-foreground); font-size: 11px; line-height: 1.5; font-weight: 500; }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(26px) scale(.965); } to { opacity: 1; transform: none; } }
+@keyframes thud { 0% { translate: 0 0; } 24% { translate: 0 2.5px; } 100% { translate: 0 0; } }
+@keyframes word-rise { from { translate: 0 112%; rotate: 4deg; } to { translate: 0 0; rotate: 0deg; } }
+@keyframes rise { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+@keyframes ticket-in { from { opacity: 0; translate: 0 22px; } to { opacity: 1; translate: 0 0; } }
+
+@media (max-width: 520px) {
+  .overlay { padding: max(12px, env(safe-area-inset-top, 0px), var(--tg-safe-area-inset-top, 0px)) 12px max(12px, var(--safe-bottom, env(safe-area-inset-bottom, 0px))); }
+  .dialog { padding: 20px 22px 20px; border-radius: 24px; }
+}
+@media (max-height: 760px) {
+  .dialog { padding-top: 16px; padding-bottom: 16px; }
+  .ticket { margin-top: 20px; }
+  .ticketMain { padding: 18px 20px 16px; }
+  .ticketStub { padding: 14px 20px 15px; }
+  .footer { margin-top: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .overlay, .dialog, .message p, .word > span, .ticket, .footer { animation: none; }
+  .close, .continue { transition: none; }
+  .continue:active { transform: none; }
+}

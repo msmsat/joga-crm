@@ -119,6 +119,7 @@ export interface DigestVisit {
   status: 'attended' | 'missed' | 'cancelled' | 'upcoming'
   rating: number | null
   review_text: string | null
+  review_photos: string[]
   is_trial: boolean
   /** Как записан и чем закрыт — то же, что у строки записанного в Журнале. */
   booked_at: string | null

@@ -76,7 +76,7 @@ export function useLessonBooking({ messages, onNeedAuth, onBooked }: Options) {
   // Запись приложение не закрывает: человек остаётся на странице и уходит сам.
   // Раньше здесь стоял tg.close(), и он же был источником зависания — вне
   // Telegram метод ничего не делает, а ветка else не выполнялась никогда, потому
-  // что telegram-web-app.js создаёт window.Telegram.WebApp и в браузере тоже.
+  // что telegram-web-app.js создавал window.Telegram.WebApp и в браузере тоже.
   const closeSuccess = () => {
     setIsSuccessOpen(false);
     // Кофе — только если студия его включила: иначе цепочка кончается успехом.

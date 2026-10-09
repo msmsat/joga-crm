@@ -588,9 +588,13 @@ async def apply_paid(
                 # Бронь стала записью не от этих денег: место отдали иначе
                 # (студия подтвердила заявку, администратор отметил приход).
                 # Оставить оплату себе молча нельзя — это возврат.
+                # У оплаты долга то же следствие: долг закрыли у стойки, пока
+                # человек платил картой.
                 raise HTTPException(status_code=409, detail={
                     "code": "checkout.booking_already_granted",
-                    "message": "Место уже отдано без этой оплаты — нужен возврат",
+                    "message": ("Долг за занятие погашен без этой оплаты — нужен возврат"
+                                if booking_payment.settles_debt(checkout)
+                                else "Место уже отдано без этой оплаты — нужен возврат"),
                 })
             if settled is booking_payment.Settlement.MISMATCH:
                 raise HTTPException(status_code=400, detail={
@@ -819,6 +823,24 @@ def _attempt_of(session) -> str | None:
     return getattr(metadata, ATTEMPT_KEY, None) if metadata is not None else None
 
 
+async def fetch_pending_session(row, *, max_sessions: int | None = None):
+    """Recover a saved attempt's session; callers must end DB reads before I/O.
+
+    Scheduled recovery keeps the full scan; the client endpoint bounds it to
+    one page. Neither path creates a session or changes money at Stripe.
+    """
+    session_id = row.session_id
+    if not session_id and row.attempt_id:
+        options = {} if max_sessions is None else {"max_sessions": max_sessions}
+        session_id = await stripe_connect.find_session_by_reference(
+            row.account_id, row.attempt_id,
+            int(row.created_at.replace(tzinfo=timezone.utc).timestamp()), **options,
+        )
+    if not session_id:
+        return None, None
+    return session_id, await stripe_connect.fetch_session(session_id, row.account_id)
+
+
 async def reconcile_pending(db: AsyncSession) -> int:
     """Разобрать заявки, застрявшие в `pending`. Вернуть число проведённых оплат.
 
@@ -881,10 +903,7 @@ async def reconcile_pending(db: AsyncSession) -> int:
                         row.id,
                     )
                     continue
-                session_id = await stripe_connect.find_session_by_reference(
-                    row.account_id, row.attempt_id,
-                    int(row.created_at.replace(tzinfo=timezone.utc).timestamp()),
-                )
+                session_id, session = await fetch_pending_session(row)
                 if not session_id:
                     # Сессии нет — значит и денег не было: платить было негде.
                     # Ждём дольше её собственного срока жизни (сутки), потому что
@@ -911,7 +930,8 @@ async def reconcile_pending(db: AsyncSession) -> int:
                         )
                     continue
 
-            session = await stripe_connect.fetch_session(session_id, row.account_id)
+            else:
+                session_id, session = await fetch_pending_session(row)
 
             # Сессия обязана быть НАШЕЙ. Ссылку ставим мы при создании, и её
             # расхождение означает, что в заявке лежит чужой id — провести по

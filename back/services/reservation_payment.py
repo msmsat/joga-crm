@@ -110,13 +110,29 @@ async def reprice_debt(db: AsyncSession, studio_id: int, reservation: Reservatio
     Зовут скидка при записи (`discount_debt`) и отмена оплаты у стойки
     (services/reservation_refund): погашенный долг хранит уплаченное, а не
     выставленное, и снова открытым должен стать по цене брони."""
-    from routers.checkout.router import _get_client_package, _quote  # ponytail: локальный импорт разрывает цикл
-
     if reservation.debt_payment_id is None:
         return
     debt = await db.get(ClientPayment, reservation.debt_payment_id)
     if debt is None or debt.status != "pending":
         return
+    total = await owed(db, studio_id, reservation)
+    if total > 0:
+        debt.amount = total
+    else:
+        reservation.debt_payment_id = None
+        await db.delete(debt)
+
+
+async def owed(db: AsyncSession, studio_id: int, reservation: Reservation) -> int:
+    """Сколько касса возьмёт за долг брони сейчас — тем же ядром и с теми же
+    рычагами, с какими его проведёт оплата без указаний кассира: скидка
+    администратора, данная брони, и коды, которые бронь держит с записи.
+
+    Отсюда сумма формы Stripe, когда клиент гасит долг картой
+    (services/booking_payment.pay_link), — и вебхук пересчитает ровно её
+    (`perform_pay` сверит итог с `expected_total`). Только чтение."""
+    from routers.checkout.router import _get_client_package, _quote  # ponytail: локальный импорт разрывает цикл
+
     await db.flush()
     _client, package = await _get_client_package(
         db, studio_id, reservation.client_id, reservation.lesson_id, "lesson", reservation_id=reservation.id,
@@ -126,11 +142,7 @@ async def reprice_debt(db: AsyncSession, studio_id: int, reservation: Reservatio
     quote = await _quote(db, studio_id, reservation.client_id, package, "lesson", codes.promo_code,
                          codes.use_bonuses, codes.use_deposit, codes.certificate_code,
                          manual_percent=reservation.manual_discount_percent, hold_owner=reservation.id)
-    if quote.total_price > 0:
-        debt.amount = quote.total_price
-    else:
-        reservation.debt_payment_id = None
-        await db.delete(debt)
+    return quote.total_price
 
 
 def forget_first_lesson(reservation: Reservation) -> None:

@@ -32,6 +32,7 @@ from typing import Optional, Sequence
 
 from fastapi import HTTPException
 from sqlalchemy import or_, select, text
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import Lesson, Studio, StaffBusyInterval, StudioMember, Service, User
@@ -40,12 +41,34 @@ from services import booking_time
 from services import lesson_time, resource_hours, studio_time
 
 
+# NO KEY UPDATE serializes booking/configuration writers while permitting the
+# KEY SHARE lock PostgreSQL takes for child-table foreign keys (outbox/checkout).
+_STUDIO_LOCK = select(Studio).with_for_update(key_share=True)
+
+
+def check_payment_lock_safety() -> None:
+    """Fail startup offline if the actual booking lock can recreate the incident.
+
+    Compile the same statement lock_studio executes; never create test rows or
+    contact Stripe from production startup. The PostgreSQL regression tests
+    additionally exercise the real concurrent transactions before deployment.
+    """
+    sql = str(_STUDIO_LOCK.compile(dialect=postgresql.dialect())).strip()
+    if not sql.endswith(" FOR NO KEY UPDATE"):
+        raise RuntimeError(
+            "Payment lock safety check failed: studio writes must use FOR NO KEY UPDATE. "
+            "Startup blocked to prevent checkout/notification deadlocks. "
+            "Run tests/test_payment_lock_incident.py and tests/test_schedule_guard.py "
+            "on an isolated PostgreSQL before deployment."
+        )
+
+
 async def lock_studio(db: AsyncSession, studio_id: int) -> Studio:
-    """`SELECT studios FOR UPDATE` — держит строку до commit/rollback
+    """`SELECT studios FOR NO KEY UPDATE` — держит строку до commit/rollback
     вызывающего. 404, если студии нет (тот же ответ, что у любого чужого id
     в проекте — не подсказывать существование чужой строки)."""
     studio = (await db.execute(
-        select(Studio).where(Studio.id == studio_id).with_for_update().execution_options(populate_existing=True)
+        _STUDIO_LOCK.where(Studio.id == studio_id).execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if studio is None:
         raise HTTPException(status_code=404, detail="Студия не найдена")

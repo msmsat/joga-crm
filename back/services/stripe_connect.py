@@ -259,6 +259,12 @@ async def create_hosted_checkout_session(
     return session.id, session.url
 
 
+def checkout_return_url(base: str, outcome: str, checkout_id: int) -> str:
+    """Identify the exact web checkout without changing Telegram startapp data."""
+    suffix = f"&checkout_id={checkout_id}" if base.endswith("?pay=") else ""
+    return f"{base}{outcome}{suffix}"
+
+
 async def fetch_session(session_id: str, account_id: str):
     """Сессия Checkout целиком — для сверки потерянных оплат.
 
@@ -278,6 +284,7 @@ _SCAN_LIMIT = 10_000
 
 async def find_session_by_reference(
     account_id: str, reference: str, created_after: int,
+    *, max_sessions: int = _SCAN_LIMIT,
 ) -> str | None:
     """id сессии по НАШЕМУ `client_reference_id`, или None. Спасение осиротевших.
 
@@ -306,7 +313,7 @@ async def find_session_by_reference(
             seen += 1
             if getattr(session, "client_reference_id", None) == reference:
                 return session.id, seen, False
-            if seen >= _SCAN_LIMIT:
+            if seen >= max_sessions:
                 return None, seen, True
         return None, seen, False
 

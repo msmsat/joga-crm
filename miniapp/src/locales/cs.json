@@ -78,6 +78,30 @@
   "payment": {
     "action": {
       "buy_subscription": "Platba za předplatné: {{item}}"
+    },
+    "success": {
+      "title": "Platba proběhla",
+      "booking_hint": "Máte rezervaci. Těšíme se na vás ve studiu!",
+      "subscription_hint": "Vaše permanentka byla přidána do profilu.",
+      "service": "Služba",
+      "subscription": "Permanentka",
+      "paid": "Zaplaceno",
+      "amount": "Zaplacená částka",
+      "bookings": "Moje lekce",
+      "profile": "Přejít do profilu",
+      "thanks": "Děkujeme, že si děláte čas na sebe.",
+      "close": "Zavřít potvrzení platby"
+    },
+    "sync": {
+      "paid": "Zaplaceno online",
+      "confirmed": "Platba přijata a potvrzena",
+      "check": "Ověřit platbu",
+      "checking": "Ověřujeme platbu…",
+      "pending": "Čekáme na potvrzení platby. Pokud jste již zaplatili, ověřte stav.",
+      "unavailable": "Platbu se nyní nepodařilo ověřit. Zkuste to prosím znovu za několik sekund.",
+      "awaiting": "Čekáme na přijetí platby",
+      "verifying": "Stripe potvrzuje vaši platbu. Jakmile bude přijata, vše se automaticky aktualizuje.",
+      "close": "Skrýt ověření platby"
     }
   },
   "profile": {
@@ -147,7 +171,33 @@
     "awaiting_confirmation": "Čeká na potvrzení",
     "unpaid": "Nezaplaceno · {{amount}}",
     "trial": "Zkušební lekce",
-    "reschedule": "Přesunout"
+    "reschedule": "Přesunout",
+    "review": {
+      "ask": "Jak to šlo?",
+      "levels": {
+        "1": "Nelíbilo se",
+        "2": "Nic moc",
+        "3": "Ujde to",
+        "4": "Dobré",
+        "5": "Nadšení"
+      },
+      "prompt_low": "Co se nepovedlo? Studio to vyřeší",
+      "prompt_mid": "Co by lekci zlepšilo?",
+      "prompt_high": "Co vám nejvíc utkvělo?",
+      "field": "Vaše hodnocení",
+      "add_photo": "Přidat fotku",
+      "photo": "Foto",
+      "remove_photo": "Odebrat fotku",
+      "open_photo": "Fotka {{index}} z {{count}}",
+      "close": "Zavřít",
+      "send": "Odeslat hodnocení",
+      "sent": "Odesláno — děkujeme!",
+      "photo_error": "Fotku se nepodařilo nahrát. Zkuste to znovu.",
+      "rate_label": "Hodnocení lekce",
+      "to": "Pro {{name}} a studio",
+      "to_studio": "Pro studio",
+      "edit_short": "Upravit"
+    }
   },
   "schedule": {
     "title": "Rozvrh",
@@ -686,5 +736,20 @@
     "view": "Prohlédnout předplatná",
     "choose_hint": "Vyberte si balíček lekcí ve svém tempu",
     "details": "Zbývající lekce · Zobrazit podrobnosti"
+  },
+  "about": {
+    "more": "Více",
+    "less": "Méně",
+    "more_about": "Více o {{name}}",
+    "rating_aria": "Hodnocení {{avg}} z 5",
+    "ratings_one": "{{count}} hodnocení",
+    "ratings_few": "{{count}} hodnocení",
+    "ratings_many": "{{count}} hodnocení",
+    "ratings_other": "{{count}} hodnocení",
+    "average": "Průměrné hodnocení",
+    "leads": "Vede",
+    "book": "Rezervovat na {{time}}",
+    "my_booking": "Moje rezervace",
+    "view": "Otevřít"
   }
 }

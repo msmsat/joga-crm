@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { LessonResponse } from '../../api/lessons';
 import type { GroupWizardFlow } from '../../hooks/useGroupWizard';
@@ -8,7 +8,16 @@ import { serviceIdsOf, teacherIdsOf, timesOf } from '../../lib/groupWizard';
 import { Initials } from '../home/PickSheet';
 import WizardRow, { RowSkeleton, WizardEmpty } from './WizardRow';
 
-type Option = { id: number; title: string; lead: ReactNode; aside?: string; match: (lesson: LessonResponse) => boolean };
+type Option = {
+  id: number;
+  title: string;
+  lead: ReactNode;
+  aside?: string;
+  /** Средняя оценка и текст «Подробнее» — из каталога студии. */
+  rating?: number | null;
+  more?: string | null;
+  match: (lesson: LessonResponse) => boolean;
+};
 
 /** Что уже выбрано, — строкой над списком: «Занятия в 18:00 · сегодня». */
 function Context({ parts }: { parts: (string | null | undefined)[] }) {
@@ -56,7 +65,7 @@ function ChoiceList({ flow, options, available, active, onPick, emptyTitle }: {
           onAction={() => flow.goTo('time')}
         />
       ) : (
-        <div className="grid gap-2.5 @xl:grid-cols-2">
+        <div className="grid items-start gap-2.5 @xl:grid-cols-2">
           {list.map((option, index) => (
             <WizardRow
               key={option.id}
@@ -65,6 +74,8 @@ function ChoiceList({ flow, options, available, active, onPick, emptyTitle }: {
               lead={option.lead}
               title={option.title}
               hint={option.times.length > 0 ? option.times.map(hhmm).join(' · ') : t('groupWizard.notThisDay')}
+              rating={option.rating}
+              more={option.more}
               aside={option.aside}
               onClick={() => onPick(option.id)}
             />
@@ -82,6 +93,8 @@ export function GroupServices({ flow }: { flow: GroupWizardFlow }) {
     id: service.id,
     title: t(`lesson.name.${service.name}`, { defaultValue: service.name }),
     aside: service.price_str,
+    rating: service.rating_avg,
+    more: service.description,
     lead: (
       <span className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-brand/12 text-brand">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
@@ -103,13 +116,23 @@ export function GroupServices({ flow }: { flow: GroupWizardFlow }) {
   );
 }
 
+/** Фото тренера; нет его или не загрузилось — инициалы. */
+function Photo({ url, name }: { url: string | null; name: string }) {
+  const [broken, setBroken] = useState(false);
+  return url && !broken
+    ? <img src={url} alt="" onError={() => setBroken(true)} className="h-12 w-12 rounded-full object-cover" />
+    : <Initials text={name} />;
+}
+
 /** Раздел «Мастер»: тренеры студии. */
 export function GroupTeachers({ flow }: { flow: GroupWizardFlow }) {
   const { t } = useTranslation();
   const options: Option[] = flow.staff.map((member) => ({
     id: member.id,
     title: member.name,
-    lead: <Initials text={member.name} />,
+    rating: member.rating_avg,
+    more: member.bio,
+    lead: <Photo url={member.photo_url} name={member.name} />,
     match: (lesson) => lesson.teacher_id === member.id,
   }));
   return (

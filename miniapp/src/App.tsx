@@ -1,11 +1,11 @@
 import BusinessTermsProvider from './components/BusinessTermsProvider';
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, memo, startTransition } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import Home from './pages/home';
-import MyLessons from './pages/mylessons';
-import Profile from './pages/profile';
-import Club from './pages/club';
+import HomePage from './pages/home';
+import MyLessonsPage from './pages/mylessons';
+import ProfilePage from './pages/profile';
+import ClubPage from './pages/club';
 import BottomNav from './components/BottomNav';
 import DesktopNav from './components/DesktopNav';
 import AmbientBackdrop from './components/home/AmbientBackdrop';
@@ -22,6 +22,11 @@ import {
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession, reconcileSession, isSignedOut } from './lib/session';
 import { startPresence } from './lib/presence';
+import { whenIdle } from './lib/idle';
+import PaymentSuccess from './components/payment/PaymentSuccess';
+import PaymentWaiting from './components/payment/PaymentWaiting';
+import { usePaymentReconciliation } from './hooks/usePaymentReconciliation';
+import { dismissPaymentSuccess } from './lib/paymentSync';
 import './App.css';
 
 /**
@@ -51,6 +56,26 @@ const DEFAULT_TAB = 'home';
  */
 const deepLinkTab = (link: DeepLink): string | undefined =>
   link.packageId != null ? 'prof' : undefined;
+
+/**
+ * Разделы под `memo`. Открытые разделы живут в DOM все сразу (`visited`), и
+ * без этого тап по меню перерисовывал каждый из них целиком — главную вместе с
+ * собранными листами мастеров, профиль, клуб, — хотя у них не поменялось
+ * ничего, кроме `hidden` у обёртки. Замерено при CPU ×4: обработчик тапа
+ * 110–210 мс, из них ~120 мс i18next и ~200 мс проекции framer (`layout` и
+ * `layoutId` в перерисованных разделах будят замер всего дерева). Поэтому
+ * все колбэки, которые App отдаёт разделам, — постоянные (`useCallback`).
+ */
+const Home = memo(HomePage);
+const MyLessons = memo(MyLessonsPage);
+const Profile = memo(ProfilePage);
+const Club = memo(ClubPage);
+
+/** Первый раздел собирается заранее не раньше этого — после анимаций входа
+ *  главной и сборки её листов (WizardHosts 1.8 с, BuyModalHost 2.6 с). */
+const TAB_PREBUILD_DELAY_MS = 3000;
+/** Следующий — через столько после предыдущего: по разделу на простой. */
+const TAB_PREBUILD_GAP_MS = 600;
 
 export default function App() {
   const { t } = useTranslation();
@@ -117,6 +142,15 @@ export default function App() {
    * реферальной ссылке, персональный оффер), а одноразовая скидка гаснет в
    * момент оплаты — устаревший снимок обещал бы её второй раз. */
   const loadCatalog = useCallback(async () => {
+    // Лояльность — тем же заходом, что и каталог, а не после него: от каталога
+    // она не зависит (студию запросу называет ссылка или токен, api/client.ts),
+    // а очередью холодный запуск ждал два круга до сервера вместо одного.
+    // Ошибка заворачивается сразу: каталог может увести в перезагрузку раньше,
+    // чем до ответа лояльности дойдёт очередь.
+    const loyaltyRequest = getLoyalty().then(
+      (value) => ({ value }),
+      (error: unknown) => ({ error }),
+    );
     try {
       const data = await getStudioCatalog();
       // Витрина пришла от студии из ссылки — теперь к ней же приводим сессию:
@@ -144,18 +178,21 @@ export default function App() {
       console.error('Не вдалося завантажити дані студії:', error);
     }
 
-    // Отдельным запросом и без await в общей цепочке: упавшая лояльность не
-    // должна мешать войти в кабинет — раздел просто не появится в меню.
-    try {
-      setLoyalty(await getLoyalty());
-    } catch (error) {
-      console.error('Не вдалося завантажити програму лояльності:', error);
-    }
+    // Отдельным результатом: упавшая лояльность не должна мешать войти в
+    // кабинет — раздел просто не появится в меню.
+    const loyaltyResult = await loyaltyRequest;
+    if ('value' in loyaltyResult) setLoyalty(loyaltyResult.value);
+    else console.error('Не вдалося завантажити програму лояльності:', loyaltyResult.error);
 
     setIsLoading(false);
   }, [entry.studioRef]);
 
   // Счётчик «кто сейчас в мини-приложении» для панели платформы.
+  const payments = usePaymentReconciliation(Boolean(user && catalog), tg?.initData ? tg.initDataUnsafe?.start_param : undefined);
+  useEffect(() => {
+    if (payments.success) void Promise.resolve().then(loadCatalog);
+  }, [payments.success, loadCatalog]);
+
   useEffect(() => startPresence(), []);
 
   useEffect(() => {
@@ -217,7 +254,32 @@ export default function App() {
     boot();
   }, [tg, entry, loadCatalog]);
 
-  const switchTab = (tab: string) => {
+  // Разделы кабинета собираются заранее — по одному, в простое и переходом
+  // (`startTransition`: React режет рендер на куски и уступает касаниям).
+  // Первое открытие раздела было его сборкой в кадре тапа — 135–200 мс при
+  // CPU ×4, а следом запрос к серверу и скелет вместо данных. Собранный
+  // заранее раздел открывается как повторный: показать готовое. Только с
+  // сессией — гостю кабинет закрыт (`authGate`), и скрытый профиль запомнил
+  // бы гостевой 401.
+  const prebuilt = useRef(false);
+  useEffect(() => {
+    if (!user || isLoading) return;
+    const next = visibleNavItems(Boolean(loyalty?.enabled)).find((item) => !visited.includes(item.id));
+    if (!next) return;
+    let cancelIdle = () => {};
+    const timer = window.setTimeout(() => {
+      cancelIdle = whenIdle(() => {
+        prebuilt.current = true;
+        startTransition(() => setVisited((tabs) => (tabs.includes(next.id) ? tabs : [...tabs, next.id])));
+      }, TAB_PREBUILD_GAP_MS);
+    }, prebuilt.current ? TAB_PREBUILD_GAP_MS : TAB_PREBUILD_DELAY_MS);
+    return () => {
+      window.clearTimeout(timer);
+      cancelIdle();
+    };
+  }, [user, isLoading, loyalty, visited]);
+
+  const switchTab = useCallback((tab: string) => {
     if (tg) tg.HapticFeedback.impactOccurred('light');
     setActiveTab(tab);
     // Новый раздел иначе открывался бы на той же высоте, где бросили прошлый.
@@ -226,7 +288,7 @@ export default function App() {
     // ветвление по ширине окна здесь было бы дороже.
     window.scrollTo({ top: 0 });
     scroller.current?.scrollTo({ top: 0 });
-  };
+  }, [tg]);
 
   /**
    * «Использовать сертификат» из Клуба: переносит клиента в покупку абонемента
@@ -236,20 +298,22 @@ export default function App() {
    * из одного раздела в другой руками клиент не должен, а сама форма оплаты
    * принадлежит профилю (BuyModal), не Клубу.
    */
-  const useCertificate = (code: string) => {
+  const useCertificate = useCallback((code: string) => {
     setPendingCertificate(code);
     switchTab('prof');
-  };
+  }, [switchTab]);
 
   /** «Нужен абонемент» из записи: открыть покупку в профиле. */
-  const goBuySubscription = () => {
+  const goBuySubscription = useCallback(() => {
     setWantsSubscription(true);
     switchTab('prof');
-  };
+  }, [switchTab]);
 
   /** Бронь гостя упёрлась во вход. Продолжение кладём в состояние — обёртка
    *  обязательна, иначе setState принял бы функцию за апдейтер. */
-  const requireAuth = (retry: () => void) => setPendingBooking(() => retry);
+  const requireAuth = useCallback((retry: () => void) => setPendingBooking(() => retry), []);
+  const clearPendingCertificate = useCallback(() => setPendingCertificate(null), []);
+  const clearBuyIntent = useCallback(() => setWantsSubscription(false), []);
 
   /**
    * QR-код студии (занятие, услуга, сотрудник) ведёт в мастер записи на главной
@@ -259,6 +323,7 @@ export default function App() {
    * открыться поверх главной сразу, без кадра другого раздела под ним.
    */
   const [linkFocus, setLinkFocus] = useState<WizardFocus | null | undefined>(undefined);
+  const clearLinkFocus = useCallback(() => setLinkFocus(null), []);
   if (linkFocus === undefined && catalog) {
     const focus = wizardFocusOf(
       deepLink,
@@ -273,11 +338,10 @@ export default function App() {
   if (isLoading) {
     return (
       <div className="flex h-[100dvh] flex-col items-center justify-center gap-5 bg-background">
-        <motion.span
-          animate={{ scale: [1, 1.18, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-          className="h-3 w-3 rounded-full bg-brand"
-        />
+        {/* CSS, а не framer: лоадер стоит ровно тогда, когда главный поток
+            занят разбором бандла и сборкой приложения, — JS-пульс на нём
+            замирал бы. `.pulse-boot` идёт на видеокарте (index.css). */}
+        <span className="pulse-boot h-3 w-3 rounded-full bg-brand" />
         <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
           {t('common.preparing')}
         </span>
@@ -372,7 +436,7 @@ export default function App() {
         onCatalogRefresh={loadCatalog}
         onNeedAuth={requireAuth}
         focus={linkFocus ?? null}
-        onFocusUsed={() => setLinkFocus(null)}
+        onFocusUsed={clearLinkFocus}
       />
     ),
     my: <MyLessons catalog={catalog} />,
@@ -381,9 +445,9 @@ export default function App() {
         catalog={catalog}
         onCatalogRefresh={loadCatalog}
         pendingCertificate={pendingCertificate}
-        onPendingCertificateUsed={() => setPendingCertificate(null)}
+        onPendingCertificateUsed={clearPendingCertificate}
         openBuy={wantsSubscription}
-        onBuyIntentUsed={() => setWantsSubscription(false)}
+        onBuyIntentUsed={clearBuyIntent}
         initialPackageId={deepLink.packageId}
       />
     ),
@@ -467,6 +531,20 @@ export default function App() {
       {/* Снаружи `.app-scroll` намеренно: внутри прокрутки капсула уехала бы
           вверх вместе с содержимым, а на раме она стоит неподвижно. */}
       {!isDesktop && <BottomNav active={screenTab} onSelect={switchTab} items={navItems} />}
+
+      {payments.success && user && (
+        <PaymentSuccess
+          key={payments.success.id}
+          payment={payments.success}
+          studio={catalog?.studio}
+          onClose={dismissPaymentSuccess}
+          onContinue={() => {
+            switchTab(payments.success?.kind === 'subscription' ? 'prof' : 'my');
+            dismissPaymentSuccess();
+          }}
+        />
+      )}
+      {payments.awaiting && !payments.success && user && <PaymentWaiting busy={payments.busy} error={payments.error} />}
 
       {/* Вход — поверх кабинета, а не вместо него: под ним стоит открытый лист
           брони с выбранным занятием и ковриком, и размонтировать его значит

@@ -183,7 +183,7 @@ const STATUS_TONE: Record<DigestVisit['status'], string> = {
   attended: 'is-paid', missed: 'is-debt', cancelled: '', upcoming: 'is-peach',
 };
 
-export function ClientHistory({ digest, currency }: { digest: ClientDigest | null; currency?: string }) {
+export function ClientHistory({ digest, currency, zIndex }: { digest: ClientDigest | null; currency?: string; zIndex: number }) {
   const { t } = useTranslation('journal');
   const date = useDate();
   if (!digest) return <div className="cq-skeleton"><div /></div>;
@@ -216,6 +216,9 @@ export function ClientHistory({ digest, currency }: { digest: ClientDigest | nul
                     }} />
                   )}
                   {v.review_text && <div className="cq-visit-review">«{v.review_text}»</div>}
+                  {v.review_photos?.length > 0 && (
+                    <div className="cq-visit-photos"><NotePhotos photos={v.review_photos} compact zIndex={zIndex} /></div>
+                  )}
                 </div>
                 {v.rating != null
                   ? <span className="cq-visit-side is-star">★ {v.rating}</span>

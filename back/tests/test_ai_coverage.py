@@ -26,6 +26,8 @@ _METHODS = {"POST", "PATCH", "PUT", "DELETE"}
 # Маршрут → почему у него НЕТ инструмента. Причина обязательна: строка «нет
 # инструмента» без объяснения через полгода неотличима от забывчивости.
 UI_ONLY: dict[str, str] = {
+    "POST /global/checkout/sync": "сверка собственных оплат клиента с Stripe после возврата в мини-приложение; "
+                                  "новую оплату не создаёт, ассистенту чужие клиентские сессии недоступны",
     # Quotes are bound to the authenticated human and expire after five minutes.
     # Existing AI event commands remain on their own guarded domain entry points.
     "POST /global/booking-quotes": "персональный предпросмотр условий самим клиентом",
@@ -33,7 +35,9 @@ UI_ONLY: dict[str, str] = {
                                                               "чтение, а не действие",
     "POST /global/bookings": "клиент подтверждает показанные ему условия quote",
     "POST /global/bookings/{reservation_id}/cancel": "клиент отменяет выбранную конкретную бронь",
+    "POST /global/bookings/{reservation_id}/pay": "клиент сам открывает форму оплаты своей брони — деньги только руками",
     "POST /global/bookings/{reservation_id}/rate": "оценка конкретной брони — мнение клиента",
+    "POST /global/bookings/{reservation_id}/review-photos": "загрузка файла — снимок к отзыву клиента",
     "POST /global/reservations/{reservation_id}/reschedule-quotes": "клиент выбирает новый слот в календаре",
     "POST /global/reservations/{reservation_id}/reschedule": "клиент подтверждает новые условия переноса",
     "POST /schedule/booking-quotes": "персональный quote привязан к сотруднику, открывшему форму записи",

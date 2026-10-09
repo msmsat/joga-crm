@@ -89,6 +89,8 @@ interface LessonPayment {
   /** 0 — покрыто абонементом, подарено или уже оплачено. */
   debt: number;
   debt_str: string;
+  /** Confirmed online payment; zero debt alone is not proof of payment. */
+  paid_online?: boolean;
 }
 
 // Схема для будущих занятий (наследует всё + добавляет номер коврика)
@@ -101,6 +103,10 @@ export interface UpcomingLessonResponse extends LessonResponse, LessonPayment {
 export interface PastLessonResponse extends LessonResponse, LessonPayment {
   spot_number: number;
   rating: number | null; // Может быть числом (1-5) или null, если еще не оценили
+  /** Слова к оценке — клиент видит их в карточке, студия — в Журнале. */
+  review_text: string | null;
+  /** Снимки к отзыву: пути /static/reviews/…, не больше REVIEW_PHOTOS_MAX. */
+  review_photos: string[];
 }
 
 // Финальная сборка ответа для страницы "Мои занятия"

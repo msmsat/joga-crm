@@ -119,11 +119,7 @@ export default function NextLessonCard({
         {left && (
           <div className="mt-4 flex items-center dt:mt-6">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/12 px-3 py-1.5 text-[11px] font-extrabold tabular-nums text-brand dt:text-[12px]">
-              <motion.span
-                animate={{ opacity: [1, 0.35, 1] }}
-                transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
-                className="h-1.5 w-1.5 rounded-full bg-brand"
-              />
+              <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-brand [animation-duration:2.6s]" />
               {t('mylessons.remaining', left)}
             </span>
           </div>

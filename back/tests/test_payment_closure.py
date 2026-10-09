@@ -1199,7 +1199,7 @@ def _sessions(total, target_at=None, reference="att_target"):
     return rows
 
 
-def _find(monkeypatch, rows):
+def _find(monkeypatch, rows, **options):
     page = _Page(rows)
     seen = {}
 
@@ -1208,7 +1208,9 @@ def _find(monkeypatch, rows):
         return page
 
     monkeypatch.setattr(SC.stripe.checkout.Session, "list", _list)
-    found = _run(SC.find_session_by_reference("acct_1", "att_target", created_after=1000))
+    found = _run(SC.find_session_by_reference(
+        "acct_1", "att_target", created_after=1000, **options,
+    ))
     return found, page, seen
 
 
@@ -1242,10 +1244,10 @@ def test_the_orphan_search_returns_none_when_the_session_is_absent(monkeypatch):
 def test_the_orphan_search_stops_at_the_limit_and_says_so(monkeypatch, caplog):
     """Предел перебора обязан быть громким. Молчаливое усечение читалось бы как
     «сессии нет», а это ровно противоположный вывод."""
-    monkeypatch.setattr(SC, "_SCAN_LIMIT", 150)
     with caplog.at_level("WARNING"):
-        found, _, _ = _find(monkeypatch, _sessions(400, target_at=300))
+        found, page, _ = _find(monkeypatch, _sessions(400, target_at=300), max_sessions=150)
     assert found is None
+    assert page.pages_served == 2, "перебор продолжился после заданного предела"
     assert any("предел" in r.message.lower() or "предел" in str(r.args).lower()
                or "перебор" in r.message.lower() for r in caplog.records), caplog.text
 

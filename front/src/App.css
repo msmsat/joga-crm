@@ -3401,10 +3401,16 @@
        жемчуга, из угла с «Ещё» — персиковый свет;
      тёмная — «графит и жар»: графитовая капсула с бликом по кромке, бусина
        светится и подсвечивает док вокруг себя, как уголёк.
+   .mnav-kin — родня дока вне навигации, сделанная из того же материала
+   (капсула итога и оплаты над доком на странице тарифа).
    ========================================================================== */
 .mnav,
-.mdrawer-layer {
+.mdrawer-layer,
+.mnav-kin {
   --nv-bead: linear-gradient(135deg, #FDBC9F 0%, #FCAE91 46%, #F69B85 100%);
+  /* Бусина дока собрана из слоёв (dockMotion.ts): свет идёт сверху вниз, а не
+     по диагонали — растянутая середина и торцы сходятся без шва. */
+  --nv-bead-v: linear-gradient(180deg, #FDBC9F 0%, #FCAE91 52%, #F69B85 100%);
   --nv-on-bead: #1A1A1A;
 
   /* ── Фарфор (светлая тема) ── */
@@ -3417,10 +3423,11 @@
     0 4px 12px -6px rgba(26, 26, 26, 0.10);
   --nv-ring: #FFFFFF;
   --nv-mute: #968983;
-  --nv-bead-glow:
+  /* Кромка бусины (на каждом её слое) и ореол под ней (отдельным слоем). */
+  --nv-bead-edge:
     inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    inset 0 -1px 0 rgba(170, 80, 50, 0.14),
-    0 8px 18px -8px rgba(236, 128, 98, 0.75);
+    inset 0 -1px 0 rgba(170, 80, 50, 0.14);
+  --nv-bead-halo: 0 8px 18px -8px rgba(236, 128, 98, 0.75);
 
   --nv-scrim:
     radial-gradient(110% 60% at 100% 100%, rgba(252, 174, 145, 0.32), transparent 62%),
@@ -3451,10 +3458,17 @@
   --nv-tile-on-line: rgba(236, 128, 98, 0.38);
   --nv-row-on: rgba(252, 174, 145, 0.18);
   --nv-ink-on: #C9684A;
+  /* Выгода (скидка в капсуле оплаты): фисташка, на фарфоре — темнее, иначе
+     светлая #A3C9A8 по белому не читается. */
+  --nv-gain: #4A7F55;
+  --nv-gain-bg: rgba(163, 201, 168, 0.24);
+  /* Отсвет бусины на материал вокруг неё — у кнопки оплаты в капсуле итога. */
+  --nv-bead-light: rgba(252, 174, 145, 0.26);
 }
 
 :root.dark .mnav,
-:root.dark .mdrawer-layer {
+:root.dark .mdrawer-layer,
+:root.dark .mnav-kin {
   /* ── Графит и жар (тёмная тема) ── */
   --nv-dock: linear-gradient(180deg, #2C2826 0%, #1D1A19 74%);
   --nv-dock-shadow:
@@ -3465,9 +3479,10 @@
   --nv-ring: #222020;
   --nv-mute: rgba(255, 245, 240, 0.52);
   /* Свечение: бусина не лежит на доке, а светит на него. */
-  --nv-bead-glow:
+  --nv-bead-edge:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(170, 80, 50, 0.2),
+    inset 0 -1px 0 rgba(170, 80, 50, 0.2);
+  --nv-bead-halo:
     0 0 26px -4px rgba(249, 160, 139, 0.55),
     0 8px 20px -8px rgba(249, 160, 139, 0.85);
 
@@ -3499,6 +3514,9 @@
   --nv-tile-on-line: rgba(252, 174, 145, 0.36);
   --nv-row-on: rgba(252, 174, 145, 0.12);
   --nv-ink-on: #FCAE91;
+  --nv-gain: #A3C9A8;
+  --nv-gain-bg: rgba(163, 201, 168, 0.13);
+  --nv-bead-light: rgba(249, 160, 139, 0.16);
 }
 
 .mnav {
@@ -3512,6 +3530,20 @@
   /* Своего фона у полосы нет — контент виден вокруг капсулы и под ней.
      Тапы мимо капсулы тоже проходят насквозь, к контенту. */
   pointer-events: none;
+  /* Движение дока — одна пружина на всё: бусина, переезд вкладок, подпись.
+     dockMotion.ts читает эти же переменные для Web Animations.
+     Перелёт 2,5 %, 95 % пути за 0,25 с, дальше — мягкая посадка.
+     Без поддержки linear() — кривая без перелёта. */
+  --mnav-move: 720ms;
+  --mnav-spring: cubic-bezier(0.2, 0.9, 0.25, 1);
+  /* Отпускание пальца: упругая, с отскоком — кнопка «пружинит» обратно. */
+  --mnav-press-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+@supports (animation-timing-function: linear(0, 1)) {
+  .mnav {
+    --mnav-spring: linear(0, 0.0016 0.6%, 0.012 1.7%, 0.0376 3.2%, 0.0821 4.9%, 0.1459 6.8%, 0.2268 8.9%, 0.3207 11.3%, 0.4225 13.8%, 0.5264 16.4%, 0.627 19.2%, 0.7198 22.2%, 0.8015 25.3%, 0.8699 28.5%, 0.9243 31.9%, 0.9652 35.4%, 0.9938 38.9%, 1.0119 42.7%, 1.0216 46.5%, 1.0252 50.4%, 1.0246 54.4%, 1.0216 58.6%, 1.0174 62.8%, 1.0129 67.1%, 1.0089 71.6%, 1.0056 76.1%, 1.0031 80.7%, 1.0013 85.4%, 1.0002 90.2%, 0.9996 95%, 1);
+    --mnav-press-spring: linear(0, 0.004 0.8%, 0.0297 2.1%, 0.0921 3.9%, 0.1962 6%, 0.3373 8.4%, 0.5026 11.1%, 0.6743 14%, 0.8337 17.1%, 0.9651 20.4%, 1.0583 23.9%, 1.1107 27.5%, 1.1263 31.4%, 1.1142 35.4%, 1.0858 39.5%, 1.0521 43.8%, 1.0218 48.3%, 0.9999 52.9%, 0.9877 57.6%, 0.984 62.5%, 0.9861 67.5%, 0.9909 72.6%, 0.9958 77.8%, 0.9995 83.2%, 1.0015 88.7%, 1.002 94.3%, 1);
+  }
 }
 
 /* Прячется на десктопе через min-width, а не показывается на телефоне через
@@ -3523,10 +3555,12 @@
 }
 
 /* Без backdrop-filter — по той же причине, что и у оверлеев модалок
-   (см. .v-overlay): размытие роняет кадры, а здесь оно ещё и ничего бы не
-   показало — контент под док не заезжает. */
+   (см. .v-overlay): размытие роняет кадры. */
 .mnav-dock {
+  /* Радиус капсулы вкладки: высота дока минус поля 6px сверху и снизу. */
+  --mnav-pill-r: calc((var(--mnav-dock, 60px) - 12px) / 2);
   position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   gap: 2px;
@@ -3539,12 +3573,19 @@
   background: var(--nv-dock);
   box-shadow: var(--nv-dock-shadow);
   pointer-events: auto;
+  /* Перестройка вкладок не задевает раскладку страницы. */
+  contain: layout style;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 /* Невыбранные вкладки делят остаток поровну, выбранная берёт ширину по
-   содержимому (иконка + подпись). Плавность ширине даёт framer-motion
-   (layout у .mnav-pill), а не transition: из auto в 1fr CSS не анимирует. */
+   содержимому (иконка + подпись), «Ещё» на бусине — ровный круг. Раскладка
+   меняется сразу, плавность даёт dockMotion.ts (FLIP по transform). */
 .mnav-item {
+  position: relative;
+  z-index: 1;
   flex: 1 1 0;
   min-width: 0;
   height: 100%;
@@ -3555,91 +3596,145 @@
   border: none;
   border-radius: 999px;
   background: transparent;
-  color: var(--nv-mute);
   font-family: var(--font);
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.12s ease;
+  /* Долгое нажатие не открывает превью ссылки, двойной тап не зумит. */
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
 }
-.mnav-item.is-on {
-  flex: 0 0 auto;
-  color: var(--nv-on-bead);
-  /* Иконка темнеет, когда под неё уже подъехала бусина, а не раньше: на
-     светлом доке она слилась бы с капсулой, на тёмном — пропала бы. */
-  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.24s ease 0.1s;
-}
-/* Нажатие — на самой кнопке, а не на капсуле: transform капсулы во время
-   перетекания занят framer-motion. */
-.mnav-item:active { transform: scale(0.9); }
-.mnav-item:focus-visible { outline: none; }
-.mnav-item:focus-visible .mnav-pill { box-shadow: 0 0 0 2px rgba(249, 160, 139, 0.75); }
+.mnav-item.is-on { flex: 0 0 auto; padding: 0 17px 0 14px; }
+.mnav-item.mnav-more.is-on { flex: 0 0 calc(var(--mnav-pill-r) * 2); padding: 0; }
+.mnav-item:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249, 160, 139, 0.75); }
 
-.mnav-pill {
+/* Отклик под пальцем: на пустой вкладке проступает мягкое пятно, содержимое
+   вжимается и, отпущенное, пружинит обратно. На выбранной пятна нет — там
+   бусина. Только transform и opacity — отклик не ждёт главного потока. */
+.mnav-item::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  background: var(--nv-press);
+  opacity: 0;
+  transform: scale(0.55);
+  transition: opacity 0.28s ease, transform 0.45s var(--mnav-spring);
+  pointer-events: none;
+}
+.mnav-item:not(.is-on):active::before {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.08s ease, transform 0.3s var(--mnav-spring);
+}
+
+/* group едет к новому месту (dockMotion.ts), inner сжимается под пальцем:
+   два transform на разных слоях не перебивают друг друга. Слой заведён
+   заранее — первый кадр движения не тратится на его создание. */
+.mnav-group { display: flex; will-change: transform; }
+.mnav-inner {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 7px;
-  height: 48px;
-  min-width: 48px;
-  padding: 0 12px;
-  border-radius: 24px;
+  transition: transform 0.5s var(--mnav-press-spring);
 }
-.mnav-item.is-on .mnav-pill { padding: 0 17px 0 14px; }
-/* Каждая капсула — свой слой (z-index), выбранная — нижний. Во время
-   перетекания framer-motion двигает капсулы трансформой, и без этого слоем
-   выше оказывалась та, что позже в разметке: бусина ехала ПОВЕРХ иконок
-   соседних вкладок и гасила их. Теперь она проходит под ними. */
-.mnav-pill { z-index: 1; }
-.mnav-item.is-on .mnav-pill { z-index: 0; }
+.mnav-item:active .mnav-inner {
+  transform: scale(0.86);
+  transition: transform 0.12s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
 
-/* Бусина: персиковая капсула со светом сверху — единственный цветной предмет
-   в доке. Скругление задано инлайном (style), чтобы framer-motion
-   пересчитывал его при растяжении и концы не сплющивались. */
+/* ── Бусина ──────────────────────────────────────────────────────────────────
+   Персиковая капсула со светом сверху — единственный цветной предмет в доке.
+   Слои: ореол, середина, два торца и блик (зачем так — dockMotion.ts). Все
+   стоят в левом краю дока, на место их ставит инлайновый transform, а едут
+   они Web Animations по общей пружине — поэтому в ногу. */
 .mnav-bead {
   position: absolute;
-  inset: 0;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  width: 0;
   z-index: 0;
-  overflow: hidden;
-  background: var(--nv-bead);
-  box-shadow: var(--nv-bead-glow);
+  pointer-events: none;
 }
-/* Блик: бусина смонтирована заново у каждой новой вкладки (общий layoutId),
-   поэтому он пробегает один раз — ровно когда она встаёт на место. */
-.mnav-bead::after {
-  content: '';
+.mnav-bead > span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  will-change: transform;
+}
+/* Середина растягивается от 100px (BASE_W в dockMotion.ts), ореол — от
+   круга высотой в капсулу: растянутый круг остаётся внутри бусины, и пустая
+   середина тени нигде из-под неё не выглядывает. */
+.mnav-bead-glow,
+.mnav-bead-mid { transform-origin: 0 50%; }
+.mnav-bead-mid { width: 100px; }
+.mnav-bead-glow { width: calc(var(--mnav-pill-r) * 2); border-radius: 50%; box-shadow: var(--nv-bead-halo); }
+.mnav-bead-mid,
+.mnav-bead-cap-l,
+.mnav-bead-cap-r { background: var(--nv-bead-v); box-shadow: var(--nv-bead-edge); }
+.mnav-bead-cap-l,
+.mnav-bead-cap-r { width: var(--mnav-pill-r); }
+.mnav-bead-cap-l { border-radius: var(--mnav-pill-r) 0 0 var(--mnav-pill-r); }
+.mnav-bead-cap-r { border-radius: 0 var(--mnav-pill-r) var(--mnav-pill-r) 0; }
+/* Блик пробегает один раз, когда бусина встала на место. Его рамка ставится
+   на место посадки сразу и сама не едет. */
+.mnav-bead-glint {
+  overflow: hidden;
+  border-radius: var(--mnav-pill-r);
+}
+.mnav-bead-glint > span {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   width: 60%;
   background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.6) 50%, transparent 80%);
+  opacity: 0;
   transform: translateX(-140%) skewX(-14deg);
-  animation: mnav-glint 0.85s cubic-bezier(0.3, 0.55, 0.2, 1) 0.22s backwards;
-  pointer-events: none;
-}
-@keyframes mnav-glint {
-  from { transform: translateX(-140%) skewX(-14deg); }
-  to { transform: translateX(240%) skewX(-14deg); }
 }
 
+/* ── Иконка и подпись ────────────────────────────────────────────────────── */
 .mnav-icon {
   position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 22px;
   height: 22px;
   flex-shrink: 0;
 }
-.mnav-icon .nav-icon { width: 22px; height: 22px; opacity: 1; }
-.mnav-item.is-on .mnav-icon .nav-icon { stroke-width: 2.1; }
+/* Две копии: приглушённая и поверх неё тёмная «на бусине» — та толще и
+   закрывает нижнюю целиком. Тёмная проступает прозрачностью, когда бусина уже
+   подъехала (Web Animations в dockMotion.ts): на светлом доке она слилась бы
+   с капсулой, на тёмном — пропала бы. */
+.mnav-ink {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nv-mute);
+}
+.mnav-ink.is-lit { color: var(--nv-on-bead); opacity: 0; }
+.mnav-ink .nav-icon { width: 22px; height: 22px; opacity: 1; }
+.mnav-ink.is-lit .nav-icon { stroke-width: 2.1; }
+.mnav-item.is-on .mnav-ink.is-lit { opacity: 1; }
 
+/* Подпись есть у каждой вкладки, видна — у выбранной. У невыбранной она вне
+   потока, на том же месте справа от иконки: уходящая подпись гаснет там, где
+   стояла, и едет вместе со своей иконкой, а не пропадает в кадр тапа.
+   Проявление и угасание — Web Animations в dockMotion.ts. Центр по вертикали —
+   полем в полстроки, не transform: transform занят въездом, и смена
+   положения не должна дёргать подпись вверх-вниз. */
 .mnav-label {
-  position: relative;
-  z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 29px; /* иконка 22 + зазор 7 */
+  margin-top: -0.5em;
   max-width: 104px;
   font-size: 13px;
   font-weight: 800;
@@ -3648,17 +3743,28 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--nv-on-bead);
+  opacity: 0;
+  pointer-events: none;
+}
+.mnav-item.is-on .mnav-label {
+  position: static;
+  margin-top: 0;
+  opacity: 1;
 }
 @media (max-width: 359px) {
   .mnav-label { max-width: 72px; }
 }
 
 /* Счётчик клиентов и метка NEW — на углу иконки. Обводка цветом дока
-   отрезает значок от иконки под ним; на бусине цвета меняются местами. */
+   отрезает значок от иконки под ним. На бусине значок гаснет: рядом с иконкой
+   там стоит подпись, и «128» ложилось на её первую букву, а само число
+   человек и так видит на открытой странице. */
 .mnav-badge {
   position: absolute;
   top: -7px;
   left: 13px;
+  z-index: 1;
   min-width: 17px;
   height: 17px;
   padding: 0 5px;
@@ -3670,37 +3776,27 @@
   line-height: 17px;
   text-align: center;
   box-shadow: 0 0 0 2px var(--nv-ring);
+  transition: opacity 0.2s ease 0.12s, transform 0.4s var(--mnav-press-spring) 0.12s;
 }
 .mnav-item.is-on .mnav-badge {
-  background: var(--nv-on-bead);
-  color: #FCAE91;
-  box-shadow: 0 0 0 2px #FCAE91;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.12s ease, transform 0.16s ease;
 }
 
-/* «Ещё» ⇄ «Закрыть»: точки поворачиваются, съезжаются в центр и гаснут, поверх
-   прорисовываются штрихи крестика. */
-.mnav-moreglyph { transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.25, 1.15); }
+/* «Ещё» — просто три точки, двумя рядами, как копии иконок: на бусине
+   проступает тёмный. На тап вздрагивают волной (waveDots в dockMotion.ts). */
+.mnav-dots {
+  display: flex;
+  align-items: center;
+  gap: 3.6px;
+}
 .mnav-dot {
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.22s ease;
+  width: 4.4px;
+  height: 4.4px;
+  border-radius: 50%;
+  background: currentColor;
 }
-.mnav-cross {
-  stroke-width: 2.2;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.22s cubic-bezier(0.4, 0, 1, 1);
-}
-.mnav-item.is-open .mnav-moreglyph { transform: rotate(90deg); }
-.mnav-item.is-open .mnav-dot { opacity: 0; }
-.mnav-item.is-open .mnav-dot-l { transform: translateX(7px) scale(0.3); }
-.mnav-item.is-open .mnav-dot-c { transform: scale(0.3); }
-.mnav-item.is-open .mnav-dot-r { transform: translateX(-7px) scale(0.3); }
-.mnav-item.is-open .mnav-cross {
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 0.34s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s;
-}
-.mnav-item.is-open .mnav-cross-b { transition-delay: 0.17s; }
 
 /* ── Панель «Ещё» ────────────────────────────────────────────────────────────
    Не шит снизу во весь экран: тот читался как отдельная страница, а не как
@@ -3713,8 +3809,26 @@
   position: fixed;
   inset: 0;
   z-index: 140;
+  /* Сам слой тапы не ловит — только затемнение и панель (pointer-events у них
+     свои): так закрытый слой не перекрывает страницу, а фазе не нужно менять
+     наследуемое свойство на всей панели. */
+  pointer-events: none;
 }
-.mdrawer-layer.is-leaving { pointer-events: none; }
+/* Панель смонтирована заранее (MobileNav) и закрытой спрятана целиком:
+   content-visibility хранит её стили и раскладку готовыми, и открытие стоит
+   около миллисекунды. Не visibility и не display: первое наследуется и
+   пересчитывало все ~100 узлов панели (30–50 мс при CPU ×4), второе
+   выбрасывает готовые стили. Классы фаз не задевают правил потомков (кроме
+   затемнения): вход, уход и каскад строк — Web Animations в drawerMotion.ts. */
+.mdrawer-layer.is-closed { content-visibility: hidden; }
+/* Прогрев после монтирования (MobileMore): пару кадров панель раскладывается
+   по-настоящему, но прозрачной и за краем экрана. Сдвиг и прозрачность не
+   наследуются — снятие прогрева не трогает стилей потомков. */
+.mdrawer-layer.is-warming {
+  content-visibility: visible;
+  opacity: 0;
+  transform: translateX(200vw);
+}
 
 /* Затемнение с тёплым отсветом из угла, где стоит «Ещё»: панель будто
    поднимается из этой кнопки. При свайпе гаснет вслед за пальцем (--swipe). */
@@ -3724,19 +3838,16 @@
   background: var(--nv-scrim);
   opacity: calc(1 - var(--swipe, 0));
   transition: opacity 0.26s ease;
-  animation: mdrawer-tint 0.34s ease backwards;
+  pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
 }
-.mdrawer-layer[data-dragging] .mdrawer-scrim { transition: none; }
-.mdrawer-layer.is-leaving .mdrawer-scrim { animation: mdrawer-untint 0.3s ease both; }
-@keyframes mdrawer-tint { from { opacity: 0; } }
-@keyframes mdrawer-untint { from { opacity: calc(1 - var(--swipe, 0)); } to { opacity: 0; } }
+/* --swipe и data-dragging свайп (drawerSwipe.ts) ставит на само затемнение. */
+.mdrawer-scrim[data-dragging] { transition: none; }
+/* Панель уходит — тап по затемнению уже проходит к странице. */
+.mdrawer-layer.is-leaving .mdrawer-scrim { pointer-events: none; }
 
+/* Вход, уход и каскад строк — drawerMotion.ts (там же пружина входа). */
 .mdrawer {
-  /* Пружина: быстрый выезд с едва заметным перелётом и мягкой посадкой.
-     Без поддержки linear() — обычная кривая без перелёта. */
-  --mdrawer-spring: cubic-bezier(0.22, 1, 0.36, 1);
-
   position: absolute;
   /* Под шапкой, как окно быстрого вопроса AI: поверх неё скругление панели
      открывало угол кнопки «+», а название раздела над панелью остаётся
@@ -3755,11 +3866,8 @@
   border-radius: 30px;
   box-shadow: var(--nv-pane-shadow);
   transform-origin: 100% 100%;
-  /* backwards, а не both: с заливкой вперёд анимация продолжала держать
-     transform и перебивала инлайновый стиль — свайп вправо не сдвигал панель
-     (та же засада, что у шитов модалок, см. .v-modal в телефонном блоке). */
-  animation: mdrawer-in 0.62s var(--mdrawer-spring) backwards;
   transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  pointer-events: auto;
   /* Vertical scrolling stays native; horizontal movement dismisses the drawer. */
   touch-action: pan-y pinch-zoom;
 }
@@ -3769,28 +3877,6 @@
   --bg-card: #2A2624;
   --card: #2A2624;
 }
-@supports (animation-timing-function: linear(0, 1)) {
-  .mdrawer {
-    --mdrawer-spring: linear(0, 0.057, 0.188, 0.344, 0.498, 0.635, 0.749, 0.837, 0.903, 0.949, 0.98, 0.999, 1.009, 1.014, 1.015, 1.014, 1.012, 1.01, 1.008, 1.005, 1.004, 1.002, 1.001, 1.001, 1);
-  }
-}
-/* Уходит туда же, откуда пришла — и с того места, где её отпустил палец. */
-.mdrawer-layer.is-leaving .mdrawer { animation: mdrawer-out 0.3s cubic-bezier(0.4, 0, 0.9, 0.35) both; }
-@keyframes mdrawer-in { from { transform: translateX(calc(100% + 28px)) scale(0.96); } to { transform: none; } }
-@keyframes mdrawer-out { from { transform: translateX(var(--swipe-x, 0px)); } to { transform: translateX(calc(100% + 28px)); } }
-
-/* Содержимое въезжает вслед за панелью строка за строкой (--i — номер в
-   каскаде, ставит MobileMore): одно движение, а не девять одновременных. */
-.mdrawer-head,
-.mdrawer-gtitle,
-.mdrawer-tile,
-.mdrawer-row,
-.mdrawer-account {
-  animation: mdrawer-rise 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-  animation-delay: calc(120ms + var(--i, 0) * 26ms);
-}
-.mdrawer-head { animation-delay: 70ms; }
-@keyframes mdrawer-rise { from { opacity: 0; transform: translateX(28px); } }
 
 /* Шапка: человек должен видеть, ЧТО он открыл, а не гадать по полоске. */
 .mdrawer-head {
@@ -3990,17 +4076,11 @@
   .mdrawer-layer { display: none; }
 }
 
-/* Без движения: вместо выезда и перетекания — короткое проявление. Ключевые
-   кадры переопределены с теми же именами, поэтому конец ухода (animationend
-   mdrawer-out) MobileNav ловит как обычно. */
+/* Без движения: бусина и вкладки встают на место без перелёта (dockMotion.ts
+   не запускает анимаций), панель «Ещё» проявляется (drawerMotion.ts); здесь —
+   отклик кнопок под пальцем. */
 @media (prefers-reduced-motion: reduce) {
-  @keyframes mdrawer-in { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes mdrawer-out { from { opacity: 1; } to { opacity: 0; } }
-  .mdrawer { animation-duration: 0.18s; }
-  .mdrawer-layer.is-leaving .mdrawer { animation-duration: 0.16s; }
-  .mdrawer-head, .mdrawer-gtitle, .mdrawer-tile, .mdrawer-row, .mdrawer-account { animation: none; }
-  .mnav-bead::after { display: none; }
-  .mnav-item, .mnav-moreglyph, .mnav-dot, .mnav-cross { transition: none; }
+  .mnav-inner, .mnav-badge, .mnav-item::before { transition: none; }
 }
 
 /* ==========================================================================

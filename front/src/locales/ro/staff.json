@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "Emailul și telefonul aparțin contului angajatului — el le schimbă în propriul profil.",
       "color": "Culoare în jurnal",
       "colorHint": "Cu această culoare apar în jurnal coloana și ședințele angajatului. Un punct marchează culorile folosite deja de alții.",
-      "colorTakenBy": "Folosită deja de: {{names}}"
+      "colorTakenBy": "Folosită deja de: {{names}}",
+      "bio": "Despre mine — văzut de clienți",
+      "bioPlaceholder": "De exemplu: predau hatha yoga de 8 ani și ajut spatele să-și recapete blând mobilitatea",
+      "bioHint": "Clienții văd acest text în mini-aplicație: în detaliile ședinței și la programare."
     },
     "role": {
       "heading": "Rol și specializare",

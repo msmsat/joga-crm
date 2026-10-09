@@ -454,3 +454,22 @@ class BookingRead(HybridSchema):
     # Только у переноса, и только когда сумма клиента поменялась: деньги,
     # которые уже заплачены, система не двигает — это решает человек у стойки.
     repricing: Optional[BookingRepricing] = None
+
+
+class BookingPayRequest(HybridSchema):
+    """Откуда платят: из Telegram Stripe вернёт в t.me, из браузера — на ту же
+    вкладку. Адрес собирает сервер; флаг, а не URL — иначе открытый редирект."""
+    in_telegram: bool = True
+
+
+class BookingPayRead(HybridSchema):
+    """Ссылка на оплату своей брони (services/booking_payment.pay_link).
+
+    open — форма готова; pending — оплата уже идёт, ждём подтверждения Stripe;
+    unavailable — студия не принимает оплату онлайн либо Stripe не ответил;
+    stale — платить нечего: бронь уже оплачена, отменена или занятие началось.
+    """
+    outcome: Literal["open", "pending", "unavailable", "stale"]
+    url: Optional[str] = None
+    checkout_id: Optional[int] = None
+    amount_str: str = ""

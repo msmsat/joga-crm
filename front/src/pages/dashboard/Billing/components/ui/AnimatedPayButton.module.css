@@ -8,7 +8,8 @@
   transform: scale(0.8);
   animation: auraFlow 3.5s ease-in-out infinite alternate paused;
 }
-.halo { inset: -5px; border: 1px solid rgb(252 174 145 / 45%); border-radius: 20px; transform: scale(0.96); }
+/* --pay-radius — скругление снаружи: в капсуле над доком кнопка сама капсула. */
+.halo { inset: -5px; border: 1px solid rgb(252 174 145 / 45%); border-radius: calc(var(--pay-radius, 14px) + 6px); transform: scale(0.96); }
 .button {
   position: relative;
   display: flex;
@@ -20,7 +21,7 @@
   overflow: hidden;
   isolation: isolate;
   border: 1px solid rgb(255 255 255 / 28%);
-  border-radius: 14px;
+  border-radius: var(--pay-radius, 14px);
   background: linear-gradient(115deg, #fcae91 0%, #f9a08b 55%, #fbc0a7 100%);
   color: #3b241d;
   font: inherit;

@@ -149,9 +149,13 @@ async def settle(db: AsyncSession, studio_id: int, lesson_id: int, reservation_i
     reservation = await _locked(db, studio_id, reservation_id)
     if (reservation is None or reservation.status != "attended" or reservation.no_show
             or reservation.held_codes):
+        # Both callers committed the visit before settle. A no-op must release
+        # the studio guard too, before _close sends review/debt notifications.
+        await db.rollback()
         return False
     debt = await _open_debt(db, reservation)
     if debt is None:
+        await db.rollback()
         return False
 
     reservation.auto_paid = True

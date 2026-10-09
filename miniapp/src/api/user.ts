@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from './client';
+import { apiGet, apiPatch, apiPost, apiUpload } from './client';
 import { isInTelegram } from '../hooks/useTelegram';
 import type { CoffeeState } from './lessons';
 
@@ -70,6 +70,7 @@ export interface CheckoutCalc {
 }
 
 export interface CheckoutSessionResponse {
+  checkout_id?: number | null;
   /** null — платить было нечего, абонемент уже начислен (см. paid). */
   url: string | null;
   paid: boolean;
@@ -102,6 +103,9 @@ export interface ReservationResponse {
   spot_number: number;
   status: string;
   rating: number | null;
+  /** Відгук до оцінки: слова й знімки (шляхи /static/reviews/…). */
+  review_text: string | null;
+  review_photos: string[];
   /** Стан «кави» одразу після броні — ним відкривається панель запрошення. */
   coffee: CoffeeState;
 }
@@ -166,8 +170,21 @@ export const cancelLesson = (lessonId: number): Promise<ReservationResponse> =>
 export const cancelReservation = (reservationId: number): Promise<unknown> =>
   apiPost(`/global/bookings/${reservationId}/cancel`);
 
-export const rateReservation = (reservationId: number, rating: number): Promise<ReservationResponse> =>
-  apiPost(`/global/bookings/${reservationId}/rate`, { rating });
+/**
+ * Оцінка й відгук. Без `review` — лише оцінка: сердечко в картці не стирає
+ * написаного раніше (сервер не чіпає поля, яких не прислали). Порожній текст
+ * і порожній список — «прибрати відгук».
+ */
+export const rateReservation = (
+  reservationId: number,
+  rating: number,
+  review?: { comment: string; photos: string[] },
+): Promise<ReservationResponse> =>
+  apiPost(`/global/bookings/${reservationId}/rate`, { rating, ...review });
+
+/** Знімок до відгуку. Повертає шлях — до броні його прив'язує rateReservation. */
+export const uploadReviewPhoto = (reservationId: number, file: Blob, name: string): Promise<{ url: string }> =>
+  apiUpload(`/global/bookings/${reservationId}/review-photos`, file, name);
 
 /**
  * Зберігає номер телефону клієнта — передумова запису з оплатою на місці.

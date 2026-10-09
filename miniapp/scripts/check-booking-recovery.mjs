@@ -41,6 +41,7 @@ async function setup(file, api = {}) {
       resourceStaff: async () => ({ staff: members }), servicesDay: async () => ({ services: rows }), ...api,
     } },
     revision: { bumpLessons() {} }, petals: { spawnPetals() {} }, session: { getSession: () => ({ token: 'test' }) },
+    paymentSync: { rememberCheckout() {}, syncCheckouts: async () => ({ payments: [], verification_unavailable: false }) },
     slots: { studioToday: () => '2026-10-08', dayList: () => ['2026-10-08'], lastBookableDay: () => '2026-10-08',
       availabilityQuery: value => value, timeOf: value => value.slice(11, 16) },
     useTelegram: { useTelegram: () => ({ vibrateLight() {}, vibrateMedium() {}, tg: null, ...api.telegram }) },

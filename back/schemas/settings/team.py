@@ -84,6 +84,9 @@ class StaffUpdate(BaseSchema):
     # и промахнуться с понижением до admin/trainer нельзя.
     role: Optional[Literal["admin", "trainer"]] = None
     department: Optional[str] = None
+    # «О себе» для клиентов (мини-приложение, «Подробнее»). Не прислали — не
+    # меняется; пустая строка — снять текст.
+    bio: Optional[str] = Field(None, max_length=600)
     salary: Optional[float] = None
     rate: Optional[float] = None
     rate_type: Optional[str] = None

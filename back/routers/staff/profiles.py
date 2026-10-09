@@ -534,6 +534,7 @@ async def get_staff_profile(
         # Имя, фото, должность и деньги — профиль и условия В ЭТОЙ студии, поэтому
         # с membership. avg_rating остаётся с аккаунта: это оценка человека.
         "department": membership.department,
+        "bio": membership.bio,
         "is_online": _is_online(user),
         "is_active": membership.status == "active",
         "is_specialist": await is_specialist(db, studio_id, staff_id),
@@ -747,7 +748,13 @@ async def update_staff(
     membership.name = data.name
     membership.last_name = data.last_name
     membership.photo_url = data.photo_url
-    membership.department = data.department
+    # Должность и «О себе» — только если их прислали. Окно сотрудника в CRM
+    # должность не отправляет вовсе, и безусловное присваивание стирало её на
+    # каждом сохранении карточки (а с ней — подпись мастера в мини-приложении).
+    if "department" in data.model_fields_set:
+        membership.department = data.department
+    if "bio" in data.model_fields_set:
+        membership.bio = (data.bio or "").strip() or None
     membership.salary = data.salary
     membership.rate = data.rate
     membership.rate_type = data.rate_type

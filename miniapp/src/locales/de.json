@@ -78,6 +78,30 @@
   "payment": {
     "action": {
       "buy_subscription": "Zahlung für Abo: {{item}}"
+    },
+    "success": {
+      "title": "Zahlung erfolgreich",
+      "booking_hint": "Du bist angemeldet. Bis bald im Studio!",
+      "subscription_hint": "Dein Abo wurde deinem Profil hinzugefügt.",
+      "service": "Leistung",
+      "subscription": "Abo",
+      "paid": "Bezahlt",
+      "amount": "Bezahlter Betrag",
+      "bookings": "Meine Kurse",
+      "profile": "Zu meinem Profil",
+      "thanks": "Danke, dass du dir Zeit für dich nimmst.",
+      "close": "Zahlungsbestätigung schließen"
+    },
+    "sync": {
+      "paid": "Online bezahlt",
+      "confirmed": "Zahlung erhalten und bestätigt",
+      "check": "Zahlung prüfen",
+      "checking": "Zahlung wird geprüft…",
+      "pending": "Wir warten auf die Zahlungsbestätigung. Wenn Sie bereits bezahlt haben, prüfen Sie den Status.",
+      "unavailable": "Die Zahlung konnte gerade nicht geprüft werden. Bitte versuchen Sie es in einigen Sekunden erneut.",
+      "awaiting": "Zahlung wird bestätigt",
+      "verifying": "Stripe bestätigt Ihre Zahlung. Sobald sie angenommen wurde, wird alles automatisch aktualisiert.",
+      "close": "Zahlungsprüfung ausblenden"
     }
   },
   "profile": {
@@ -147,7 +171,33 @@
     "awaiting_confirmation": "Wartet auf Bestätigung",
     "unpaid": "Offen · {{amount}}",
     "trial": "Probestunde",
-    "reschedule": "Verschieben"
+    "reschedule": "Verschieben",
+    "review": {
+      "ask": "Wie war's?",
+      "levels": {
+        "1": "Hat nicht gefallen",
+        "2": "Geht so",
+        "3": "In Ordnung",
+        "4": "Gut",
+        "5": "Begeistert"
+      },
+      "prompt_low": "Was lief schief? Das Studio kümmert sich darum",
+      "prompt_mid": "Was hätte den Kurs besser gemacht?",
+      "prompt_high": "Was ist Ihnen am meisten geblieben?",
+      "field": "Ihre Bewertung",
+      "add_photo": "Foto hinzufügen",
+      "photo": "Foto",
+      "remove_photo": "Foto entfernen",
+      "open_photo": "Foto {{index}} von {{count}}",
+      "close": "Schließen",
+      "send": "Bewertung senden",
+      "sent": "Gesendet — danke!",
+      "photo_error": "Foto konnte nicht hochgeladen werden. Bitte noch einmal versuchen.",
+      "rate_label": "Kurs bewerten",
+      "to": "An {{name}} & das Studio",
+      "to_studio": "An das Studio",
+      "edit_short": "Bearbeiten"
+    }
   },
   "schedule": {
     "title": "Stundenplan",
@@ -686,5 +736,20 @@
     "view": "Abos ansehen",
     "choose_hint": "Wähle ein Kurspaket in deinem Rhythmus",
     "details": "Verbleibende Kurse · Details ansehen"
+  },
+  "about": {
+    "more": "Mehr",
+    "less": "Weniger",
+    "more_about": "Mehr über {{name}}",
+    "rating_aria": "Bewertung {{avg}} von 5",
+    "ratings_one": "{{count}} Bewertung",
+    "ratings_few": "{{count}} Bewertungen",
+    "ratings_many": "{{count}} Bewertungen",
+    "ratings_other": "{{count}} Bewertungen",
+    "average": "Durchschnittliche Bewertung",
+    "leads": "Leitung",
+    "book": "Für {{time}} buchen",
+    "my_booking": "Meine Buchung",
+    "view": "Öffnen"
   }
 }

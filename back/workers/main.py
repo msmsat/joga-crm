@@ -34,7 +34,7 @@ import socket
 import sys
 
 from database import async_session_maker
-from services import agent_jobs, outbound
+from services import agent_jobs, outbound, schedule_guard
 
 logger = logging.getLogger("velora.worker")
 
@@ -242,6 +242,7 @@ class Worker:
 
 
 async def _main() -> None:
+    schedule_guard.check_payment_lock_safety()
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s %(message)s",

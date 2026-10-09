@@ -1,7 +1,7 @@
 /**
  * Проверяет мобильный слой (<768px) — то, что билд и eslint пропускают молча.
  *
- * Четыре вещи, каждая из которых один раз уже ломалась или ломается незаметно:
+ * Пять вещей, каждая из которых один раз уже ломалась или ломается незаметно:
  *
  * 1. Каскад .mnav. Правила нижней панели стоят в App.css НИЖЕ телефонного
  *    медиазапроса, поэтому «показать на телефоне» нельзя написать как
@@ -22,7 +22,13 @@
  *    (в каскаде анимации выше «normal author»), а смахивание двигает карточку
  *    именно инлайном — вернули both, и жест молча перестал работать: события
  *    приходят, transform выставляется, шит стоит. Ни билд, ни линт про это
- *    ничего не знают.
+ *    ничего не знают. Шит — CSS-анимация v-sheet-in в App.css, панель «Ещё» —
+ *    Web Animations с параметрами PANEL_IN в drawerMotion.ts.
+ *
+ * 5. Нижний док движется без framer-motion. Его layout-анимации мерили всё
+ *    дерево проекций на каждый тап (140 мс до первого кадра при CPU ×4) и
+ *    считали кадры в главном потоке — бусина вставала, пока раскладывалась
+ *    страница. Движение дока — dockMotion.ts (компоновщик).
  *
  * Запуск:  node scripts/check-mobile.mjs
  */
@@ -33,6 +39,7 @@ const SRC = path.join(import.meta.dirname, '..', 'src');
 const css = readFileSync(path.join(SRC, 'App.css'), 'utf8');
 const mobileNav = readFileSync(path.join(SRC, 'components/ui/MobileNav.tsx'), 'utf8');
 const navItems = readFileSync(path.join(SRC, 'components/ui/navItems.tsx'), 'utf8');
+const drawerMotion = readFileSync(path.join(SRC, 'components/ui/drawerMotion.ts'), 'utf8');
 
 const fail = [];
 
@@ -69,16 +76,28 @@ if (lastMobile === -1) {
 }
 
 /* 4. Жест смахивания: анимации входа не держат transform ───────────────────── */
-for (const name of ['v-sheet-in', 'mdrawer-in']) {
-  const decl = css.match(new RegExp(`animation:\\s*${name}[^;]*;`));
-  if (!decl) {
-    fail.push(`App.css: пропала анимация ${name} — шит/панель появятся рывком`);
-  } else if (/\b(both|forwards)\b/.test(decl[0])) {
-    fail.push(
-      `App.css: у ${name} заливка вперёд (${decl[0].trim()}) — она перебьёт инлайновый transform, ` +
-      'и смахивание (useSheetDrag / свайп панели «Ещё») перестанет двигать карточку',
-    );
-  }
+const sheetIn = css.match(/animation:\s*v-sheet-in[^;]*;/);
+if (!sheetIn) {
+  fail.push('App.css: пропала анимация v-sheet-in — шит появится рывком');
+} else if (/\b(both|forwards)\b/.test(sheetIn[0])) {
+  fail.push(
+    `App.css: у v-sheet-in заливка вперёд (${sheetIn[0].trim()}) — она перебьёт инлайновый transform, ` +
+    'и смахивание (useSheetDrag) перестанет двигать карточку',
+  );
+}
+const panelIn = drawerMotion.match(/export const PANEL_IN[^;]*;/);
+if (!panelIn) {
+  fail.push('drawerMotion.ts: пропали параметры входа PANEL_IN — панель «Ещё» появится рывком');
+} else if (/fill:\s*['"](both|forwards)['"]/.test(panelIn[0])) {
+  fail.push(
+    `drawerMotion.ts: у входа панели «Ещё» заливка вперёд (${panelIn[0].trim()}) — она перебьёт ` +
+    'инлайновый transform, и свайп панели перестанет её двигать',
+  );
+}
+
+/* 5. Док без framer-motion ───────────────────────────────────────────────── */
+if (/from ['"](framer-motion|motion\/react)['"]/.test(mobileNav)) {
+  fail.push('MobileNav.tsx: вернулся framer-motion — его layout-анимации тормозили док; движение дока живёт в dockMotion.ts');
 }
 
 if (fail.length) {

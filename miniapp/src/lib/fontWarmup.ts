@@ -12,7 +12,7 @@
  * нечем заняться: дальше браузер берёт готовое из кэша.
  */
 
-import { whenIdle } from './idle';
+import { whenIdle, whenIdleSteps } from './idle';
 
 /** Буквы всех пяти языков интерфейса: кириллица (вместе с украинской),
  *  чешские и немецкие знаки, цифры — с ними и табличные. */
@@ -26,33 +26,38 @@ const SIZES = [8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 15, 16, 
 /** Без requestIdleCallback (Safari, вебвью Telegram на iOS) — позже анимации входа главной. */
 const FALLBACK_DELAY_MS = 1500;
 
+/** Первый шаг укладки — не раньше этого после прихода файлов. */
+const STEP_DELAY_MS = 120;
 
-/** Уложить одно начертание во всех кеглях — невидимо, и сразу убрать. */
-function warmWeight(weight: number): void {
-  const host = document.createElement('div');
-  host.setAttribute('aria-hidden', 'true');
-  host.style.cssText =
-    'position:fixed;left:-10000px;top:0;visibility:hidden;pointer-events:none;white-space:nowrap;'
-    + `font-family:Manrope,system-ui,sans-serif;font-weight:${weight}`;
-  for (const size of SIZES) {
-    for (const tabular of [false, true]) {
-      const line = document.createElement('div');
-      line.textContent = SAMPLE;
-      line.style.fontSize = `${size}px`;
-      if (tabular) line.style.fontVariantNumeric = 'tabular-nums';
-      host.appendChild(line);
-    }
+
+/**
+ * Уложить одно сочетание «начертание + кегль» (с обычными и табличными
+ * цифрами) — невидимо, в общей подложке прогрева.
+ *
+ * Шаг маленький намеренно. Раньше за раз укладывалось начертание во всех
+ * восемнадцати кеглях: пять задач по ~180 мс при CPU ×4, и все — в первые
+ * секунды после открытия, ровно когда человек уже листает и тапает. Тап,
+ * попавший на такую задачу, ждал её конца. Теперь шагов девяносто, каждый —
+ * пара строк (~10 мс при ×4), и `whenIdleSteps` берёт их столько, сколько
+ * влезает в окно простоя.
+ */
+function warmStep(host: HTMLElement, weight: number, size: number): void {
+  for (const tabular of [false, true]) {
+    const line = document.createElement('div');
+    line.textContent = SAMPLE;
+    line.style.fontWeight = String(weight);
+    line.style.fontSize = `${size}px`;
+    if (tabular) line.style.fontVariantNumeric = 'tabular-nums';
+    host.appendChild(line);
   }
-  document.body.appendChild(host);
   // Укладка — здесь и сейчас, в простое: она и готовит шрифт.
   void host.offsetHeight;
-  host.remove();
+  host.replaceChildren();
 }
 
 /**
- * Запустить прогрев, когда браузеру будет нечем заняться. По начертанию за
- * раз, каждое — в своём окне простоя: прогрев целиком сам стал бы длинной
- * задачей, и тап, пришедшийся на неё, ждал бы её конца.
+ * Запустить прогрев, когда браузеру будет нечем заняться: сначала файлы
+ * начертаний, потом укладка — по сочетанию за шаг (`warmStep`).
  */
 export function warmFontsWhenIdle(): void {
   if (typeof document === 'undefined' || !document.fonts) return;
@@ -64,11 +69,15 @@ export function warmFontsWhenIdle(): void {
       // Не вышло — шрифт подготовится при первом показе, как и раньше.
       return;
     }
-    const next = (index: number) => {
-      if (index >= WEIGHTS.length) return;
-      warmWeight(WEIGHTS[index]);
-      whenIdle(() => next(index + 1), 120);
-    };
-    next(0);
+    const host = document.createElement('div');
+    host.setAttribute('aria-hidden', 'true');
+    // `contain: strict` — укладка подложки не трогает остальную страницу.
+    host.style.cssText =
+      'position:fixed;left:-10000px;top:0;width:1000px;height:100px;contain:strict;visibility:hidden;'
+      + 'pointer-events:none;white-space:nowrap;font-family:Manrope,system-ui,sans-serif';
+    document.body.appendChild(host);
+    const steps = WEIGHTS.flatMap((weight) => SIZES.map((size) => () => warmStep(host, weight, size)));
+    steps.push(() => host.remove());
+    whenIdleSteps(steps, STEP_DELAY_MS);
   }, FALLBACK_DELAY_MS);
 }

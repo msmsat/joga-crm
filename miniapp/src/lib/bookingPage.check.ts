@@ -25,7 +25,7 @@ const service = (id: number, name: string, over: Partial<StudioService> = {}): S
   is_bookable: true, terminology_profile: null, price: 500, price_str: '500 Kč',
   price_min: 500, price_max: 500, price_min_str: '500 Kč', price_max_str: '500 Kč', duration_min: 45,
   duration_from: 45, duration_to: 45,
-  color: null, ...over,
+  color: null, description: null, rating_avg: null, rating_count: 0, ...over,
 });
 const member = (teacher_id: number, name: string, service_ids: number[], branch_ids: number[] = [171]): ResourceStaffMember => ({
   teacher_id, name, last_name: null, photo_url: null, department: null, service_ids, branch_ids,

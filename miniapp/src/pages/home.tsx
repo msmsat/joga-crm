@@ -75,7 +75,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onC
     if (focus.kind === 'resource') wizard.current?.open('time', null, focus);
     else groupWizard.current?.open('time', null, focus);
     onFocusUsed();
-    // Ссылка разбирается один раз; `onFocusUsed` пересоздаётся каждым рендером App.
+    // Ссылка разбирается один раз: на новый `focus`, а не на смену колбэка.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus]);
 

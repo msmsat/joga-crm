@@ -58,6 +58,7 @@ async def get_client_digest(
     rows = (await db.execute(
         select(
             Reservation.id, Reservation.status, Reservation.no_show, Reservation.rating, Reservation.review_text,
+            Reservation.review_photos,
             Reservation.is_trial, Lesson.id.label("lesson_id"), Lesson.name, Lesson.start_time,
             Lesson.teacher_name, Lesson.status.label("lesson_status"),
             # Как записан и чем закрыт — то же, что у строки записанного в Журнале.
@@ -88,6 +89,7 @@ async def get_client_digest(
             "reservation_id": r["id"], "lesson_id": r["lesson_id"], "name": r["name"],
             "start_time": r["start_time"], "teacher_name": r["teacher_name"] or None,
             "status": status, "rating": r["rating"], "review_text": r["review_text"],
+            "review_photos": r["review_photos"] or [],
             "is_trial": r["is_trial"], "booked_at": r["booked_at"], "price": r["price"],
             "trial_discount_percent": r["trial_discount_percent"],
             "trial_discount_amount": r["trial_discount_amount"],

@@ -3,12 +3,17 @@ import { useRef, type MouseEvent, type PointerEvent } from 'react';
 /**
  * Horizontal dismissal; the browser keeps native vertical scrolling and pinch zoom.
  *
- * The panel's parent (the layer holding panel + scrim) receives the progress:
- * `--swipe` (0…1) dims the scrim along with the finger, `data-dragging` turns off
- * the scrim's own transition so it does not lag behind the finger.
+ * The scrim (the panel's `.mdrawer-scrim` sibling) receives the progress:
+ * `--swipe` (0…1) dims it along with the finger, `data-dragging` turns off its
+ * own transition so it does not lag behind the finger. On the scrim and not on
+ * the layer around both: a custom property is inherited, and on the layer every
+ * finger move restyled the whole panel (≈100 nodes, 24 ms at CPU ×4 per move).
  * On dismissal the panel keeps where the finger left it in `--swipe-x`: the exit
  * animation starts from there instead of jumping back to zero first.
  */
+const scrimOf = (panel: HTMLElement) =>
+  panel.parentElement?.querySelector<HTMLElement>(':scope > .mdrawer-scrim') ?? null;
+
 export function useDrawerSwipe(close: () => void) {
   const gesture = useRef<{
     id: number; x: number; y: number; axis: 'x' | 'y' | null;
@@ -17,10 +22,10 @@ export function useDrawerSwipe(close: () => void) {
   const suppressClick = useRef(false);
 
   const release = (panel: HTMLElement, keepProgress: boolean) => {
-    const layer = panel.parentElement;
-    if (layer) {
-      delete layer.dataset.dragging;
-      if (!keepProgress) layer.style.removeProperty('--swipe');
+    const scrim = scrimOf(panel);
+    if (scrim) {
+      delete scrim.dataset.dragging;
+      if (!keepProgress) scrim.style.removeProperty('--swipe');
     }
     gesture.current = null;
   };
@@ -64,12 +69,15 @@ export function useDrawerSwipe(close: () => void) {
 
       // To the left the panel has nowhere to go: it gives a little and resists.
       const x = dx > 0 ? dx : -Math.min(18, Math.sqrt(-dx) * 2.4);
+      // Width is read before the writes: reading after them forced a style
+      // recalculation on every move.
+      const progress = Math.min(1, Math.max(0, dx / panel.offsetWidth));
       panel.style.transition = 'none';
       panel.style.transform = `translateX(${x}px)`;
-      const layer = panel.parentElement;
-      if (layer) {
-        layer.dataset.dragging = '';
-        layer.style.setProperty('--swipe', String(Math.min(1, Math.max(0, dx / panel.offsetWidth))));
+      const scrim = scrimOf(panel);
+      if (scrim) {
+        scrim.dataset.dragging = '';
+        scrim.style.setProperty('--swipe', String(progress));
       }
     },
     onPointerUp: (event: PointerEvent<HTMLElement>) => {
@@ -83,7 +91,8 @@ export function useDrawerSwipe(close: () => void) {
       const panel = event.currentTarget;
       if (!dismiss) { reset(panel); return; }
       panel.style.setProperty('--swipe-x', `${Math.max(0, dx)}px`);
-      // transition: none — a running transition outranks the exit animation in the cascade.
+      // transition: none — the inline transform is dropped below, and a snap-back
+      // transition to zero must not start under the exit animation.
       panel.style.transition = 'none';
       panel.style.transform = '';
       release(panel, true);

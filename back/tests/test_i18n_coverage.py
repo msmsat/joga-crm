@@ -45,6 +45,8 @@ _FLAT_TABLES = {
     "notify_texts.BDAY_NAMED": texts.BDAY_NAMED,
     "notify_texts.BDAY_PLAIN": texts.BDAY_PLAIN,
     "notify_texts.SPOTS": texts.SPOTS,
+    "notify_texts.REVIEW_QUOTE": texts.REVIEW_QUOTE,
+    "notify_texts.REVIEW_PHOTOS": texts.REVIEW_PHOTOS,
     "notifier._MONTHS": notifier._MONTHS,
     "email_layout._GREETING": email_layout._GREETING,
     "email_layout._FOOTER": email_layout._FOOTER,

@@ -117,6 +117,12 @@ class ServiceInfo(BaseSchema):
     # выгоднее. У обычной услуги — пустой список и None.
     bundle_parts: list[str] = []
     bundle_full_price_str: Optional[str] = None
+    # «Подробнее» на карточке занятия: описание владельца (Каталог → услуга) и
+    # средняя оценка клиентов по всем занятиям направления. `rating_avg` —
+    # None, пока оценок меньше catalog.MIN_RATINGS. Тексты отзывов не отдаются.
+    description: Optional[str] = None
+    rating_avg: Optional[float] = None
+    rating_count: int = 0
 
 
 class PackageInfo(BaseSchema):
@@ -146,9 +152,17 @@ class StaffInfo(BaseSchema):
 
     `id` — `users.id`, тот же номер, что в `Lesson.teacher_id` и в карточке
     сотрудника CRM. Имя — подпись ЭТОЙ студии (`StudioMember`).
+
+    Остальное — «Подробнее» о мастере в мини-приложении: фото, должность и
+    «О себе» этой студии, средняя оценка его занятий (без текстов отзывов).
     """
     id: int
     name: str
+    photo_url: Optional[str] = None
+    department: Optional[str] = None
+    bio: Optional[str] = None
+    rating_avg: Optional[float] = None
+    rating_count: int = 0
 
 
 class StudioCatalog(BaseSchema):
@@ -178,6 +192,7 @@ def _service_info(
     service, span: "service_pricing.PriceRange", currency: str,
     parts: list[str] = (), full_price: Optional[int] = None,
     minutes: "service_pricing.DurationRange | None" = None,
+    rating: Optional[catalog.Rating] = None,
 ) -> "ServiceInfo":
     """Услуга витрины вместе с её ценой и диапазоном.
 
@@ -205,6 +220,21 @@ def _service_info(
         buffer_after_min=service.buffer_after_min,
         is_bookable=service.is_bookable,
         terminology_profile=service.terminology_profile,
+        description=(service.description or "").strip() or None,
+        rating_avg=rating.avg if rating else None,
+        rating_count=rating.count if rating else 0,
+    )
+
+
+def _staff_info(trainer: "catalog.TrainerRef", rating: Optional["catalog.Rating"]) -> "StaffInfo":
+    return StaffInfo(
+        id=trainer.id,
+        name=trainer.name,
+        photo_url=trainer.photo_url,
+        department=trainer.department,
+        bio=(trainer.bio or "").strip() or None,
+        rating_avg=rating.avg if rating else None,
+        rating_count=rating.count if rating else 0,
     )
 
 
@@ -331,6 +361,8 @@ async def get_studio_catalog(
     # а не «роль == тренер»: владелец с назначенными услугами тоже стоит в
     # журнале и тоже может раздать свой QR.
     trainers = await catalog.trainers(db, studio_id)
+    # Средние оценки направлений и мастеров — один запрос на весь каталог.
+    rated = await catalog.ratings(db, studio_id)
 
     packages = (await db.execute(
         select(SubscriptionPackage)
@@ -424,10 +456,11 @@ async def get_studio_catalog(
                     if service.id in compositions else None
                 ),
                 minutes=minutes.get(service.id),
+                rating=rated.by_service.get(service.id),
             )
             for service in services
         ],
-        staff=[StaffInfo(id=trainer.id, name=trainer.name) for trainer in trainers],
+        staff=[_staff_info(trainer, rated.by_teacher.get(trainer.id)) for trainer in trainers],
         packages=[
             PackageInfo(
                 id=package.id,

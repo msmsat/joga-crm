@@ -2,7 +2,7 @@ import { useBusinessTerms } from '../hooks/useBusinessTerms';
 import { useResourceBooking } from '../hooks/useResourceBooking';
 import ResourceBookingSheet from '../components/booking/ResourceBookingSheet';
 import type { StudioCatalog } from '../api/studio';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useSyncExternalStore, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import UpcomingCard from '../components/mylessons/UpcomingCard';
@@ -20,10 +20,13 @@ import {
   type UpcomingLessonResponse,
   type PastLessonResponse,
 } from '../api/lessons';
-import { cancelReservation, rateReservation } from '../api/user';
-import { useTelegram } from '../hooks/useTelegram';
+import { cancelReservation } from '../api/user';
+import { haptic, useTelegram } from '../hooks/useTelegram';
+import { seedReviews } from '../components/mylessons/review/store';
 import { notify } from '../lib/notify';
 import { bumpLessons, useLessonsVersion } from '../lib/revision';
+import { getPaymentSnapshot, subscribePayments, syncCheckouts } from '../lib/paymentSync';
+import PaidBadge from '../components/payment/PaidBadge';
 
 type MyLesson = UpcomingLessonResponse | PastLessonResponse;
 
@@ -42,6 +45,11 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
   const [past, setPast] = useState<PastLessonResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const loaded = useRef(false);
+  // Последний применённый ответ — чтобы возврат в приложение с тем же списком
+  // ничего не перерисовывал (см. fetchLessons).
+  const lastPayload = useRef('');
+  const [checkingPayment, setCheckingPayment] = useState(false);
 
   // Открытое занятие. Держим объектом, а не id: после отмены оно исчезает из
   // списков, и лист домигивал бы пустой шапкой, пока уезжает.
@@ -55,36 +63,69 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
   // Раздел остаётся смонтированным при переключении вкладок: о записи, сделанной
   // на главной или в расписании, он узнаёт из общей версии (lib/revision.ts).
   const lessonsVersion = useLessonsVersion();
+  const payments = useSyncExternalStore(subscribePayments, getPaymentSnapshot);
+  const awaitingStripe = (lesson: MyLesson) => lesson.status === 'hold' && payments.awaiting
+    && payments.payments.some(payment => payment.reservation_id === lesson.reservation_id && payment.status === 'pending');
 
   const [countdowns, setCountdowns] = useState<{ [key: number]: string }>({});
-  const [ratings, setRatings] = useState<{ [key: number]: number }>({});
-  const [bouncing, setBouncing] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
+    let disposed = false;
+    let running = false;
     const fetchLessons = async () => {
-      setIsLoading(true);
-      setError(null);
+      if (disposed || running) return;
+      running = true;
       try {
         const data = await getMyLessons();
+        if (disposed) return;
+        // Раздел собран заранее и живёт в DOM всё время (App), а список
+        // перечитывается на каждый возврат в приложение. Чаще всего приходит
+        // тот же самый — новые массивы перерисовали бы весь раздел впустую.
+        const payload = JSON.stringify(data);
+        if (payload === lastPayload.current) return;
+        lastPayload.current = payload;
         setUpcoming(data.upcoming);
         setPast(data.past);
         setCancelled(data.cancelled);
+        setError(null);
+        loaded.current = true;
+        setActiveLesson(current => current
+          ? [...data.upcoming, ...data.past, ...data.cancelled].find(item => item.reservation_id === current.reservation_id) ?? current
+          : null);
 
-        const initialRatings: { [key: number]: number } = {};
-        data.past.forEach((lesson) => {
-          if (lesson.rating) initialRatings[lesson.reservation_id] = lesson.rating;
-        });
-        setRatings(initialRatings);
+        // Оценки и отзывы — в своё хранилище: на него подписан только блок
+        // отзыва своей брони, и тап по сердцу не перерисовывает раздел.
+        seedReviews(data.past);
       } catch (err) {
-        console.error('Помилка завантаження моїх занять:', err);
-        setError(err instanceof Error ? err.message : t('mylessons.load_error'));
+        if (!disposed && !loaded.current) setError(err instanceof Error ? err.message : t('mylessons.load_error'));
       } finally {
-        setIsLoading(false);
+        running = false;
+        if (!disposed) setIsLoading(false);
       }
     };
-
-    fetchLessons();
+    const onReturn = () => { if (document.visibilityState !== 'hidden') void fetchLessons(); };
+    window.addEventListener('focus', onReturn);
+    document.addEventListener('visibilitychange', onReturn);
+    void fetchLessons();
+    return () => {
+      disposed = true;
+      window.removeEventListener('focus', onReturn);
+      document.removeEventListener('visibilitychange', onReturn);
+    };
   }, [t, lessonsVersion]);
+
+  const checkPayment = async () => {
+    if (!activeLesson || checkingPayment) return;
+    setCheckingPayment(true);
+    try {
+      const result = await syncCheckouts({ reservation_id: activeLesson.reservation_id });
+      bumpLessons();
+      if (result?.verification_unavailable) notify(t('payment.sync.unavailable'));
+      else if (!result?.payments.some(payment => payment.status === 'paid')) notify(t('payment.sync.pending'));
+    } catch {
+      notify(t('payment.sync.unavailable'));
+    } finally { setCheckingPayment(false); }
+  };
 
   useEffect(() => {
     if (upcoming.length === 0) return;
@@ -158,6 +199,15 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
     vibrateMedium();
   };
 
+  /** Постоянная — для карточек прошедших под memo: страница перерисовывается
+   *  от обратного отсчёта и оплат, карточки при этом стоят. */
+  const openPast = useCallback((lesson: PastLessonResponse) => {
+    setActiveLesson(lesson);
+    setIsPastLesson(true);
+    setIsModalOpen(true);
+    haptic.medium();
+  }, []);
+
   /** Ответ сервера про кофе — сразу в оба места, где он виден: карточка списка
    *  и открытый лист. Иначе одно из них показывало бы состояние до нажатия. */
   const applyCoffee = (lessonId: number, state: CoffeeState) => {
@@ -188,27 +238,6 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
       if (tg) tg.HapticFeedback.notificationOccurred('error');
     } finally {
       setIsProcessing(false);
-    }
-  };
-
-  const rateClass = async (classId: number, rating: number) => {
-    setRatings({ ...ratings, [classId]: rating });
-    vibrateLight();
-
-    for (let i = 1; i <= rating; i++) {
-      setTimeout(() => {
-        setBouncing((prev) => ({ ...prev, [`${classId}-${i}`]: true }));
-        setTimeout(() => setBouncing((prev) => ({ ...prev, [`${classId}-${i}`]: false })), 500);
-      }, i * 60);
-    }
-
-    try {
-      await rateReservation(classId, rating);
-      bumpLessons();
-    } catch (error) {
-      setRatings((current) => ({ ...current, [classId]: past.find((item) => item.reservation_id === classId)?.rating ?? 0 }));
-      console.error('Не вдалося зберегти оцінку:', error);
-      notify(error instanceof Error ? error.message : t('mylessons.save_review_error'));
     }
   };
 
@@ -314,14 +343,15 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
                     index={i}
                     title={translateName(cls.name)}
                     statusLabel={
-                      cls.status === 'pending'
+                      awaitingStripe(cls) ? t('payment.sync.awaiting') : cls.status === 'pending'
                         ? t('mylessons.awaiting_confirmation')
                         : cls.status === 'hold' ? t('mylessons.status.hold') : t('mylessons.status.upcoming')
                     }
-                    statusTone={cls.status === 'pending' ? 'brand' : 'neutral'}
+                    statusTone={cls.status === 'pending' || awaitingStripe(cls) ? 'brand' : 'neutral'}
                     meta={`${formatDate(cls.start_time)}, ${cls.time} · ${cls.teacher}`}
                     matLabel={cls.booking_mode === 'resource' ? '' : t('mylessons.mat_label', { spot: cls.spot_number })}
                     countdown={countdowns[cls.id] || t('mylessons.counting_time')}
+                    paidOnline={cls.paid_online}
                     {...(cls.debt > 0
                       ? { paymentLabel: t('mylessons.unpaid', { amount: cls.debt_str }), paymentTone: 'debt' as const }
                       : cls.is_trial
@@ -351,6 +381,7 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
                     <div className="font-bold text-card-foreground">{translateName(item.name)}</div>
                     <div className="mt-2 text-sm text-muted-foreground">{formatDate(item.start_time)}, {item.time} · {item.teacher}</div>
                     <div className="mt-2 text-xs text-muted-foreground">{t('mylessons.status.cancelled')}</div>
+                    {item.paid_online && <div className="mt-3"><PaidBadge /></div>}
                   </button>
                 ))}
               </div>
@@ -367,15 +398,10 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
                   <PastCard
                     key={cls.reservation_id}
                     index={i}
-                    lessonId={cls.reservation_id}
+                    lesson={cls}
                     title={translateName(cls.name)}
-                    statusLabel={t('mylessons.status.past')}
                     meta={`${formatDate(cls.start_time)}, ${cls.time} · ${cls.teacher}`}
-                    ratingLabel={t('mylessons.your_rating')}
-                    rating={ratings[cls.reservation_id] || 0}
-                    bouncing={bouncing}
-                    onRate={(star) => rateClass(cls.reservation_id, star)}
-                    onOpen={() => openLesson(cls, true)}
+                    onOpen={openPast}
                   />
                 ))}
               </div>
@@ -394,10 +420,9 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
         title={translateName(activeLesson?.name)}
         dateLabel={activeLesson ? formatDate(activeLesson.start_time) : ''}
         countdown={activeLesson ? countdowns[activeLesson.id] : undefined}
-        rating={activeLesson ? ratings[activeLesson.reservation_id] || 0 : 0}
-        bouncing={bouncing}
-        onRate={activeLesson?.allowed_actions.includes('rate') ? (star) => rateClass(activeLesson.reservation_id, star) : undefined}
         isProcessing={isProcessing}
+        checkingPayment={checkingPayment}
+        onCheckPayment={activeLesson?.status === 'hold' ? checkPayment : undefined}
         onCancel={activeLesson?.allowed_actions.includes('cancel') ? cancelBooking : undefined}
         onReschedule={
           activeLesson?.allowed_actions.includes('reschedule') && activeLesson.service_id

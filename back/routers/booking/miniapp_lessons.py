@@ -18,20 +18,22 @@ import logging
 from datetime import date, datetime, timedelta, timezone
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, Request, Response, UploadFile
 from pydantic import Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import async_session_maker, get_db
 from ratelimit import limiter
-from models import Client, ClientPayment, Hall, Lesson, Reservation, Studio
+from models import Client, ClientPayment, Hall, Lesson, Reservation, StripeCheckout, Studio
 from schemas._base import BaseSchema
+from schemas.photos import REVIEW_PHOTOS_DIR, ReviewPhotos
+from routers.studio.media import save_image
 from services import booking
 from services.booking_access import coverage_gap, trial_applies
 from services.booking_http import reject
 from services.discounts import FirstLessonDiscount, apply_discount
-from services import catalog, lesson_time
+from services import booking_payment, catalog, lesson_time
 from services.booking_rules import (
     BookingRules, assert_bookable, booking_window, is_bookable, load_rules,
     within_widget_hours, trial_service_allowed,
@@ -152,6 +154,7 @@ class MiniappLesson(BaseSchema):
 
 class MiniappUpcomingLesson(MiniappLesson):
     reservation_id: int
+    paid_online: bool = False
     version: int = 1
     starts_at: Optional[datetime] = None
     allowed_actions: list[str] = []
@@ -165,19 +168,28 @@ class MiniappUpcomingLesson(MiniappLesson):
     # покрыто абонементом, подарено или уже оплачено.
     debt: int = 0
     debt_str: str = ""
+    # Занятие списано с абонемента — чтобы лист занятия сказал «по абонементу»,
+    # а не гадал по нулевому долгу.
+    by_subscription: bool = False
 
 
 class MiniappPastLesson(MiniappLesson):
     reservation_id: int
+    paid_online: bool = False
     status: str
     version: int = 1
     starts_at: Optional[datetime] = None
     allowed_actions: list[str] = []
     spot_number: int
     rating: Optional[int]
+    # Слова и снимки к оценке: клиент видит свой отзыв в карточке занятия
+    # (дневник практики), студия — в Журнале и в истории клиента.
+    review_text: Optional[str] = None
+    review_photos: list[str] = []
     is_trial: bool = False
     debt: int = 0
     debt_str: str = ""
+    by_subscription: bool = False
 
 
 class MiniappMyLessons(BaseSchema):
@@ -586,6 +598,18 @@ async def my_lessons(
     if not rows:
         return MiniappMyLessons(upcoming=[], past=[])
 
+    # Payment is independent of booking status or a zero debt. Keep its badge
+    # in history, but refunds/chargebacks must no longer look paid.
+    paid_reservations = set((await db.execute(
+        select(StripeCheckout.payload["reservation_id"].as_integer()).where(
+            StripeCheckout.studio_id == client.studio_id,
+            StripeCheckout.payload["client_id"].as_string() == str(client.id),
+            StripeCheckout.payload["kind"].as_string() == "lesson_booking",
+            StripeCheckout.payload["reservation_id"].as_integer().in_([r.id for r, _ in rows]),
+            StripeCheckout.status == "paid",
+        )
+    )).scalars().all())
+
     lessons_by_id = {lesson.id: lesson for _, lesson in rows}
     taken_by_lesson, _ = await _reservations_map(db, list(lessons_by_id))
     hall_colors = await _hall_colors(db, list(lessons_by_id.values()))
@@ -608,6 +632,9 @@ async def my_lessons(
         }
 
     studio = await db.get(Studio, client.studio_id)
+    # Долг можно погасить картой, только если студия принимает оплату онлайн:
+    # иначе кнопка «Оплатить» обещала бы форму, которую `pay_link` не выдаст.
+    takes_cards = await booking_payment.account_for(db, client.studio_id) is not None
     upcoming: list[MiniappUpcomingLesson] = []
     past: list[MiniappPastLesson] = []
     cancelled: list[MiniappPastLesson] = []
@@ -643,25 +670,34 @@ async def my_lessons(
             actions.append("reschedule")
         if reservation.status == "hold":
             actions.append("pay")
+        # «Оплата на месте», а человек передумал и платит картой — до начала:
+        # после занятия долг зачисляет система (services/attendance). Правило
+        # то же, что у `booking_payment.pay_link`; решает всё равно он.
+        elif (reservation.status == "active" and debt > 0 and left > timedelta(0)
+                and takes_cards):
+            actions.append("pay")
         if reservation.status in {"active", "attended"} and left < timedelta(0):
             actions.append("rate")
         paid_fields = dict(
             reservation_id=reservation.id,
+            paid_online=reservation.id in paid_reservations,
             version=lesson.version,
             starts_at=when.instant.replace(tzinfo=timezone.utc) if when.instant is not None else None,
             allowed_actions=actions,
             is_trial=reservation.is_trial,
             debt=debt,
             debt_str=_fmt_amount(debt, currency) if debt else "",
+            by_subscription=reservation.subscription_id is not None,
         )
+        review = dict(review_text=reservation.review_text, review_photos=reservation.review_photos or [])
         if reservation.status == "cancelled":
             cancelled.append(MiniappPastLesson(
-                **fields, **paid_fields, spot_number=reservation.spot_number,
+                **fields, **paid_fields, **review, spot_number=reservation.spot_number,
                 rating=reservation.rating, status=reservation.status,
             ))
         elif left < timedelta(0):
             past.append(MiniappPastLesson(
-                **fields, **paid_fields,
+                **fields, **paid_fields, **review,
                 spot_number=reservation.spot_number, rating=reservation.rating, status=reservation.status,
             ))
         else:
@@ -684,6 +720,11 @@ class ReservationCreateRequest(BaseSchema):
 
 class RateReservationRequest(BaseSchema):
     rating: int = Field(ge=1, le=5)
+    # Отзыв к оценке. None — «не трогать»: сердечко в карточке шлёт одну
+    # оценку, и написанное раньше от этого стираться не должно. Пустая строка
+    # и пустой список — «убрать».
+    comment: Optional[str] = Field(None, max_length=500)
+    photos: Optional[ReviewPhotos] = None
 
 
 class MiniappReservation(BaseSchema):
@@ -692,6 +733,8 @@ class MiniappReservation(BaseSchema):
     spot_number: int
     status: str
     rating: Optional[int]
+    review_text: Optional[str] = None
+    review_photos: list[str] = []
     # Состояние «кофе» на момент ответа — им открывается панель приглашения
     # сразу после записи. Без этого она показывала бы счётчик из списка занятий,
     # снятый ДО брони: там клиент ещё не участник, и цифра успевала устареть.
@@ -940,7 +983,25 @@ async def rate_reservation(
     reservation = await _own_active_reservation(db, client, lesson_id)
     lesson = await _studio_lesson(db, client, lesson_id)
 
-    return await _rate_owned(db, client, reservation, lesson, body.rating, background)
+    return await _rate_owned(db, client, reservation, lesson, body, background)
+
+
+async def _own_rateable_booking(db: AsyncSession, client: Client, reservation_id: int) -> Reservation:
+    """Своя бронь, которую можно оценить: действующая или отмеченная посещённой."""
+    reservation = (await db.execute(select(Reservation).join(Lesson).where(
+        Reservation.id == reservation_id, Reservation.client_id == client.id,
+        Lesson.studio_id == client.studio_id, Reservation.status.in_(("active", "attended")),
+    ))).scalar_one_or_none()
+    if reservation is None:
+        raise HTTPException(status_code=404, detail="NOT_FOUND")
+    return reservation
+
+
+async def _assert_lesson_over(db: AsyncSession, client: Client, lesson: Lesson) -> None:
+    studio = await db.get(Studio, client.studio_id)
+    started = lesson_time.has_started(lesson, studio)
+    if started is False or (started is None and lesson.start_time >= lesson_time.local_now(studio)):
+        raise HTTPException(status_code=403, detail="Оценить можно только прошедшее занятие")
 
 
 @router.post("/bookings/{reservation_id}/rate", response_model=MiniappReservation)
@@ -950,41 +1011,60 @@ async def rate_booking(
     background: BackgroundTasks,
     client: Client = Depends(get_current_client), db: AsyncSession = Depends(get_db),
 ):
-    reservation = (await db.execute(select(Reservation).join(Lesson).where(
-        Reservation.id == reservation_id, Reservation.client_id == client.id,
-        Lesson.studio_id == client.studio_id, Reservation.status.in_(("active", "attended")),
-    ))).scalar_one_or_none()
-    if reservation is None:
-        raise HTTPException(status_code=404, detail="NOT_FOUND")
+    reservation = await _own_rateable_booking(db, client, reservation_id)
     lesson = await _studio_lesson(db, client, reservation.lesson_id)
-    return await _rate_owned(db, client, reservation, lesson, body.rating, background)
+    return await _rate_owned(db, client, reservation, lesson, body, background)
 
 
-async def _rate_owned(db, client, reservation, lesson, rating, background):
-    studio = await db.get(Studio, client.studio_id)
-    started = lesson_time.has_started(lesson, studio)
-    if started is False or (started is None and lesson.start_time >= lesson_time.local_now(studio)):
-        raise HTTPException(status_code=403, detail="Оценить можно только прошедшее занятие")
+@router.post("/bookings/{reservation_id}/review-photos")
+@limiter.limit("20/minute")
+async def upload_review_photo(
+    request: Request, reservation_id: int, file: UploadFile = File(...),
+    client: Client = Depends(get_current_client), db: AsyncSession = Depends(get_db),
+):
+    """Снимок к отзыву о занятии. Грузится до отправки отзыва — превью стоит в
+    карточке, пока клиент дописывает слова, — поэтому только возвращает путь;
+    к брони его привязывает /rate полем `photos`. Право то же, что у оценки:
+    своя бронь на уже прошедшее занятие."""
+    reservation = await _own_rateable_booking(db, client, reservation_id)
+    await _assert_lesson_over(db, client, await _studio_lesson(db, client, reservation.lesson_id))
+    return {"url": await save_image(file, REVIEW_PHOTOS_DIR, max_size_mb=10)}
 
-    reservation.rating = rating
+
+async def _rate_owned(db, client, reservation, lesson, body: RateReservationRequest, background):
+    await _assert_lesson_over(db, client, lesson)
+
+    before = (reservation.rating, reservation.review_text, list(reservation.review_photos or []))
+    reservation.rating = body.rating
+    if body.comment is not None:
+        reservation.review_text = body.comment.strip() or None
+    if body.photos is not None:
+        reservation.review_photos = body.photos
+    after = (reservation.rating, reservation.review_text, list(reservation.review_photos or []))
     await db.commit()
     await db.refresh(reservation)
 
     # t7 «Новый отзыв» — эпик N-9 оставил его без врезки, считая, что отзыв
     # появится только со StudioReview во второй очереди. Оценка занятия из
     # мини-приложения и есть отзыв о работе тренера, так что событие живёт здесь.
+    # Только когда отзыв изменился: повторное нажатие на ту же оценку не должно
+    # будить тренера вторым одинаковым сообщением. Слова в нём — целиком: ради
+    # них отзыв и пишут, а снимки — счётчиком, их смотрят в Журнале.
     notifications = []
-    if lesson.teacher_id is not None:
+    if lesson.teacher_id is not None and after != before:
         notifications.append(("trainer", "t7", {
             "trainer_id": lesson.teacher_id,
             "client_name": f"{client.name} {client.last_name or ''}".strip(),
-            "rating": rating,
+            "rating": reservation.rating,
             "lesson_name": lesson.name,
+            "comment": reservation.review_text or "",
+            "photo_count": len(reservation.review_photos or []),
         }))
 
     response = MiniappReservation(
         id=reservation.id, lesson_id=reservation.lesson_id,
         spot_number=reservation.spot_number, status=reservation.status, rating=reservation.rating,
+        review_text=reservation.review_text, review_photos=reservation.review_photos or [],
     )
     await db.commit()
     if notifications:

@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "E-posta ve telefon çalışanın hesabına aittir — bunları kendi profilinden değiştirir.",
       "color": "Takvimdeki renk",
       "colorHint": "Çalışanın takvimdeki sütunu ve dersleri bu renkle gösterilir. Nokta, başkalarının zaten kullandığı renkleri işaretler.",
-      "colorTakenBy": "Zaten kullanan: {{names}}"
+      "colorTakenBy": "Zaten kullanan: {{names}}",
+      "bio": "Hakkımda — müşteriler görür",
+      "bioPlaceholder": "Örneğin: 8 yıldır hatha yoga öğretiyorum ve sırtın hareketliliğini nazikçe geri kazanmasına yardım ediyorum",
+      "bioHint": "Müşteriler bu metni mini uygulamada görür: ders ayrıntılarında ve randevu alırken."
     },
     "role": {
       "heading": "Rol ve uzmanlık",

@@ -1,0 +1,46 @@
+.badge {
+  --paid-ink: #28533d;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  max-width: 100%;
+  padding: 7px 12px 7px 7px;
+  border: 1px solid color-mix(in srgb, var(--v-success) 52%, transparent);
+  border-radius: 100px;
+  background: color-mix(in srgb, var(--v-success) 24%, var(--v-card));
+  color: var(--paid-ink);
+  box-shadow: 0 4px 14px -7px color-mix(in srgb, var(--v-success) 75%, transparent);
+  animation: arrive 650ms cubic-bezier(.16,1,.3,1) both;
+}
+.badge::after {
+  content: '';
+  position: absolute;
+  inset: -30% -80%;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 42%, #fff7 50%, transparent 58%);
+  transform: translateX(-50%);
+  animation: sheen 1600ms 450ms ease-in-out both;
+  pointer-events: none;
+}
+.seal { display: grid; place-items: center; width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%; background: var(--paid-ink); color: #fff; }
+.seal svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.seal path { stroke-dasharray: 20; animation: check 550ms 200ms both; }
+.copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.label { font-size: 11px; font-weight: 800; line-height: 1.3; letter-spacing: .01em; }
+.hint { font-size: 11px; font-weight: 500; line-height: 1.5; opacity: .85; }
+.spark { width: 12px; height: 12px; margin-left: 4px; flex-shrink: 0; fill: currentColor; opacity: .6; animation: sparkle 900ms 350ms both; }
+.detail { display: flex; margin-top: 12px; padding: 15px; gap: 12px; border-radius: 18px; }
+.detail .seal { width: 34px; height: 34px; }
+.detail .seal svg { width: 22px; height: 22px; }
+.detail .label { font-size: 14px; }
+.detail .spark { margin-left: auto; width: 18px; height: 18px; }
+:global(.dark) .badge { --paid-ink: #b8dfc2; background: color-mix(in srgb, var(--v-success) 13%, var(--v-card)); }
+:global(.dark) .seal { color: #153723; }
+@keyframes arrive { from { opacity: 0; transform: translateY(5px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes check { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+@keyframes sheen { from { transform: translateX(-50%); } to { transform: translateX(50%); } }
+@keyframes sparkle { 0% { transform: scale(.3) rotate(-35deg); opacity: 0; } 65% { transform: scale(1.25) rotate(10deg); } 100% { transform: none; opacity: .6; } }
+@media (prefers-reduced-motion: reduce) { .badge, .badge::after, .seal path, .spark { animation: none; } .badge::after { display: none; } }

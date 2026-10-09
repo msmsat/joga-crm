@@ -283,6 +283,7 @@ async def get_lesson(
             Reservation.created_at.label("booked_at"),
             Reservation.rating,
             Reservation.review_text,
+            Reservation.review_photos,
             Reservation.coffee,
             ClientSubscription.type.label("subscription_name"),
             Reservation.payment_breakdown.label("payment"),

@@ -145,6 +145,8 @@
   font-size: 11.5px; color: var(--muted); font-style: italic; line-height: 1.45; padding: 0 4px;
   overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
 }
+/* Снимки к отзыву — под словами клиента, миниатюрами заметки (NotePhotos compact). */
+.lc-review-photos { padding: 4px 4px 0; }
 
 /* ── Чек записанного (LessonBill) ───────────────────────────────
    Плашка внутри карточки: «Итог» и статус оплаты, сумма крупно с прайсом
@@ -483,6 +485,7 @@ a.cq-contact-value:hover { color: var(--peach); }
 .cq-visit.is-cancelled .cq-visit-title { color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(var(--ink), 0.25); }
 .cq-visit-sub { font-size: 11px; color: var(--muted); font-weight: 600; }
 .cq-visit-review { font-size: 11.5px; color: var(--onyx); font-style: italic; margin-top: 3px; line-height: 1.45; }
+.cq-visit-photos { margin-top: 6px; }
 .cq-visit-side { font-size: 10.5px; font-weight: 800; white-space: nowrap; padding-top: 2px; }
 .cq-visit-side.is-missed { color: var(--rose); }
 .cq-visit-side.is-star { color: #C9953A; }

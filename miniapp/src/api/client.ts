@@ -14,7 +14,7 @@ import { RequestTimeoutError, withRequestTimeout } from '../lib/requestTimeout';
 // смысл ручки: /auth/email/verify с токеном не логинит, а привязывает почту к
 // текущей карточке (back/routers/booking/miniapp_email_auth.py), поэтому вход
 // вторым аккаунтом с того же устройства обязан идти анонимно.
-type ApiOptions = Omit<RequestInit, 'body'> & { body?: unknown; anon?: boolean };
+type ApiOptions = Omit<RequestInit, 'body'> & { body?: unknown; anon?: boolean; form?: FormData };
 
 /** Ошибка API: HTTP-код и, если сервер его назвал, машинный код отказа. */
 export type ApiError = Error & { status?: number; code?: string };
@@ -33,7 +33,7 @@ async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
 }
 
 async function performRequest<T>(path: string, options: ApiOptions): Promise<T> {
-  const { body, headers, anon, ...rest } = options;
+  const { body, headers, anon, form, ...rest } = options;
   const session = getSession();
 
   // Студию называем ВСЕГДА, когда знаем её, — и гостем, и с живой сессией.
@@ -54,7 +54,9 @@ async function performRequest<T>(path: string, options: ApiOptions): Promise<T> 
       ...(!anon && session?.token ? { Authorization: `Bearer ${session.token}` } : {}),
       ...headers,
     },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    // FormData уходит как есть: Content-Type с границей частей ставит браузер,
+    // свой заголовок её бы потерял.
+    body: form ?? (body !== undefined ? JSON.stringify(body) : undefined),
   });
 
   // A transport can finish after its deadline despite abort. Its late response
@@ -115,3 +117,10 @@ export const apiPatch = <T>(path: string, body?: unknown): Promise<T> =>
 
 export const apiDelete = <T>(path: string): Promise<T> =>
   apiFetch<T>(path, { method: 'DELETE' });
+
+/** Один файл полем `file` (multipart/form-data) — снимки к отзыву. */
+export const apiUpload = <T>(path: string, file: Blob, name: string): Promise<T> => {
+  const form = new FormData();
+  form.append('file', file, name);
+  return apiFetch<T>(path, { method: 'POST', form });
+};

@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "E-post och telefon tillhör den anställdes konto — de ändras i personens egen profil.",
       "color": "Färg i schemat",
       "colorHint": "Med den här färgen visas personens kolumn och pass i schemat. En prick markerar färger som andra redan har.",
-      "colorTakenBy": "Används redan av: {{names}}"
+      "colorTakenBy": "Används redan av: {{names}}",
+      "bio": "Om mig — visas för kunder",
+      "bioPlaceholder": "Till exempel: Jag har undervisat i hathayoga i 8 år och hjälper ryggen att varsamt få tillbaka rörligheten",
+      "bioHint": "Kunderna ser texten i miniappen: i detaljerna om ett pass och vid bokning."
     },
     "role": {
       "heading": "Roll och specialisering",

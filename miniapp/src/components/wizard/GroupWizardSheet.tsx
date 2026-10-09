@@ -169,7 +169,7 @@ export default function GroupWizardSheet({ flow, catalog, onBuySubscription, kee
               animate="center"
               exit="exit"
             >
-              {step === 'time' && <GroupTime flow={flow} branches={catalog?.branches ?? NO_BRANCHES} />}
+              {step === 'time' && <GroupTime flow={flow} branches={catalog?.branches ?? NO_BRANCHES} catalog={catalog} />}
               {step === 'service' && <GroupServices flow={flow} />}
               {step === 'master' && <GroupTeachers flow={flow} />}
               {step === 'summary' && <GroupSummary flow={flow} catalog={catalog} />}

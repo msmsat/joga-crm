@@ -10,14 +10,15 @@ import Ring from '../pass/Ring';
 import { materialsOf } from '../pass/material';
 import { createSelection, useSelection, type Selection } from '../pass/selection';
 import { guilloche } from '../pass/guilloche';
-import { whenIdle } from '../../lib/idle';
-import { money } from '../../lib/money';
+import { whenIdleSteps } from '../../lib/idle';
+import { fractionOf, money } from '../../lib/money';
 import { useTelegram } from '../../hooks/useTelegram';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
 import { useCheckoutCalc } from '../../hooks/useCheckoutCalc';
 import { createCheckoutSession, type CheckoutOptions, type UserSubscription } from '../../api/user';
 import type { ApiError } from '../../api/client';
 import { notify } from '../../lib/notify';
+import { rememberCheckout } from '../../lib/paymentSync';
 import type { StudioInfo, SubscriptionPackageInfo } from '../../api/studio';
 
 const NO_OPTIONS: CheckoutOptions = {
@@ -95,18 +96,22 @@ export default function BuyModal({
   }));
 
   // Гравировку карт считаем заранее, когда приложению нечем заняться: в кадре
-  // открытия её расчёт стоил ~70 мс при CPU ×4. Дальше она в кэше.
+  // открытия её расчёт стоил ~70 мс при CPU ×4. Дальше она в кэше. По карте за
+  // шаг: все разом — снова одна длинная задача, на которую мог попасть тап.
   // Туда же — форматтер валюты: первое создание Intl.NumberFormat ~35 мс.
-  useEffect(() => whenIdle(() => {
-    packages.forEach((plan) => guilloche(plan.id));
-    money(0, currency, i18n.language);
-  }, 2500), [packages, currency, i18n.language]);
+  useEffect(() => whenIdleSteps([
+    ...packages.map((plan) => () => { guilloche(plan.id); }),
+    () => { money(0, currency, i18n.language); },
+  ], 2500), [packages, currency, i18n.language]);
 
   const sessionPending = useRef(false);
   const stopReturnListener = useRef<(() => void) | null>(null);
   useEffect(() => () => stopReturnListener.current?.(), []);
 
   const materials = useMemo(() => materialsOf(packages), [packages]);
+  // Цены всех пакетов — один формат сумм на всю витрину (барабаны цены,
+  // зачёркнутая цена, кнопка оплаты): копейки у всех или ни у кого.
+  const prices = useMemo(() => packages.map((plan) => plan.final_price), [packages]);
   const nameOf = useCallback(
     (plan: SubscriptionPackageInfo) => t(`subscription.${plan.name}.name`, { defaultValue: plan.name }),
     [t],
@@ -174,7 +179,7 @@ export default function BuyModal({
     sessionPending.current = true;
 
     try {
-      const { url, paid } = await createCheckoutSession(paying.id, options, calc.total_price);
+      const { url, paid, checkout_id } = await createCheckoutSession(paying.id, options, calc.total_price);
       // Only an explicit server-confirmed activation is a successful purchase.
       if (paid) {
         sessionPending.current = false;
@@ -184,6 +189,7 @@ export default function BuyModal({
         return;
       }
       if (!url) throw new Error(t('paymentModal.session_error'));
+      if (checkout_id) rememberCheckout({ checkout_id });
       if (isInTelegram && tg?.openLink) {
         tg.openLink(url);
         waitForReturnAndRefresh();
@@ -253,7 +259,7 @@ export default function BuyModal({
 
   const details = packages.length > 0 && (
     <>
-      <SelectedDetails selection={selection} packages={packages} nameOf={nameOf} currency={currency} reduce={reduce} />
+      <SelectedDetails selection={selection} packages={packages} prices={prices} nameOf={nameOf} currency={currency} reduce={reduce} />
       {!canPayOnline && (
         <p className="mt-4 text-[12.5px] font-medium leading-relaxed text-muted-foreground">{t('buyModal.pay_in_studio')}</p>
       )}
@@ -303,7 +309,7 @@ export default function BuyModal({
         ) : undefined}
         footer={
           canPayOnline && packages.length > 0 ? (
-            <PayAction selection={selection} packages={packages} onPay={openPayment} />
+            <PayAction selection={selection} packages={packages} prices={prices} currency={currency} onPay={openPayment} />
           ) : (
             <SheetAction tone={packages.length > 0 ? 'ghost' : 'brand'} onClick={handleClose}>{t('buyModal.close')}</SheetAction>
           )
@@ -337,28 +343,32 @@ export default function BuyModal({
 }
 
 /** Что выбрано под картами — подписано на выбор, а не на состояние листа. */
-function SelectedDetails({ selection, packages, nameOf, currency, reduce }: {
+function SelectedDetails({ selection, packages, prices, nameOf, currency, reduce }: {
   selection: Selection;
   packages: SubscriptionPackageInfo[];
+  prices: number[];
   nameOf: (plan: SubscriptionPackageInfo) => string;
   currency: string;
   reduce: boolean;
 }) {
   const { index, dir } = useSelection(selection);
-  const prices = useMemo(() => packages.map((row) => row.final_price), [packages]);
   const plan = packages[Math.min(index, packages.length - 1)];
   if (!plan) return null;
   return <PassDetails plan={plan} prices={prices} name={nameOf(plan)} dir={dir} currency={currency} reduce={reduce} />;
 }
 
-/** Оплата выбранного пакета — цена в кнопке следует за листанием. */
-function PayAction({ selection, packages, onPay }: {
+/** Оплата выбранного пакета — цена в кнопке следует за листанием и набрана
+ *  тем же форматом, что и цена над ней (языком интерфейса, а не студии). */
+function PayAction({ selection, packages, prices, currency, onPay }: {
   selection: Selection;
   packages: SubscriptionPackageInfo[];
+  prices: number[];
+  currency: string;
   onPay: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { index } = useSelection(selection);
   const plan = packages[Math.min(index, packages.length - 1)];
-  return <SheetAction onClick={onPay}>{t('buyModal.pay', { price: plan?.final_price_str ?? '' })}</SheetAction>;
+  const price = plan ? money(plan.final_price, currency, i18n.language, fractionOf(prices)) : '';
+  return <SheetAction onClick={onPay}>{t('buyModal.pay', { price })}</SheetAction>;
 }

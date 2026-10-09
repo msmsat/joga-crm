@@ -5,6 +5,7 @@ from .miniapp import router as miniapp_base_router
 from .miniapp_email_auth import router as miniapp_email_auth_router
 from .miniapp_lessons import router as miniapp_lessons_router
 from .miniapp_users import router as miniapp_users_router
+from .miniapp_checkout import router as miniapp_checkout_router
 from .miniapp_studio import router as miniapp_studio_router
 from .miniapp_loyalty import router as miniapp_loyalty_router
 from .hybrid import router as hybrid_router
@@ -15,6 +16,7 @@ miniapp_router.include_router(miniapp_base_router)
 miniapp_router.include_router(miniapp_email_auth_router)
 miniapp_router.include_router(miniapp_lessons_router)
 miniapp_router.include_router(miniapp_users_router)
+miniapp_router.include_router(miniapp_checkout_router)
 miniapp_router.include_router(miniapp_studio_router)
 miniapp_router.include_router(miniapp_loyalty_router)
 miniapp_router.include_router(hybrid_router)

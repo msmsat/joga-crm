@@ -8,14 +8,17 @@ import vm from 'node:vm';
 
 const source = fs.readFileSync(new URL('./release-gate.mjs', import.meta.url), 'utf8');
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'velora-release-check-'));
-const requiredSuites = ['test_miniapp_journey.py', 'test_miniapp_email_auth.py', 'test_miniapp_checkout.py', 'test_mailer_guard.py'];
+const requiredSuites = ['test_miniapp_journey.py', 'test_miniapp_email_auth.py', 'test_miniapp_checkout.py', 'test_mailer_guard.py',
+  'test_payment_lock_incident.py', 'test_payment_lock_startup.py', 'test_schedule_guard.py', 'test_attendance_autopilot.py'];
 
-async function exercise(name, pytestResult) {
+async function exercise(name, pytestResult, omittedSuite) {
   const repository = path.join(root, name);
   const evidence = path.join(repository, 'evidence');
   const tests = path.join(repository, 'back', 'tests');
   fs.mkdirSync(tests, { recursive: true });
-  for (const suite of requiredSuites) fs.writeFileSync(path.join(tests, suite), '');
+  for (const suite of requiredSuites) {
+    if (suite !== omittedSuite) fs.writeFileSync(path.join(tests, suite), '');
+  }
   const processStub = {
     platform: 'linux', exitCode: 0,
     env: {
@@ -34,6 +37,9 @@ async function exercise(name, pytestResult) {
       fs.writeFileSync(path.join(dist, 'index.html'), '<html>tested candidate</html>');
     }
     if (args[1] === 'pytest') {
+      for (const suite of requiredSuites) {
+        assert.ok(args.includes(`tests/${suite}`), `Release must exercise ${suite}`);
+      }
       pytestTemp = args.find(arg => arg.startsWith('--basetemp=')).slice('--basetemp='.length);
       // pytest creates a private directory when it starts, including on failure.
       fs.chmodSync(pytestTemp, 0o700);
@@ -67,6 +73,13 @@ async function exercise(name, pytestResult) {
     }, { context });
   });
   await module.evaluate();
+  if (omittedSuite) {
+    assert.equal(processStub.exitCode, 1, 'Deleting a required regression must block release');
+    assert.equal(pytestTemp, undefined);
+    assert.equal(browserRan, false);
+    assert.equal(fs.existsSync(path.join(evidence, 'release.json')), false);
+    return;
+  }
   assert.ok(pytestTemp, 'The gate must execute the backend suite');
   const relativeTemp = path.relative(evidence, pytestTemp);
   assert.ok(relativeTemp.startsWith(`..${path.sep}`) || path.isAbsolute(relativeTemp),
@@ -90,7 +103,9 @@ try {
   await exercise('failure', { status: 1 });
   await exercise('signal', { status: null, signal: 'SIGTERM' });
   await exercise('success', { status: 0 });
-  console.log('Release gate diagnostics checks passed (failure, signal, success).');
+  await exercise('missing-payment-regression', { status: 0 }, 'test_payment_lock_incident.py');
+  await exercise('missing-startup-regression', { status: 0 }, 'test_payment_lock_startup.py');
+  console.log('Release gate diagnostics checks passed (failure, signal, success, missing required regressions).');
 } finally {
   fs.rmSync(root, { recursive: true, force: true });
 }

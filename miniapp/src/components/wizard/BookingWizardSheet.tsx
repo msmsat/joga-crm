@@ -132,7 +132,7 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
             >
               {step === 'time' && <WizardTime flow={flow} onPreview={onPreview} />}
               {step === 'service' && <WizardServices flow={flow} onPreview={onPreview} />}
-              {step === 'master' && <WizardMasters flow={flow} onPreview={onPreview} />}
+              {step === 'master' && <WizardMasters flow={flow} onPreview={onPreview} catalog={catalog} />}
               {step === 'summary' && (isDesktop ? <WizardTicket flow={flow} catalog={catalog} /> : <WizardSummary flow={flow} catalog={catalog} />)}
             </motion.div>
           </motion.div>

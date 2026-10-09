@@ -63,10 +63,15 @@ const lookup = (dict: object, key: string): unknown =>
 
 assert.ok(used.size > 50, `нашли всего ${used.size} ключей — сломался разбор исходников`);
 
+// Ключ с числом i18next ищет по формам языка: `ratings_one`, `ratings_few`…
+// Форма `_other` есть в каждом языке — по ней и проверяем, что перевод есть.
+const has = (dict: object, key: string): boolean =>
+  typeof lookup(dict, key) === 'string' || typeof lookup(dict, `${key}_other`) === 'string';
+
 const missing: string[] = [];
 for (const [key, path] of used) {
   for (const lang of LOCALES) {
-    if (typeof lookup(dicts[lang], key) !== 'string') missing.push(`${lang}: ${key} (${path})`);
+    if (!has(dicts[lang], key)) missing.push(`${lang}: ${key} (${path})`);
   }
 }
 

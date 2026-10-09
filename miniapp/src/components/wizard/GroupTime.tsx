@@ -1,11 +1,12 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { LessonResponse } from '../../api/lessons';
-import type { Studio } from '../../api/studio';
+import type { Studio, StudioCatalog } from '../../api/studio';
 import { addDays, formatDay, upperFirst, type IsoDay } from '../../lib/slots';
 import { daySlots, lessonOf, nextMarked, slotsByPart, type DayMarks, type GroupPick } from '../../lib/groupWizard';
 import type { GroupWizardFlow } from '../../hooks/useGroupWizard';
+import { useLessonAbout, type LessonAbout } from '../../lib/lessonAbout';
 import DayStrip from './DayStrip';
 import GroupSlot from './GroupSlot';
 import { WizardEmpty } from './WizardRow';
@@ -25,7 +26,12 @@ import { WizardEmpty } from './WizardRow';
  * человек видит день студии целиком: «занятия нет» и «занятие есть, но мест
  * нет» — разные ответы.
  */
-export default function GroupTime({ flow, branches }: { flow: GroupWizardFlow; branches: Studio[] }) {
+export default function GroupTime({ flow, branches, catalog }: { flow: GroupWizardFlow; branches: Studio[]; catalog: StudioCatalog | null }) {
+  // Описание, оценка и тренер — из каталога студии, а не запросом на
+  // раскрытие: карточка раскрывается в тот же кадр.
+  const aboutOf = useLessonAbout(catalog);
+  // Карточка с описанием выше на две строки — заглушки дня растут с ней.
+  const described = Boolean(catalog?.services.some((row) => row.booking_mode === 'event' && row.description));
   return (
     <GroupTimeView
       pick={flow.pick}
@@ -38,6 +44,8 @@ export default function GroupTime({ flow, branches }: { flow: GroupWizardFlow; b
       smooth={flow.isOpen && !flow.opening}
       branches={branches}
       scope={flow.scope}
+      aboutOf={aboutOf}
+      described={described}
       onPickDay={flow.pickDay}
       onPickLesson={flow.pickLesson}
       onRetry={flow.retryDay}
@@ -57,6 +65,10 @@ type ViewProps = {
   branches: Studio[];
   /** Филиал, с которым открыт лист; `null` — все. */
   scope: number | null;
+  /** «Подробнее» о занятии — словари каталога (lib/lessonAbout). */
+  aboutOf: (lesson: LessonResponse) => LessonAbout;
+  /** У направлений студии есть описания — карточки и заглушки выше. */
+  described: boolean;
   onPickDay: (day: IsoDay) => void;
   onPickLesson: (lesson: LessonResponse) => void;
   onRetry: () => void;
@@ -70,9 +82,12 @@ type ViewProps = {
  * где перерисовка собранной заранее вкладки была главной статьёй расходов.
  */
 const GroupTimeView = memo(function GroupTimeView({
-  pick, lessons: dayLessons, days, today, marks, loading, failed, smooth, branches, scope, onPickDay, onPickLesson, onRetry,
+  pick, lessons: dayLessons, days, today, marks, loading, failed, smooth, branches, scope, aboutOf, described, onPickDay, onPickLesson, onRetry,
 }: ViewProps) {
   const { t, i18n } = useTranslation();
+  // Раскрыта одна карточка за раз: вторая сворачивает первую, и день не
+  // превращается в простыню из полных описаний.
+  const [expanded, setExpanded] = useState<number | null>(null);
   const lessons = dayLessons ?? [];
   const slots = daySlots(lessons, pick);
   const groups = slotsByPart(slots);
@@ -119,7 +134,7 @@ const GroupTimeView = memo(function GroupTimeView({
         // Заглушки той же высоты, что карточки: пришедший день не двигает лист.
         <div aria-busy="true" className="grid gap-2 pt-4 @xl:grid-cols-2">
           {Array.from({ length: 4 }, (_, i) => (
-            <div key={i} className="h-[84px] animate-pulse rounded-[20px] bg-background" style={{ animationDelay: `${i * 70}ms` }} />
+            <div key={i} className={`${described ? 'h-[142px]' : 'h-[84px]'} animate-pulse rounded-[20px] bg-background`} style={{ animationDelay: `${i * 70}ms` }} />
           ))}
         </div>
       ) : groups.length === 0 ? (
@@ -137,7 +152,7 @@ const GroupTimeView = memo(function GroupTimeView({
               <div className="pb-2.5 text-[10px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground">
                 {t(`resource.parts.${group.part}`)}
               </div>
-              <div className="grid gap-2 @xl:grid-cols-2">
+              <div className="grid items-start gap-2 @xl:grid-cols-2">
                 {group.slots.map((slot) => (
                   <GroupSlot
                     key={slot.lesson.id}
@@ -145,6 +160,9 @@ const GroupTimeView = memo(function GroupTimeView({
                     active={slot.lesson.id === chosen}
                     place={placeOf(slot.lesson.branch_id)}
                     onPick={() => onPickLesson(slot.lesson)}
+                    about={aboutOf(slot.lesson)}
+                    expanded={expanded === slot.lesson.id}
+                    onToggle={() => setExpanded((current) => (current === slot.lesson.id ? null : slot.lesson.id))}
                   />
                 ))}
               </div>
@@ -167,4 +185,6 @@ const GroupTimeView = memo(function GroupTimeView({
   && before.failed === after.failed
   && before.smooth === after.smooth
   && before.branches === after.branches
-  && before.scope === after.scope);
+  && before.scope === after.scope
+  && before.aboutOf === after.aboutOf
+  && before.described === after.described);

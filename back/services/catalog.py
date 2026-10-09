@@ -40,7 +40,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, time
 from typing import NamedTuple, Optional, Sequence
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import (
@@ -110,6 +110,28 @@ class TrainerRef(NamedTuple):
     id: int
     name: str
     active: bool
+    # Как мастер представлен клиентам в ЭТОЙ студии: фото, должность и
+    # «О себе». Пишет владелец (CRM → Сотрудники); наш текст их не дополняет.
+    photo_url: Optional[str] = None
+    department: Optional[str] = None
+    bio: Optional[str] = None
+
+
+# Меньше оценок — средняя не показывается: одна случайная «двойка» иначе
+# становилась бы «2.0» на витрине направления.
+MIN_RATINGS = 3
+
+
+class Rating(NamedTuple):
+    """Средняя оценка клиентов. `avg` — None, пока оценок меньше MIN_RATINGS:
+    порог держит сервер, чтобы экраны не решали его каждый по-своему."""
+    avg: Optional[float]
+    count: int
+
+
+class Ratings(NamedTuple):
+    by_service: dict[int, Rating]
+    by_teacher: dict[int, Rating]
 
 
 class StudioRef(NamedTuple):
@@ -189,7 +211,46 @@ async def trainers(db: AsyncSession, studio_id: int) -> list[TrainerRef]:
         .where(StudioMember.studio_id == studio_id, is_specialist_clause(studio_id))
         .order_by(StudioMember.user_id)
     )).scalars().all()
-    return [TrainerRef(m.user_id, full_name(m), m.status == "active") for m in rows]
+    return [
+        TrainerRef(m.user_id, full_name(m), m.status == "active", m.photo_url, m.department, m.bio)
+        for m in rows
+    ]
+
+
+async def ratings(db: AsyncSession, studio_id: int) -> Ratings:
+    """Средние оценки клиентов по направлениям и по мастерам — ОДНИМ запросом.
+
+    Наружу уходит только агрегат. Текст отзыва клиент писал «для тренера и
+    студии», и показывать его другим клиентам продукт не обещал — поэтому его
+    здесь нет даже в выборке. Отменённая бронь не считается: оценка занятия,
+    на котором человека не было, ничего не значит.
+
+    Группировка по паре (направление, мастер) и свёртка в памяти: оба разреза
+    из одной выборки, без второго прохода по броням студии.
+    """
+    rows = (await db.execute(
+        select(Lesson.service_id, Lesson.teacher_id,
+               func.count(Reservation.id), func.sum(Reservation.rating))
+        .join(Lesson, Lesson.id == Reservation.lesson_id)
+        .where(Lesson.studio_id == studio_id, Reservation.rating.is_not(None), OCCUPIES_SPOT)
+        .group_by(Lesson.service_id, Lesson.teacher_id)
+    )).all()
+
+    services: dict[int, tuple[int, int]] = {}
+    teachers: dict[int, tuple[int, int]] = {}
+    for service_id, teacher_id, count, total in rows:
+        for key, acc in ((service_id, services), (teacher_id, teachers)):
+            if key is not None:
+                seen, sum_ = acc.get(key, (0, 0))
+                acc[key] = (seen + count, sum_ + int(total))
+
+    def summary(acc: dict[int, tuple[int, int]]) -> dict[int, Rating]:
+        return {
+            key: Rating(round(total / count, 1) if count >= MIN_RATINGS else None, count)
+            for key, (count, total) in acc.items()
+        }
+
+    return Ratings(summary(services), summary(teachers))
 
 
 class DayHours(NamedTuple):

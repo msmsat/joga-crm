@@ -50,8 +50,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import (
-    BookingChannelConfig, Client, Lesson, OnlineChannel, Reservation,
-    StripeCheckout, Studio,
+    BookingChannelConfig, Client, ClientPayment, Lesson, OnlineChannel,
+    Reservation, StripeCheckout, Studio,
 )
 from services import booking
 from services.booking import Terms
@@ -62,6 +62,13 @@ logger = logging.getLogger(__name__)
 # Вид покупки в `StripeCheckout.payload`. Заявки без этого ключа — прежние
 # (касса CRM и покупка абонемента клиентом); их путь не меняется ни на строку.
 PAYLOAD_KIND = "lesson_booking"
+
+# Заявка гасит долг «оплата на месте» уже состоявшейся записи: человек выбрал
+# платить у стойки, а потом передумал и платит картой. Место за ним и так —
+# бронь `active`, держать нечего; деньги закрывают ТУ ЖЕ строку долга
+# (`ClientPayment`), а не заводят вторую. Значение — id этой строки: долг,
+# погашенный тем временем у стойки, — уже другой исход, чем долг, который ждёт.
+DEBT_KEY = "debt_payment_id"
 
 # Отметка «эта оплата больше не исполнима на этих условиях». Лежит В ЗАЯВКЕ, а
 # не в новом статусе: статусов у заявки шесть, каждый читается в пяти местах, и
@@ -125,15 +132,17 @@ class Payable:
 def payload_for(*, reservation_id: int, client_id: int, lesson_id: int,
                 amount: int, currency: str, terms: Optional[list] = None,
                 thread_id: Optional[int] = None,
-                channel: Optional[str] = None) -> dict:
+                channel: Optional[str] = None,
+                debt_payment_id: Optional[int] = None) -> dict:
     """Экономическая правда заявки — то, что сверяется при проведении.
 
     Здесь нет ни текста, ни цены «как показали»: только то, что сервер сам
     посчитал в момент подтверждения условий. `terms` — снимок ЗАНЯТИЯ
     (`booking.lesson_part`), по которому видно, что занятие переехало под уже
-    открытой формой оплаты.
+    открытой формой оплаты. `debt_payment_id` — только у оплаты долга (DEBT_KEY);
+    у карточной брони ключа нет вовсе, и прежние заявки выглядят как раньше.
     """
-    return {
+    body = {
         "kind": PAYLOAD_KIND,
         "reservation_id": reservation_id,
         "client_id": client_id,
@@ -144,10 +153,18 @@ def payload_for(*, reservation_id: int, client_id: int, lesson_id: int,
         "thread_id": thread_id,
         "channel": channel,
     }
+    if debt_payment_id is not None:
+        body[DEBT_KEY] = debt_payment_id
+    return body
 
 
 def is_booking(checkout: StripeCheckout) -> bool:
     return (checkout.payload or {}).get("kind") == PAYLOAD_KIND
+
+
+def settles_debt(checkout: StripeCheckout) -> Optional[int]:
+    """id долга, который гасит эта заявка, или None — заявка держит место (`hold`)."""
+    return (checkout.payload or {}).get(DEBT_KEY)
 
 
 def voided(checkout: StripeCheckout) -> Optional[dict]:
@@ -178,7 +195,8 @@ async def start(db: AsyncSession, *, studio_id: int, reservation_id: int,
                 lesson_terms: Optional[list] = None,
                 thread_id: Optional[int] = None,
                 channel: Optional[str] = None,
-                presentation: Optional[dict] = None) -> Started:
+                presentation: Optional[dict] = None,
+                debt_payment_id: Optional[int] = None) -> Started:
     """Завести заявку на оплату занятия. СЕТИ ЗДЕСЬ НЕТ.
 
     Порядок «сначала у себя, потом в Stripe» — тот же, что у остальных заявок
@@ -200,7 +218,8 @@ async def start(db: AsyncSession, *, studio_id: int, reservation_id: int,
                           lesson_id=lesson_id, amount=terms.funding.price,
                           currency=terms.funding.currency,
                           terms=lesson_terms or booking.lesson_part(terms),
-                          thread_id=thread_id, channel=channel)
+                          thread_id=thread_id, channel=channel,
+                          debt_payment_id=debt_payment_id)
     checkout, needs_session = await reserve_checkout(
         db, studio_id=studio_id, user_id=None, account_id=account_id,
         payload=payload, amount=terms.funding.price,
@@ -298,6 +317,10 @@ async def settle(db: AsyncSession, checkout: StripeCheckout) -> Settlement:
                        checkout.studio_id, checkout.id)
         return Settlement.UNFULFILLABLE
 
+    debt_id = settles_debt(checkout)
+    if debt_id is not None:
+        return await _settle_debt(db, checkout, reservation, debt_id)
+
     # «Провели сейчас» и «было проведено раньше» различаются ДО перехода:
     # после него обе брони выглядят одинаково активными, а повтор вебхука
     # обязан быть отличим от настоящей оплаты — по нему считают выручку.
@@ -331,6 +354,46 @@ async def settle(db: AsyncSession, checkout: StripeCheckout) -> Settlement:
     await _tell_the_client(db, checkout, reservation)
     logger.info("payment_settled studio_id=%s reservation_id=%s checkout_id=%s",
                 checkout.studio_id, reservation.id, checkout.id)
+    return Settlement.ACTIVATED
+
+
+async def _settle_debt(db: AsyncSession, checkout: StripeCheckout,
+                       reservation: Reservation, debt_id: int) -> Settlement:
+    """Оплачен картой долг «оплата на месте» уже состоявшейся записи.
+
+    Бронь НЕ переводится: она и так `active`, место за человеком. Здесь
+    доказывается только, что долг всё ещё ждёт ЭТИХ денег. Его могли закрыть у
+    стойки, пока форма была открыта, — тогда второй платёж за то же занятие
+    уходит в возврат, а не растворяется в «уже оплачено». Сам долг закрывает
+    `record_income` (касса, та же строка) — одной транзакцией с пометкой заявки.
+
+    `attended` законен: администратор мог отметить приход, пока человек платил,
+    — долг от этого не исчезает. Отмена — нет: исполнять договор уже нечем.
+    """
+    if reservation.status == "cancelled":
+        logger.warning("payment_unfulfillable studio_id=%s checkout_id=%s reason=cancelled",
+                       checkout.studio_id, checkout.id)
+        return Settlement.UNFULFILLABLE
+    if reservation.status not in ("active", "attended"):
+        # У брони, которая держит место или ждёт одобрения, долга быть не может:
+        # заявка не о ней.
+        logger.warning("payment_mismatch studio_id=%s checkout_id=%s reason=debt_status",
+                       checkout.studio_id, checkout.id)
+        return Settlement.MISMATCH
+    debt = (await db.get(ClientPayment, debt_id, populate_existing=True)
+            if reservation.debt_payment_id == debt_id else None)
+    if debt is None or debt.status != "pending":
+        if await _paid_sibling(db, checkout, reservation.id):
+            logger.error(
+                "payment_duplicate studio_id=%s reservation_id=%s checkout_id=%s — "
+                "долг за бронь оплачен дважды, нужен возврат",
+                checkout.studio_id, reservation.id, checkout.id)
+            return Settlement.DUPLICATE
+        logger.warning("payment_unfulfillable studio_id=%s checkout_id=%s reason=debt_closed",
+                       checkout.studio_id, checkout.id)
+        return Settlement.ALREADY
+    logger.info("payment_settled studio_id=%s reservation_id=%s checkout_id=%s debt=%s",
+                checkout.studio_id, reservation.id, checkout.id, debt_id)
     return Settlement.ACTIVATED
 
 
@@ -439,6 +502,16 @@ async def record_income(db: AsyncSession, checkout: StripeCheckout) -> None:
     from schemas.checkout import CheckoutPayRequest
 
     payload = checkout.payload or {}
+    # Оплата долга (DEBT_KEY) гасит ТУ ЖЕ строку, что погасил бы кассир у
+    # стойки, и с той же скидкой администратора на брони: без строки в истории
+    # остался бы вечный долг рядом с оплатой, без скидки пересчёт разошёлся бы
+    # со списанной суммой. `settle` уже доказал, что долг ждёт.
+    debt, manual_percent = None, None
+    debt_id = settles_debt(checkout)
+    if debt_id is not None:
+        debt = await db.get(ClientPayment, debt_id)
+        reservation = await db.get(Reservation, payload.get("reservation_id"))
+        manual_percent = reservation.manual_discount_percent if reservation is not None else None
     await perform_pay(
         db, checkout.studio_id,
         # Не кассир: продажу провела оплата клиента, а не сотрудник. Подпись в
@@ -458,6 +531,8 @@ async def record_income(db: AsyncSession, checkout: StripeCheckout) -> None:
         # Цену занятия касса считает заново — по снимку скидки первого занятия
         # ЭТОЙ брони, иначе пересчёт разойдётся со списанной суммой.
         reservation_id=payload.get("reservation_id"),
+        debt=debt,
+        manual_percent=manual_percent,
     )
 
 
@@ -520,7 +595,18 @@ async def unfulfillable_reason(db: AsyncSession, checkout: StripeCheckout, *,
     )).scalar_one_or_none()
     if reservation is None or reservation.status == "cancelled":
         return "booking_gone"
-    if reservation.status != "hold":
+    debt_id = settles_debt(checkout)
+    if debt_id is not None:
+        # Оплата долга не держит места, поэтому «бронь не в hold» для неё не
+        # повод. Повод — долг, который больше не ждёт: его погасили у стойки
+        # или зачислили по окончании занятия, пока форма была открыта.
+        # Закрываем форму, запись не трогаем (`_KEEP_BOOKING`).
+        debt = (await db.get(ClientPayment, debt_id, populate_existing=True)
+                if reservation.debt_payment_id == debt_id else None)
+        if (reservation.status not in ("active", "attended")
+                or debt is None or debt.status != "pending"):
+            return "no_longer_waiting"
+    elif reservation.status != "hold":
         # Бронь перестала ждать оплату, но не через неё: администратор отметил
         # приход прямо из Журнала, где `hold` выглядит обычной записью. Место
         # человек уже получил — и может заплатить за него по всё ещё открытой
@@ -544,7 +630,10 @@ async def unfulfillable_reason(db: AsyncSession, checkout: StripeCheckout, *,
         return mark.get("reason") or "void"
 
     moment = now or datetime.utcnow()
-    created = reservation.created_at or moment
+    # Срок формы долга считается от самой формы: бронь могла быть создана
+    # неделю назад, и по её возрасту только что выданная ссылка закрылась бы
+    # на следующем проходе разбора.
+    created = (checkout.created_at if debt_id is not None else reservation.created_at) or moment
     if created < moment - timedelta(minutes=HOLD_MINUTES):
         # Место держится слишком долго. Это НЕ решение освободить его — это
         # повод спросить у платёжной системы.
@@ -659,7 +748,8 @@ async def return_base(db: AsyncSession, studio_id: int, channel: str) -> Optiona
 
 async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
                    client_id: int, channel: str = "telegram",
-                   thread_id: Optional[int] = None) -> Payable:
+                   thread_id: Optional[int] = None,
+                   return_to: Optional[str] = None) -> Payable:
     """Ссылка на оплату брони. ЕДИНСТВЕННАЯ точка, где заводится форма оплаты.
 
     Ни агент, ни роутер, ни обработчик нажатия сессию Stripe не создают: иначе
@@ -670,10 +760,21 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
     место ещё держится, занятие живо. Состоянию разговора здесь не верят — оно
     старше решения на целый ход.
 
+    Платить законно в двух случаях: бронь держит место под оплату (`hold`) или
+    запись состоялась с долгом «оплата на месте», а человек передумал и платит
+    картой (DEBT_KEY). Второе — только до начала занятия: по его окончании долг
+    зачисляет система (services/attendance), и форма, оплаченная после этого,
+    стала бы вторым платежом за тот же визит. Брони, ждущей одобрения студии,
+    платить нечего: одобрение первее денег.
+
+    `return_to` — адрес возврата, уже собранный СЕРВЕРОМ для открытой вкладки
+    мини-приложения (`miniapp_users._checkout_return_base`, origin из белого
+    списка). Без него — `return_base` по каналу разговора.
+
     Порядок: локальная заявка (коммит) -> сеть -> запись id сессии (коммит).
     Сеть между коммитами, а не внутри транзакции.
     """
-    from services import stripe_connect
+    from services import lesson_time, reservation_payment, stripe_connect
     from routers.checkout.stripe_pay import ATTEMPT_KEY
     from services.schedule_guard import lock_studio
 
@@ -684,9 +785,16 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
         .where(Reservation.id == reservation_id, Lesson.studio_id == studio_id)
         .execution_options(populate_existing=True)
     )).scalar_one_or_none()
-    if (reservation is None or reservation.status != "hold"
+    if (reservation is None or reservation.status not in ("hold", "active")
             or reservation.client_id != client_id):
         return Payable(PayOutcome.STALE)
+    debt = None
+    if reservation.status == "active":
+        debt = (await db.get(ClientPayment, reservation.debt_payment_id, populate_existing=True)
+                if reservation.debt_payment_id is not None else None)
+        if debt is None or debt.status != "pending":
+            # Абонемент, подарок или уже оплачено: платить нечего.
+            return Payable(PayOutcome.STALE)
 
     lesson = await db.get(Lesson, reservation.lesson_id, populate_existing=True)
     studio = await db.get(Studio, studio_id)
@@ -694,12 +802,20 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
     if (lesson is None or lesson.status == "cancelled" or studio is None
             or client is None or not client.is_active):
         return Payable(PayOutcome.STALE)
+    if debt is not None and lesson_time.has_started(lesson, studio) is not False:
+        # Началось — или момент неизвестен, и обещать «ещё не началось» нельзя.
+        return Payable(PayOutcome.STALE)
 
     currency = studio.currency or "RUB"
     # ЦЕНА КЛИЕНТА, ОДНИМ ИСТОЧНИКОМ С ПРЕДЛОЖЕНИЕМ. Прайс занятия здесь не
     # годится: у человека может быть скидка, и взять с него полную цену значит
     # взять лишнее. Считает `booking.client_price` — тот же расчёт, что у кассы.
-    if reservation.held_codes:
+    if debt is not None:
+        # Долг гасится ТЕМ ЖЕ расчётом, каким его проведёт вебхук: скидка
+        # администратора на брони и коды с записи (`reservation_payment.owed`).
+        # Сумма самого долга годится лишь как подсказка — касса пересчитает.
+        amount = await reservation_payment.owed(db, studio_id, reservation)
+    elif reservation.held_codes:
         # Клиент назвал при записи промокод, ваучер, баллы или депозит: форма
         # Stripe — на остаток, тем же расчётом кассы, каким его проведёт
         # вебхук (`record_income` → `perform_pay` берёт коды с брони сам).
@@ -715,7 +831,7 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
     account_id = await account_for(db, studio_id)
     if not account_id or not stripe_connect.configured():
         return Payable(PayOutcome.UNAVAILABLE)
-    base = await return_base(db, studio_id, channel)
+    base = return_to or await return_base(db, studio_id, channel)
     if not base:
         return Payable(PayOutcome.UNAVAILABLE)
 
@@ -724,6 +840,12 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
         # Оплату уже признали неисполнимой (занятие перенесли, сняли, место
         # отдали). Закрывать форму — операция со своим ответом от Stripe: этим
         # займётся разбор, а второй формы рядом быть не должно.
+        return Payable(PayOutcome.PENDING, checkout_id=open_now.id,
+                       amount=int(open_now.amount), currency=currency)
+    debt_id = debt.id if debt is not None else None
+    if open_now is not None and settles_debt(open_now) != debt_id:
+        # Открытая форма по этой брони — о другом: о прежнем держании места или
+        # о прежнем долге. Вторую рядом не заводим; разбор закроет старую.
         return Payable(PayOutcome.PENDING, checkout_id=open_now.id,
                        amount=int(open_now.amount), currency=currency)
 
@@ -770,7 +892,7 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
             client_id=client_id, lesson_id=lesson_id, terms=terms,
             account_id=account_id, application_fee=fee_minor,
             lesson_terms=snapshot, thread_id=thread_id, channel=channel,
-            presentation=presentation)
+            presentation=presentation, debt_payment_id=debt_id)
         # `start` -> `reserve_checkout` уже закоммитил заявку: она обязана
         # существовать ДО того, как у Stripe появится форма.
         checkout = await db.get(StripeCheckout, started.checkout_id)
@@ -793,8 +915,8 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
                     "reservation_id": str(reservation_id),
                     ATTEMPT_KEY: attempt_id,
                 },
-                success_url=f"{base}paysuccess",
-                cancel_url=f"{base}paycancel",
+                success_url=stripe_connect.checkout_return_url(base, "paysuccess", checkout_id),
+                cancel_url=stripe_connect.checkout_return_url(base, "paycancel", checkout_id),
                 application_fee_minor=fee_minor,
                 receipt_email=email,
                 client_reference_id=attempt_id,

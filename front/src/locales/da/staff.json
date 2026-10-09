@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "E-mail og telefon hører til medarbejderens konto — de ændrer dem i deres egen profil.",
       "color": "Farve i kalenderen",
       "colorHint": "Medarbejderens kolonne og hold vises i denne farve i kalenderen. En prik markerer farver, som andre allerede har.",
-      "colorTakenBy": "Bruges allerede af: {{names}}"
+      "colorTakenBy": "Bruges allerede af: {{names}}",
+      "bio": "Om mig — vises for kunder",
+      "bioPlaceholder": "For eksempel: Jeg har undervist i hatha yoga i 8 år og hjælper med blidt at give ryggen bevægelighed tilbage",
+      "bioHint": "Kunderne ser teksten i mini-appen: i detaljerne om en time og ved booking."
     },
     "role": {
       "heading": "Rolle og specialisering",

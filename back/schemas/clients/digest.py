@@ -17,6 +17,7 @@ class DigestVisit(BaseSchema):
     status: Literal["attended", "missed", "cancelled", "upcoming"]
     rating: Optional[int] = None
     review_text: Optional[str] = None
+    review_photos: list[str] = []
     is_trial: bool = False
     # Как записан и чем закрыт: цена занятия, скидка первого занятия, абонемент,
     # долг или оплата со снимком кассы.

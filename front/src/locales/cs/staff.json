@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "E-mail a telefon patří k účtu zaměstnance — mění si je ve vlastním profilu.",
       "color": "Barva v deníku",
       "colorHint": "Touto barvou je v deníku označen sloupec a lekce pracovníka. Tečkou jsou označeny barvy, které už mají jiní.",
-      "colorTakenBy": "Už má: {{names}}"
+      "colorTakenBy": "Už má: {{names}}",
+      "bio": "O mně — uvidí klienti",
+      "bioPlaceholder": "Například: 8 let učím hatha jógu a pomáhám jemně vrátit zádům pohyblivost",
+      "bioHint": "Klienti uvidí tento text v mini aplikaci: v detailu lekce a při rezervaci."
     },
     "role": {
       "heading": "Role a specializace",

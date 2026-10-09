@@ -8,6 +8,7 @@ import AnimatedPayButton from './AnimatedPayButton';
 import CheckoutDetails from './CheckoutDetails';
 import TeamLineup from './TeamLineup';
 import FirstPaymentPromo from './FirstPaymentPromo';
+import RollingAmount from './RollingAmount';
 import { checkoutAmounts } from '../checkout/checkoutAmounts';
 import type { CheckoutPreview } from '../../../../../api/billing/billing.types';
 import styles from '../../Billing.module.css';
@@ -261,20 +262,27 @@ export default function PlanCalculator({
 
           <CheckoutDetails preview={quote} pending={pending} />
 
-          {/* Итог и оплата. Класс bl-pay-cta глобальный: на телефоне этот же
-              узел становится полосой над нижней панелью (Billing.module.css). */}
-          <div className={`${styles.calcCta} bl-pay-cta`}>
-            <div className={styles.calcTotal}>
-              <span className={fillCls(styles.calcTotalLabel)}>{t(outcome === 'taxable' ? 'payModal.totalWithTax' : outcome === 'stripe_auto' || outcome === 'requires_review' ? 'checkout.totalBeforeTax' : 'paymentSchedule.total')}</span>
-              <span key={`${checkoutTotal}:${currency}`} className={fillCls(styles.calcTotalValue)}>{formatMoney(checkoutTotal, currency)}</span>
+          {/* Итог и оплата. Класс bl-pay-cta глобальный: на телефоне итог с
+              кнопкой становится второй капсулой дока (Billing.module.css), а
+              сноска о налоге остаётся здесь, в панели. На десктопе обёртка —
+              display: contents, и порядок прежний: итог, сноска, кнопка. */}
+          <div className={styles.calcCta}>
+            <div className={`${styles.calcBar} bl-pay-cta mnav-kin`}>
+              <div className={styles.calcTotal}>
+                <span className={fillCls(styles.calcTotalLabel)}>{t(outcome === 'taxable' ? 'payModal.totalWithTax' : outcome === 'stripe_auto' || outcome === 'requires_review' ? 'checkout.totalBeforeTax' : 'paymentSchedule.total')}</span>
+                <RollingAmount text={formatMoney(checkoutTotal, currency)} className={fillCls(styles.calcTotalValue)} />
+                {/* Только в капсуле телефона: в панели экономию и так называют
+                    строка «Ваша экономия» и бейдж под ценой. */}
+                {savedTotal > 0 && <span className={fillCls(styles.calcTotalOff)}>−{savingPercent}%</span>}
+              </div>
+              <AnimatedPayButton onClick={onPay} className={styles.calcPay} loading={payBusy}
+                disabled={!info}>
+                {selectedPeriod > 1 ? t('paymentSchedule.payFor', { count: selectedPeriod }) : t('pay')}
+              </AnimatedPayButton>
             </div>
             {/* Налог определяется по реквизитам на следующем шаге.
                 Отсутствие предварительного расчёта не блокирует переход к форме. */}
             <p className={fillCls(styles.calcVat)}>{t(taxNote)}</p>
-            <AnimatedPayButton onClick={onPay} className={styles.calcPay} loading={payBusy}
-              disabled={!info}>
-              {selectedPeriod > 1 ? t('paymentSchedule.payFor', { count: selectedPeriod }) : t('pay')}
-            </AnimatedPayButton>
           </div>
         </div>
       </div>

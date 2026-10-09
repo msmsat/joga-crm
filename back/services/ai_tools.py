@@ -921,6 +921,10 @@ class UpdateStaffArgs(BaseModel):
     staff_id: int
     access_role: Optional[Literal["admin", "trainer"]] = None
     department: Optional[str] = None
+    bio: Optional[str] = Field(
+        None, max_length=600,
+        description="«О себе» — текст для клиентов: мини-приложение показывает его в «Подробнее» "
+                    "у занятия и у мастера. Пустая строка снимает текст")
     salary: Optional[float] = None
     rate: Optional[float] = None
     rate_type: Optional[Literal["fixed", "percent", "hourly"]] = None
@@ -2965,8 +2969,8 @@ async def _staff_update_body(staff_id: int, ctx: StudioContext, db: AsyncSession
     endpoint="PUT /staff/{staff_id}",
 )
 async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffArgs) -> dict:
-    """Изменить сотрудника: должность (department), роль доступа (access_role:
-    admin/trainer), список услуг, ставку и тип оплаты. Указывать нужно только
+    """Изменить сотрудника: должность (department), «О себе» для клиентов (bio),
+    роль доступа (access_role: admin/trainer), список услуг, ставку и тип оплаты. Указывать нужно только
     то, что меняется, — остальное останется как было. Роль владельца этим
     инструментом не меняется. color — цвет его колонки и занятий в журнале.
 
@@ -2976,7 +2980,7 @@ async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffAr
     сотрудника: услуге, которой в списке нет, вернутся цена и время Каталога.
     Чтобы снять надбавку с одной услуги, пришли остальные без неё."""
     body = await _staff_update_body(args.staff_id, ctx, db)
-    for field in ("department", "salary", "rate", "rate_type", "color"):
+    for field in ("department", "bio", "salary", "rate", "rate_type", "color"):
         value = getattr(args, field)
         if value is not None:
             body[field] = value

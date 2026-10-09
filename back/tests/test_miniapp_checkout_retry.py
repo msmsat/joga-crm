@@ -54,7 +54,8 @@ def test_retry_reuses_branded_session_after_orm_rollback(lost_response, monkeypa
                     settings = (await db.execute(select(StudioBookingSettings).where(StudioBookingSettings.studio_id == sid))).scalar_one()
                     settings.widget_accent_color = '#765432'
                     await db.commit()
-                assert (await pay()).url == 'https://checkout.stripe.com/retry'
+                response = await pay()
+                assert response.url == 'https://checkout.stripe.com/retry'
                 assert requests[0]['branding_settings']['button_color'] == '#234567'
                 assert requests[0]['locale'] == 'cs'
                 assert requests[0]['metadata']['client_id'] == str(client_id)
@@ -67,6 +68,9 @@ def test_retry_reuses_branded_session_after_orm_rollback(lost_response, monkeypa
                     assert len(rows) == 1
                     assert rows[0].session_id == 'cs_retry'
                     assert rows[0].payload['client_id'] == client_id
+                    assert response.checkout_id == rows[0].id
+                    assert requests[0]['success_url'].endswith(f'pay=paysuccess&checkout_id={rows[0].id}')
+                    assert requests[0]['cancel_url'].endswith(f'pay=paycancel&checkout_id={rows[0].id}')
         finally:
             async with async_session_maker() as db:
                 await db.execute(delete(Studio).where(Studio.id == sid))

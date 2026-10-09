@@ -30,7 +30,9 @@ export interface StaffCreate {
 
 // role необязателен: у владельца роль не меняется — поле просто не отправляем.
 // color — цвет в журнале (#RRGGBB). Не прислали — сервер его не трогает.
-export type StaffUpdate = Omit<StaffCreate, 'password' | 'role'> & { role?: string; color?: string }
+// bio — «О себе» для клиентов мини-приложения; не прислали — не меняется,
+// пустая строка — снять текст.
+export type StaffUpdate = Omit<StaffCreate, 'password' | 'role'> & { role?: string; color?: string; bio?: string }
 
 export interface StaffMessagePayload {
   text: string
@@ -188,6 +190,8 @@ export interface StaffProfile extends StaffListItem {
   rate: number | null
   rate_type: 'fixed' | 'percent' | 'hourly' | null
   avg_rating: number | null
+  // «О себе» — текст, который клиент видит в мини-приложении.
+  bio: string | null
   stats: StaffStats
   halls: StaffHall[]
   services: StaffService[]

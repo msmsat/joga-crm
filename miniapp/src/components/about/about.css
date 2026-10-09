@@ -1,0 +1,211 @@
+/* ─────────────────────────────────────────────────────────────
+   «Подробнее» о занятии и мастере: описание на карточке расписания,
+   средняя оценка сердцами, визитка мастера.
+
+   Описание не подменяется новым блоком при раскрытии — тот же абзац
+   продолжается вниз: его высота растёт вместе с выезжающей панелью, а
+   растворённый конец второй строки проявляется, пока строка уходит вниз.
+
+   Визитка мастера — тот же матовый тёмный камень с зерном, что у линзы
+   нижней капсулы и записки отзыва (`--rv-slab`): один сильный предмет в
+   раскрытой карточке. Цвет студии в ней — только отсвет снизу.
+   ───────────────────────────────────────────────────────────── */
+
+/* Регистрация переменной, а не голое значение: иначе растворение конца
+   строки не анимируется и щёлкает в момент раскрытия. */
+@property --ab-fade {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 100%;
+}
+
+/* Где строка гаснет полностью. 100% — у самого края; у текста с «Подробнее»
+   в хвосте — раньше кнопки, чтобы слово не проступало из-под неё. */
+@property --ab-clear {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 100%;
+}
+
+@layer components {
+  /* ── Описание ── */
+  .ab-text {
+    --ab-lh: 20px;
+    --ab-lines: 2;
+    overflow: hidden;
+    line-height: var(--ab-lh);
+    max-height: calc(var(--ab-lh) * var(--ab-lines));
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    transition:
+      max-height 0.46s cubic-bezier(0.2, 0.8, 0.2, 1),
+      --ab-fade 0.32s ease,
+      --ab-clear 0.32s ease;
+  }
+
+  /* Описание под строкой выбора — во всю её ширину, до трёх строк: столько
+     читается одним взглядом и ещё не превращает список в стену текста. */
+  .ab-text-wide {
+    --ab-lh: 21px;
+    --ab-lines: 3;
+  }
+
+  /* Не влезло в две строки — конец второй уходит в прозрачность, а не
+     обрывается многоточием посреди слова. Две маски: всё, кроме последней
+     видимой строки, — целиком, последняя — с растворением вправо. */
+  .ab-text[data-cut] {
+    --ab-fade: 38%;
+    -webkit-mask:
+      linear-gradient(#000 0 0) 0 0 / 100% calc(100% - var(--ab-lh)) no-repeat,
+      linear-gradient(90deg, #000 var(--ab-fade), transparent var(--ab-clear)) 0 100% / 100% var(--ab-lh) no-repeat;
+    mask:
+      linear-gradient(#000 0 0) 0 0 / 100% calc(100% - var(--ab-lh)) no-repeat,
+      linear-gradient(90deg, #000 var(--ab-fade), transparent var(--ab-clear)) 0 100% / 100% var(--ab-lh) no-repeat;
+  }
+
+  /* «Подробнее» стоит в хвосте последней строки — в той её части, что и так
+     погасла. Текст уходит в прозрачность раньше, чем начинается кнопка. */
+  .ab-text-tail[data-cut] {
+    --ab-fade: 30%;
+    --ab-clear: 58%;
+  }
+
+  .ab-text[data-cut][data-open] {
+    --ab-fade: 100%;
+    --ab-clear: 100%;
+  }
+
+  /* ── «Подробнее» ── */
+  .ab-toggle-icon {
+    transition: rotate 0.36s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  [aria-expanded='true'] > .ab-toggle-icon {
+    rotate: 180deg;
+  }
+
+  /* ── Сердца средней оценки ── */
+  .ab-hearts {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .ab-hearts-row {
+    display: flex;
+    gap: 3px;
+  }
+
+  .ab-hearts-row svg {
+    width: 14px;
+    height: 14px;
+    overflow: visible;
+  }
+
+  .ab-hearts-row path {
+    fill: none;
+    stroke: var(--hr-empty);
+    stroke-width: 1.8;
+  }
+
+  /* Залитый ряд поверх пустого, обрезанный по средней: 4.3 — четыре сердца
+     и треть пятого. */
+  .ab-hearts-row[data-full] {
+    position: absolute;
+    inset: 0;
+  }
+
+  .ab-hearts-row[data-full] path {
+    fill: var(--v-brand);
+    stroke: var(--v-brand);
+  }
+
+  /* ── Визитка мастера: камень ── */
+  .ab-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 16px;
+    border-radius: 20px;
+    color: var(--rv-ink);
+    background:
+      var(--grain) 0 0 / 140px 140px,
+      linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 38%),
+      var(--rv-slab);
+    box-shadow: var(--rv-slab-shadow);
+  }
+
+  /* Свет студии тлеет в камне снизу, под фото. */
+  .ab-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(90% 120% at 0% 130%, var(--rv-ember), transparent 70%);
+    opacity: 0.8;
+    pointer-events: none;
+  }
+
+  .ab-card-kicker {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rv-ink-soft);
+  }
+
+  .ab-photo {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08), 0 8px 16px -8px rgba(0, 0, 0, 0.7);
+  }
+
+  .ab-initials {
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--rv-ink);
+    background: color-mix(in srgb, var(--v-brand) 26%, #2C2825);
+  }
+
+  .ab-name {
+    font-size: 15.5px;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: var(--rv-ink);
+  }
+
+  .ab-role {
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--rv-ink-soft);
+  }
+
+  .ab-score {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--rv-ink);
+  }
+
+  .ab-bio {
+    margin-top: 14px;
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.6;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    color: rgba(246, 241, 235, 0.84);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-text,
+  .ab-toggle-icon {
+    transition: none;
+  }
+}

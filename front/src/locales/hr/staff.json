@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "E-pošta i telefon pripadaju računu zaposlenika — mijenja ih u vlastitom profilu.",
       "color": "Boja u dnevniku",
       "colorHint": "Ovom bojom u dnevniku su označeni stupac i termini zaposlenika. Točkom su označene boje koje već imaju drugi.",
-      "colorTakenBy": "Već koristi: {{names}}"
+      "colorTakenBy": "Već koristi: {{names}}",
+      "bio": "O meni — vide klijenti",
+      "bioPlaceholder": "Na primjer: 8 godina predajem hatha jogu i pomažem leđima da nježno vrate pokretljivost",
+      "bioHint": "Klijenti vide ovaj tekst u mini aplikaciji: u detaljima termina i pri rezervaciji."
     },
     "role": {
       "heading": "Uloga i specijalizacija",

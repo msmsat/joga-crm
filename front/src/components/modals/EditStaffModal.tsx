@@ -14,6 +14,7 @@ import { useContactCheck } from "../../hooks/useContactCheck";
 import { useRoleLabel } from "../../hooks/useBusinessTerms";
 import StaffAvailabilitySection from "./StaffAvailabilitySection";
 import StaffColorPicker from "./StaffColorPicker";
+import StaffBioField from "./StaffBioField";
 import { submitOnEnter } from "../../lib/submitOnEnter";
 import { ServicePricePicker } from "../ui/index";
 
@@ -35,6 +36,8 @@ export interface StaffMember {
   rate_type?: "fixed" | "percent" | "hourly" | "";
   schedule?: Record<string, ScheduleDay>;
   photo_url?: string;
+  /** «О себе» — текст для клиентов мини-приложения. */
+  bio?: string;
   service_ids?: number[];
   /** Только СВОИ цены мастера {service_id: цена}. Услуги тут нет — значит, она
    *  идёт по цене Каталога и продолжит ехать за её правкой. */
@@ -381,6 +384,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     rate_type: "fixed" | "percent" | "hourly" | "";
     schedule: Record<string, ScheduleDay>;
     photo_url?: string;
+    bio: string;
     serviceIds: number[];
     servicePrices: Record<number, number>;
     serviceDurations: Record<number, number>;
@@ -388,7 +392,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
   }>({
     id: 0, name: "", last_name: "", phone: "", email: "", role: "",
     avatar_gradient: "", color: "", is_online: true, salary: "", rate_type: "",
-    schedule: { ...defaultSchedule }, serviceIds: [], servicePrices: {}, serviceDurations: {}, branchIds: [],
+    schedule: { ...defaultSchedule }, bio: "", serviceIds: [], servicePrices: {}, serviceDurations: {}, branchIds: [],
   });
   const [availableBranches, setAvailableBranches] = useState<{ id: number; name: string }[]>([]);
 
@@ -423,6 +427,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         rate_type:      staff.rate_type ?? "",
         schedule:       staff.schedule ?? { ...defaultSchedule },
         photo_url:      staff.photo_url,
+        bio:            staff.bio ?? "",
         serviceIds:     staff.service_ids ?? [],
         servicePrices:  staff.service_prices ?? {},
         serviceDurations: staff.service_durations ?? {},
@@ -481,6 +486,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         // Назначения филиалов имеют смысл только у того, кто ведёт услуги:
         // администратор в Resource-доступности не участвует.
         branch_ids: canHaveServices ? form.branchIds : [],
+        // «О себе» видят клиенты только у того, кто ведёт услуги. У остальных
+        // поле не показано — и не отправляется, чтобы не стереть прежний текст.
+        bio: canHaveServices ? form.bio : undefined,
       });
       setSaving(false);
       setSaved(true);
@@ -1008,6 +1016,20 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                           {t("staff:ownerModal.loginWarning")}
                         </p>
                       )}
+                    </div>
+                  )}
+
+                  {/* «О себе» — витрина мастера в мини-приложении. Только тем,
+                      кто ведёт услуги: администратора клиент не выбирает. */}
+                  {canHaveServices && (
+                    <div>
+                      <FieldLabel>{t("staff:editModal.profile.bio")}</FieldLabel>
+                      <StaffBioField
+                        value={form.bio}
+                        onChange={v => set("bio", v)}
+                        placeholder={t("staff:editModal.profile.bioPlaceholder")}
+                        hint={t("staff:editModal.profile.bioHint")}
+                      />
                     </div>
                   )}
 

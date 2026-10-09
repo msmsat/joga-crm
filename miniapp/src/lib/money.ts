@@ -23,9 +23,13 @@ export function moneyFormat(currency: string, locale: string, fraction = 0): Int
   return format;
 }
 
-export function money(amount: number, currency: string, locale: string): string {
+/** Копеек у сумм одного набора (пакеты витрины): все целые — без копеек,
+ *  иначе два знака у всех. Суммы одного экрана читаются одинаково. */
+export const fractionOf = (amounts: number[]): number => (amounts.some((amount) => !Number.isInteger(amount)) ? 2 : 0);
+
+export function money(amount: number, currency: string, locale: string, fraction = 0): string {
   try {
-    return moneyFormat(currency, locale).format(amount);
+    return moneyFormat(currency, locale, fraction).format(amount);
   } catch {
     // Неизвестный код валюты — число и код как есть, а не пустота.
     return `${amount} ${currency}`;

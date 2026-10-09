@@ -1,0 +1,17 @@
+.panel { position: fixed; z-index: 290; left: 50%; bottom: calc(var(--nav-clearance, 110px) + 8px); width: min(420px, calc(100% - 32px)); transform: translateX(-50%); padding: 20px; border: 1px solid var(--v-border); border-radius: 24px; background: var(--v-card); color: var(--v-foreground); box-shadow: 0 20px 60px -20px #0004; animation: appear 450ms cubic-bezier(.16,1,.3,1) both; }
+.header { display: flex; gap: 12px; align-items: flex-start; }
+.copy { flex: 1; min-width: 0; }
+.copy strong { display: block; font-size: 14px; font-weight: 800; letter-spacing: -.02em; }
+.copy p { margin: 6px 0 0; font-size: 12px; line-height: 1.6; color: var(--v-muted-foreground); }
+.orbit { display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; background: color-mix(in srgb, var(--v-brand) 17%, transparent); }
+.orbit span { width: 18px; height: 18px; border: 2px solid color-mix(in srgb, var(--v-brand) 28%, transparent); border-top-color: var(--v-foreground); border-radius: 50%; animation: spin 1.4s linear infinite; }
+.close { display: grid; place-items: center; width: 32px; height: 32px; margin: -6px -6px 0 0; flex-shrink: 0; border: none; border-radius: 50%; color: var(--v-muted-foreground); background: transparent; cursor: pointer; }
+.close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.close:hover { background: var(--v-background); }
+.retry { width: 100%; margin-top: 15px; min-height: 42px; border: 0; border-radius: 13px; background: var(--v-background); color: var(--v-foreground); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+.retry:disabled { opacity: .6; cursor: wait; }
+.retry:focus-visible,.close:focus-visible { outline: 2px solid var(--v-foreground); outline-offset: 3px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes appear { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
+@media (min-width: 1024px) { .panel { bottom: 32px; } }
+@media (prefers-reduced-motion: reduce) { .panel, .orbit span { animation: none; } }

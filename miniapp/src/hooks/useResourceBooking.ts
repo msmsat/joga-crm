@@ -7,6 +7,7 @@ import type { StudioCatalog } from '../api/studio';
 import { getSession } from '../lib/session';
 import { bumpLessons } from '../lib/revision';
 import { spawnPetals } from '../lib/petals';
+import { rememberCheckout } from '../lib/paymentSync';
 import {
   availabilityQuery, dayList, firstDayWithSlots, groupByDay, lastBookableDay, pageCount, pageRange,
   studioToday, type IsoDay,
@@ -235,7 +236,8 @@ export function useResourceBooking({ onNeedAuth, catalog }: Options = {}) {
       setNotice(null);
       setStep('done');
       bumpLessons();
-      spawnPetals();
+      if (result.payment_url) rememberCheckout({ reservation_id: result.reservation_id });
+      else spawnPetals();
       if (tg) tg.HapticFeedback.notificationOccurred('success');
     } catch (error) {
       const failure = error as ApiError;

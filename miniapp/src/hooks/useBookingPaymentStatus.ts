@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateA
 import { hybridApi } from '../api/hybrid.api';
 import type { BookingRead } from '../api/hybrid.types';
 import { bumpLessons } from '../lib/revision';
+import { syncCheckouts } from '../lib/paymentSync';
 
 /** A checkout return is a reason to read the booking, never proof of payment. */
 export function useBookingPaymentStatus(
@@ -19,6 +20,7 @@ export function useBookingPaymentStatus(
     checking.current = id;
     setRequest({ id, busy: true, error: false });
     try {
+      const verification = await syncCheckouts({ reservation_id: id });
       const current = await hybridApi.readQuote(quoteId);
       if (!('reservation_id' in current) || current.reservation_id !== id || !('status' in current)) return;
       setBooking(previous => previous?.reservation_id === id ? {
@@ -28,7 +30,7 @@ export function useBookingPaymentStatus(
         payment_url: current.status === 'hold' ? current.payment_url ?? previous.payment_url : current.payment_url,
       } : previous);
       bumpLessons();
-      setRequest({ id, busy: false, error: false });
+      setRequest({ id, busy: false, error: current.status === 'hold' && Boolean(verification?.verification_unavailable) });
     } catch {
       setRequest({ id, busy: false, error: true });
     } finally {

@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "Sähköposti ja puhelin kuuluvat työntekijän tiliin — hän vaihtaa ne omassa profiilissaan.",
       "color": "Väri päiväkirjassa",
       "colorHint": "Tällä värillä näkyvät työntekijän sarake ja tunnit päiväkirjassa. Piste merkitsee värit, jotka ovat jo muilla.",
-      "colorTakenBy": "Jo käytössä: {{names}}"
+      "colorTakenBy": "Jo käytössä: {{names}}",
+      "bio": "Tietoa minusta — näkyy asiakkaille",
+      "bioPlaceholder": "Esimerkiksi: Olen opettanut hathajoogaa 8 vuotta ja autan palauttamaan selän liikkuvuuden lempeästi",
+      "bioHint": "Asiakkaat näkevät tämän tekstin miniappissa: tunnin tiedoissa ja varatessa."
     },
     "role": {
       "heading": "Rooli ja erikoisala",

@@ -1,5 +1,5 @@
 import { memo, useState, type CSSProperties } from 'react';
-import { moneyFormat } from '../../lib/money';
+import { fractionOf, moneyFormat } from '../../lib/money';
 import { cn } from '../../lib/utils';
 import { priceLayout } from './priceLayout';
 
@@ -34,7 +34,7 @@ export default memo(function PriceRoll({ value, set, currency, locale, reduce, c
   reduce: boolean;
   className?: string;
 }) {
-  const fraction = [value, ...set].some((amount) => !Number.isInteger(amount)) ? 2 : 0;
+  const fraction = fractionOf([value, ...set]);
   let format: Intl.NumberFormat | null;
   try {
     format = moneyFormat(currency, locale, fraction);

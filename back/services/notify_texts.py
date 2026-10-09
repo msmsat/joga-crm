@@ -109,6 +109,15 @@ BDAY_PLAIN = {"ru": "Поздравляем вас с днём рождения!
 SPOTS = {"ru": "\nРядом: {spots}", "en": "\nNearby: {spots}", "uk": "\nПоруч: {spots}",
          "cs": "\nV okolí: {spots}", "de": "\nIn der Nähe: {spots}"}
 
+# Отзыв клиента к оценке занятия (t7). Обе части необязательны: оценку ставят и
+# без слов, и тогда сообщение кончается на точке, а не на пустых кавычках.
+# Снимки — счётчиком: в мессенджер их не отправить, смотрят их в Журнале.
+REVIEW_QUOTE = {"ru": "\n«{text}»", "en": "\n“{text}”", "uk": "\n«{text}»",
+                "cs": "\n„{text}“", "de": "\n„{text}“"}
+REVIEW_PHOTOS = {"ru": "\nФото к отзыву: {count}", "en": "\nPhotos attached: {count}",
+                 "uk": "\nФото до відгуку: {count}", "cs": "\nFotky k hodnocení: {count}",
+                 "de": "\nFotos zur Bewertung: {count}"}
+
 # Подписи полей в карточке «Детали» письма (notifier._EXTRA_FACTS).
 FACT_LABELS: dict[str, dict[str, str]] = {
     "trainer_name": {"ru": "Тренер", "en": "Trainer", "uk": "Тренер",
@@ -799,15 +808,15 @@ TEXTS: dict[str, dict[str, tuple[str, str]]] = {
     # t7 — задел (N-9 границы): эндпоинта создания отзыва ещё нет, врезки тоже.
     "t7": {
         "ru": ("Новый отзыв",
-               "Новая оценка занятия «{lesson}»: {rating}★ от клиента {client}."),
+               "Новая оценка занятия «{lesson}»: {rating}★ от клиента {client}.{review}"),
         "en": ("New review",
-               "New rating for “{lesson}”: {rating}★ from {client}."),
+               "New rating for “{lesson}”: {rating}★ from {client}.{review}"),
         "uk": ("Новий відгук",
-               "Нова оцінка заняття «{lesson}»: {rating}★ від клієнта {client}."),
+               "Нова оцінка заняття «{lesson}»: {rating}★ від клієнта {client}.{review}"),
         "cs": ("Nové hodnocení",
-               "Nové hodnocení lekce „{lesson}“: {rating}★ od klienta {client}."),
+               "Nové hodnocení lekce „{lesson}“: {rating}★ od klienta {client}.{review}"),
         "de": ("Neue Bewertung",
-               "Neue Bewertung für „{lesson}“: {rating}★ von {client}."),
+               "Neue Bewertung für „{lesson}“: {rating}★ von {client}.{review}"),
     },
 }
 

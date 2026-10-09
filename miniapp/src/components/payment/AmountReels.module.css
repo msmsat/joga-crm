@@ -1,0 +1,64 @@
+.amount {
+  display: inline-block;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.line {
+  display: inline-flex;
+  align-items: flex-start;
+}
+
+.lit {
+  white-space: pre;
+}
+
+/* Окно разряда выше строки на --pad сверху и снизу (отрицательное поле прячет
+   это от раскладки): цифры на ходу растворяются в мягких краях окна, а не
+   режутся кромкой строки. Трекинг — внешним полем, ячейка шириной в цифру. */
+.slot {
+  --pad: .24em;
+  position: relative;
+  display: inline-block;
+  padding-block: var(--pad);
+  margin-block: calc(var(--pad) * -1);
+  margin-inline-end: -.04em;
+  overflow: hidden;
+  overflow: clip;
+  letter-spacing: 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--pad), #000 calc(100% - var(--pad)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--pad), #000 calc(100% - var(--pad)), transparent 100%);
+}
+
+.ghost {
+  display: block;
+  visibility: hidden;
+}
+
+/* Барабан из двух кругов (20 цифр, шаг 5% высоты) стоит на второй копии своей
+   цифры; кадр отводит его на полный круг назад (50%) и докручивает. В кадрах
+   нет переменных — оборот у всех разрядов один, разная только длительность. */
+.reel {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--pad);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(calc((10 + var(--d)) * -5%));
+  will-change: translate;
+  animation: reel calc(860ms + var(--n) * 95ms) calc(var(--impact, 0ms) + 330ms) cubic-bezier(.18, .72, .12, 1) both;
+}
+
+.reel > span {
+  display: block;
+  height: 1.3em;
+}
+
+@keyframes reel {
+  from { translate: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel { animation: none; }
+}

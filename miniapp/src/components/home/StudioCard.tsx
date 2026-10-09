@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { Studio } from '../../api/studio';
 import { studioState, STATE_COLOR } from '../../lib/studio-status';
 import { Press } from '../ui/Press';
+import { cn } from '../../lib/utils';
 
 type Props = {
   studio: Studio;
@@ -140,10 +141,8 @@ export default function StudioCard({
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/20" />
 
             <span className="absolute left-3.5 top-3.5 flex items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1.5">
-              <motion.span
-                animate={state === 'open' ? { opacity: [1, 0.35, 1] } : { opacity: 1 }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-                className="h-1.5 w-1.5 rounded-full"
+              <span
+                className={cn('h-1.5 w-1.5 rounded-full', state === 'open' && 'pulse-dot')}
                 style={{ background: STATE_COLOR[state] }}
               />
               <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white">

@@ -78,6 +78,30 @@
   "payment": {
     "action": {
       "buy_subscription": "Subscription payment: {{item}}"
+    },
+    "success": {
+      "title": "Payment complete",
+      "booking_hint": "You're booked in. See you at the studio!",
+      "subscription_hint": "Your pass has been added to your profile.",
+      "service": "Service",
+      "subscription": "Pass",
+      "paid": "Paid",
+      "amount": "Amount paid",
+      "bookings": "My classes",
+      "profile": "Go to my profile",
+      "thanks": "Thank you for making time for yourself.",
+      "close": "Close payment confirmation"
+    },
+    "sync": {
+      "paid": "Paid online",
+      "confirmed": "Payment received and confirmed",
+      "check": "Check payment",
+      "checking": "Checking payment…",
+      "pending": "Waiting for payment confirmation. If you have already paid, check the status.",
+      "unavailable": "We could not verify your payment right now. Please try again in a few seconds.",
+      "awaiting": "Awaiting payment acceptance",
+      "verifying": "Stripe is confirming your payment. Everything will update automatically once it is accepted.",
+      "close": "Hide payment check"
     }
   },
   "profile": {
@@ -147,7 +171,33 @@
     "awaiting_confirmation": "Awaiting confirmation",
     "unpaid": "Unpaid · {{amount}}",
     "trial": "Trial class",
-    "reschedule": "Reschedule"
+    "reschedule": "Reschedule",
+    "review": {
+      "ask": "How was it?",
+      "levels": {
+        "1": "Didn't like it",
+        "2": "So-so",
+        "3": "Okay",
+        "4": "Good",
+        "5": "Loved it"
+      },
+      "prompt_low": "What went wrong? The studio will sort it out",
+      "prompt_mid": "What would have made it better?",
+      "prompt_high": "What stood out the most?",
+      "field": "Your review",
+      "add_photo": "Add photo",
+      "photo": "Photo",
+      "remove_photo": "Remove photo",
+      "open_photo": "Photo {{index}} of {{count}}",
+      "close": "Close",
+      "send": "Send review",
+      "sent": "Sent — thank you!",
+      "photo_error": "Couldn't upload the photo. Please try again.",
+      "rate_label": "Rate the class",
+      "to": "To {{name}} & the studio",
+      "to_studio": "To the studio",
+      "edit_short": "Edit"
+    }
   },
   "schedule": {
     "title": "Schedule",
@@ -686,5 +736,20 @@
     "view": "View subscriptions",
     "choose_hint": "Choose a class pack at your own pace",
     "details": "Classes remaining · View details"
+  },
+  "about": {
+    "more": "More",
+    "less": "Less",
+    "more_about": "More about {{name}}",
+    "rating_aria": "Rated {{avg}} out of 5",
+    "ratings_one": "{{count}} rating",
+    "ratings_few": "{{count}} ratings",
+    "ratings_many": "{{count}} ratings",
+    "ratings_other": "{{count}} ratings",
+    "average": "Average rating",
+    "leads": "Led by",
+    "book": "Book for {{time}}",
+    "my_booking": "My booking",
+    "view": "Open"
   }
 }

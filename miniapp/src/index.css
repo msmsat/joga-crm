@@ -1164,6 +1164,670 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
+   Отзыв о прошедшем занятии («Мои занятия», components/mylessons/review).
+
+   Сердца — оценка: заливка наливается волной от прежней оценки к новой
+   (задержки --d пишет HeartRating прямо в стиль до перерисовки), у нажатого
+   — вспышка кольцом и искрами (Web Animations). Всё на transform/opacity.
+
+   Записка тренеру — матовый тёмный камень с зерном, тот же материал, что у
+   линзы нижней капсулы и билета абонемента. Свет студии тлеет в нём снизу
+   у отправки и разгорается, когда пишут. «Приложить снимок» — плитка «Фото»
+   из заметок CRM (NotePhotos) в ряду снимков. Снимки «проявляются», пока
+   летят на сервер; отправку отмечает вспышка по камню.
+   Крупных поверхностей цвета студии нет (см. заметку «меньше цвета студии»).
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --rv-slab: linear-gradient(180deg, #312D2A 0%, #1B1917 100%);
+  --rv-slab-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 1px 1.5px rgba(30, 20, 15, 0.28), 0 16px 30px -16px rgba(30, 20, 15, 0.66);
+  /* Цвет кромки камня — им обведена галочка на аватаре: обводка вырезает
+     значок из камня, а не из карточки. */
+  --rv-slab-edge: #221F1D;
+  --rv-ink: #F6F1EB;
+  /* На камне: подпись адресата — 6:1, подсказка в пустом поле — не тише
+     4.5:1. Обе читаются по WCAG и остаются тише набранного текста. */
+  --rv-ink-soft: rgba(246, 241, 235, 0.6);
+  --rv-ink-faint: rgba(246, 241, 235, 0.5);
+  --rv-ember: color-mix(in srgb, var(--v-brand) 44%, transparent);
+  --rv-key: linear-gradient(180deg, #FFFFFF 0%, #ECE7E1 100%);
+  --rv-key-ink: #1A1A1A;
+  --hr-empty: rgba(26, 26, 26, 0.24);
+}
+
+/* На графитовой карточке чёрный камень провалился бы в дыру — в тёмной теме
+   он светлее, как кварцевая линза капсулы. */
+.dark {
+  --rv-slab: linear-gradient(180deg, #3B3734 0%, #282523 100%);
+  --rv-slab-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.11), inset 0 0 0 1px rgba(255, 255, 255, 0.045), 0 16px 30px -14px rgba(0, 0, 0, 0.85);
+  --rv-slab-edge: #2E2B28;
+  --rv-ink-faint: rgba(246, 241, 235, 0.54);
+  --rv-ember: color-mix(in srgb, var(--v-brand) 36%, transparent);
+  --hr-empty: rgba(255, 255, 255, 0.28);
+}
+
+@layer components {
+  /* ── Сердца ── */
+  .hr-group {
+    margin-left: -9px;
+  }
+
+  .hr-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .hr-lg .hr-btn {
+    width: 50px;
+    height: 50px;
+  }
+
+  .hr-heart {
+    position: relative;
+    display: block;
+    width: 27px;
+    height: 27px;
+  }
+
+  .hr-lg .hr-heart {
+    width: 31px;
+    height: 31px;
+  }
+
+  /* Нажатие видно в кадре касания — сердце поддаётся под пальцем ещё до
+     отпускания (scale — своё свойство, вспышка крутит transform). */
+  .hr-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    transition: scale 0.14s ease;
+  }
+
+  .hr-btn:active .hr-svg {
+    scale: 0.86;
+  }
+
+  /* Контур не перекрашивается: залитое сердце накрывает его своей обводкой
+     того же цвета, что и заливка. Значит, при смене оценки у контура нет
+     ни перехода, ни перерисовки. */
+  .hr-outline {
+    fill: none;
+    stroke: var(--hr-empty);
+    stroke-width: 1.7;
+  }
+
+  /* Заливка. Итог — по data-rating группы (одна смена атрибута на ряд), путь
+     к нему — волна Web Animations в HeartRating. Переходов здесь нет: каждый
+     рассылал бы события, которые React 19 ловит на корне. */
+  .hr-fill {
+    fill: var(--v-brand);
+    stroke: var(--v-brand);
+    stroke-width: 1.7;
+    transform: scale(0);
+    transform-box: fill-box;
+    transform-origin: 50% 64%;
+  }
+
+  .hr-group[data-rating="1"] .hr-btn:nth-child(-n + 1) .hr-fill,
+  .hr-group[data-rating="2"] .hr-btn:nth-child(-n + 2) .hr-fill,
+  .hr-group[data-rating="3"] .hr-btn:nth-child(-n + 3) .hr-fill,
+  .hr-group[data-rating="4"] .hr-btn:nth-child(-n + 4) .hr-fill,
+  .hr-group[data-rating="5"] .hr-btn:nth-child(-n + 5) .hr-fill {
+    transform: none;
+  }
+
+  .hr-gloss {
+    fill: #FFFFFF;
+    stroke: none;
+    opacity: 0.5;
+  }
+
+  .hr-ring {
+    position: absolute;
+    inset: -4px;
+    border: 2px solid var(--v-brand);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hr-spark {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+    border-radius: 50%;
+    background: var(--v-brand);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hr-spark:nth-of-type(3n) {
+    width: 4px;
+    height: 4px;
+    margin: -2px 0 0 -2px;
+    background: var(--v-brand-light);
+  }
+
+  .hr-spark:nth-of-type(3n + 1) {
+    background: color-mix(in srgb, var(--v-brand) 55%, #FFD48A);
+  }
+
+  .hr-btn:focus-visible {
+    outline: none;
+  }
+
+  .hr-btn:focus-visible .hr-heart::after {
+    content: "";
+    position: absolute;
+    inset: -7px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--v-brand);
+  }
+
+  .hr-word {
+    animation: hr-word 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+
+  /* ── Записка: камень ── */
+  .rv {
+    --rv-lh: 24px;
+    position: relative;
+    isolation: isolate;
+    margin-top: 6px;
+    padding: 10px 12px 12px 16px;
+    overflow: hidden;
+    border-radius: 20px;
+    color: var(--rv-ink);
+    background:
+      var(--grain) 0 0 / 140px 140px,
+      linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 38%),
+      var(--rv-slab);
+    box-shadow: var(--rv-slab-shadow);
+  }
+
+  /* Свет студии изнутри камня — снизу справа, у отправки. Пишут —
+     разгорается: переход у одного слоя, а не у самого камня с его тенями. */
+  .rv::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(85% 110% at 100% 125%, var(--rv-ember), transparent 72%);
+    opacity: 0.55;
+    transition: opacity 0.45s ease;
+    pointer-events: none;
+  }
+
+  .rv:focus-within::before {
+    opacity: 1;
+  }
+
+  /* Высота шапки — по карандашу прочтения: в правке его нет, но строка та
+     же, и переход «прочтение → правка» не сдвигает текст. */
+  .rv-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+  }
+
+  .rv-avatar {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: var(--v-brand-foreground);
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  /* Галочка вынесена за угол аватара — на инициалы она не заходит, — и
+     аватар с ней отодвигает подпись, чтобы та не упиралась в значок. */
+  .rv-avatar-done {
+    margin-right: 5px;
+  }
+
+  .rv-avatar-ok {
+    position: absolute;
+    right: -6px;
+    bottom: -5px;
+    display: grid;
+    place-items: center;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    color: #1A1A1A;
+    background: var(--v-success);
+    box-shadow: 0 0 0 1.5px var(--rv-slab-edge);
+  }
+
+  .rv-avatar-ok svg {
+    width: 8px;
+    height: 8px;
+  }
+
+  .rv-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--rv-ink-soft);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .rv-label-status {
+    color: var(--rv-ink);
+    animation: rv-rise 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s backwards;
+  }
+
+  .rv-corner {
+    display: flex;
+    flex: none;
+    margin-right: -2px;
+  }
+
+  /* ── Поле ── */
+  .rv-field {
+    display: block;
+    width: 100%;
+    margin-top: 2px;
+    padding: 0 4px 0 0;
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+    color: var(--rv-ink);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: var(--rv-lh);
+    letter-spacing: -0.01em;
+    caret-color: var(--v-brand);
+    outline: none;
+    resize: none;
+  }
+
+  .rv-field::placeholder {
+    color: var(--rv-ink-faint);
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 1;
+  }
+
+  .rv-foot {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .rv-count {
+    align-self: center;
+    color: var(--rv-ink-faint);
+    font-size: 11.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Снимки ── */
+  /* Ряд сжимает кадры, а не вылезает за камень: четыре снимка и отправка
+     помещаются и на телефоне шириной 320. */
+  .rv-tray {
+    display: flex;
+    flex: 1;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .rv-tray-read {
+    margin-top: 12px;
+    margin-bottom: 2px;
+  }
+
+  .rv-thumb {
+    position: relative;
+    flex: 0 1 52px;
+    min-width: 0;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), 0 8px 16px -10px rgba(0, 0, 0, 0.8);
+    transition: transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .rv-thumb:active {
+    transform: scale(0.94);
+  }
+
+  /* Кант поверх кадра: светлый снимок не растекается по камню. */
+  .rv-thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+  }
+
+  .rv-thumb-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter 0.7s ease, transform 0.7s ease;
+  }
+
+  /* Проявка: пока файл летит — кадр размыт, обесцвечен и притушен, по нему
+     идёт отсвет. Пришёл ответ сервера — атрибут снят, кадр проявляется. */
+  .rv-thumb[data-pending] .rv-thumb-img {
+    filter: blur(5px) saturate(0.2) brightness(0.6);
+    transform: scale(1.15);
+  }
+
+  .rv-thumb[data-pending]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.24) 50%, transparent 70%);
+    animation: rv-sheen 1.3s ease-in-out infinite;
+  }
+
+  .rv-thumb-in {
+    animation: rv-thumb-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards;
+  }
+
+  /* «Фото» — плитка из заметок CRM (NotePhotos): пунктирная рамка, плюс и
+     подпись, размером со снимок. На камне рамка и подпись светлые; под
+     пальцем, как там под мышью, — персиковые. */
+  .rv-add {
+    display: flex;
+    flex: 0 1 52px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 0;
+    aspect-ratio: 1;
+    border: 1px dashed rgba(246, 241, 235, 0.26);
+    border-radius: 12px;
+    color: var(--rv-ink-soft);
+    font-size: 10px;
+    font-weight: 700;
+    transition: transform 0.15s ease, translate 0.15s ease, color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .rv-add:active {
+    transform: scale(0.97);
+    border-color: var(--v-brand);
+    background-color: color-mix(in srgb, var(--v-brand) 10%, transparent);
+    color: var(--v-brand);
+  }
+
+  /* На телефоне шириной 320 с тремя снимками плитка ужимается до ~32px, и
+     подпись упиралась в рамку: там остаётся один плюс. */
+  .rv-add-wrap {
+    display: flex;
+    flex: 0 1 52px;
+    min-width: 0;
+    container-type: inline-size;
+  }
+
+  .rv-add-wrap > .rv-add {
+    flex: 1;
+  }
+
+  @container (max-width: 40px) {
+    .rv-add > span {
+      display: none;
+    }
+  }
+
+  /* ── Отправка и правка ── */
+  .rv-send {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    color: var(--rv-key-ink);
+    background: var(--rv-key);
+    box-shadow:
+      inset 0 1px 0 #FFFFFF,
+      inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+      0 2px 3px rgba(0, 0, 0, 0.3),
+      0 10px 22px -8px color-mix(in srgb, var(--v-brand) 75%, transparent);
+    transition: transform 0.15s ease;
+    animation: rv-pop 0.45s cubic-bezier(0.3, 0.7, 0.3, 1) backwards;
+  }
+
+  .rv-send:active:not(:disabled) {
+    transform: scale(0.9);
+  }
+
+  .rv-send-idle {
+    color: var(--rv-ink-faint);
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px rgba(246, 241, 235, 0.18);
+    animation: none;
+  }
+
+  /* Кнопка в 34px, а палец ловит 44: невидимое поле нажатия вокруг. */
+  .rv-edit-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin-right: 2px;
+    border-radius: 50%;
+    color: var(--rv-ink-soft);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    transition: transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .rv-edit-btn::before {
+    content: "";
+    position: absolute;
+    inset: -5px;
+  }
+
+  .rv-edit-btn:active {
+    transform: scale(0.9);
+  }
+
+  /* ── Прочтение ── */
+  .rv-read {
+    padding-bottom: 14px;
+  }
+
+  .rv-read-text {
+    display: block;
+    width: 100%;
+    margin-top: 2px;
+    text-align: left;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .rv-text {
+    color: var(--rv-ink);
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: var(--rv-lh);
+    letter-spacing: -0.01em;
+    white-space: pre-line;
+  }
+
+  /* Отправлено: по камню проходит вспышка, свет студии вспыхивает и оседает,
+     на аватаре адресата выскакивает галочка. Один раз — в момент отправки. */
+  .rv-sent::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(105deg, transparent 32%, rgba(255, 255, 255, 0.2) 50%, transparent 68%);
+    transform: translateX(-110%);
+    animation: rv-flash 0.95s cubic-bezier(0.3, 0.6, 0.3, 1) 0.08s;
+    pointer-events: none;
+  }
+
+  .rv-sent::before {
+    animation: rv-ember 1.4s ease-out;
+  }
+
+  .rv-sent .rv-avatar-ok {
+    animation: rv-pop 0.5s cubic-bezier(0.3, 0.7, 0.3, 1.3) 0.3s backwards;
+  }
+
+  .rv-enter {
+    transform-origin: 50% 0;
+    animation: rv-enter 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.1) backwards;
+  }
+
+  /* Выпуклая кнопка на бумаге («подробнее» в шапке карточки). */
+  .memo-knob {
+    background: var(--v-surface-raised);
+    box-shadow: var(--v-shadow-button);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .memo-knob:active:not(:disabled) {
+    transform: scale(0.92);
+    box-shadow: var(--v-shadow-button-press);
+  }
+
+  .memo-spin {
+    animation: memo-spin 0.8s linear infinite;
+  }
+
+  .memo-viewer {
+    animation: memo-fade 0.24s ease backwards;
+  }
+
+  .memo-viewer-img {
+    animation: memo-zoom 0.34s cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
+  }
+}
+
+/* Предпросмотр оценки под мышью (десктоп): контуры до наведённого сердца. */
+@media (hover: hover) {
+  /* Без :has(): он заставлял бы браузер перепроверять группу на каждую
+     смену атрибута внутри неё. Наведённое и всё левее — подсвечены, правее —
+     погашены обратно соседним селектором. */
+  .hr-group[role="radiogroup"]:hover .hr-btn .hr-outline {
+    stroke: color-mix(in srgb, var(--v-brand) 75%, transparent);
+  }
+
+  .hr-group[role="radiogroup"] .hr-btn:hover ~ .hr-btn .hr-outline {
+    stroke: var(--hr-empty);
+  }
+
+  .rv-add:hover {
+    translate: 0 -2px;
+    border-color: var(--v-brand);
+    background-color: color-mix(in srgb, var(--v-brand) 7%, transparent);
+    color: var(--v-brand);
+  }
+}
+
+@keyframes hr-word {
+  from { opacity: 0; transform: translateY(7px); }
+}
+
+@keyframes rv-rise {
+  from { opacity: 0; transform: translateY(5px); }
+}
+
+@keyframes rv-sheen {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes rv-thumb-in {
+  from { opacity: 0; transform: scale(0.6); }
+}
+
+@keyframes rv-pop {
+  0% { opacity: 0; transform: scale(0.4); }
+  55% { opacity: 1; transform: scale(1.12); }
+  80% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+@keyframes rv-flash {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(110%); }
+}
+
+@keyframes rv-ember {
+  0% { opacity: 0.55; }
+  25% { opacity: 1; }
+  100% { opacity: 0.55; }
+}
+
+@keyframes rv-enter {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+}
+
+@keyframes memo-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes memo-fade {
+  from { opacity: 0; }
+}
+
+@keyframes memo-zoom {
+  from { opacity: 0; transform: scale(0.94); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hr-svg,
+  .rv::before,
+  .rv-add,
+  .rv-thumb,
+  .rv-thumb-img,
+  .rv-send,
+  .rv-edit-btn {
+    transition: none;
+  }
+
+  .hr-word,
+  .rv-label-status,
+  .rv-thumb[data-pending]::before,
+  .rv-thumb-in,
+  .rv-send,
+  .rv-sent::before,
+  .rv-sent::after,
+  .rv-sent .rv-avatar-ok,
+  .rv-enter,
+  .memo-viewer,
+  .memo-viewer-img {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
    ТЕЛЕФОН: прокручивается оболочка, а не документ.
 
    Safari (панель с адресом снизу) и вебвью Instagram сворачивают и
@@ -1239,4 +1903,55 @@
    листе, стоило странице быть пролистанной. */
 .is-locked {
   overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Бесконечные пульсации — только CSS.
+
+   Они же раньше были `animate={{ …: [a, b, a] }}` с `repeat: Infinity` у
+   framer. Масштаб (`scale`) framer ведёт из JS: каждый кадр, вечно, на главном
+   потоке, — и не останавливается, когда раздел спрятан (`hidden` у вкладки
+   App), потому что `display: none` его цикл не видит. Замерено: после первого
+   визита в профиль ореол аватара держал 60 кадров rAF в секунду на любой
+   вкладке, и каждый тап по меню делил кадр с ним. CSS-анимация прозрачности
+   и transform идёт на видеокарте и в скрытом разделе не играет вовсе.
+   Длительность — у места применения (`animation-duration`), кривая — та же
+   easeInOut на каждом отрезке. */
+.pulse-dot {
+  animation: pulse-dot 2.4s ease-in-out infinite;
+}
+
+.pulse-halo {
+  animation: pulse-halo 4.5s ease-in-out infinite;
+}
+
+.pulse-boot {
+  animation: pulse-boot 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  50% { opacity: 0.35; }
+}
+
+@keyframes pulse-halo {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.15; transform: scale(1.06); }
+}
+
+@keyframes pulse-boot {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.18); }
+}
+
+/* Как у MotionConfig reducedMotion="user": движение уходит, мерцание
+   прозрачности остаётся. */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-halo {
+    animation: none;
+    opacity: 0.35;
+  }
+
+  .pulse-boot {
+    animation-name: pulse-dot;
+  }
 }

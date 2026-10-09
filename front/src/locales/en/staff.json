@@ -233,7 +233,10 @@
       "contactsOwnedByEmployee": "Email and phone belong to the employee's account — they change them in their own profile.",
       "color": "Color in the Journal",
       "colorHint": "Colors this person's column and classes in the Journal. A dot marks colors someone else already has.",
-      "colorTakenBy": "Already used by: {{names}}"
+      "colorTakenBy": "Already used by: {{names}}",
+      "bio": "About — shown to clients",
+      "bioPlaceholder": "For example: I've taught hatha yoga for 8 years and help people gently restore mobility to their back",
+      "bioHint": "Clients see this text in the mini app: in the class details and when booking."
     },
     "role": {
       "heading": "Role & specialization",
