@@ -69,7 +69,8 @@ function SessionPayment(props: Props) {
     pending.current = true; setBusy(true); setError('');
     try {
       const confirmation = await result.checkout.confirm({
-        returnUrl: props.returnUrl, redirect: 'if_required',
+        // The server binds return_url to this order; Stripe rejects a duplicate here.
+        redirect: 'if_required',
         billingAddress: { address: address(props.profile) },
         ...(event ? { expressCheckoutConfirmEvent: event } : {}),
       });

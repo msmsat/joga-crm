@@ -20,6 +20,7 @@ def test_prepaid_elements_is_one_payment_without_recurring_or_invoice_creation(m
     assert sent['mode'] == 'payment'
     assert sent['adaptive_pricing'] == {'enabled': False}
     assert sent['ui_mode'] == 'elements'
+    assert sent['return_url'] == 'https://velora.test/return'
     assert sent['line_items'][0]['price_data']['unit_amount'] == 4500
     assert 'recurring' not in sent['line_items'][0]['price_data']
     assert 'subscription_data' not in sent and 'invoice_creation' not in sent
