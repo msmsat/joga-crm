@@ -37,7 +37,8 @@
     "preparing": "Setting up your space",
     "need_link_title": "A studio link is needed",
     "need_link_hint": "This is the client area. Open it via your studio's link — from Telegram, Instagram or its website.",
-    "request_error": "Request failed ({{status}})"
+    "request_error": "Request failed ({{status}})",
+    "request_timeout": "The server did not respond in time. Check your connection and try again."
   },
   "lesson": {
     "name": {
@@ -520,6 +521,7 @@
     "min": "min"
   },
   "booking": {
+    "loading": "Loading...",
     "title": "Book a visit",
     "stepMaster": "Specialist",
     "duration": "{{min}} min",

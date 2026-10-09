@@ -188,8 +188,7 @@
       "emailSentTitle": "Email inviata",
       "resend": "Invia di nuovo",
       "resentOk": "Email inviata di nuovo",
-      "resendError": "Invio non riuscito — riprova",
-      "copied": "Copiato"
+      "resendError": "Invio non riuscito — riprova"
     },
     "illus": {
       "contacts": "Contatti",

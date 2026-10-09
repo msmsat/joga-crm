@@ -55,6 +55,7 @@ class _Lesson:
         # Статус записи-источника при переносе (Bumpix) — поле модели,
         # уходит в ответ _lesson_read, фейк обязан его нести.
         self.source_status = None
+        self.source_details = None
         # Отменённое и убранное из сетки — поле модели, уходит в ответ.
         self.hidden_at = None
 

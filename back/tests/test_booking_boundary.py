@@ -25,6 +25,8 @@ import ast
 import os
 import re
 
+import pytest
+
 BACK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Где вообще ищем: боевой код. Тесты, миграции и сиды пишут строки напрямую по
@@ -51,13 +53,13 @@ _ALLOWED: dict[str, str] = {
         "сообщений — проверяется отсутствием мутаций ниже",
 }
 
-# Перенос истории из другой CRM (Bumpix) — тот же класс, что сиды и миграции:
-# подготовка данных, а не поведение продукта. Пишут его только серверные
-# скрипты (scripts/import_bumpix*.py), роутеры зовут из пакета одно чтение.
-# Через домен прошлый визит пройти не может по определению: домен проверяет
-# покрытие, списывает абонемент и шлёт уведомления, а история обязана лечь
-# без кассы, списаний и писем (см. native_projection: «Past imports never
-# trigger automatic cash, attendance or messages»).
+# Перенос существующих записей из Bumpix — подготовка данных миграцией,
+# включая будущие записи в journal; это не живая запись через роутер.
+# Пишут его только серверные скрипты (scripts/import_bumpix*.py),
+# роутеры зовут из пакета одно чтение. Перенос не должен заново
+# применять текущие правила покрытия, списания и уведомления.
+# historical_cash отдельно переносит прошлые исходные оплаты
+# без сегодняшних начислений, списаний абонемента и писем.
 _IMPORT: dict[str, str] = {
     os.path.join("services", "bumpix_import", "native_projection.py"):
         "перенос записей Bumpix в обычные занятия и брони, без бизнес-эффектов",
@@ -163,6 +165,19 @@ def test_every_exception_has_a_reason():
     for path, reason in {**_ALLOWED, **_IMPORT}.items():
         assert reason and len(reason) > 20, path
         assert os.path.exists(os.path.join(BACK, path)), path
+
+
+def test_new_import_writer_still_requires_the_domain(tmp_path, monkeypatch):
+    """Миграционные исключения не разрешают нового писателя рядом с ними."""
+    writer = tmp_path / "services" / "bumpix_import" / "new_booking_writer.py"
+    writer.parent.mkdir(parents=True)
+    writer.write_text('reservation = Reservation()\nreservation.status = "active"\n', encoding="utf-8")
+    monkeypatch.setitem(globals(), "BACK", str(tmp_path))
+    monkeypatch.setitem(globals(), "_files", lambda: [str(writer)])
+    with pytest.raises(AssertionError, match="бронь заводят мимо домена"):
+        test_only_the_domain_creates_reservations()
+    with pytest.raises(AssertionError, match="бизнес-состояние брони меняют мимо домена"):
+        test_only_the_domain_moves_reservation_state()
 
 
 if __name__ == "__main__":

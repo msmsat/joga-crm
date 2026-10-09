@@ -24,6 +24,8 @@ models/client.py). Телефон доказательством по-прежн
 подтверждает почту изнутри Telegram — и дальше входит по ней в браузере в ТУ ЖЕ
 карточку, со своим абонементом и историей, вместо того чтобы завести вторую.
 """
+import asyncio
+import logging
 import random
 import secrets
 from datetime import datetime, timedelta
@@ -52,9 +54,13 @@ from .miniapp import (
 from .public import _AVATAR_COLORS
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 CODE_TTL = timedelta(minutes=10)
 MAX_ATTEMPTS = 5
+# aiosmtplib's timeout applies to individual SMTP operations; bound the whole
+# delivery as well so stalled SMTP returns a retryable response.
+EMAIL_SEND_TIMEOUT = 20
 
 # Один текст 400 на все отказы сверки: «нет кода», «протух», «не совпал» и
 # «кончились попытки» — снаружи неотличимы, иначе ответы сами подсказывают
@@ -133,6 +139,14 @@ _CODE_BODY = {
            "Haben Sie ihn nicht angefordert, können Sie diese E-Mail löschen.</p>"),
 }
 
+_SEND_ERROR = {
+    "ru": "Не удалось отправить код. Попробуйте ещё раз.",
+    "en": "Could not send the code. Please try again.",
+    "uk": "Не вдалося надіслати код. Спробуйте ще раз.",
+    "cs": "Kód se nepodařilo odeslat. Zkuste to prosím znovu.",
+    "de": "Der Code konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+}
+
 
 @router.post("/auth/email/request", response_model=EmailCodeResponse, status_code=202)
 @limiter.limit("3/minute")
@@ -153,6 +167,15 @@ async def request_email_code(
     if studio is None:
         raise HTTPException(status_code=404, detail="Студия не найдена")
 
+    is_new = (await db.execute(
+        select(Client.id).where(
+            Client.studio_id == body.studio_id,
+            normalized_column(Client, "email") == body.email,
+        )
+    )).scalars().first() is None
+    lang = resolve(studio.language)
+    studio_name = studio.name
+
     code = f"{secrets.randbelow(1_000_000):06d}"  # secrets, не random
     otp = (await db.execute(
         select(ClientEmailOtp).where(
@@ -166,25 +189,31 @@ async def request_email_code(
     otp.code_hash = get_password_hash(code)
     otp.expires_at = datetime.utcnow() + CODE_TTL
     otp.attempts = 0
+    # Finish all database work before waiting for SMTP. Querying after this
+    # commit would reacquire a connection and hold it throughout delivery.
     await db.commit()
 
-    is_new = (await db.execute(
-        select(Client.id).where(
-            Client.studio_id == body.studio_id,
-            normalized_column(Client, "email") == body.email,
+    try:
+        sent = await asyncio.wait_for(
+            send_email(
+                body.email,
+                pick(_CODE_SUBJECT, lang).format(studio=studio_name),
+                pick(_CODE_BODY, lang).format(
+                    code=code_block(code), minutes=int(CODE_TTL.total_seconds() // 60),
+                ),
+                brand=studio_name,
+                lang=lang,
+                require_delivery=True,
+            ),
+            timeout=EMAIL_SEND_TIMEOUT,
         )
-    )).scalars().first() is None
-
-    lang = resolve(studio.language)
-    await send_email(
-        body.email,
-        pick(_CODE_SUBJECT, lang).format(studio=studio.name),
-        pick(_CODE_BODY, lang).format(
-            code=code_block(code), minutes=int(CODE_TTL.total_seconds() // 60),
-        ),
-        brand=studio.name,
-        lang=lang,
-    )
+    except Exception as exc:
+        # Provider exceptions can contain addresses or connection details.
+        # Log their type only and return the same retryable error to the client.
+        logger.warning("miniapp email code delivery failed: %s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail=pick(_SEND_ERROR, lang)) from exc
+    if not sent:
+        raise HTTPException(status_code=503, detail=pick(_SEND_ERROR, lang))
     return EmailCodeResponse(expires_in=int(CODE_TTL.total_seconds()), is_new=is_new)
 
 

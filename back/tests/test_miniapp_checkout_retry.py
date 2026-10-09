@@ -15,7 +15,8 @@ from tests.test_miniapp_checkout import _setup, _Req
 
 
 @pytest.mark.parametrize('lost_response', [False, True])
-def test_retry_reuses_branded_session_after_orm_rollback(lost_response):
+def test_retry_reuses_branded_session_after_orm_rollback(lost_response, monkeypatch):
+    monkeypatch.setenv("MINIAPP_URL", "https://fixturefrontend.net")
     async def run():
         async with async_session_maker() as db:
             sid, package, client = await _setup(db)

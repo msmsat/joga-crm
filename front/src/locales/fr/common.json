@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR code",
     "subtitle": "Imprimez-le, publiez-le en story ou copiez le lien.",
-    "copy": "Copier",
     "print": "Imprimer",
     "story": "Pour les stories",
-    "copied": "Lien copié",
-    "copyFailed": "Impossible de copier le lien",
     "printBlocked": "Le navigateur a bloqué la fenêtre d'impression",
     "storySaved": "Image enregistrée",
     "storyFailed": "Impossible de créer l'image",
@@ -212,6 +209,10 @@
     "packageCaption": "Pointez la caméra pour acheter l'abonnement",
     "serviceAction": "QR code du service",
     "staffAction": "QR code du collaborateur"
+  },
+  "copyLink": {
+    "copy": "Copier le lien",
+    "copied": "Copié"
   },
   "auth": {
     "haveAccount": "Vous avez déjà un compte ?",

@@ -188,8 +188,7 @@
       "emailSentTitle": "Email trimis",
       "resend": "Trimite din nou",
       "resentOk": "Emailul a fost trimis din nou",
-      "resendError": "Trimiterea a eșuat — încearcă din nou",
-      "copied": "Copiat"
+      "resendError": "Trimiterea a eșuat — încearcă din nou"
     },
     "illus": {
       "contacts": "Contacte",

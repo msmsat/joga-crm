@@ -19,7 +19,7 @@ from datetime import datetime, time, timedelta
 
 warnings.filterwarnings("ignore")
 
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from starlette.requests import Request
@@ -82,7 +82,8 @@ async def _setup(db, *, confirmation=False, repeat=False, spots=3):
 
 async def _book(db, client, lesson, spot):
     return await create_reservation(
-        _Req(), ReservationCreateRequest(lesson_id=lesson.id, spot_number=spot), client, db,
+        request=_Req(), body=ReservationCreateRequest(lesson_id=lesson.id, spot_number=spot),
+        background=BackgroundTasks(), client=client, db=db,
     )
 
 

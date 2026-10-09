@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Client link",
       "desc": "Booking mini app — for bio, stories and campaigns",
-      "copy": "Copy link",
       "open": "Open mini app",
       "posterTitle": "Book your class online",
       "scanHint": "Point your phone camera at the code"

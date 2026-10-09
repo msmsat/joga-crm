@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion, type PanInfo } from 'framer-motion';
+import { motion, type PanInfo } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { StudioCatalog } from '../../api/studio';
 import type { BookingWizardFlow } from '../../hooks/useBookingWizard';
@@ -122,21 +122,19 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
             // решают, сколько их встаёт в ряд.
             className="@container min-h-[50%]"
           >
-            <AnimatePresence mode="wait" initial={false} custom={flow.dir}>
-              <motion.div
-                key={step}
-                custom={flow.dir}
-                initial={isDesktop ? { opacity: 0, y: 10 } : { opacity: 0, x: flow.dir * 28 }}
-                animate={{ opacity: 1, x: 0, y: 0 }}
-                exit={isDesktop ? { opacity: 0, y: -6 } : { opacity: 0, x: flow.dir * -28 }}
-                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              >
-                {step === 'time' && <WizardTime flow={flow} onPreview={onPreview} />}
-                {step === 'service' && <WizardServices flow={flow} onPreview={onPreview} />}
-                {step === 'master' && <WizardMasters flow={flow} onPreview={onPreview} />}
-                {step === 'summary' && (isDesktop ? <WizardTicket flow={flow} catalog={catalog} /> : <WizardSummary flow={flow} catalog={catalog} />)}
-              </motion.div>
-            </AnimatePresence>
+            {/* Replace the step immediately. Queued exit animations can keep
+                stale choices mounted when navigation changes at their boundary. */}
+            <motion.div
+              key={step}
+              initial={isDesktop ? { opacity: 0, y: 10 } : { opacity: 0, x: flow.dir * 28 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {step === 'time' && <WizardTime flow={flow} onPreview={onPreview} />}
+              {step === 'service' && <WizardServices flow={flow} onPreview={onPreview} />}
+              {step === 'master' && <WizardMasters flow={flow} onPreview={onPreview} />}
+              {step === 'summary' && (isDesktop ? <WizardTicket flow={flow} catalog={catalog} /> : <WizardSummary flow={flow} catalog={catalog} />)}
+            </motion.div>
           </motion.div>
         )}
       </Sheet>

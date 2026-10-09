@@ -197,11 +197,8 @@
   "qr": {
     "title": "Kod QR",
     "subtitle": "Wydrukuj, wrzuć na stories albo skopiuj link.",
-    "copy": "Kopiuj",
     "print": "Drukuj",
     "story": "Na stories",
-    "copied": "Link skopiowany",
-    "copyFailed": "Nie udało się skopiować linku",
     "printBlocked": "Przeglądarka zablokowała okno drukowania",
     "storySaved": "Obraz zapisany",
     "storyFailed": "Nie udało się utworzyć obrazu",
@@ -212,6 +209,10 @@
     "packageCaption": "Skieruj aparat, aby kupić karnet",
     "serviceAction": "Kod QR usługi",
     "staffAction": "Kod QR pracownika"
+  },
+  "copyLink": {
+    "copy": "Kopiuj link",
+    "copied": "Skopiowano"
   },
   "auth": {
     "haveAccount": "Masz już konto?",

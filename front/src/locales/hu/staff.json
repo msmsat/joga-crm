@@ -188,8 +188,7 @@
       "emailSentTitle": "Az e-mail elment",
       "resend": "Küldés újra",
       "resentOk": "Az e-mail újra elment",
-      "resendError": "A küldés nem sikerült — próbálja újra",
-      "copied": "Másolva"
+      "resendError": "A küldés nem sikerült — próbálja újra"
     },
     "illus": {
       "contacts": "Elérhetőségek",

@@ -197,11 +197,8 @@
   "qr": {
     "title": "Kod QR",
     "subtitle": "Printojeni, vendoseni në stories ose kopjoni lidhjen.",
-    "copy": "Kopjo",
     "print": "Printo",
     "story": "Për stories",
-    "copied": "Lidhja u kopjua",
-    "copyFailed": "Lidhja nuk u kopjua dot",
     "printBlocked": "Shfletuesi bllokoi dritaren e printimit",
     "storySaved": "Imazhi u ruajt",
     "storyFailed": "Imazhi nuk u krijua dot",
@@ -212,6 +209,10 @@
     "packageCaption": "Drejtoni kamerën për të blerë abonimin",
     "serviceAction": "Kodi QR i shërbimit",
     "staffAction": "Kodi QR i punonjësit"
+  },
+  "copyLink": {
+    "copy": "Kopjo lidhjen",
+    "copied": "U kopjua"
   },
   "auth": {
     "haveAccount": "Keni tashmë një llogari?",

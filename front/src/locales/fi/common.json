@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR-koodi",
     "subtitle": "Tulosta, jaa storyihin tai kopioi linkki.",
-    "copy": "Kopioi",
     "print": "Tulosta",
     "story": "Storyihin",
-    "copied": "Linkki kopioitu",
-    "copyFailed": "Linkin kopiointi ei onnistunut",
     "printBlocked": "Selain esti tulostusikkunan",
     "storySaved": "Kuva tallennettu",
     "storyFailed": "Kuvan luonti ei onnistunut",
@@ -212,6 +209,10 @@
     "packageCaption": "Suuntaa kamera ja osta sarjakortti",
     "serviceAction": "Palvelun QR-koodi",
     "staffAction": "Työntekijän QR-koodi"
+  },
+  "copyLink": {
+    "copy": "Kopioi linkki",
+    "copied": "Kopioitu"
   },
   "auth": {
     "haveAccount": "Onko sinulla jo tili?",

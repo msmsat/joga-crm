@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR kód",
     "subtitle": "Vytiskněte ho, dejte do stories nebo zkopírujte odkaz.",
-    "copy": "Kopírovat",
     "print": "Tisk",
     "story": "Do stories",
-    "copied": "Odkaz zkopírován",
-    "copyFailed": "Odkaz se nepodařilo zkopírovat",
     "printBlocked": "Prohlížeč zablokoval okno tisku",
     "storySaved": "Obrázek uložen",
     "storyFailed": "Obrázek se nepodařilo vytvořit",
@@ -212,6 +209,10 @@
     "packageCaption": "Namiřte foťák a kupte si permanentku",
     "serviceAction": "QR kód služby",
     "staffAction": "QR kód zaměstnance"
+  },
+  "copyLink": {
+    "copy": "Kopírovat odkaz",
+    "copied": "Zkopírováno"
   },
   "auth": {
     "haveAccount": "Už máte účet?",

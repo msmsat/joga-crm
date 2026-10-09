@@ -75,13 +75,16 @@ def is_deliverable(to: str) -> bool:
 async def send_email(
     to: str, subject: str, html: str, sender: str | None = None, brand: str | None = None,
     greeting: str | None = None, calendar: bytes | None = None, lang: str | None = None,
+    require_delivery: bool = False,
 ) -> bool:
     """Возвращает True, если письмо ушло (или дев-фолбэк его напечатал).
     `brand` — имя в шапке письма: студия пишет клиенту от своего имени, а не
     от имени CRM, которой он не покупал. Не передан — письмо платформы (Velora).
     `greeting` — обращение по имени, `calendar` — вложенный .ics с занятием.
     `lang` — язык подвала оболочки; не передан — определяется по тексту письма
-    (email_layout.wrap), что для украинского даёт русский подвал."""
+    (email_layout.wrap), что для украинского даёт русский подвал.
+    `require_delivery` — код входа должен действительно уйти в SMTP: вместо
+    dev-превью возвращаем False, если отправщик не настроен."""
     if not is_deliverable(to):
         logger.warning("mailer: %s — зарезервированный домен (RFC 2606/6761), не отправляем", to)
         return False
@@ -93,6 +96,9 @@ async def send_email(
     port = int(os.getenv("SMTP_PORT", "587"))
 
     if not (host and user and password):
+        if require_delivery:
+            logger.warning("mailer: SMTP delivery required but credentials are incomplete")
+            return False
         print("\n" + "=" * 40)
         print(f"[MAILER dev] Кому: {to}")
         print(f"Тема: {subject}")
@@ -100,24 +106,23 @@ async def send_email(
         print("=" * 40 + "\n")
         return True
 
-    # timeout задаём явно: дефолт aiosmtplib — 60 секунд, и это не только
-    # «письмо шло долго». Уведомления уходят ПРЯМО в запросе (notifier.deliver),
-    # а запрос всё это время держит соединение из пула БД (database.py). Одна
-    # запись в мини-приложении шлёт три письма — клиенту, админу, тренеру, — то
-    # есть подвисший SMTP запирал соединение на три минуты. Несколько таких
-    # записей осушали пул, и вместе с почтой ложилось всё приложение, включая
-    # CRM. 20 секунд — потолок ожидания, после которого notifier помечает
-    # отправку ошибкой в журнале и идёт дальше; живой провайдер отвечает за
-    # доли секунды и этого предела не видит.
-    await aiosmtplib.send(
-        build_message(to, subject, html, sender, brand, greeting, calendar, lang),
-        hostname=host,
-        port=port,
-        username=user,
-        password=password,
-        start_tls=True,
-        timeout=20,
-    )
+    message = build_message(to, subject, html, sender, brand, greeting, calendar, lang)
+    settings = dict(hostname=host, port=port, username=user, password=password,
+                    start_tls=True, timeout=20)
+    if require_delivery:
+        # The login handler bounds the entire operation. aiosmtplib.send's
+        # context manager awaits QUIT on cancellation, adding another timeout.
+        # Own the socket so cancellation closes it immediately. DATA acceptance
+        # confirms delivery to SMTP; waiting for QUIT cannot improve that result.
+        client = aiosmtplib.SMTP(**settings)
+        try:
+            await client.connect()
+            await client.send_message(message)
+        finally:
+            client.close()
+    else:
+        # Other notifications retain their existing transport and dev behavior.
+        await aiosmtplib.send(message, **settings)
     return True
 
 

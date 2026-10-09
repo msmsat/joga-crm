@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Link pentru clienți",
       "desc": "Mini-aplicație de rezervări — pentru bio, stories și campanii",
-      "copy": "Copiază linkul",
       "open": "Deschide mini-aplicația",
       "posterTitle": "Rezervați-vă ședința online",
       "scanHint": "Îndreptați camera telefonului spre cod"

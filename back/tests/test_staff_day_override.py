@@ -8,7 +8,7 @@
 Запуск из back/:  python -m tests.test_staff_day_override
 """
 import asyncio
-from datetime import date, datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 
 import pytest
@@ -61,15 +61,16 @@ class _DB:
 
 
 CTX = SimpleNamespace(user=None, studio_id=1, role="owner")
-FUTURE = date.today() + timedelta(days=4)
-PAST = date.today() - timedelta(days=1)
+TODAY = datetime.now(UTC).date()
+FUTURE = TODAY + timedelta(days=4)
+PAST = TODAY - timedelta(days=1)
 MEMBER = object()      # членство сотрудника в студии найдено
 BOOKING = SimpleNamespace(start_time=datetime.combine(FUTURE, datetime.min.time()), duration_min=60, buffer_after_min=0)        # строка активной записи на этот день
 NOTHING = None
 # HB-06: `schedule_guard.lock_studio` — первый SELECT в set_day_override.
 # strict_schedule_enabled=False — assert_future_assignments_valid не делает
 # больше ни одного запроса (короткое замыкание на самом входе функции).
-STUDIO = SimpleNamespace(id=1, strict_schedule_enabled=False)
+STUDIO = SimpleNamespace(id=1, strict_schedule_enabled=False, tz_iana="UTC")
 
 
 def _call(db, is_working, day=None):

@@ -467,27 +467,7 @@
 .miniapp-body { flex: 1; min-width: 0; }
 .miniapp-body .channel-desc { margin-bottom: 8px; }
 .miniapp-print { margin-top: 8px; }
-
-.channel-link {
-  display: flex; align-items: center; gap: 4px;
-  padding: 5px 5px 5px 10px; border-radius: 10px;
-  background: var(--bg); border: 1px solid var(--border);
-  transition: border-color 0.2s;
-}
-.miniapp-card:hover .channel-link { border-color: rgba(91,171,114,0.45); }
-.channel-link-url {
-  flex: 1; min-width: 0;
-  font-size: 10.5px; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  color: var(--text2); letter-spacing: -0.01em;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.channel-link-btn {
-  width: 24px; height: 24px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  border: none; border-radius: 7px; background: transparent;
-  color: var(--text3); cursor: pointer; transition: all 0.15s;
-}
-.channel-link-btn:hover { background: rgba(91,171,114,0.12); color: #5BAB72; }
+/* Строка адреса — CopyLink кита (нажал — скопировано), своих стилей у неё нет. */
 
 /* ── SETTINGS EXTRAS ── */
 .settings-select {

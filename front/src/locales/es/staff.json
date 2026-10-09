@@ -188,8 +188,7 @@
       "emailSentTitle": "Email enviado",
       "resend": "Enviar de nuevo",
       "resentOk": "Email enviado de nuevo",
-      "resendError": "Error al enviar — inténtalo otra vez",
-      "copied": "Copiado"
+      "resendError": "Error al enviar — inténtalo otra vez"
     },
     "illus": {
       "contacts": "Contactos",

@@ -188,8 +188,7 @@
       "emailSentTitle": "E-post sendt",
       "resend": "Send på nytt",
       "resentOk": "E-posten er sendt på nytt",
-      "resendError": "Sendingen mislyktes — prøv igjen",
-      "copied": "Kopiert"
+      "resendError": "Sendingen mislyktes — prøv igjen"
     },
     "illus": {
       "contacts": "Kontakter",

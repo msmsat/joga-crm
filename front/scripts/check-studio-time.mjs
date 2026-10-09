@@ -176,6 +176,26 @@ test('an own label is recognised by its words in five languages', () => {
   assert.equal(m.presetByWords('   '), null);
 });
 
+test('words inside other words do not pick the wrong icon', () => {
+  // «air» в «Repair», «vent» в «Event» — не проветривание.
+  assert.equal(m.presetByWords('Repair the mirror'), 'maintenance');
+  assert.equal(m.presetByWords('Event setup'), 'prep');
+  assert.equal(m.presetByWords('Ventilation'), 'airing');
+});
+
+test('lunch is recognised by words without its own preset button', () => {
+  assert.equal(m.presetByWords('Обед'), 'meal');
+  assert.equal(m.presetByWords('Обід'), 'meal');
+  assert.equal(m.presetByWords('Lunch break'), 'meal');
+  assert.equal(m.presetByWords('Oběd'), 'meal');
+  assert.equal(m.presetByWords('Mittagspause'), 'meal');
+  // Начало слова, а не кусок: «Победа», «Messen» — не обед.
+  assert.equal(m.presetByWords('Победа'), null);
+  assert.equal(m.presetByWords('Messen'), null);
+  // Обед — не готовое название: кнопки в окне у него нет.
+  assert.ok(!m.LABEL_PRESETS.includes('meal'));
+});
+
 // Цвет блока и палитра мастеров живут в трёх файлах. Разойдутся — мастер снова
 // сможет надеть цвет «времени студии», а перерыв — совпасть с занятием.
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');

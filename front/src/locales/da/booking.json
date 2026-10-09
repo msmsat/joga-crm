@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Kundelink",
       "desc": "Booking-miniapp — til bio, stories og kampagner",
-      "copy": "Kopiér link",
       "open": "Åbn miniappen",
       "posterTitle": "Book dit hold online",
       "scanHint": "Ret telefonens kamera mod koden"

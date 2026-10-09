@@ -8,6 +8,7 @@ import i18n from '../i18n';
 import { BASE_URL } from './config';
 import { getSession, clearSession } from '../lib/session';
 import { getStudioRef } from '../lib/entry';
+import { RequestTimeoutError, withRequestTimeout } from '../lib/requestTimeout';
 
 // `anon` — запрос заведомо без Bearer. Нужен ровно там, где живая сессия меняет
 // смысл ручки: /auth/email/verify с токеном не логинит, а привязывает почту к
@@ -19,6 +20,19 @@ type ApiOptions = Omit<RequestInit, 'body'> & { body?: unknown; anon?: boolean }
 export type ApiError = Error & { status?: number; code?: string };
 
 async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
+  try {
+    return await withRequestTimeout((signal) => performRequest<T>(path, { ...options, signal }), options.signal);
+  } catch (error) {
+    if (error instanceof RequestTimeoutError) {
+      const timeout = new Error(i18n.t('common.request_timeout')) as ApiError;
+      timeout.code = error.code;
+      throw timeout;
+    }
+    throw error;
+  }
+}
+
+async function performRequest<T>(path: string, options: ApiOptions): Promise<T> {
   const { body, headers, anon, ...rest } = options;
   const session = getSession();
 
@@ -43,8 +57,13 @@ async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
+  // A transport can finish after its deadline despite abort. Its late response
+  // must not mutate the session or reload the newly authenticated application.
+  if (options.signal?.aborted) throw options.signal.reason ?? new Error('Request cancelled');
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
+    if (options.signal?.aborted) throw options.signal.reason ?? new Error('Request cancelled');
     const message =
       typeof errorData?.detail === 'string'
         ? errorData.detail

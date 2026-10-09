@@ -23,6 +23,8 @@ export type { SwitchProps } from './Switch';
 export { ConfirmModal } from './ConfirmModal';
 export { QrShareModal } from './QrShareModal';
 export type { QrShareModalProps } from './QrShareModal';
+export { CopyLink } from './CopyLink';
+export type { CopyLinkProps } from './CopyLink';
 export type { ConfirmModalProps } from './ConfirmModal';
 export { ToastProvider, useToast } from './Toast';
 export { Sidebar } from './Sidebar';

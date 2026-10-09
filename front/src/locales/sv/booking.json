@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Kundlänk",
       "desc": "Boknings-miniapp — för bio, stories och kampanjer",
-      "copy": "Kopiera länk",
       "open": "Öppna miniappen",
       "posterTitle": "Boka ditt pass online",
       "scanHint": "Rikta mobilkameran mot koden"

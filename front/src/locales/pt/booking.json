@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Link para clientes",
       "desc": "Mini aplicação de marcações — para bio, stories e campanhas",
-      "copy": "Copiar link",
       "open": "Abrir a mini aplicação",
       "posterTitle": "Marque a sua aula online",
       "scanHint": "Aponte a câmara do telemóvel ao código"

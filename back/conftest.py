@@ -95,7 +95,7 @@ def pytest_configure(config):
     Затирания кредов достаточно, пока каждый отправщик честно проверяет их перед
     отправкой. Проверку однажды забудут — а цена ошибки здесь письмо реальному
     человеку с тестовыми данными, поэтому подменяем и то, через что письмо
-    физически уходит. Все отправители сидят на одном aiosmtplib.send.
+    физически уходит: обычные письма через send, коды входа через SMTP.
     """
     import aiosmtplib
 
@@ -103,6 +103,23 @@ def pytest_configure(config):
         return {}, "тест: письмо не отправлено"
 
     aiosmtplib.send = _swallow
+
+    class _NoNetworkSMTP:
+        """The required-delivery path must also stay offline under pytest."""
+
+        def __init__(self, **_kwargs):
+            pass
+
+        async def connect(self):
+            return None
+
+        async def send_message(self, *_args, **_kwargs):
+            return {}, "тест: письмо не отправлено"
+
+        def close(self):
+            pass
+
+    aiosmtplib.SMTP = _NoNetworkSMTP
 
     _stub_llm()
     _stub_stripe()

@@ -1,0 +1,16 @@
+.git
+**/node_modules
+**/venv
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.env
+**/.env.*
+**/dist
+**/backups
+**/uploads
+work
+outputs
+*.dump
+*.sql
+*.sql.gz

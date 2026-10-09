@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Lidhja për klientët",
       "desc": "Mini-aplikacioni i rezervimeve — për bio, stories dhe fushata",
-      "copy": "Kopjo lidhjen",
       "open": "Hap mini-aplikacionin",
       "posterTitle": "Rezervoni mësimin online",
       "scanHint": "Drejtojeni kamerën e telefonit nga kodi"

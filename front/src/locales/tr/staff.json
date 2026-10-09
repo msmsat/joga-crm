@@ -188,8 +188,7 @@
       "emailSentTitle": "E-posta gönderildi",
       "resend": "Yeniden gönder",
       "resentOk": "E-posta yeniden gönderildi",
-      "resendError": "Gönderilemedi — tekrar deneyin",
-      "copied": "Kopyalandı"
+      "resendError": "Gönderilemedi — tekrar deneyin"
     },
     "illus": {
       "contacts": "İletişim",

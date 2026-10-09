@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Müşteri bağlantısı",
       "desc": "Randevu mini uygulaması — bio, hikâye ve kampanyalar için",
-      "copy": "Bağlantıyı kopyala",
       "open": "Mini uygulamayı aç",
       "posterTitle": "Dersinizi online ayırtın",
       "scanHint": "Telefon kameranızı koda tutun"

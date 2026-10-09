@@ -37,7 +37,8 @@
     "preparing": "Ihr Bereich wird eingerichtet",
     "need_link_title": "Studio-Link erforderlich",
     "need_link_hint": "Das ist der Kundenbereich. Öffnen Sie ihn über den Link Ihres Studios — aus Telegram, Instagram oder von der Website.",
-    "request_error": "Anfrage fehlgeschlagen ({{status}})"
+    "request_error": "Anfrage fehlgeschlagen ({{status}})",
+    "request_timeout": "Der Server hat nicht rechtzeitig geantwortet. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
   },
   "lesson": {
     "name": {
@@ -520,6 +521,7 @@
     "min": "Min"
   },
   "booking": {
+    "loading": "Wird geladen...",
     "title": "Termin buchen",
     "stepMaster": "Fachkraft",
     "duration": "{{min}} Min.",

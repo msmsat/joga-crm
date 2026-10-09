@@ -37,7 +37,8 @@
     "preparing": "Настраиваем пространство",
     "need_link_title": "Нужна ссылка студии",
     "need_link_hint": "Это кабинет клиента. Откройте его по ссылке вашей студии — из Telegram, Instagram или с сайта.",
-    "request_error": "Ошибка запроса ({{status}})"
+    "request_error": "Ошибка запроса ({{status}})",
+    "request_timeout": "Сервер не ответил вовремя. Проверьте соединение и попробуйте ещё раз."
   },
   "lesson": {
     "name": {
@@ -520,6 +521,7 @@
     "min": "мин"
   },
   "booking": {
+    "loading": "Загрузка...",
     "title": "Записаться",
     "stepMaster": "Мастер",
     "duration": "{{min}} мин",

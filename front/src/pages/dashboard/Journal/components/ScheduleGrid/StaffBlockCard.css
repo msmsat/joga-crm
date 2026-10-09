@@ -204,6 +204,15 @@
   .j-staff-block-name { font-size: 8px; }
 }
 
+/* Высокий блок в колонке средней ширины (8–10 мастеров) — название в две
+   строки: «Nepracovní doba», а не «Neprac…». */
+@container staff-block (max-width: 200px) {
+  .j-staff-block.is-tall .j-staff-block-copy strong {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+    white-space: normal; overflow-wrap: break-word;
+  }
+}
+
 :root.dark .j-staff-block {
   --sb-surface: #232321;
   --sb-accent: #AFAAA2;
@@ -248,10 +257,11 @@
   .j-hdr-off-tag { font-size: 8px; padding: 2px 4px; }
 }
 
-/* «Время студии» (уборка, планёрка, проветривание): свой цвет — аква. Его
+/* «Время студии» (уборка, планёрка, обед): свой цвет — аква. Его
    нет в палитре мастеров и сервер его мастеру не выдаст
    (back/services/staff_colors.py, BLOCK_COLORS — меняешь акцент здесь, меняй
-   и там). Перерыв и выходной своих цветов не меняют.
+   и там). Перерыв и выходной своих цветов не меняют. Раскладка лица блока —
+   в StudioTimeFace.css.
    Кликабелен только сам блок: подложка периода пропускает нажатия к сетке. */
 .j-staff-block-studio {
   --sb-surface: #E6F6F5;
@@ -281,7 +291,7 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), 0 6px 16px -12px var(--sb-glow);
 }
 /* Точечная сетка — тише к тексту, ярче к краю: блок читается «временем
-   студии» даже без иконки, в узкой колонке недели. */
+   студии» и там, где медальон — голый значок, в очень узкой колонке. */
 .j-staff-block-studio::after {
   content: '';
   position: absolute;
@@ -298,39 +308,13 @@
   background: linear-gradient(180deg, #63D2D3, var(--sb-accent));
   box-shadow: 0 0 10px var(--sb-glow);
 }
-.j-staff-block-studio .j-staff-block-icon {
-  color: #fff;
-  background: var(--sb-chip);
-  box-shadow: 0 6px 14px -6px var(--sb-glow), inset 0 1px 0 rgba(255, 255, 255, .35);
+@keyframes j-studio-in {
+  from { opacity: 0; transform: translateY(3px) scale(.985); }
 }
-.j-staff-block-studio .j-staff-block-copy strong { letter-spacing: -.25px; }
-/* «Подготовка зала» в колонке средней ширины — двумя строками, а не
-   «Подготовка за…». Только у высокого блока (is-tall, от 100px — ~1,5 ч): в часовом
-   вторая строка выталкивала время за нижний край. */
-.j-staff-block-studio.is-tall .j-staff-block-copy strong {
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal;
-}
-.j-staff-block-studio .j-staff-block-time {
-  align-self: flex-start;
-  border-radius: 6px;
-  padding: 2px 6px;
-  background: var(--sb-detail);
-  opacity: 1;
-}
-.j-staff-block-dur { display: none; font-weight: 750; }
-.j-staff-block-dur::before { content: '·'; margin: 0 4px; opacity: .55; }
-.j-staff-block-studio .j-staff-block-art {
-  display: block;
-  top: auto;
-  bottom: -22px;
-  right: -14px;
-  width: 96px;
-  height: 96px;
-  opacity: .1;
-  transform: rotate(-12deg);
-}
-/* Карандаш «можно править». В колонке недели он висит в углу поверх блока, а
-   не в строке: там каждый пиксель — название. В широкой колонке — в строке. */
+
+/* Карандаш «можно править» у занятости без названия: висит в углу поверх
+   блока, а не в строке — там каждый пиксель отдан подписи. У «времени
+   студии» карандаш — на углу медальона (StudioTimeFace.css). */
 .j-staff-block-edit {
   position: absolute;
   top: 6px;
@@ -350,51 +334,7 @@
 .j-staff-block.is-openable:focus-visible .j-staff-block-edit { opacity: 1; transform: none; }
 /* Без наведения (планшет, телефон) подсказка «можно править» видна всегда. */
 @media (hover: none) { .j-staff-block-edit { opacity: .8; transform: none; } }
-
-.j-staff-block-studio.is-short .j-staff-block-art,
-.j-staff-block-studio.is-short .j-staff-block-dur,
-.j-staff-block-studio.is-short .j-staff-block-edit { display: none; }
-/* Колонка недели: подпись не должна уходить под угловой карандаш. */
-.j-staff-block-studio.is-openable:not(.is-short) .j-staff-block-copy { padding-right: 14px; }
-.j-staff-block-studio.is-short .j-staff-block-time { padding: 0 5px; border-radius: 5px; }
-.j-staff-block-studio.is-short:not(.is-tiny) .j-staff-block-caption { padding-top: 3px; padding-bottom: 3px; }
-.j-staff-block-studio.is-tiny .j-staff-block-time { background: none; padding: 0; }
-@container staff-block (max-width: 120px) {
-  .j-staff-block-studio .j-staff-block-edit,
-  .j-staff-block-studio .j-staff-block-art { display: none; }
-  .j-staff-block-studio .j-staff-block-time { padding: 2px 4px; }
-}
-@container staff-block (min-width: 260px) {
-  .j-staff-block-studio .j-staff-block-icon { flex-basis: 36px; width: 36px; height: 36px; border-radius: 12px; }
-  .j-staff-block-studio .j-staff-block-icon svg { width: 18px; height: 18px; }
-  .j-staff-block-studio .j-staff-block-time { align-self: center; padding: 5px 8px; border-radius: 7px; }
-  .j-staff-block-studio .j-staff-block-dur { display: inline; }
-  .j-staff-block-studio.is-tall .j-staff-block-copy strong { display: block; white-space: nowrap; }
-  .j-staff-block-studio.is-openable:not(.is-short) .j-staff-block-copy { padding-right: 0; }
-  .j-staff-block-studio .j-staff-block-edit { position: static; flex: 0 0 26px; width: 26px; height: 26px; margin-left: 4px; }
-  .j-staff-block-studio .j-staff-block-art { width: 120px; height: 120px; bottom: -30px; right: 32%; }
-}
-/* Узкая колонка (неделя, телефон — ~120–160px). Высокий блок: иконка над
-   текстом, название в две строки. Остальным иконка не по карману — текст в
-   строку на всю ширину. Сбоку иконка оставляла названию «П…». */
-@container staff-block (max-width: 160px) {
-  .j-staff-block-studio.is-tall .j-staff-block-caption {
-    flex-direction: column; align-items: flex-start; gap: 7px; padding: 10px 9px;
-  }
-  .j-staff-block-studio.is-tall .j-staff-block-icon {
-    flex-basis: auto; width: 26px; height: 26px; border-radius: 8px;
-  }
-  .j-staff-block-studio.is-tall .j-staff-block-icon svg { width: 14px; height: 14px; }
-  .j-staff-block-studio.is-tall .j-staff-block-copy { width: 100%; gap: 4px; }
-  .j-staff-block-studio.is-tall .j-staff-block-copy strong { font-size: 11px; overflow-wrap: anywhere; }
-  .j-staff-block-studio:not(.is-tall) .j-staff-block-icon { display: none; }
-  .j-staff-block-studio:not(.is-tall):not(.is-short) .j-staff-block-caption { padding: 9px 9px; }
-  .j-staff-block-studio:not(.is-tall) .j-staff-block-art { display: none; }
-  .j-staff-block-studio .j-staff-block-time { font-size: 9.5px; letter-spacing: -.2px; padding: 2px 5px; }
-}
-@keyframes j-studio-in {
-  from { opacity: 0; transform: translateY(3px) scale(.985); }
-}
+.j-staff-block.is-short .j-staff-block-edit { display: none; }
 
 .j-staff-block.is-openable {
   pointer-events: auto;
@@ -412,35 +352,9 @@
     transform: translateY(-1px);
   }
   .j-staff-block.is-openable:hover .j-staff-block-edit { opacity: 1; transform: none; }
-  .j-staff-block.is-openable:hover .j-staff-block-icon { transform: rotate(-6deg) scale(1.04); }
 }
-.j-staff-block-studio .j-staff-block-icon { transition: transform .22s cubic-bezier(.22, 1, .36, 1); }
 @media (prefers-reduced-motion: reduce) {
   .j-staff-block.is-openable, .j-staff-block.is-openable:hover { transition: none; transform: none; }
   .j-staff-block-studio { animation: none; }
-  .j-staff-block-edit, .j-staff-block-studio .j-staff-block-icon { transition: none; }
-  .j-staff-block.is-openable:hover .j-staff-block-icon { transform: none; }
-}
-
-/* У «времени студии» есть заметка или снимки — вместо точки справа значок
-   заметки (сам текст — в подсказке, остальное — в окне правки). */
-.j-staff-block-note {
-  flex: 0 0 20px;
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  margin-left: auto;
-  border-radius: 7px;
-  color: var(--sb-accent);
-  background: var(--sb-detail);
-}
-.j-staff-block.is-short .j-staff-block-note { flex-basis: 16px; width: 16px; height: 16px; border-radius: 5px; }
-.j-staff-block.is-short .j-staff-block-note svg { width: 10px; height: 10px; }
-.j-staff-block.is-tiny .j-staff-block-note { display: none; }
-@container staff-block (min-width: 260px) {
-  .j-staff-block-note { margin-left: 0; }
-}
-@container staff-block (max-width: 120px) {
-  .j-staff-block-note { display: none; }
+  .j-staff-block-edit { transition: none; }
 }

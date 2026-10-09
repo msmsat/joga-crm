@@ -188,8 +188,7 @@
       "emailSentTitle": "E-Mail gesendet",
       "resend": "Erneut senden",
       "resentOk": "E-Mail erneut gesendet",
-      "resendError": "Senden fehlgeschlagen — erneut versuchen",
-      "copied": "Kopiert"
+      "resendError": "Senden fehlgeschlagen — erneut versuchen"
     },
     "illus": {
       "contacts": "Kontakte",

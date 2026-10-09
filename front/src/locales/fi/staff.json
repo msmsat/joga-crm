@@ -188,8 +188,7 @@
       "emailSentTitle": "Sähköposti lähetetty",
       "resend": "Lähetä uudelleen",
       "resentOk": "Sähköposti lähetetty uudelleen",
-      "resendError": "Lähetys epäonnistui — yritä uudelleen",
-      "copied": "Kopioitu"
+      "resendError": "Lähetys epäonnistui — yritä uudelleen"
     },
     "illus": {
       "contacts": "Yhteystiedot",

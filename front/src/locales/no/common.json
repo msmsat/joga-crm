@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR-kode",
     "subtitle": "Skriv den ut, legg den i stories eller kopier lenken.",
-    "copy": "Kopier",
     "print": "Skriv ut",
     "story": "Til stories",
-    "copied": "Lenken er kopiert",
-    "copyFailed": "Kunne ikke kopiere lenken",
     "printBlocked": "Nettleseren blokkerte utskriftsvinduet",
     "storySaved": "Bildet er lagret",
     "storyFailed": "Kunne ikke lage bildet",
@@ -212,6 +209,10 @@
     "packageCaption": "Rett kameraet mot koden for å kjøpe klippekortet",
     "serviceAction": "QR-kode for tjenesten",
     "staffAction": "QR-kode for den ansatte"
+  },
+  "copyLink": {
+    "copy": "Kopier lenke",
+    "copied": "Kopiert"
   },
   "auth": {
     "haveAccount": "Har du allerede en konto?",

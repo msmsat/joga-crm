@@ -107,7 +107,10 @@ export function useGridColumns({ cols, filteredBookings, viewMode, calendarView,
               block,
               top: (start - gridStart - ti * 60) / 60 * 72 + 2,
               height: (end - start) / 60 * 72 - 4,
-              name: calendarView === 'week' ? visibleTrainers.find(s => s.id === block.staff_id)?.name : undefined,
+              // Имя — только когда дорожек несколько: неделя одного мастера
+              // уже называет его в панели, и строка с именем на каждом блоке
+              // отнимала место у названия («Подго-товка…» вместо «Подготовка зала»).
+              name: lanes > 1 ? visibleTrainers.find(s => s.id === block.staff_id)?.name : undefined,
               style: lanes > 1 ? { left: `${lane / lanes * 100}%`, right: `${(lanes - lane - 1) / lanes * 100}%` } : undefined,
             };
           });

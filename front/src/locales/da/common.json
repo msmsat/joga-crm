@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR-kode",
     "subtitle": "Print den, læg den i stories, eller kopiér linket.",
-    "copy": "Kopiér",
     "print": "Udskriv",
     "story": "Til stories",
-    "copied": "Linket er kopieret",
-    "copyFailed": "Linket kunne ikke kopieres",
     "printBlocked": "Browseren blokerede udskriftsvinduet",
     "storySaved": "Billedet er gemt",
     "storyFailed": "Billedet kunne ikke laves",
@@ -212,6 +209,10 @@
     "packageCaption": "Ret kameraet mod koden for at købe klippekortet",
     "serviceAction": "QR-kode til ydelsen",
     "staffAction": "QR-kode til medarbejderen"
+  },
+  "copyLink": {
+    "copy": "Kopiér link",
+    "copied": "Kopieret"
   },
   "auth": {
     "haveAccount": "Har du allerede en konto?",

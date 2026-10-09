@@ -197,11 +197,8 @@
   "qr": {
     "title": "Código QR",
     "subtitle": "Imprima, publique nos stories ou copie o link.",
-    "copy": "Copiar",
     "print": "Imprimir",
     "story": "Para stories",
-    "copied": "Link copiado",
-    "copyFailed": "Não foi possível copiar o link",
     "printBlocked": "O navegador bloqueou a janela de impressão",
     "storySaved": "Imagem guardada",
     "storyFailed": "Não foi possível criar a imagem",
@@ -212,6 +209,10 @@
     "packageCaption": "Aponte a câmara para comprar o passe",
     "serviceAction": "Código QR do serviço",
     "staffAction": "Código QR do colaborador"
+  },
+  "copyLink": {
+    "copy": "Copiar link",
+    "copied": "Copiado"
   },
   "auth": {
     "haveAccount": "Já tem uma conta?",

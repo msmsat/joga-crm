@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Asiakaslinkki",
       "desc": "Varausten minisovellus — bioon, storyihin ja kampanjoihin",
-      "copy": "Kopioi linkki",
       "open": "Avaa minisovellus",
       "posterTitle": "Varaa tuntisi verkossa",
       "scanHint": "Suuntaa puhelimen kamera koodiin"

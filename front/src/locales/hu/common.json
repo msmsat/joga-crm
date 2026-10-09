@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR-kód",
     "subtitle": "Nyomtasd ki, tedd ki sztoriba, vagy másold a linket.",
-    "copy": "Másolás",
     "print": "Nyomtatás",
     "story": "Sztorihoz",
-    "copied": "A link a vágólapon",
-    "copyFailed": "A linket nem sikerült másolni",
     "printBlocked": "A böngésző blokkolta a nyomtatási ablakot",
     "storySaved": "A kép mentve",
     "storyFailed": "A képet nem sikerült elkészíteni",
@@ -212,6 +209,10 @@
     "packageCaption": "Irányítsd rá a kamerát, és vedd meg a bérletet",
     "serviceAction": "A szolgáltatás QR-kódja",
     "staffAction": "A munkatárs QR-kódja"
+  },
+  "copyLink": {
+    "copy": "Link másolása",
+    "copied": "Másolva"
   },
   "auth": {
     "haveAccount": "Már van fiókja?",

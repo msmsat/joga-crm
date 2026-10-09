@@ -74,6 +74,7 @@ _FLAT_TABLES = {
     "billing._EXPORT_STATUS": billing_router._EXPORT_STATUS,
     "email_auth._CODE_SUBJECT": email_auth._CODE_SUBJECT,
     "email_auth._CODE_BODY": email_auth._CODE_BODY,
+    "email_auth._SEND_ERROR": email_auth._SEND_ERROR,
     "security._ARCHIVE_SUBJECT": security._ARCHIVE_SUBJECT,
     "security._ARCHIVE_BODY": security._ARCHIVE_BODY,
     "security._ARCHIVE_BUTTON": security._ARCHIVE_BUTTON,

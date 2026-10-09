@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import { ModalShell, ModalHeader, ModalBody, ModalFooter } from './modal';
 import { Button } from './Button';
+import { CopyLink } from './CopyLink';
 import { useToast } from './Toast';
+import { useQrFit } from './qrFit';
 
 /**
  * Одна модалка на все QR продукта: мини-приложение студии, занятие, абонемент.
@@ -182,18 +184,15 @@ async function drawStory(qr: HTMLCanvasElement, text: StoryText): Promise<Blob |
 export function QrShareModal({ url, title, subtitle, kicker, caption, fileName, onClose }: QrShareModalProps) {
   const { t } = useTranslation('common');
   const toast = useToast();
+  const posterRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
 
   const shareTitle = caption ?? t('qr.scanHint');
-
-  function copy() {
-    navigator.clipboard.writeText(url).then(
-      () => toast.success(t('qr.copied')),
-      () => toast.error(t('qr.copyFailed')),
-    );
-  }
+  // Размер кода — от высоты экрана (см. qrFit.ts): на ноутбуке и телефоне
+  // окно иначе прокручивалось, и код срезался.
+  const { size: qrSize, compact } = useQrFit(posterRef, svgRef, [url, title, subtitle, kicker, shareTitle]);
 
   function print() {
     // Печатаем ровно тот <svg>, что на экране: у него есть viewBox, поэтому на
@@ -270,14 +269,18 @@ export function QrShareModal({ url, title, subtitle, kicker, caption, fileName, 
     // 9999 — как у ConfirmModal: код открывают и поверх попапа журнала,
     // который сам стоит на 9000 и иначе накрыл бы модалку собой.
     <ModalShell onClose={onClose} maxWidth="420px" zIndex={9999}>
-      <ModalHeader title={t('qr.title')} subtitle={t('qr.subtitle')} />
+      {/* В тесном окне подзаголовок уступает место коду: действия под ним
+          говорят то же самое кнопками. */}
+      <ModalHeader title={t('qr.title')} subtitle={compact ? undefined : t('qr.subtitle')} />
 
       <ModalBody>
-        {/* Превью-плакат: то же, что уйдёт в сторис и на лист, только мельче —
-            человек должен видеть, что он раздаёт, до того как это напечатает. */}
-        <div style={{
-          position: 'relative', overflow: 'hidden', textAlign: 'center',
-          borderRadius: '20px', padding: '26px 22px 22px',
+        {/* Превью-плаката: то же, что уйдёт в сторис и на лист, только мельче —
+            человек должен видеть, что он раздаёт, до того как это напечатает.
+            Строки с адресом в превью нет: его показывает поле со ссылкой ниже,
+            где адрес заодно и копируется. */}
+        <div ref={posterRef} style={{
+          position: 'relative', overflow: 'hidden', textAlign: 'center', flexShrink: 0,
+          borderRadius: '20px', padding: compact ? '16px 18px 16px' : '22px 20px 20px',
           background: 'linear-gradient(180deg, #FDFCFB 0%, #F6EAE3 100%)',
           border: '1px solid rgba(var(--ink),0.05)',
         }}>
@@ -287,8 +290,16 @@ export function QrShareModal({ url, title, subtitle, kicker, caption, fileName, 
             background: 'radial-gradient(ellipse at center, rgba(252,174,145,0.45) 0%, rgba(252,174,145,0) 70%)',
           }} />
 
+          {/* Второй экземпляр кода — растровый, только ради плаката сторис.
+              Спрятан размером, а не display:none: у неотрисованного canvas
+              нечего копировать на холст. Внутри плаката и вне потока: отдельным
+              ребёнком тела он занимал бы промежуток между блоками. */}
+          <div ref={canvasRef} style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }} aria-hidden>
+            <QRCodeCanvas value={url} size={640} level="M" bgColor="#FFFFFF" fgColor="#1A1A1A" marginSize={0} />
+          </div>
+
           <div style={{ position: 'relative' }}>
-            {kicker && (
+            {kicker && !compact && (
               <div style={{
                 fontSize: 10, fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase',
                 color: '#B09C92', marginBottom: 8,
@@ -306,51 +317,31 @@ export function QrShareModal({ url, title, subtitle, kicker, caption, fileName, 
             )}
 
             <div ref={svgRef} style={{
-              display: 'inline-block', marginTop: 20, padding: 14, background: '#FFFFFF',
+              display: 'inline-block', marginTop: compact ? 12 : 18, padding: 14, background: '#FFFFFF',
               borderRadius: '18px', boxShadow: '0 12px 32px rgba(26,26,26,0.10)', lineHeight: 0,
             }}>
-              <QRCodeSVG value={url} size={168} level="M" bgColor="#FFFFFF" fgColor="#1A1A1A" marginSize={0} />
+              <QRCodeSVG value={url} size={qrSize} level="M" bgColor="#FFFFFF" fgColor="#1A1A1A" marginSize={0} />
             </div>
 
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1A1A', marginTop: 16 }}>{shareTitle}</div>
-            <div style={{ fontSize: 11, fontFamily: 'ui-monospace, Menlo, monospace', color: '#A8988F', marginTop: 5 }}>
-              {pretty(url)}
-            </div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1A1A', marginTop: compact ? 10 : 14 }}>{shareTitle}</div>
           </div>
         </div>
 
-        {/* Второй экземпляр кода — растровый, только ради плаката сторис.
-            Спрятан размером, а не display:none: у неотрисованного canvas
-            нечего копировать на холст. */}
-        <div ref={canvasRef} style={{ width: 0, height: 0, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }} aria-hidden>
-          <QRCodeCanvas value={url} size={640} level="M" bgColor="#FFFFFF" fgColor="#1A1A1A" marginSize={0} />
-        </div>
+        <CopyLink value={url} />
       </ModalBody>
 
       <ModalFooter>
-        {/* Два этажа, а не три кнопки в ряд: «Копировать · Печать · Для сторис»
-            на 360px не помещаются ни на одном из языков продукта. Сторис —
-            главное действие, поэтому отдельной строкой и во всю ширину. */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <Button variant="ghost" size="sm" fullWidth onClick={copy} icon={<IconCopy />}>{t('qr.copy')}</Button>
-            <Button variant="ghost" size="sm" fullWidth onClick={print} icon={<IconPrint />}>{t('qr.print')}</Button>
-          </div>
-          <Button variant="primary" fullWidth loading={busy} onClick={story} icon={<IconStory />}>
-            {t('qr.story')}
-          </Button>
-        </div>
+        {/* Один ряд: копирование переехало в поле со ссылкой, и двум кнопкам
+            хватает 360px на любом языке продукта. Сторис — главное действие,
+            поэтому она забирает всю оставшуюся ширину. */}
+        <Button variant="ghost" onClick={print} icon={<IconPrint />}>{t('qr.print')}</Button>
+        <Button variant="primary" loading={busy} onClick={story} icon={<IconStory />} style={{ flex: 1 }}>
+          {t('qr.story')}
+        </Button>
       </ModalFooter>
     </ModalShell>
   );
 }
-
-const IconCopy = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="9" y="9" width="12" height="12" rx="2.5" />
-    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-  </svg>
-);
 
 const IconPrint = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

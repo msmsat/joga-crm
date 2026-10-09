@@ -11,7 +11,7 @@ import { useRoleLabel } from "../../../../../hooks/useBusinessTerms";
 import { staffApi } from "../../../../../api/staff";
 import type { StaffMutateResponse } from "../../../../../api/staff/staff.types";
 import { submitOnEnter } from "../../../../../lib/submitOnEnter";
-import { ServicePricePicker } from "../../../../../components/ui/index";
+import { CopyLink, ServicePricePicker } from "../../../../../components/ui/index";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3 | 4;
@@ -361,7 +361,6 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     id: number; email: string; inviteUrl: string;
   } | null>(null);
   const [saving, setSaving]   = useState(false);
-  const [copied, setCopied]   = useState(false);
   const [resent, setResent]   = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   useEffect(() => {
@@ -400,7 +399,6 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     setStep(1);
     setShowCatalogConfirm(false);
     setCreated(null);
-    setCopied(false);
     setResent("idle");
     setData({ name: "", last_name: "", email: "", password: "", role: "", serviceIds: [], servicePrices: {}, serviceDurations: {}, salary: "", rate_type: "fixed", schedule: { ...defaultSchedule } });
     onClose();
@@ -431,17 +429,6 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
       // Ошибка уже показана тостом выше по стеку (Staff.tsx onSuccess) — остаёмся на шаге 3.
     } finally {
       setSaving(false);
-    }
-  }
-
-  async function handleCopy() {
-    if (!created?.inviteUrl) return;
-    try {
-      await navigator.clipboard.writeText(created.inviteUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      // Буфер обмена недоступен (http без localhost) — ссылка видна и её можно выделить.
     }
   }
 
@@ -1066,14 +1053,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                   {created?.inviteUrl && (
                     <div style={{ padding: "16px 18px", background: "rgba(var(--ink),0.025)", borderRadius: "14px", border: "1.5px solid rgba(var(--ink),0.08)", marginBottom: "14px" }}>
                       <p style={{ fontSize: "10px", fontWeight: 700, color: "#AAA", textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 7px" }}>{t("addModal.step4.inviteLinkLabel")}</p>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <div style={{ flex: 1, minWidth: 0, padding: "9px 12px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "11px", fontWeight: 600, color: "var(--text3)", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {created.inviteUrl}
-                        </div>
-                        <button type="button" onClick={handleCopy} style={{ padding: "9px 13px", background: copied ? "rgba(163,201,168,0.16)" : "rgba(252,174,145,0.12)", border: `1.5px solid ${copied ? "rgba(163,201,168,0.4)" : "rgba(252,174,145,0.3)"}`, borderRadius: "10px", fontSize: "12px", fontWeight: 700, color: copied ? "#7aab80" : "#F9A08B", cursor: "pointer", fontFamily: "Manrope, sans-serif", transition: "all 0.15s", whiteSpace: "nowrap" }}>
-                          {copied ? t("addModal.step4.copied") : t("common:buttons.copy")}
-                        </button>
-                      </div>
+                      <CopyLink value={created.inviteUrl} />
                     </div>
                   )}
 

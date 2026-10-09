@@ -1,0 +1,61 @@
+name: Miniapp release
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: miniapp-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  miniapp-release:
+    name: Miniapp release gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Build isolated verification image
+        run: docker build -f scripts/release.Dockerfile -t miniapp-release-tests .
+      - name: Verify the exact candidate with disposable PostgreSQL
+        env:
+          CANDIDATE_SHA: ${{ github.sha }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p release-evidence
+          docker network create --internal miniapp-release-test
+          docker run -d --name miniapp-release-postgres --network miniapp-release-test --network-alias postgres \
+            -e POSTGRES_USER=miniapp -e POSTGRES_PASSWORD=miniapp -e POSTGRES_DB=miniapp_test postgres:17-alpine
+          ready=false
+          for _ in {1..60}; do
+            if docker exec miniapp-release-postgres pg_isready -U miniapp -d miniapp_test; then ready=true; break; fi
+            sleep 1
+          done
+          test "$ready" = true
+          docker run --rm --network miniapp-release-test \
+            --mount "type=bind,src=$PWD/release-evidence,dst=/evidence" \
+            -e "MINIAPP_RELEASE_SHA=$CANDIDATE_SHA" \
+            -e DATABASE_URL=postgresql+asyncpg://miniapp:miniapp@postgres:5432/unused_app \
+            -e TEST_DATABASE_URL=postgresql+asyncpg://miniapp:miniapp@postgres:5432/miniapp_test \
+            -e SECRET_KEY=release-tests-only-not-a-production-secret miniapp-release-tests 2>&1 | tee release-evidence/gate.log
+          docker run --rm --network none --mount "type=bind,src=$PWD/release-evidence,dst=/evidence,readonly" \
+            miniapp-release-tests python /release/scripts/release_artifacts.py verify /evidence "$CANDIDATE_SHA"
+      - name: Preserve diagnostics and tested build
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: miniapp-release-${{ github.sha }}
+          path: release-evidence
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Remove only disposable verification containers
+        if: always()
+        run: |
+          docker rm -f miniapp-release-postgres || true
+          docker network rm miniapp-release-test || true

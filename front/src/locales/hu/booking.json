@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Ügyféllink",
       "desc": "Foglalási mini alkalmazás — bióhoz, storyhoz és kampányokhoz",
-      "copy": "Link másolása",
       "open": "Mini alkalmazás megnyitása",
       "posterTitle": "Foglaljon órát online",
       "scanHint": "Irányítsa a telefon kameráját a kódra"

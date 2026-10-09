@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Poveznica za klijente",
       "desc": "Mini aplikacija za rezervacije — za bio, stories i kampanje",
-      "copy": "Kopiraj poveznicu",
       "open": "Otvori mini aplikaciju",
       "posterTitle": "Rezervirajte termin online",
       "scanHint": "Usmjerite kameru telefona na kod"

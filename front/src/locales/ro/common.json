@@ -197,11 +197,8 @@
   "qr": {
     "title": "Cod QR",
     "subtitle": "Printează-l, pune-l în stories sau copiază linkul.",
-    "copy": "Copiază",
     "print": "Printează",
     "story": "Pentru stories",
-    "copied": "Link copiat",
-    "copyFailed": "Linkul nu a putut fi copiat",
     "printBlocked": "Browserul a blocat fereastra de printare",
     "storySaved": "Imagine salvată",
     "storyFailed": "Imaginea nu a putut fi creată",
@@ -212,6 +209,10 @@
     "packageCaption": "Îndreaptă camera ca să cumperi abonamentul",
     "serviceAction": "Codul QR al serviciului",
     "staffAction": "Codul QR al angajatului"
+  },
+  "copyLink": {
+    "copy": "Copiază linkul",
+    "copied": "Copiat"
   },
   "auth": {
     "haveAccount": "Aveți deja un cont?",

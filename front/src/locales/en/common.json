@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR code",
     "subtitle": "Print it, post it to stories, or copy the link.",
-    "copy": "Copy",
     "print": "Print",
     "story": "For stories",
-    "copied": "Link copied",
-    "copyFailed": "Could not copy the link",
     "printBlocked": "The browser blocked the print window",
     "storySaved": "Image saved",
     "storyFailed": "Could not build the image",
@@ -212,6 +209,10 @@
     "packageCaption": "Point your camera to buy this pass",
     "serviceAction": "Service QR code",
     "staffAction": "Staff QR code"
+  },
+  "copyLink": {
+    "copy": "Copy link",
+    "copied": "Copied"
   },
   "auth": {
     "haveAccount": "Already have an account?",

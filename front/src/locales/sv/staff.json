@@ -188,8 +188,7 @@
       "emailSentTitle": "E-post skickad",
       "resend": "Skicka igen",
       "resentOk": "E-posten har skickats igen",
-      "resendError": "Sändningen misslyckades — försök igen",
-      "copied": "Kopierat"
+      "resendError": "Sändningen misslyckades — försök igen"
     },
     "illus": {
       "contacts": "Kontakter",

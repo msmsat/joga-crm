@@ -14,15 +14,16 @@
 и публичной записи (`routers/booking/public.py`): расхождение логики между
 ними и мини-приложением означает разъехавшиеся остатки абонементов.
 """
+import logging
 from datetime import date, datetime, timedelta, timezone
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, Response
 from pydantic import Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from database import get_db
+from database import async_session_maker, get_db
 from ratelimit import limiter
 from models import Client, ClientPayment, Hall, Lesson, Reservation, Studio
 from schemas._base import BaseSchema
@@ -45,8 +46,28 @@ from .miniapp import Viewer, get_current_client, get_viewer
 from services.schedule_guard import lock_studio
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 DEFAULT_HALL_COLOR = "#FCAE91"
+
+
+async def _notify_after_response(
+    studio_id: int, notifications: list[tuple[str, str, dict]],
+    client_id: Optional[int] = None, remaining: Optional[int] = None,
+) -> None:
+    """Deliver staff/subscription events without delaying a saved mutation.
+
+    Only scalar snapshots cross the response boundary. Client booking/cancel
+    messages already have durable intents recorded by the booking domain.
+    """
+    try:
+        async with async_session_maker() as db:
+            for role, event_id, context in notifications:
+                await notify(db, studio_id, role, event_id, context)
+            if client_id is not None:
+                await notify_subscription_remaining(db, studio_id, client_id, remaining)
+    except Exception:
+        logger.exception("miniapp post-response notifications failed: studio=%s", studio_id)
 
 
 class CoffeeParticipant(BaseSchema):
@@ -711,6 +732,7 @@ async def _studio_lesson(db: AsyncSession, client: Client, lesson_id: int) -> Le
 async def create_reservation(
     request: Request,
     body: ReservationCreateRequest,
+    background: BackgroundTasks,
     client: Client = Depends(get_current_client),
     db: AsyncSession = Depends(get_db),
 ):
@@ -810,36 +832,35 @@ async def create_reservation(
     reservation = await db.get(Reservation, result.reservation_id)
     remaining = result.remaining
 
-    # c1 «Запись подтверждена» уходит только за подтверждённой бронью: пока
-    # студия не одобрила, подтверждать нечего. Клиент видит статус «ожидает» в
-    # мини-приложении, а c1 придёт после confirm в Журнале.
+    # Client c1 is delivered by the durable intent recorded in booking.create;
+    # sending it here too would duplicate the worker's confirmation.
     lesson_ctx = await lesson_context(db, lesson)
-    if reservation.status == "active":
-        await notify(db, client.studio_id, "client", "c1", {
-            **lesson_ctx, "client_id": client.id,
-        })
-    await notify(db, client.studio_id, "admin", "a1", {
+    notifications = [("admin", "a1", {
         **lesson_ctx,
         "client_name": client.name,
         # См. reservations.py: гасит a1 владельцу, который сам ведёт занятие и
         # получит t1 (notifier._recipient).
         "trainer_id": lesson.teacher_id,
-    })
+    })]
     if lesson.teacher_id is not None:
-        await notify(db, client.studio_id, "trainer", "t1", {
+        notifications.append(("trainer", "t1", {
             **lesson_ctx,
             "trainer_id": lesson.teacher_id,
             "client_name": client.name,
-        })
-    await notify_subscription_remaining(db, client.studio_id, client.id, remaining)
+        }))
 
-    return MiniappReservation(
+    response = MiniappReservation(
         id=reservation.id, lesson_id=reservation.lesson_id,
         spot_number=reservation.spot_number, status=reservation.status, rating=reservation.rating,
         # Панель приглашения на кофе открывается сразу после этого ответа —
         # отдаём ей актуальную картину, а не ту, что была в списке до брони.
         coffee=await _coffee_state(db, client, lesson.id, rules),
     )
+    # Reads above reopen a transaction after the booking commit. Release its
+    # connection before BackgroundTasks starts SMTP using its own session.
+    await db.commit()
+    background.add_task(_notify_after_response, client.studio_id, notifications, client.id, remaining)
+    return response
 
 
 @router.post("/reservations/{lesson_id}/cancel", response_model=MiniappReservation)
@@ -847,6 +868,7 @@ async def create_reservation(
 async def cancel_reservation(
     request: Request,
     lesson_id: int,
+    background: BackgroundTasks,
     client: Client = Depends(get_current_client),
     db: AsyncSession = Depends(get_db),
 ):
@@ -867,9 +889,8 @@ async def cancel_reservation(
     await db.commit()
     await db.refresh(reservation)
 
-    await notify(db, client.studio_id, "client", "c3", {
-        **await lesson_context(db, lesson), "client_id": client.id,
-    })
+    # Client c3 is delivered by the durable cancellation intent.
+    notifications = []
 
     # a2/t2 «клиент отменил в последний момент» — их единственный живой путь.
     # В CRM клиента снимает сам администратор, и сообщать ему о собственном
@@ -881,25 +902,29 @@ async def cancel_reservation(
                    else lesson.start_time - lesson_time.local_now(studio)).total_seconds() / 3600)
     client_name = f"{client.name} {client.last_name or ''}".strip()
     if hours_left < 2 and lesson.teacher_id is not None:
-        await notify(db, client.studio_id, "trainer", "t2", {
+        notifications.append(("trainer", "t2", {
             "trainer_id": lesson.teacher_id,
             "client_name": client_name,
             "lesson_name": lesson.name,
             "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
-        })
+        }))
     if hours_left < 1:
-        await notify(db, client.studio_id, "admin", "a2", {
+        notifications.append(("admin", "a2", {
             "client_name": client_name,
             "lesson_name": lesson.name,
             # Поздняя отмена при hours_left < 1 попадает и в t2 выше: без этого
             # владелец-тренер студии без администратора получал обе версии.
             "trainer_id": lesson.teacher_id,
-        })
+        }))
 
-    return MiniappReservation(
+    response = MiniappReservation(
         id=reservation.id, lesson_id=reservation.lesson_id,
         spot_number=reservation.spot_number, status=reservation.status, rating=reservation.rating,
     )
+    await db.commit()
+    if notifications:
+        background.add_task(_notify_after_response, client.studio_id, notifications)
+    return response
 
 
 @router.post("/reservations/{lesson_id}/rate", response_model=MiniappReservation)
@@ -908,19 +933,21 @@ async def rate_reservation(
     request: Request,
     lesson_id: int,
     body: RateReservationRequest,
+    background: BackgroundTasks,
     client: Client = Depends(get_current_client),
     db: AsyncSession = Depends(get_db),
 ):
     reservation = await _own_active_reservation(db, client, lesson_id)
     lesson = await _studio_lesson(db, client, lesson_id)
 
-    return await _rate_owned(db, client, reservation, lesson, body.rating)
+    return await _rate_owned(db, client, reservation, lesson, body.rating, background)
 
 
 @router.post("/bookings/{reservation_id}/rate", response_model=MiniappReservation)
 @limiter.limit("10/minute")
 async def rate_booking(
     request: Request, reservation_id: int, body: RateReservationRequest,
+    background: BackgroundTasks,
     client: Client = Depends(get_current_client), db: AsyncSession = Depends(get_db),
 ):
     reservation = (await db.execute(select(Reservation).join(Lesson).where(
@@ -930,10 +957,10 @@ async def rate_booking(
     if reservation is None:
         raise HTTPException(status_code=404, detail="NOT_FOUND")
     lesson = await _studio_lesson(db, client, reservation.lesson_id)
-    return await _rate_owned(db, client, reservation, lesson, body.rating)
+    return await _rate_owned(db, client, reservation, lesson, body.rating, background)
 
 
-async def _rate_owned(db, client, reservation, lesson, rating):
+async def _rate_owned(db, client, reservation, lesson, rating, background):
     studio = await db.get(Studio, client.studio_id)
     started = lesson_time.has_started(lesson, studio)
     if started is False or (started is None and lesson.start_time >= lesson_time.local_now(studio)):
@@ -946,18 +973,23 @@ async def _rate_owned(db, client, reservation, lesson, rating):
     # t7 «Новый отзыв» — эпик N-9 оставил его без врезки, считая, что отзыв
     # появится только со StudioReview во второй очереди. Оценка занятия из
     # мини-приложения и есть отзыв о работе тренера, так что событие живёт здесь.
+    notifications = []
     if lesson.teacher_id is not None:
-        await notify(db, client.studio_id, "trainer", "t7", {
+        notifications.append(("trainer", "t7", {
             "trainer_id": lesson.teacher_id,
             "client_name": f"{client.name} {client.last_name or ''}".strip(),
             "rating": rating,
             "lesson_name": lesson.name,
-        })
+        }))
 
-    return MiniappReservation(
+    response = MiniappReservation(
         id=reservation.id, lesson_id=reservation.lesson_id,
         spot_number=reservation.spot_number, status=reservation.status, rating=reservation.rating,
     )
+    await db.commit()
+    if notifications:
+        background.add_task(_notify_after_response, client.studio_id, notifications)
+    return response
 
 
 async def _set_coffee(db: AsyncSession, client: Client, lesson_id: int, value: bool) -> CoffeeState:

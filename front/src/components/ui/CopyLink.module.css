@@ -1,0 +1,159 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ССЫЛКА С КОПИРОВАНИЕМ ПО НАЖАТИЮ (CopyLink.tsx)
+   Поле целиком — одна кнопка: попадать в маленькую иконку копирования не
+   нужно. Подтверждение — фисташкой (успех ДС), а не персиком: персик держит
+   действие, а «готово» — уже не действие.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.root {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  min-width: 0;
+  border-radius: 12px;
+  background: rgba(var(--ink), 0.03);
+  border: 1px solid var(--border);
+  /* Свой слой наложения: блик ложится на фон поля, но под текст. */
+  isolation: isolate;
+  overflow: hidden;
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.md { min-height: 44px; padding: 5px; }
+.sm { min-height: 34px; padding: 3px; border-radius: 10px; }
+
+/* Наведение — только там, где оно есть: на телефоне :hover залипает после тапа. */
+@media (hover: hover) {
+  .root:not([data-copied]):has(.field:not(:disabled)):hover {
+    border-color: rgba(249, 160, 139, 0.5);
+    background: rgba(249, 160, 139, 0.05);
+  }
+  .root:not([data-copied]):hover .chip { background: rgba(252, 174, 145, 0.26); }
+}
+.root:has(.field:focus-visible) {
+  border-color: #FCAE91;
+  box-shadow: 0 0 0 3px rgba(252, 174, 145, 0.22);
+}
+.root[data-copied] {
+  border-color: rgba(163, 201, 168, 0.75);
+  background: rgba(163, 201, 168, 0.13);
+  animation: ring 0.6s ease-out;
+}
+@keyframes ring {
+  from { box-shadow: 0 0 0 0 rgba(163, 201, 168, 0.5); }
+  to   { box-shadow: 0 0 0 9px rgba(163, 201, 168, 0); }
+}
+
+.field {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 0 9px;
+  background: none;
+  border: 0;
+  border-radius: 9px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sm .field { gap: 6px; padding-left: 7px; }
+.field:focus-visible { outline: none; }
+.field:disabled { cursor: default; }
+.field:not(:disabled):active .chip { transform: scale(0.9); }
+
+/* Адрес и «Скопировано» стоят в одной клетке сетки: при смене один уезжает
+   вверх, другой въезжает снизу, и высота строки не дёргается. */
+.stage {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  overflow: hidden;
+}
+.stage > * { grid-area: 1 / 1; min-width: 0; }
+
+.url {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Если буфер обмена недоступен, адрес выделяется под ручное копирование. */
+  user-select: text;
+}
+.sm .url { font-size: 10.5px; }
+
+.done {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #5E9467;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:global(:root.dark) .done { color: #A3C9A8; }
+.sm .done { font-size: 11px; }
+
+.chip {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(252, 174, 145, 0.16);
+  color: #F9A08B;
+  transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+}
+.chip > svg { grid-area: 1 / 1; }
+.sm .chip { width: 26px; height: 26px; border-radius: 7px; }
+.field:disabled .chip { opacity: 0.45; }
+.root[data-copied] .chip {
+  background: #A3C9A8;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(163, 201, 168, 0.45);
+}
+
+.open {
+  flex-shrink: 0;
+  width: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: var(--text3);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.sm .open { width: 26px; border-radius: 7px; }
+.open:hover { background: rgba(var(--ink), 0.06); color: var(--text); }
+.open:focus-visible { outline: 2px solid #FCAE91; outline-offset: -2px; }
+
+/* Блик проходит слева направо один раз на каждое нажатие (ключ — счётчик). */
+.flash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 15%, rgba(163, 201, 168, 0.42) 50%, transparent 85%);
+  transform: translateX(-100%);
+  animation: sweep 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes sweep { to { transform: translateX(100%); } }
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-copied] { animation: none; }
+  .chip { transition: none; }
+}

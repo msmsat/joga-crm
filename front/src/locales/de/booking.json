@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Kundenlink",
       "desc": "Buchungs-Mini-App — für Bio, Stories und Kampagnen",
-      "copy": "Link kopieren",
       "open": "Mini-App öffnen",
       "posterTitle": "Buchen Sie Ihren Kurs online",
       "scanHint": "Richten Sie die Handykamera auf den Code"

@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Lien client",
       "desc": "Mini-app de réservation — pour la bio, les stories et les campagnes",
-      "copy": "Copier le lien",
       "open": "Ouvrir la mini-app",
       "posterTitle": "Réservez votre cours en ligne",
       "scanHint": "Dirigez l'appareil photo du téléphone vers le code"

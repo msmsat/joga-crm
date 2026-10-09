@@ -15,6 +15,10 @@ export const DURATION_PRESETS = [15, 30, 45, 60, 90, 120] as const;
 /** Готовые названия — ключи journal:studioTime.presets.*. */
 export const LABEL_PRESETS = ['cleaning', 'prep', 'meeting', 'airing', 'maintenance'] as const;
 export type LabelPreset = typeof LABEL_PRESETS[number];
+/** Вид блока по названию: готовые названия и те, что узнаются только по
+ *  словам, без своей кнопки в окне, — обед: его ставят своим названием, а в
+ *  сетке он должен узнаваться значком, а не общим «временем в календаре». */
+export type StudioTimeKind = LabelPreset | 'meal';
 
 export interface StudioTimeDraft {
   /** Есть — окно правит уже стоящий блок, нет — ставит новый. */
@@ -238,16 +242,19 @@ export function outsideHours(hours: StaffScheduleBlock[], draft: StudioTimeDraft
  *  исходящих текстов (ru, en, uk, cs, de): «Уборка зала», «Прибирання»,
  *  «Generalreinigung», «Porada týmu» получают значок своего вида, а не общий.
  *  Порядок значим: «уборка после ремонта» — уборка. */
-const PRESET_WORDS: [LabelPreset, RegExp][] = [
+const PRESET_WORDS: [StudioTimeKind, RegExp][] = [
   ['cleaning', /убор|прибир|чист|мыть|мойк|clean|tidy|wash|úklid|uklid|čišt|myt|reinig|putz|sauber/i],
-  ['airing', /провет|провітр|воздух|air|vent|větr|lüft/i],
+  // «air» и «vent» — только с начала слова: «Repair», «Event» не проветривание.
+  ['airing', /провет|провітр|воздух|\bair|\bvent|větr|lüft/i],
   ['meeting', /планёр|планер|собран|встреч|нарад|летуч|meet|brief|sync|stand-?up|porad|schůz|besprech/i],
   ['maintenance', /обслуж|ремонт|почин|чинит|техн|repair|maint|fix|servis|oprav|údrž|wartung|repar/i],
   ['prep', /подгот|підгот|расстав|prep|set ?up|příprav|vorbereit|aufbau/i],
+  // С начала слова: «Победа» и «Messen» — не обед.
+  ['meal', /(?<!\p{L})(обед|обід|ланч|перекус|lunch|meal|snack|brunch|oběd|obed|svačin|mittag|imbiss|essen)/iu],
 ];
 
 /** Вид своего названия по словам; null — не узнали (общий значок). */
-export function presetByWords(label: string): LabelPreset | null {
+export function presetByWords(label: string): StudioTimeKind | null {
   const clean = cleanLabel(label);
   return (clean && PRESET_WORDS.find(([, words]) => words.test(clean))?.[0]) || null;
 }

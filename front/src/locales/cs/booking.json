@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Odkaz pro klienty",
       "desc": "Rezervační mini aplikace — do bia, stories a kampaní",
-      "copy": "Kopírovat odkaz",
       "open": "Otevřít mini aplikaci",
       "posterTitle": "Rezervujte si lekci online",
       "scanHint": "Namiřte fotoaparát telefonu na kód"

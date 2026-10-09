@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR-kod",
     "subtitle": "Skriv ut, lägg upp i stories eller kopiera länken.",
-    "copy": "Kopiera",
     "print": "Skriv ut",
     "story": "För stories",
-    "copied": "Länken kopierad",
-    "copyFailed": "Det gick inte att kopiera länken",
     "printBlocked": "Webbläsaren blockerade utskriftsfönstret",
     "storySaved": "Bilden sparad",
     "storyFailed": "Det gick inte att skapa bilden",
@@ -212,6 +209,10 @@
     "packageCaption": "Rikta kameran för att köpa klippkortet",
     "serviceAction": "QR-kod för tjänsten",
     "staffAction": "QR-kod för medarbetaren"
+  },
+  "copyLink": {
+    "copy": "Kopiera länk",
+    "copied": "Kopierat"
   },
   "auth": {
     "haveAccount": "Har du redan ett konto?",

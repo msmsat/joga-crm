@@ -13,6 +13,8 @@ resolve_channels — так же не завязаны на его внутре�
 import asyncio
 from datetime import datetime, timedelta
 
+import pytest
+
 from fastapi import HTTPException
 
 import routers.schedule.lessons as L
@@ -23,19 +25,18 @@ from dependencies import StudioContext
 from schemas.schedule.lessons import LessonUpdateRequest
 from services.notifier import notify
 
-# notify() реально шлёт email через SMTP (креды есть в .env этого проекта) —
-# в тестах подменяем send_email на no-op, чтобы не улетали настоящие письма.
-# Подмена делается на уровне модуля, то есть на ВЕСЬ прогон (pytest импортирует
-# все файлы тестов до запуска первого), поэтому заглушка обязана возвращать то
-# же, что настоящий send_email — bool «письмо ушло». С None здесь падал
-# test_campaign: notify() возвращал False, и кампания не досчитывала отправки.
+# Транспорт подменяется только на время каждого теста: подмена при импорте
+# модуля меняла send_email для всех остальных файлов ещё при сборе pytest.
+# Физическая сеть дополнительно закрыта в conftest.py.
 
 
 async def _noop_send_email(*_args, **_kwargs) -> bool:
     return True
 
 
-notifier_module.send_email = _noop_send_email
+@pytest.fixture(autouse=True)
+def isolated_delivery(monkeypatch):
+    monkeypatch.setattr(notifier_module, "send_email", _noop_send_email)
 
 
 class _User:
@@ -81,6 +82,7 @@ class _Lesson:
         # Статус записи-источника при переносе (Bumpix) — поле модели,
         # уходит в ответ _lesson_read, фейк обязан его нести.
         self.source_status = None
+        self.source_details = None
         # Отменённое и убранное из сетки — поле модели, уходит в ответ.
         self.hidden_at = None
 
@@ -390,14 +392,16 @@ def test_cancel_no_clients_stays_false():
 
 
 if __name__ == "__main__":
-    test_notify_returns_false_when_resolver_finds_no_channels()
-    test_notify_sends_via_forced_fallback_channel()
-    test_notify_returns_false_for_unknown_event_template()
-    test_reschedule_with_client_sets_notified_true_when_email_enabled()
-    test_reschedule_with_client_notified_false_when_channel_disabled()
-    test_reschedule_without_clients_stays_false_no_notify_call()
-    test_reschedule_cancelled_lesson_rejected()
-    test_non_reschedule_field_does_not_trigger_notify()
-    test_cancel_sets_notified_true_when_client_notified()
-    test_cancel_no_clients_stays_false()
+    with pytest.MonkeyPatch.context() as delivery_patch:
+        delivery_patch.setattr(notifier_module, "send_email", _noop_send_email)
+        test_notify_returns_false_when_resolver_finds_no_channels()
+        test_notify_sends_via_forced_fallback_channel()
+        test_notify_returns_false_for_unknown_event_template()
+        test_reschedule_with_client_sets_notified_true_when_email_enabled()
+        test_reschedule_with_client_notified_false_when_channel_disabled()
+        test_reschedule_without_clients_stays_false_no_notify_call()
+        test_reschedule_cancelled_lesson_rejected()
+        test_non_reschedule_field_does_not_trigger_notify()
+        test_cancel_sets_notified_true_when_client_notified()
+        test_cancel_no_clients_stays_false()
     print("ALL PASS — событие c11 / честный clients_notified V4-6 задача 3 зелёные")

@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Link per i clienti",
       "desc": "Mini app di prenotazione — per bio, storie e campagne",
-      "copy": "Copia il link",
       "open": "Apri la mini app",
       "posterTitle": "Prenota la tua lezione online",
       "scanHint": "Punta la fotocamera del telefono sul codice"

@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR kod",
     "subtitle": "Yazdırın, hikâyeye koyun ya da bağlantıyı kopyalayın.",
-    "copy": "Kopyala",
     "print": "Yazdır",
     "story": "Hikâye için",
-    "copied": "Bağlantı kopyalandı",
-    "copyFailed": "Bağlantı kopyalanamadı",
     "printBlocked": "Tarayıcı yazdırma penceresini engelledi",
     "storySaved": "Görsel kaydedildi",
     "storyFailed": "Görsel oluşturulamadı",
@@ -212,6 +209,10 @@
     "packageCaption": "Paketi satın almak için kamerayı doğrultun",
     "serviceAction": "Hizmetin QR kodu",
     "staffAction": "Çalışanın QR kodu"
+  },
+  "copyLink": {
+    "copy": "Bağlantıyı kopyala",
+    "copied": "Kopyalandı"
   },
   "auth": {
     "haveAccount": "Zaten hesabınız var mı?",

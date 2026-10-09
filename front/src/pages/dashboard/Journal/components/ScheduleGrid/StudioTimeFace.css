@@ -1,0 +1,371 @@
+/* Лицо «времени студии» (StudioTimeFace.tsx). Цвета, подложка, рельс слева и
+   наведение блока — в StaffBlockCard.css (.j-staff-block-studio), рядом с
+   цветами перерыва и выходного. Здесь — только раскладка.
+
+   Ступени по высоте (data-size) задаёт компонент, по ширине — контейнер
+   staff-block: XS < 88px (очень много мастеров), S < 160 (неделя, 8–10
+   мастеров), M < 260, L — широкая колонка.
+
+   Высокий блок считает строки заметки по числам отсюда (TALL в .tsx):
+   поля 11+11, медальон до 36px, строка названия 15px, строка фактов 18px,
+   строка заметки 14px, зазоры 7px. Меняешь их здесь — меняй и там, иначе
+   последняя строка заметки уйдёт под нижний край. */
+.stb-body {
+  --stb-chip: 26px;
+  --stb-glyph: 14px;
+  --stb-radius: 9px;
+  --stb-fact: 16px;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: var(--stb-chip) minmax(0, 1fr);
+  grid-template-areas: "icon titles" "icon facts";
+  align-content: center;
+  column-gap: 8px;
+  height: 100%;
+  min-width: 0;
+  padding: 8px 9px 8px 12px;
+}
+
+/* ── Медальон: значок вида, у того, кто правит, — карандаш на углу ─────── */
+.stb-icon {
+  grid-area: icon;
+  position: relative;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: var(--stb-chip);
+  height: var(--stb-chip);
+  border-radius: var(--stb-radius);
+  color: #fff;
+  background: var(--sb-chip);
+  box-shadow: 0 6px 14px -6px var(--sb-glow), inset 0 1px 0 rgba(255, 255, 255, .35);
+  transition: transform .22s cubic-bezier(.22, 1, .36, 1);
+}
+.stb-icon > svg { width: var(--stb-glyph); height: var(--stb-glyph); }
+.stb-edit {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  color: var(--sb-accent);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 1.5px var(--sb-surface), 0 2px 6px -2px var(--sb-glow);
+  opacity: 0;
+  transform: scale(.6);
+  transition: opacity .18s ease, transform .22s cubic-bezier(.34, 1.56, .64, 1);
+}
+.stb-edit svg { width: 9px; height: 9px; }
+.j-staff-block.is-openable:focus-visible .stb-edit { opacity: 1; transform: none; }
+@media (hover: hover) {
+  .j-staff-block.is-openable:hover .stb-icon { transform: rotate(-6deg) scale(1.04); }
+  .j-staff-block.is-openable:hover .stb-edit { opacity: 1; transform: rotate(6deg); }
+}
+/* Без наведения (планшет, телефон) «можно править» видно всегда. */
+@media (hover: none) { .stb-edit { opacity: 1; transform: none; } }
+
+/* ── Название ──────────────────────────────────────────────────────────── */
+.stb-titles {
+  grid-area: titles;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.stb-name {
+  font-size: 9.5px;
+  font-weight: 650;
+  line-height: 14px;
+  opacity: .75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stb-label {
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 15px;
+  letter-spacing: -.25px;
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--stb-lines, 1);
+  line-clamp: var(--stb-lines, 1);
+  overflow: hidden;
+}
+
+/* ── Строка фактов ─────────────────────────────────────────────────────────
+   Не влезшее переносится во вторую строку, а её не видно: пропадает целиком,
+   а не обрезается до «13:0…». Порядок в разметке — по важности. */
+.stb-facts {
+  grid-area: facts;
+  align-self: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  gap: 4px 6px;
+  min-width: 0;
+  height: var(--stb-fact);
+  margin-top: 3px;
+  overflow: hidden;
+  font-size: 9.5px;
+  font-weight: 650;
+  line-height: var(--stb-fact);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.stb-facts > * { flex: none; height: var(--stb-fact); }
+.stb-range {
+  padding: 0 5px;
+  border-radius: 5px;
+  background: var(--sb-detail);
+  font-weight: 750;
+  letter-spacing: -.1px;
+}
+.stb-dur { opacity: .78; }
+.stb-dur-title { display: none; }
+.stb-inline-icon {
+  display: none;
+  width: 11px;
+  height: 11px;
+  margin-right: 4px;
+  vertical-align: -1.5px;
+  color: var(--sb-accent);
+}
+.stb-team { display: inline-flex; align-items: center; padding-left: 4px; }
+.stb-face {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--sb-accent);
+  box-shadow: 0 0 0 1.5px var(--sb-surface);
+  color: #fff;
+  font-size: 7.5px;
+  font-weight: 800;
+  line-height: 1;
+}
+.stb-face-more {
+  width: auto;
+  min-width: 14px;
+  padding: 0 3px;
+  box-sizing: border-box;
+  border-radius: 7px;
+  background: var(--sb-detail);
+  color: var(--sb-text);
+  letter-spacing: -.2px;
+}
+.stb-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--sb-accent);
+  font-weight: 750;
+}
+.stb-mark svg { width: 11px; height: 11px; }
+/* Заметка уже написана под шапкой — значок «есть заметка» лишний. */
+.stb-mark-note.is-written { display: none; }
+
+/* ── Заметка (только высокий блок) ─────────────────────────────────────── */
+.stb-note {
+  grid-area: note;
+  margin: 7px 0 0;
+  padding-left: 8px;
+  border-left: 2px solid color-mix(in srgb, var(--sb-accent) 35%, transparent);
+  font-size: 11px;
+  font-weight: 550;
+  line-height: 14px;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  opacity: .9;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--stb-note-wide, 1);
+  line-clamp: var(--stb-note-wide, 1);
+  overflow: hidden;
+}
+
+/* ── Водяной знак: тот же значок, крупно и тихо, уходит за угол ─────────── */
+.stb-art {
+  position: absolute;
+  right: -10px;
+  bottom: -16px;
+  width: 62px;
+  height: 62px;
+  color: var(--sb-accent);
+  opacity: .11;
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+.stb-art svg { width: 100%; height: 100%; }
+.stb-art[data-size="tiny"], .stb-art[data-size="short"] { display: none; }
+.stb-art[data-size="tall"] { width: 96px; height: 96px; bottom: -22px; right: -14px; }
+
+/* ── Высокий (от полутора часов) ───────────────────────────────────────────
+   Медальон с названием, под ними на всю ширину — факты и заметка. Шапка
+   прилипает под заголовок колонок, пока длинный блок прокручивают. */
+.stb-body[data-size="tall"] {
+  --stb-chip: 30px;
+  --stb-glyph: 16px;
+  --stb-radius: 10px;
+  --stb-fact: 18px;
+  position: sticky;
+  top: calc(var(--j-header-h, 94px) + 8px);
+  grid-template-areas: "icon titles" "facts facts" "note note";
+  align-content: start;
+  height: auto;
+  padding: 11px 11px 11px 13px;
+}
+.stb-body[data-size="tall"] .stb-icon { align-self: start; }
+.stb-body[data-size="tall"] .stb-titles { align-self: center; }
+.stb-body[data-size="tall"] .stb-label { font-size: 12.5px; }
+.stb-body[data-size="tall"] .stb-facts {
+  height: auto;
+  max-height: calc(var(--stb-fact) * 2 + 4px);
+  margin-top: 7px;
+  font-size: 10px;
+}
+.stb-body[data-size="tall"] .stb-range { padding: 0 6px; border-radius: 6px; }
+.stb-body[data-size="tall"] .stb-face { width: 16px; height: 16px; font-size: 8px; }
+
+/* ── Короткий (полчаса — 40 минут): две строки впритык ────────────────── */
+.stb-body[data-size="short"] {
+  --stb-chip: 22px;
+  --stb-glyph: 12px;
+  --stb-radius: 7px;
+  --stb-fact: 13px;
+  column-gap: 7px;
+  padding: 2px 8px 2px 10px;
+}
+.stb-body[data-size="short"] .stb-label { font-size: 10.5px; line-height: 13px; }
+.stb-body[data-size="short"] .stb-facts { margin-top: 2px; font-size: 9px; gap: 2px 5px; }
+.stb-body[data-size="short"] .stb-range { padding: 0 4px; border-radius: 4px; }
+.stb-body[data-size="short"] .stb-face { width: 12px; height: 12px; font-size: 6.5px; }
+.stb-body[data-size="short"] .stb-mark svg { width: 10px; height: 10px; }
+.stb-body[data-size="short"] .stb-edit { width: 13px; height: 13px; right: -4px; bottom: -4px; }
+.stb-body[data-size="short"] .stb-edit svg { width: 8px; height: 8px; }
+
+/* ── Крошечный (до 25 минут): одна строка ростом с сам блок ───────────────
+   Тот же перенос в невидимую строку: первой уходит длительность, потом
+   время, а значок и название остаются. */
+.stb-body[data-size="tiny"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  column-gap: 6px;
+  padding: 0 7px 0 9px;
+  overflow: hidden;
+}
+.stb-body[data-size="tiny"] .stb-titles,
+.stb-body[data-size="tiny"] .stb-facts { display: contents; }
+.stb-body[data-size="tiny"] .stb-icon,
+.stb-body[data-size="tiny"] .stb-team { display: none; }
+.stb-body[data-size="tiny"] .stb-inline-icon { display: inline; width: 10px; height: 10px; vertical-align: -1px; }
+.stb-body[data-size="tiny"] .stb-facts > * { height: 100%; display: inline-flex; align-items: center; }
+/* Название — первым и одно в строке, если не влезает: сжимается до «…»,
+   а время уходит в невидимую строку. */
+.stb-body[data-size="tiny"] .stb-label {
+  display: block;
+  flex: 0 1 auto;
+  align-self: center;
+  min-width: 0;
+  font-size: 10px;
+  line-height: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.stb-body[data-size="tiny"] .stb-range { margin-left: auto; padding: 0; background: none; font-size: 9px; }
+.stb-body[data-size="tiny"] .stb-dur { font-size: 9px; }
+.stb-body[data-size="tiny"] .stb-mark svg { width: 10px; height: 10px; }
+
+/* ── Ступени по ширине ─────────────────────────────────────────────────── */
+@container staff-block (min-width: 160px) {
+  .stb-body[data-size="mid"] { --stb-chip: 30px; --stb-glyph: 16px; --stb-radius: 10px; column-gap: 10px; padding-left: 13px; }
+  .stb-body[data-size="tall"] { --stb-chip: 32px; --stb-glyph: 17px; --stb-radius: 11px; column-gap: 10px; }
+  .stb-body[data-size="mid"] .stb-label { font-size: 12.5px; }
+}
+@container staff-block (min-width: 260px) {
+  .stb-body { padding-left: 16px; padding-right: 14px; }
+  .stb-body[data-size="mid"] { --stb-chip: 34px; --stb-glyph: 18px; --stb-radius: 12px; column-gap: 12px; }
+  .stb-body[data-size="tall"] { --stb-chip: 36px; --stb-glyph: 18px; --stb-radius: 12px; column-gap: 12px; }
+  .stb-body[data-size="mid"] .stb-label,
+  .stb-body[data-size="tall"] .stb-label { font-size: 13.5px; letter-spacing: -.3px; }
+  .stb-body[data-size="mid"] .stb-facts { font-size: 10px; gap: 4px 8px; }
+  .stb-body[data-size="tall"] .stb-facts { gap: 4px 8px; }
+  .stb-body[data-size="tall"] .stb-note { font-size: 11.5px; }
+  .stb-art[data-size="mid"] { width: 84px; height: 84px; bottom: -24px; right: 18px; }
+  .stb-art[data-size="tall"] { width: 124px; height: 124px; bottom: -30px; right: 16px; }
+}
+/* Узкая колонка (неделя, 8–10 мастеров). Факты высокого блока с командой
+   или фото встают в две строки — заметке остаётся меньше (tight в .tsx), а
+   не поместилась ни строка — о ней говорит значок. Короткому и среднему
+   длительность — в строку названия: «Обед 45 мин», а время — строкой ниже;
+   длинное название её вытесняет тем же переносом в невидимую строку. */
+@container staff-block (max-width: 259px) {
+  .stb-note { -webkit-line-clamp: var(--stb-note-tight, 1); line-clamp: var(--stb-note-tight, 1); }
+  .stb-body[data-note-tight="none"] .stb-note { display: none; }
+  .stb-body[data-note-tight="none"] .stb-mark-note.is-written { display: inline-flex; }
+}
+@container staff-block (max-width: 159px) {
+  /* Каждый пиксель — названию: «Подготовка» целиком, а не «Подго-товка». */
+  .stb-body { padding-right: 6px; padding-left: 11px; column-gap: 7px; }
+  .stb-body[data-size="mid"] { --stb-chip: 24px; --stb-glyph: 13px; --stb-radius: 8px; }
+  .stb-body[data-size="tall"] { --stb-chip: 24px; --stb-glyph: 13px; --stb-radius: 8px; padding: 10px 6px 10px 11px; }
+  .stb-body[data-size="short"] { padding-left: 10px; column-gap: 6px; }
+  .stb-body:is([data-size="short"], [data-size="mid"]) .stb-titles {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    align-content: flex-start;
+    column-gap: 5px;
+    max-height: calc(var(--stb-lines, 1) * 15px);
+    overflow: hidden;
+  }
+  .stb-body[data-size="short"] .stb-titles { max-height: 13px; }
+  .stb-body:is([data-size="short"], [data-size="mid"]) .stb-label { flex: 0 1 auto; min-width: 0; }
+  .stb-body:is([data-size="short"], [data-size="mid"]) .stb-dur-title {
+    display: block;
+    flex: none;
+    font-size: 9.5px;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .stb-body[data-size="short"] .stb-dur-title { font-size: 9px; }
+  .stb-body:is([data-size="short"], [data-size="mid"]) .stb-facts .stb-dur { display: none; }
+}
+/* Очень узкая колонка (телефон, 10+ мастеров): медальон — значком в строке
+   названия, подпись на всю ширину и переносится, где придётся; время —
+   мельче, чтобы «09:00–10:30» влезло целиком. Водяного знака и заметки нет —
+   о заметке говорит значок в фактах. */
+@container staff-block (max-width: 87px) {
+  .stb-body:not([data-size="tiny"]) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "titles" "facts" "note";
+    padding-left: 8px;
+    padding-right: 4px;
+  }
+  .stb-body:not([data-size="tiny"]) .stb-icon { display: none; }
+  .stb-body:not([data-size="tiny"]) .stb-inline-icon { display: inline; }
+  .stb-body:not([data-size="tiny"]) .stb-label { overflow-wrap: anywhere; font-size: 10.5px; }
+  .stb-facts { gap: 2px 4px; }
+  .stb-body:not([data-size="tiny"]) .stb-range { padding: 0 3px; font-size: 8.5px; letter-spacing: -.3px; }
+  .stb-note, .stb-art { display: none; }
+  .stb-mark-note.is-written { display: inline-flex; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stb-icon, .stb-edit { transition: none; }
+  .j-staff-block.is-openable:hover .stb-icon { transform: none; }
+}

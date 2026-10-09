@@ -72,7 +72,7 @@ docker compose exec api python -m scripts.preflight   # валюта, ключи
 Развёрнутый сервер ещё не значит live: ключи Stripe, Connect, Tax и вебхуки
 переключаются в дашборде и в `back/.env` по шагам оттуда.
 
-**Клиентское мини-приложение собирается на хосте, не в образе:** `cd miniapp && npm ci && npm run build`. Контейнер `api` монтирует готовый `miniapp/dist` и раздаёт его по `/s/{studio_id}` — нет папки, нет мини-апа (API при этом работает). Пересобирать образ после правок мини-апа не нужно, достаточно `npm run build`.
+**Клиентское мини-приложение:** контейнер `api` монтирует готовый `miniapp/dist` и раздаёт его по `/s/{studio_id}` — нет папки, нет мини-апа (API при этом работает). Для обновления используйте проверку и продвижение точного commit SHA из [docs/DEPLOY_MINIAPP.md](docs/DEPLOY_MINIAPP.md). Сборка прямо в рабочем `miniapp/dist` меняет уже доступный клиентам интерфейс до завершения проверок.
 
 ---
 
@@ -119,15 +119,36 @@ ADMIN_JWT_SECRET=<python -c "import secrets; print(secrets.token_hex(32))">
 
 ## Обновление кода
 
+Для мини-приложения и совместимых изменений его API сначала проверяется отдельная копия точного коммита. Ошибка теста, сборки или skipped-тест блокирует обновление:
+
 ```bash
-git pull && docker compose up -d --build && docker compose exec api python -m scripts.preflight
+bash scripts/deploy-miniapp.sh --check origin/main
+bash scripts/deploy-miniapp.sh --deploy origin/main
 ```
+
+Подставьте фактическую ветку выпуска. Полные требования, первичная установка wrapper, CI enforcement и ограничения отката описаны в [docs/DEPLOY_MINIAPP.md](docs/DEPLOY_MINIAPP.md). `--check` проверяет мини-приложение в любом кандидате, включая изменения CRM/админки. `--deploy` продвигает только мини-приложение и совместимые изменения API: он не выполняет production-миграции и отказывает при новых изменениях CRM/админки, схемы или Compose. Для других выпусков проверка мини-приложения обязательна до обновления кода, а продвижение сервиса и миграции выполняются отдельной проверенной процедурой. Ранее используемая связка `git pull && docker compose up` обходит новые проверки.
 
 Для обновления **только `front/`**, без изменений API, окружения и схемы базы:
 
 ```bash
-git pull && docker compose up -d --build --no-deps web
+set -euo pipefail
+git fetch --prune origin
+before=$(git rev-parse HEAD)
+candidate=$(git rev-parse --verify 'origin/main^{commit}')
+git diff --quiet "$before" "$candidate" -- back miniapp admin docker-compose.yml
+miniapp_runtime="$before"
+runtime_marker="$(git rev-parse --absolute-git-dir)/miniapp-release.deployed-sha"
+if [ -f "$runtime_marker" ]; then read -r miniapp_runtime <"$runtime_marker"; fi
+git diff --quiet "$miniapp_runtime" "$candidate" -- back miniapp docker-compose.yml
+bash scripts/deploy-miniapp.sh --check "$candidate" &&
+  test "$(git rev-parse HEAD)" = "$before" &&
+  test -z "$(git status --porcelain)" &&
+  git merge --ff-only "$candidate" &&
+  test "$(git rev-parse HEAD)" = "$candidate" &&
+  docker compose up -d --build --no-deps web
 ```
+
+Подставьте фактическую ветку выпуска. Здесь SHA фиксируется один раз: если проверка мини-приложения не прошла, исходники и `web` не обновляются. Проверка ограничивает только мини-приложение; собственные проверки CRM остаются частью процедуры выпуска `front/`. Команда допускает только выпуск без изменений мини-приложения/API/админки/Compose и блокирует его, если после прежнего отката исходники API опережают работающую версию. Маркер последнего выпуска мини-приложения/API при таком обновлении `web` не меняется.
 
 При обычном обновлении кода не добавляй `--force-recreate` для всего проекта:
 он пересоздаёт даже неизменившиеся сервисы, включая базу. Для изменений
@@ -142,8 +163,9 @@ git pull && docker compose up -d --build --no-deps web
 восстановить нельзя — такому пользователю потребуется войти один раз.
 
 **`back/.env` в git нет — `git pull` его НЕ обновляет.** Пул принёс новые переменные
-или сменил значение в `.env.example` — правь `back/.env` на сервере руками. Preflight
-для того и стоит в команде: он ловит именно расхождение конфига с кодом (выход 1 = блокер).
+или сменил значение в `.env.example` — правь `back/.env` на сервере руками. Проверяй
+конфигурацию до изменения работающих сервисов: `scripts.preflight` проверяет платёжные
+настройки (выход 1 = блокер), а новый miniapp-wrapper отдельно проверяет наличие SMTP.
 
 **Поправил `back/.env` — нужен `up -d --force-recreate api`, а НЕ `restart`.**
 `docker compose restart` перезапускает существующий контейнер с окружением, вшитым

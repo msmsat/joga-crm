@@ -197,11 +197,8 @@
   "qr": {
     "title": "Código QR",
     "subtitle": "Imprímelo, súbelo a historias o copia el enlace.",
-    "copy": "Copiar",
     "print": "Imprimir",
     "story": "Para historias",
-    "copied": "Enlace copiado",
-    "copyFailed": "No se pudo copiar el enlace",
     "printBlocked": "El navegador bloqueó la ventana de impresión",
     "storySaved": "Imagen guardada",
     "storyFailed": "No se pudo crear la imagen",
@@ -212,6 +209,10 @@
     "packageCaption": "Apunta la cámara para comprar el bono",
     "serviceAction": "Código QR del servicio",
     "staffAction": "Código QR del empleado"
+  },
+  "copyLink": {
+    "copy": "Copiar enlace",
+    "copied": "Copiado"
   },
   "auth": {
     "haveAccount": "¿Ya tienes una cuenta?",

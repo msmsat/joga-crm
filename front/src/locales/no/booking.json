@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Kundelenke",
       "desc": "Booking-miniapp — til bio, stories og kampanjer",
-      "copy": "Kopier lenke",
       "open": "Åpne miniappen",
       "posterTitle": "Book økten din på nett",
       "scanHint": "Rett telefonkameraet mot koden"

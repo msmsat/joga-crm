@@ -188,8 +188,7 @@
       "emailSentTitle": "E-mail envoyé",
       "resend": "Renvoyer",
       "resentOk": "E-mail renvoyé",
-      "resendError": "Échec de l'envoi — réessayez",
-      "copied": "Copié"
+      "resendError": "Échec de l'envoi — réessayez"
     },
     "illus": {
       "contacts": "Coordonnées",

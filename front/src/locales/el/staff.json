@@ -188,8 +188,7 @@
       "emailSentTitle": "Το email στάλθηκε",
       "resend": "Αποστολή ξανά",
       "resentOk": "Το email στάλθηκε ξανά",
-      "resendError": "Η αποστολή απέτυχε — δοκιμάστε ξανά",
-      "copied": "Αντιγράφηκε"
+      "resendError": "Η αποστολή απέτυχε — δοκιμάστε ξανά"
     },
     "illus": {
       "contacts": "Επικοινωνία",

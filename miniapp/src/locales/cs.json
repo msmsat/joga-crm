@@ -37,7 +37,8 @@
     "preparing": "Připravujeme váš prostor",
     "need_link_title": "Je potřeba odkaz studia",
     "need_link_hint": "Tohle je klientská zóna. Otevřete ji přes odkaz vašeho studia — z Telegramu, Instagramu nebo z webu.",
-    "request_error": "Chyba požadavku ({{status}})"
+    "request_error": "Chyba požadavku ({{status}})",
+    "request_timeout": "Server neodpověděl včas. Zkontrolujte připojení a zkuste to znovu."
   },
   "lesson": {
     "name": {
@@ -520,6 +521,7 @@
     "min": "min"
   },
   "booking": {
+    "loading": "Načítání...",
     "title": "Objednat se",
     "stepMaster": "Specialista",
     "duration": "{{min}} min",

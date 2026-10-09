@@ -17,7 +17,6 @@
     "miniapp": {
       "name": "Enlace para clientes",
       "desc": "Mini app de reservas — para la bio, las stories y las campañas",
-      "copy": "Copiar enlace",
       "open": "Abrir la mini app",
       "posterTitle": "Reserva tu clase online",
       "scanHint": "Apunta la cámara del móvil al código"

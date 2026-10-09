@@ -197,11 +197,8 @@
   "qr": {
     "title": "QR kod",
     "subtitle": "Odštampajte ga, objavite u storiju ili kopirajte link.",
-    "copy": "Kopiraj",
     "print": "Štampa",
     "story": "Za story",
-    "copied": "Link je kopiran",
-    "copyFailed": "Link nije moguće kopirati",
     "printBlocked": "Pregledač je blokirao prozor za štampu",
     "storySaved": "Slika je sačuvana",
     "storyFailed": "Sliku nije moguće napraviti",
@@ -212,6 +209,10 @@
     "packageCaption": "Usmerite kameru i kupite paket",
     "serviceAction": "QR kod usluge",
     "staffAction": "QR kod zaposlenog"
+  },
+  "copyLink": {
+    "copy": "Копирај линк",
+    "copied": "Копирано"
   },
   "auth": {
     "haveAccount": "Већ имате налог?",

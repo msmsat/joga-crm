@@ -188,8 +188,7 @@
       "emailSentTitle": "Email sent",
       "resend": "Send again",
       "resentOk": "Email sent again",
-      "resendError": "Sending failed — retry",
-      "copied": "Copied"
+      "resendError": "Sending failed — retry"
     },
     "illus": {
       "contacts": "Contacts",

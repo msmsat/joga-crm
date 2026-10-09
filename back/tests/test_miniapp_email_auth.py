@@ -11,6 +11,8 @@
 import asyncio
 import warnings
 
+import pytest
+
 warnings.filterwarnings("ignore")
 
 from sqlalchemy import delete, select
@@ -29,13 +31,21 @@ _SENT: list[tuple[str, str, str]] = []
 # сигнатурой падал бы TypeError'ом на каждой такой правке.
 async def _fake_send_email(to, subject, html, **_kw):
     _SENT.append((to, subject, html))
+    return True
 
 
-M.send_email = _fake_send_email
+def _isolate_delivery(monkeypatch):
+    # Never mutate production modules during collection: later journey tests
+    # must use their real local SMTP transport, independent of test ordering.
+    _SENT.clear()
+    monkeypatch.setattr(M, "send_email", _fake_send_email)
+    # The rate limit is not under test here; the scenario requests six codes.
+    monkeypatch.setattr(limiter, "enabled", False)
 
-# Лимиты 3/мин на выдачу кода — здесь помеха, а не предмет проверки: тест зовёт
-# ручку шесть раз подряд от одного IP. Сам лимит проверяется не тут.
-limiter.enabled = False
+
+@pytest.fixture(autouse=True)
+def isolated_delivery(monkeypatch):
+    _isolate_delivery(monkeypatch)
 
 EMAIL = "web.client@velora-test.com"
 
@@ -223,5 +233,7 @@ def test_miniapp_email_auth():
 
 
 if __name__ == "__main__":
-    test_miniapp_email_auth()
+    with pytest.MonkeyPatch.context() as delivery_patch:
+        _isolate_delivery(delivery_patch)
+        test_miniapp_email_auth()
     print("ALL PASS — вход клиента мини-приложения по email (вне Telegram)")
