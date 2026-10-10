@@ -4,9 +4,8 @@ interface ProgramMeta {
   key: ProgramKey;
   titleKey: string;
   descKey: string;
-  accentColor: string;
-  accentBg: string;
-  accentBorder: string;
+  /** Тон материала карты: из него CSS смешивает фон, чернила и узор для обеих тем. */
+  hue: string;
   stats: { labelKey: string };
 }
 
@@ -18,36 +17,28 @@ export const PROGRAM_METADATA: ProgramMeta[] = [
     key: 'loyalty',
     titleKey: 'programs.loyalty.title',
     descKey: 'programs.loyalty.desc',
-    accentColor: '#FCAE91',
-    accentBg: 'rgba(252,174,145,0.08)',
-    accentBorder: 'rgba(252,174,145,0.25)',
+    hue: '#F4A38A',
     stats: { labelKey: 'programs.loyalty.statLabel' },
   },
   {
     key: 'discounts',
     titleKey: 'programs.discounts.title',
     descKey: 'programs.discounts.desc',
-    accentColor: '#5BAB72',
-    accentBg: 'rgba(91,171,114,0.08)',
-    accentBorder: 'rgba(91,171,114,0.25)',
+    hue: '#8FBF97',
     stats: { labelKey: 'programs.discounts.statLabel' },
   },
   {
     key: 'certificates',
     titleKey: 'programs.certificates.title',
     descKey: 'programs.certificates.desc',
-    accentColor: '#4A80C4',
-    accentBg: 'rgba(74,128,196,0.08)',
-    accentBorder: 'rgba(74,128,196,0.25)',
+    hue: '#8EA9D6',
     stats: { labelKey: 'programs.certificates.statLabel' },
   },
   {
     key: 'referral',
     titleKey: 'programs.referral.title',
     descKey: 'programs.referral.desc',
-    accentColor: '#9B8EC4',
-    accentBg: 'rgba(155,142,196,0.08)',
-    accentBorder: 'rgba(155,142,196,0.25)',
+    hue: '#ADA0D6',
     stats: { labelKey: 'programs.referral.statLabel' },
   },
   {
@@ -56,27 +47,21 @@ export const PROGRAM_METADATA: ProgramMeta[] = [
     key: 'first_lesson',
     titleKey: 'programs.first_lesson.title',
     descKey: 'programs.first_lesson.desc',
-    accentColor: '#F9A08B',
-    accentBg: 'rgba(249,160,139,0.08)',
-    accentBorder: 'rgba(249,160,139,0.25)',
+    hue: '#E39AA8',
     stats: { labelKey: 'programs.first_lesson.statLabel' },
   },
   {
     key: 'promocodes',
     titleKey: 'programs.promocodes.title',
     descKey: 'programs.promocodes.desc',
-    accentColor: '#5BAB72',
-    accentBg: 'rgba(91,171,114,0.08)',
-    accentBorder: 'rgba(91,171,114,0.25)',
+    hue: '#E2B66A',
     stats: { labelKey: 'programs.promocodes.statLabel' },
   },
   {
     key: 'deposit',
     titleKey: 'programs.deposit.title',
     descKey: 'programs.deposit.desc',
-    accentColor: '#FCAE91',
-    accentBg: 'rgba(252,174,145,0.08)',
-    accentBorder: 'rgba(252,174,145,0.25)',
+    hue: '#3A3734',
     stats: { labelKey: 'programs.deposit.statLabel' },
   },
 ];

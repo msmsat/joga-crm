@@ -54,3 +54,9 @@ This gate covers the miniapp and its API paths. It does not certify the whole CR
 `cd miniapp && npm run verify` uses the same sequence. Supply a fresh dedicated `TEST_DATABASE_URL`, a distinct inert `DATABASE_URL` guard value, and optionally `MINIAPP_E2E_PYTHON` and `MINIAPP_E2E_BROWSER_CHANNEL=chrome` for an installed Chrome. Python dotenv loading is disabled by the runner so local production `.env` credentials cannot override test settings. The installed Python must have both backend requirements and `requirements-dev.txt`; install Playwright Chromium with `npx playwright install chromium` if not using system Chrome.
 
 Local verification without an exact `MINIAPP_RELEASE_SHA` produces diagnostic evidence only; the deploy wrapper accepts only artifacts tied to its exact exported commit. Docker verification is the reproducible release path.
+
+The HTTP/browser journey fixture supplies its own `MINIAPP_URL` and CORS origin
+from `MINIAPP_E2E_PREVIEW_PORT` (default `4174`). It does not need a developer's
+`.env` or a Telegram bot for browser checkout returns. Regression tests exercise
+both a missing inherited URL and an unrelated inherited URL and verify the
+actual success/cancel destinations passed to Checkout.

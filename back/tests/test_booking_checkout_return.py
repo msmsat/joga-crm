@@ -1,5 +1,6 @@
 """Real authenticated booking HTTP and PostgreSQL, controlled Stripe boundary."""
 import asyncio
+from urllib.parse import parse_qs, urlsplit
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -29,6 +30,31 @@ async def card_booking(http, ids):
     assert again.json()['status'] == 'hold'
     assert again.json()['reservation_id'] == result['reservation_id']
     return result, body
+
+
+@pytest.mark.parametrize('inherited_url', [None, 'https://developer-app.invalid'])
+def test_browser_checkout_returns_to_fixture_without_developer_configuration(monkeypatch, inherited_url):
+    if inherited_url is None:
+        monkeypatch.delenv('MINIAPP_URL', raising=False)
+    else:
+        monkeypatch.setenv('MINIAPP_URL', inherited_url)
+    monkeypatch.setenv('MINIAPP_E2E_PREVIEW_PORT', '4197')
+
+    async def scenario():
+        async with fixture_app(monkeypatch) as (app, capture, state):
+            ids = state['ids'] = await seed()
+            async with AsyncClient(transport=ASGITransport(app=app), base_url='http://fixture.local') as http:
+                await login(http, ids, capture)
+                await card_booking(http, ids)
+                session = state['stripe'].only()
+                response = await http.get(f'/__test/checkout-urls/{session.id}')
+                assert response.status_code == 200
+                for name, outcome in [('success_url', 'paysuccess'), ('cancel_url', 'paycancel')]:
+                    url = urlsplit(response.json()[name])
+                    assert (url.scheme, url.netloc, url.path) == ('http', '127.0.0.1:4197', f"/s/{ids['code']}")
+                    assert parse_qs(url.query)['pay'] == [outcome]
+                    assert int(parse_qs(url.query)['checkout_id'][0]) > 0
+    asyncio.run(scenario())
 
 
 @pytest.mark.parametrize('paid', [False, True])

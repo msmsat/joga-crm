@@ -172,7 +172,11 @@ async def fixture_app(monkeypatch):
         return_urls[result[0]] = {name: kwargs[name] for name in ('success_url', 'cancel_url')}
         return result
     monkeypatch.setattr(stripe_connect, 'create_hosted_checkout_session', create_checkout)
-    monkeypatch.setenv('CORS_ORIGINS', f"http://127.0.0.1:{os.getenv('MINIAPP_E2E_PREVIEW_PORT', '4174')}")
+    # Own the return origin, including HTTP tests without an Origin header.
+    # A developer's .env must not hide missing CI configuration or receive returns.
+    preview_url = f"http://127.0.0.1:{os.getenv('MINIAPP_E2E_PREVIEW_PORT', '4174')}"
+    monkeypatch.setenv('MINIAPP_URL', preview_url)
+    monkeypatch.setenv('CORS_ORIGINS', preview_url)
     monkeypatch.setattr(stripe_connect, 'configured', lambda: True)
     monkeypatch.setattr(stripe_env, 'expects_livemode', lambda: False)
     request_scope = ContextVar("journey_request_scope", default=None)
@@ -231,7 +235,7 @@ async def fixture_app(monkeypatch):
     app = FastAPI()
     app.state.limiter = limiter
     app.include_router(miniapp_router, prefix="/global")
-    app.add_middleware(CORSMiddleware, allow_origins=[f"http://127.0.0.1:{os.getenv('MINIAPP_E2E_PREVIEW_PORT', '4174')}"],
+    app.add_middleware(CORSMiddleware, allow_origins=[preview_url],
                        allow_methods=["*"], allow_headers=["*"])
 
     class ConnectionScope:

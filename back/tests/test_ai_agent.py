@@ -230,7 +230,9 @@ async def _run():
 
         # ── Изменяющий инструмент: предложение, а не исполнение.
         async with async_session_maker() as db:
-            lesson_id = (await db.execute(select(Lesson.id).where(Lesson.studio_id == sid))).scalars().first()
+            lesson_id = (await db.execute(select(Lesson.id).where(
+                Lesson.studio_id == sid, Lesson.name == "Пилатес",
+            ))).scalar_one()
         _ScriptedLLM(_calls(
             ("book_client", {"lesson_id": lesson_id, "client_id": ids["client_id"]}))).install()
         async with async_session_maker() as db:

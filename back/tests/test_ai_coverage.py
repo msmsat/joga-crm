@@ -26,6 +26,8 @@ _METHODS = {"POST", "PATCH", "PUT", "DELETE"}
 # Маршрут → почему у него НЕТ инструмента. Причина обязательна: строка «нет
 # инструмента» без объяснения через полгода неотличима от забывчивости.
 UI_ONLY: dict[str, str] = {
+    "POST /global/bookings/{reservation_id}/checkout-return": "возврат клиента из Stripe: сверяет его оплату "
+                                  "и освобождает только его неоплаченный резерв; контекста клиента у ассистента нет",
     "POST /global/checkout/sync": "сверка собственных оплат клиента с Stripe после возврата в мини-приложение; "
                                   "новую оплату не создаёт, ассистенту чужие клиентские сессии недоступны",
     # Quotes are bound to the authenticated human and expire after five minutes.

@@ -14,9 +14,7 @@ export interface Program {
   title: string;
   desc: string;
   icon: JSX.Element;
-  accentColor: string;
-  accentBg: string;
-  accentBorder: string;
+  hue: string;
   configured: boolean;
   stats?: { value: number; label: string };
 }
