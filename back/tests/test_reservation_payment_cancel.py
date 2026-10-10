@@ -89,7 +89,7 @@ def test_cancel_returns_everything_and_the_payment_can_be_taken_again():
                           "use_bonuses": True}
 
                 check = (await http.post(f"{url}/payment-preview", json=choice)).json()
-                assert check["discounts"] == [{"kind": "promo", "amount": 200}]
+                assert check["discounts"] == [{"kind": "promo", "amount": 200, "name": None}]
                 assert check["certificate_applied"] == 300 and check["bonuses_applied"] > 0
                 paid_total = check["total"]
                 assert paid_total > 0

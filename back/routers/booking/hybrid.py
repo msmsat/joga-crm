@@ -149,7 +149,11 @@ async def confirm(request: Request, body: ClientConfirmRequest, background: Back
     except Exception:
         await db.rollback()
         raise
-    return await hybrid_http.after_commit(db, actor, booked, background)
+    return_to = None
+    if booked['status'] == 'hold':
+        from .miniapp_users import _checkout_return_base
+        return_to = await _checkout_return_base(db, client, body.in_telegram, request)
+    return await hybrid_http.after_commit(db, actor, booked, background, return_to=return_to)
 
 
 @router.post("/bookings/{reservation_id}/cancel", response_model=BookingRead)
@@ -179,6 +183,15 @@ async def pay(request: Request, reservation_id: int, body: BookingPayRequest,
     return BookingPayRead(
         outcome=payable.outcome.value.lower(), url=payable.url, checkout_id=payable.checkout_id,
         amount_str=_fmt_amount(payable.amount, payable.currency) if payable.amount else "")
+
+
+@router.post('/bookings/{reservation_id}/checkout-return', response_model=BookingRead)
+@limiter.limit('10/minute')
+async def checkout_return(request: Request, reservation_id: int,
+                          client: Client = Depends(get_current_client), db: AsyncSession = Depends(get_db)):
+    from services import booking_checkout_return
+    return await booking_checkout_return.leave(db, studio_id=client.studio_id,
+        client_id=client.id, reservation_id=reservation_id)
 
 
 @router.post("/reservations/{reservation_id}/reschedule-quotes", response_model=QuoteRead, status_code=201)

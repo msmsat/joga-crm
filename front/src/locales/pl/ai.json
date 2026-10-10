@@ -294,7 +294,9 @@
     "update_service": "Aktualizowanie usługi…",
     "update_staff": "Aktualizowanie członka zespołu…",
     "add_studio_time": "Dodaję czas studia…",
-    "remove_studio_time": "Usuwam czas studia…"
+    "remove_studio_time": "Usuwam czas studia…",
+    "create_discount": "Tworzenie rabatu…",
+    "update_discount": "Zmiana rabatu…"
   },
   "quota": {
     "trialLow": "Pozostało mało próbnych żądań.",

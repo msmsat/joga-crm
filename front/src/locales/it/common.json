@@ -67,7 +67,8 @@
     "role": "Ruolo",
     "status": "Stato",
     "size": "Importo",
-    "optional": "Facoltativo"
+    "optional": "Facoltativo",
+    "required": "Obbligatorio"
   },
   "days": {
     "mon": "Lunedì",
@@ -152,7 +153,12 @@
       "cert_not_found": "Buono regalo non trovato",
       "cert_used": "Il buono regalo è già stato usato oppure non è valido",
       "cert_expired": "Il buono regalo è scaduto",
-      "first_lesson_amount_required": "Indica l'importo dello sconto sulla prima lezione"
+      "first_lesson_amount_required": "Indica l'importo dello sconto sulla prima lezione",
+      "discount_not_found": "Sconto non trovato",
+      "discount_invalid": "Controlla i campi dello sconto",
+      "discount_service_not_found": "Uno dei servizi scelti non esiste più",
+      "discount_package_not_found": "Uno degli abbonamenti scelti non esiste più",
+      "discount_client_not_found": "Uno dei clienti scelti non esiste più"
     },
     "notifications": {
       "critical_locked": "Questa notifica non può essere disattivata",

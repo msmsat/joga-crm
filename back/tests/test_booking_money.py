@@ -31,7 +31,7 @@ from database import async_session_maker
 from models import (
     ActionProposal, ChannelThread, Client, ClientOffer, ClientPayment, Hall, Lesson,
     OnlineChannel, Operation, Reservation, Service, StripeCheckout, Studio,
-    StudioBookingSettings, StudioDiscountConfig, User,
+    StudioBookingSettings, StudioDiscountConfig, DiscountCampaign, User,
 )
 from services import booking, booking_payment, pricing
 
@@ -98,6 +98,7 @@ async def _cleanup(ids) -> None:
             delete(Reservation).where(Reservation.lesson_id.in_(ids["lessons"])),
             delete(ClientOffer).where(ClientOffer.client_id == ids["katya"]),
             delete(StudioDiscountConfig).where(StudioDiscountConfig.studio_id == sid),
+            delete(DiscountCampaign).where(DiscountCampaign.studio_id == sid),
             delete(Lesson).where(Lesson.studio_id == sid),
             delete(Hall).where(Hall.studio_id == sid),
             delete(Service).where(Service.studio_id == sid),
@@ -127,20 +128,22 @@ async def _wipe(ids) -> None:
 
 
 async def _discount(ids, percent: int | None) -> None:
-    """Включить/выключить студийную скидку. None — убрать вовсе."""
+    """Включить/выключить скидку студии «на всё и всем» (DiscountCampaign).
+    None — убрать вовсе."""
     async with async_session_maker() as db:
+        await db.execute(delete(DiscountCampaign).where(DiscountCampaign.studio_id == ids["studio"]))
         row = (await db.execute(select(StudioDiscountConfig).where(
             StudioDiscountConfig.studio_id == ids["studio"]))).scalar_one_or_none()
         if percent is None:
             if row is not None:
                 await db.delete(row)
-        elif row is None:
-            db.add(StudioDiscountConfig(
-                studio_id=ids["studio"], is_enabled=True,
-                discount_type="percentage", discount_value=percent))
         else:
-            row.is_enabled, row.discount_value = True, percent
-            row.discount_type = "percentage"
+            if row is None:
+                db.add(StudioDiscountConfig(studio_id=ids["studio"], is_enabled=True))
+            else:
+                row.is_enabled = True
+            db.add(DiscountCampaign(studio_id=ids["studio"], name="Всем",
+                                    discount_type="percent", value=percent))
         await db.commit()
 
 

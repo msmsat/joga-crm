@@ -44,7 +44,8 @@ export function QuoteStep({ flow }: { flow: Flow }) {
     <div className="flex flex-col gap-2.5 pt-1">
       {flow.notice && (
         <div role="status" className="rounded-2xl bg-brand/12 px-4 py-3 text-[13px] font-semibold leading-snug text-foreground">
-          {t(`resource.errors.${flow.notice.code}`, { defaultValue: t('resource.bookError') })}
+          {flow.notice.code === 'UNKNOWN' && flow.notice.message ? flow.notice.message
+            : t(`resource.errors.${flow.notice.code}`, { defaultValue: flow.notice.message || t('resource.bookError') })}
         </div>
       )}
 

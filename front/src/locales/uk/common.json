@@ -67,7 +67,8 @@
     "role": "Роль",
     "status": "Статус",
     "size": "Сума",
-    "optional": "Необов'язково"
+    "optional": "Необов'язково",
+    "required": "Обов'язково"
   },
   "days": {
     "mon": "Понеділок",
@@ -152,7 +153,12 @@
       "cert_not_found": "Сертифікат не знайдено",
       "cert_used": "Сертифікат уже використано або він недійсний",
       "cert_expired": "Термін дії сертифіката минув",
-      "first_lesson_amount_required": "Вкажіть суму знижки на перше заняття"
+      "first_lesson_amount_required": "Вкажіть суму знижки на перше заняття",
+      "discount_not_found": "Знижку не знайдено",
+      "discount_invalid": "Перевірте поля знижки",
+      "discount_service_not_found": "Однієї з вибраних послуг уже немає",
+      "discount_package_not_found": "Одного з вибраних абонементів уже немає",
+      "discount_client_not_found": "Одного з вибраних клієнтів уже немає"
     },
     "notifications": {
       "critical_locked": "Це сповіщення не можна вимкнути",

@@ -291,7 +291,9 @@
     "update_service": "Szolgáltatás frissítése…",
     "update_staff": "Csapattag frissítése…",
     "add_studio_time": "Stúdióidőt adok hozzá…",
-    "remove_studio_time": "Stúdióidőt távolítok el…"
+    "remove_studio_time": "Stúdióidőt távolítok el…",
+    "create_discount": "Kedvezmény létrehozása…",
+    "update_discount": "Kedvezmény módosítása…"
   },
   "quota": {
     "trialLow": "Kevés próbakérés maradt.",

@@ -12,6 +12,7 @@ import { bumpLessons } from '../lib/revision';
 import { spawnPetals } from '../lib/petals';
 import { rememberCheckout } from '../lib/paymentSync';
 import { getSession } from '../lib/session';
+import { needsSubscription as subscriptionRequired } from '../lib/bookingFailure';
 import { availabilityQuery, dayList, lastBookableDay, studioToday, timeOf, type IsoDay } from '../lib/slots';
 import {
   branchOf, emptyPick, isComplete, minutesOf, nextStep, onService, reconcileTime, shownStep, soloOf, stepsFor,
@@ -20,6 +21,8 @@ import {
 import type { MasterChoice } from '../lib/bookingPage';
 import { useTelegram } from './useTelegram';
 import { useBookingPaymentStatus } from './useBookingPaymentStatus';
+import { useBookingCheckoutReturn } from './useBookingCheckoutReturn';
+import { rememberBookingCheckout } from '../lib/bookingCheckout';
 
 /** Способ оплаты записи: на месте или онлайн (форма Stripe). */
 export type PayMethod = 'venue' | 'card';
@@ -53,7 +56,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   // онлайн, если студия это принимает. Не принимает — сервер ответит 402, и
   // клиента поведут в покупку абонемента, как и раньше.
   const prepay = Boolean(catalog?.rules.prepay_required);
-  const defaultMethod: PayMethod = prepay && catalog?.can_pay_online ? 'card' : 'venue';
+  const defaultMethod: PayMethod = catalog?.can_pay_online ? 'card' : 'venue';
   const today = studioToday(catalog?.studio.tz_iana);
   const days = useMemo(
     () => dayList(today, lastBookableDay(today, catalog?.rules.booking_window_days)),
@@ -77,8 +80,11 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   const [quoted, setQuoted] = useState<Quoted | null>(null);
   const [quoting, setQuoting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [noticeMessage, setNoticeMessage] = useState<string | null>(null);
   const [booking, setBooking] = useState<BookingRead | null>(null);
   const [saving, setSaving] = useState(false);
+  const [returnedToPayment, setReturnedToPayment] = useState(false);
+  const [returnedCodes, setReturnedCodes] = useState<ClientConfirmPayment | null>(null);
   const submitting = useRef(false);
   const [needsPhone, setNeedsPhone] = useState(false);
   const [needsSubscription, setNeedsSubscription] = useState<string | null>(null);
@@ -86,6 +92,23 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   const attempt = useRef(0);
   // Повтор после телефона: то, что человек нажимал, когда сервер попросил номер.
   const retry = useRef<(() => void) | null>(null);
+  const checkoutReturn = useBookingCheckoutReturn(Boolean(catalog && getSession()), saved => {
+    attempt.current += 1;
+    setScope(saved.scope);
+    setPick(saved.pick);
+    setQuoted(null);
+    setQuoting(false);
+    setBooking(saved.booking);
+    setByDay({});
+    setStep('summary');
+    setIsOpen(true);
+    setReturnedCodes(saved.payment);
+    setReturnedToPayment(true);
+  }, result => {
+    setBooking(result);
+    setByDay({});
+    setQuoted(null);
+  });
 
   // Мастера — один раз за открытие студии: список не зависит ни от дня, ни от выбора.
   useEffect(() => {
@@ -100,7 +123,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   // Снимок дня — по требованию, один раз на день. Ошибка остаётся в кеше до «Повторить».
   const dayState = byDay[chosen.day];
   useEffect(() => {
-    if (!isOpen || dayState) return;
+    if (!isOpen || booking || dayState) return;
     const day = chosen.day;
     let cancelled = false;
     hybridApi.servicesDay(day)
@@ -114,7 +137,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
         if (!cancelled) setByDay((prev) => ({ ...prev, [day]: { rows: null, error: true } }));
       });
     return () => { cancelled = true; };
-  }, [isOpen, chosen.day, dayState]);
+  }, [isOpen, chosen.day, dayState, booking]);
 
   const rows = dayState?.rows ?? null;
   // Мастера филиала — сужением уже полученного списка, а не вторым запросом:
@@ -182,6 +205,10 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
     setQuoted(null);
     setBooking(null);
     setNotice(null);
+    setNeedsPhone(false);
+    setNeedsSubscription(null);
+    setReturnedToPayment(false);
+    setReturnedCodes(null);
     // Каждое открытие — свежее время: пока лист был закрыт, окна могли занять.
     setByDay({});
     setDir(1);
@@ -195,12 +222,13 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
       setNeedsPhone(true);
       return;
     }
-    if (error.status === 402) {
-      setNeedsSubscription(error.code ? t('subscriptionSheet.hint') : error.message);
+    if (subscriptionRequired(error, catalog?.rules.prepay_required)) {
+      setNeedsSubscription(t('subscriptionSheet.hint'));
       return;
     }
     const code = error.code ?? 'UNKNOWN';
     setNotice(code);
+    setNoticeMessage(error.message || null);
     if (tg) tg.HapticFeedback.notificationOccurred('error');
     if (SLOT_GONE.has(code)) {
       // Окно ушло — перечитать день и вернуть к выбору времени.
@@ -256,11 +284,11 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
 
   // Итог открыт и выбрано всё — условия считаются сами (у гостя — после входа).
   useEffect(() => {
-    if (!isOpen || step !== 'summary' || !complete || quote || quoting || !getSession()) return;
+    if (!isOpen || booking || step !== 'summary' || !complete || quote || quoting || !getSession()) return;
     void requestQuote(defaultMethod);
     // `requestQuote` пересоздаётся каждым рендером; ключ выбора — в pickKey.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, step, complete, pickKey, Boolean(quote)]);
+  }, [isOpen, step, complete, pickKey, Boolean(quote), booking]);
 
   /**
    * Записать. `payment` — коды клиента и итог из чека; `null` — платить нечего
@@ -268,7 +296,7 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
    * способ — новые условия на тот же слот, и только потом подтверждение.
    */
   const submit = async (method: PayMethod, payment: ClientConfirmPayment | null) => {
-    if (submitting.current) return;
+    if (submitting.current || booking?.status === 'hold') return;
     submitting.current = true;
     retry.current = () => void submit(method, payment);
     setSaving(true);
@@ -277,15 +305,19 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
       let current = quote;
       if (!current || current.method !== method) current = await requestQuote(method);
       if (!current) return;
-      const result = await hybridApi.confirm(current.data.quote_id, payment ?? undefined);
+      const result = await hybridApi.confirm(current.data.quote_id, payment ?? undefined, isInTelegram);
       setBooking(result);
       bumpLessons();
-      if (result.payment_url) rememberCheckout({ reservation_id: result.reservation_id });
+      if (result.status === 'hold') {
+        rememberBookingCheckout({ pick, scope, booking: result, payment });
+        rememberCheckout({ reservation_id: result.reservation_id });
+      }
       else spawnPetals();
-      if (tg) tg.HapticFeedback.notificationOccurred('success');
-      // Telegram can open its browser after a request. In a regular browser,
-      // WizardDone provides a direct link and keeps this booking tab available.
-      if (result.payment_url && isInTelegram && tg?.openLink) openPayment(result.payment_url);
+      if (tg && result.status !== 'hold') tg.HapticFeedback.notificationOccurred('success');
+      if (result.payment_url) {
+        if (isInTelegram && tg?.openLink) openPayment(result.payment_url);
+        else window.location.assign(result.payment_url);
+      }
     } catch (error) {
       const failure = error as ApiError;
       // Условия устарели — пересчитать их на тот же слот; подтверждать заново
@@ -336,7 +368,8 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
     quote: quote?.data ?? null, quoting, requestQuote, defaultMethod,
     /** На месте записать нельзя — только онлайн (предоплата студии). */
     venueAllowed: !prepay,
-    notice, booking, saving, submit, openPayment, ...paymentStatus,
+    notice, noticeMessage, booking, saving, submit, openPayment, ...paymentStatus, ...checkoutReturn,
+    returnedToPayment, returnedCodes, closeReturnedPayment: () => setReturnedToPayment(false),
     needsPhone,
     closePhone: () => setNeedsPhone(false),
     retryAfterPhone: () => { setNeedsPhone(false); retry.current?.(); },

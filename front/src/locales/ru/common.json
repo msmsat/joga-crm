@@ -67,7 +67,8 @@
     "role": "Роль",
     "status": "Статус",
     "size": "Размер",
-    "optional": "Необязательно"
+    "optional": "Необязательно",
+    "required": "Обязательно"
   },
   "days": {
     "mon": "Понедельник",
@@ -152,7 +153,12 @@
       "cert_not_found": "Сертификат не найден",
       "cert_used": "Сертификат уже погашен или недействителен",
       "cert_expired": "Срок действия сертификата истёк",
-      "first_lesson_amount_required": "Укажите сумму скидки на первое занятие"
+      "first_lesson_amount_required": "Укажите сумму скидки на первое занятие",
+      "discount_not_found": "Скидка не найдена",
+      "discount_invalid": "Проверьте поля скидки",
+      "discount_service_not_found": "Одной из выбранных услуг больше нет",
+      "discount_package_not_found": "Одного из выбранных абонементов больше нет",
+      "discount_client_not_found": "Одного из выбранных клиентов больше нет"
     },
     "notifications": {
       "critical_locked": "Это уведомление отключить нельзя",

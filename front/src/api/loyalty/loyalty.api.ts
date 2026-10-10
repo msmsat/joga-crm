@@ -5,7 +5,11 @@ import type {
   ClientOffer,
   ClientOfferCreate,
   DepositStats,
+  DiscountCampaign,
+  DiscountCampaignPayload,
   DiscountConfig,
+  DiscountReach,
+  DiscountSegment,
   FirstLessonConfig,
   GiftCertificate,
   LoyaltyCard,
@@ -61,6 +65,24 @@ export const loyaltyApi = {
 
   updateDiscountConfig: (payload: Partial<DiscountConfig>) =>
     client.patch<DiscountConfig>('/loyalty/discounts', payload),
+
+  getDiscountCampaigns: () =>
+    client.get<DiscountCampaign[]>('/loyalty/discount-campaigns'),
+
+  getDiscountReach: (segments: DiscountSegment[], birthdayWindowDays: number) => {
+    const params = new URLSearchParams({ birthday_window_days: String(birthdayWindowDays) })
+    segments.forEach(segment => params.append('segments', segment))
+    return client.get<DiscountReach>(`/loyalty/discount-campaigns/reach?${params}`)
+  },
+
+  createDiscountCampaign: (payload: DiscountCampaignPayload) =>
+    client.post<DiscountCampaign>('/loyalty/discount-campaigns', payload),
+
+  updateDiscountCampaign: (id: number, payload: Partial<DiscountCampaignPayload>) =>
+    client.patch<DiscountCampaign>(`/loyalty/discount-campaigns/${id}`, payload),
+
+  deleteDiscountCampaign: (id: number) =>
+    client.delete<void>(`/loyalty/discount-campaigns/${id}`),
 
   getCertificateConfig: () =>
     client.get<CertificateConfig>('/loyalty/certificates-config'),

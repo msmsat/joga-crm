@@ -12,7 +12,7 @@ import SubscriptionSheet from '../modals/SubscriptionSheet';
 import WizardTabs from './WizardTabs';
 import WizardTime from './WizardTime';
 import { WizardMasters, WizardServices, type Preview } from './WizardChoices';
-import WizardSummary from './WizardSummary';
+import WizardSummary, { WizardNotice } from './WizardSummary';
 import WizardTicket from './WizardTicket';
 import WizardRail from './WizardRail';
 import WizardPaySheet from './WizardPaySheet';
@@ -50,6 +50,9 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
   // кликнуть или уйти в другой раздел — она устаревает сама, без эффекта.
   const [hover, setHover] = useState<{ step: WizardStep; base: WizardPick; pick: WizardPick } | null>(null);
   const { step, pick, quote, booking } = flow;
+  const held = booking?.status === 'hold';
+  const done = booking && !held && booking.status !== 'cancelled';
+  const paymentOpen = !done && (held || ((paying || flow.returnedToPayment) && step === 'summary' && flow.complete));
   // Новый раздел открывается с начала, а не на высоте, где бросили прошлый.
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -85,7 +88,7 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
   // Не выбрано — кнопка ведёт в первый невыбранный раздел, а не перечисляет,
   // чего не хватает. Филиал — исключение: его чипы стоят тут же, на итоге.
   // Скрытый раздел (мастер один) сюда не попадает: его выбор подставлен сам.
-  const footer = booking ? (
+  const footer = done ? (
     <SheetAction onClick={() => { close(); onMyLessons(); }}>{t('wizard.toMyLessons')}</SheetAction>
   ) : step === 'summary' ? (
     <WizardSummaryAction flow={flow} onPay={() => setPaying(true)} />
@@ -101,8 +104,8 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
         // Студия и выбранное на десктопе стоят в колонке слева — шапка справа
         // остаётся одним вопросом раздела.
         kicker={isDesktop ? undefined : catalog?.studio.name ?? t('wizard.title')}
-        title={booking ? t('wizard.doneTitle') : t(`wizard.titles.${step}`)}
-        subtitle={booking || isDesktop ? undefined : picked || t('wizard.hint')}
+        title={done ? t('wizard.doneTitle') : t(`wizard.titles.${step}`)}
+        subtitle={done || isDesktop ? undefined : picked || t('wizard.hint')}
         onBack={!isDesktop && !booking && step !== 'summary' && isChosen(pick, 'time') && isChosen(pick, 'service') ? () => flow.goTo('summary') : undefined}
         backLabel={t('resource.back')}
         footer={footer}
@@ -111,7 +114,7 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
         ) : undefined}
         aside={<WizardRail flow={flow} catalog={catalog} preview={preview} />}
       >
-        {booking ? (
+        {done ? (
           <WizardDone flow={flow} />
         ) : (
           <motion.div
@@ -139,17 +142,24 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
         )}
       </Sheet>
 
-      <WizardPaySheet
-        isOpen={paying && !booking}
-        onClose={() => setPaying(false)}
+      {paymentOpen && <WizardPaySheet
+        isOpen
+        onClose={() => { setPaying(false); flow.closeReturnedPayment(); if (held) close(); }}
         quoteId={quote?.quote_id ?? null}
         subtitle={picked}
         studio={catalog?.studio}
         canPayOnline={Boolean(catalog?.can_pay_online)}
         venueAllowed={flow.venueAllowed}
-        saving={flow.saving}
+        saving={flow.saving || flow.checkoutReturnBusy}
+        blocked={held}
+        recoveryMessage={held ? t(flow.checkoutReturnBusy ? 'pay.returnChecking'
+          : flow.checkoutProcessing ? 'pay.returnPending' : 'pay.returnError') : null}
+        onRecover={flow.retryCheckoutReturn}
+        initialPayment={flow.returnedCodes}
+        notice={<WizardNotice flow={flow} />}
+        onRetryQuote={() => void flow.requestQuote()}
         onPay={(method, payment) => void flow.submit(method, payment)}
-      />
+      />}
 
       <PhoneSheet isOpen={flow.needsPhone} onClose={flow.closePhone} onSaved={flow.retryAfterPhone} layer={4} />
       <SubscriptionSheet

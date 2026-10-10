@@ -18,6 +18,7 @@ import os
 import time as _time
 import warnings
 from datetime import datetime, time, timedelta, timezone
+from types import SimpleNamespace
 
 warnings.filterwarnings("ignore")
 
@@ -361,3 +362,73 @@ def test_hold_payload_is_unchanged():
     body = booking_payment.payload_for(reservation_id=1, client_id=2, lesson_id=3,
                                        amount=500, currency="CZK", debt_payment_id=9)
     assert booking_payment.settles_debt(type("X", (), {"payload": body})()) == 9
+
+
+def test_rejected_charge_blocks_another_card_payment(monkeypatch):
+    async def run():
+        ids = await _seed()
+        try:
+            reservation_id = await _venue_booking(ids)
+            fake = FakeStripe()
+            with _Patched(fake):
+                payable = await _pay_link(ids, reservation_id)
+                async with async_session_maker() as db:
+                    row = await db.get(Reservation, reservation_id)
+                    await reservation_payment.discount_debt(db, ids['studio'], row, 20)
+                    await db.commit()
+                fake.pay(fake.only().id)
+                with pytest.raises(HTTPException):
+                    await _apply(fake.only().id)
+                async with async_session_maker() as db:
+                    assert (await db.get(StripeCheckout, payable.checkout_id)).status == 'failed'
+                again = await _pay_link(ids, reservation_id)
+                assert again.outcome.value == 'REVIEW' and again.url is None
+                assert len(fake.sessions) == 1
+            listed = (await _my(ids)).upcoming[0]
+            assert listed.payment_review is True and 'pay' not in listed.allowed_actions
+            assert listed.paid_online is False and listed.debt == 400
+            async def session_for_payment(*_):
+                return fake.only().id
+            monkeypatch.setattr(stripe_pay, '_checkout_for_payment', session_for_payment)
+            # A partial refund still leaves charged money unresolved.
+            await stripe_pay._mark_reversed(SimpleNamespace(payment_intent='pi_test', amount=50000,
+                amount_refunded=10000), 'charge.refunded', ACCOUNT)
+            with _Patched(fake):
+                assert (await _pay_link(ids, reservation_id)).outcome.value == 'REVIEW'
+            # Only a verified full refund unlocks a new form; no sale ever existed
+            # to reverse, so the pending debt and income ledger must stay intact.
+            await stripe_pay._mark_reversed(SimpleNamespace(payment_intent='pi_test', amount=50000,
+                amount_refunded=50000), 'charge.refunded', ACCOUNT)
+            listed = (await _my(ids)).upcoming[0]
+            assert listed.payment_review is False and listed.debt == 400
+            async with async_session_maker() as db:
+                assert (await db.get(StripeCheckout, payable.checkout_id)).status == 'refunded'
+                assert (await db.execute(select(Operation).where(Operation.studio_id == ids['studio']))).all() == []
+            with _Patched(fake):
+                again = await _pay_link(ids, reservation_id)
+                assert again.outcome is PayOutcome.OPEN and again.amount == 400
+        finally:
+            await _cleanup(ids)
+    asyncio.run(run())
+
+
+def test_started_hold_cannot_open_a_payment_form_or_advertise_pay():
+    async def run():
+        ids = await _seed()
+        try:
+            async with async_session_maker() as db:
+                result = await booking.create(db, studio_id=ids['studio'], client_id=ids['katya'],
+                    lesson_id=ids['lesson'], source='miniapp', hold_for_payment=True, now=NOW)
+                assert result.status == 'hold'
+                reservation_id = result.reservation_id
+                (await db.get(Lesson, ids['lesson'])).start_time = datetime.utcnow() - timedelta(hours=1)
+                await db.commit()
+            fake = FakeStripe()
+            with _Patched(fake):
+                assert (await _pay_link(ids, reservation_id)).outcome is PayOutcome.STALE
+                assert fake.sessions == {}
+            listed = (await _my(ids)).past[0]
+            assert 'pay' not in listed.allowed_actions
+        finally:
+            await _cleanup(ids)
+    asyncio.run(run())

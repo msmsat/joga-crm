@@ -31,7 +31,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from enum import Enum
 from typing import Optional
 
@@ -398,7 +398,8 @@ async def resolve_funding(db: AsyncSession, *, studio, client_id: int, lesson,
         # новичка и скидка первого занятия — часть договора; взять с человека
         # полную цену, когда у него есть скидка, значит взять лишнее.
         payable = await client_price(db, studio_id=studio_id, client_id=client_id,
-                                     base_price=lesson.price, first_lesson=trial)
+                                     base_price=lesson.price, first_lesson=trial,
+                                     service_id=lesson.service_id, on=lesson_day(lesson))
         if payable <= 0:
             # Скидка покрыла занятие целиком. Платить нечего — значит и
             # платёжного пути нет: ни формы, ни долга.
@@ -409,8 +410,16 @@ async def resolve_funding(db: AsyncSession, *, studio, client_id: int, lesson,
     return funding, subscription, trial
 
 
+def lesson_day(lesson) -> Optional[date]:
+    """День занятия по стенным часам студии — по нему сверяется период скидки
+    студии. Кандидат индивидуальной записи (ещё не занятие) тоже его знает."""
+    start = getattr(lesson, "start_time", None)
+    return start.date() if start is not None else None
+
+
 async def client_price(db: AsyncSession, *, studio_id: int, client_id: int,
-                       base_price: int, first_lesson: Optional[FirstLessonDiscount] = None) -> int:
+                       base_price: int, first_lesson: Optional[FirstLessonDiscount] = None,
+                       service_id: Optional[int] = None, on: Optional[date] = None) -> int:
     """Сколько это занятие стоит ИМЕННО ЭТОМУ клиенту. Только чтение.
 
     ЕДИНСТВЕННЫЙ ОТВЕТ НА ВОПРОС «сколько человек согласился заплатить».
@@ -431,9 +440,13 @@ async def client_price(db: AsyncSession, *, studio_id: int, client_id: int,
     `first_lesson` — скидка первого занятия, положенная этой брони:
     при записи — по правилам студии, у уже записанной — снимок на брони
     (`booking_access.trial_discount`).
+
+    `service_id` и `on` — услуга занятия и его день: скидка студии бывает на
+    выбранные услуги и на период, и сверяется по ним (`resolve_price`).
     """
     resolved = await pricing.resolve_price(db, studio_id, client_id, base_price,
-                                           first_lesson=first_lesson)
+                                           first_lesson=first_lesson,
+                                           service_id=service_id, on=on)
     return resolved.final_price
 
 

@@ -220,6 +220,8 @@ UI_ONLY: dict[str, str] = {
     "PATCH /loyalty/config": "настройка программы карт — экран с уровнями и курсом баллов",
     "PUT /loyalty/levels": "уровни лояльности правятся списком целиком",
     "PATCH /loyalty/discounts": "настройка программы скидок",
+    "DELETE /loyalty/discount-campaigns/{campaign_id}": "удаление скидки — осознанное действие владельца в списке; "
+                                                        "поставить на паузу ассистент может через update_discount",
     "PATCH /loyalty/certificates-config": "настройка программы сертификатов",
     "PATCH /loyalty/referral": "настройка реферальной программы",
     "PATCH /loyalty/first-lesson": "настройка скидки на первое занятие — экран программы с процентом",

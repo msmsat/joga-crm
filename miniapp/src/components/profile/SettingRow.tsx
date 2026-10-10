@@ -81,6 +81,13 @@ export default function SettingRow({
         >
           <motion.span
             layout
+            // Переезд — только когда тумблер переключили. Без зависимости
+            // framer считает изменением раскладки ЛЮБУЮ перерисовку строки и
+            // в следующем кадре проходит проекцией по всем motion-элементам
+            // приложения: переписывает им transform и мерит раскладку — главную,
+            // собранные листы, карты витрины. Замерено: так пришедший профиль
+            // давал по кадру раскладки всего приложения.
+            layoutDependency={checked}
             transition={{ type: 'spring', stiffness: 500, damping: 34 }}
             className={cn(
               'h-[22px] w-[22px] rounded-full bg-card shadow-soft',

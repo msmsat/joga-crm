@@ -1,8 +1,18 @@
 import { useTranslation } from 'react-i18next';
-import { Sheet, SheetAction } from '../ui/Sheet';
-import PaidBadge from '../payment/PaidBadge';
+import { Sheet } from '../ui/Sheet';
 import CoffeeStrip from '../mylessons/CoffeeStrip';
 import ReviewBlock from '../mylessons/review/ReviewBlock';
+import LessonTicket from '../mylessons/lesson/LessonTicket';
+import LessonPayment from '../mylessons/lesson/LessonPayment';
+import LessonLogistics from '../mylessons/lesson/LessonLogistics';
+import LessonAboutBlock from '../mylessons/lesson/LessonAboutBlock';
+import LessonFooter from '../mylessons/lesson/LessonFooter';
+import { canPay } from '../mylessons/lesson/paymentState';
+import { useIsDesktop } from '../../hooks/useIsDesktop';
+import { useBusinessTerms } from '../../hooks/useBusinessTerms';
+import { useLessonAbout } from '../../lib/lessonAbout';
+import type { CalendarEvent } from '../../lib/calendar';
+import type { StudioCatalog } from '../../api/studio';
 import type {
   CoffeeState,
   PastLessonResponse,
@@ -19,31 +29,45 @@ type Props = {
   isPast: boolean;
   /** Название на языке интерфейса — переводит страница (у неё словарь занятий). */
   title: string;
-  /** «12 травня» — формат и локаль тоже знает страница. */
+  /** «пятница, 12 октября» — формат и локаль тоже знает страница. */
   dateLabel: string;
   /** «Залишилось 2г 15хв» — тикает на странице, здесь только показываем. */
   countdown?: string;
+  /** Каталог студии: филиал с адресом, фото ведущего, правило отмены, описание. */
+  catalog: StudioCatalog | null;
   isProcessing?: boolean;
   onCancel?: () => void;
   /** HB-21: перенос индивидуальной записи. Кнопки нет, пока сервер не
    *  положил `reschedule` в allowed_actions этой брони. */
   onReschedule?: () => void;
   onCoffeeChange?: (state: CoffeeState) => void;
+  /** Открыть форму оплаты картой (useLessonPay). Кнопка — только при `pay`. */
+  onPay?: () => void;
+  paying?: boolean;
+  /** Stripe ещё подтверждает оплату этой брони. */
+  awaitingPayment?: boolean;
   onCheckPayment?: () => void;
   checkingPayment?: boolean;
+  /** Контакты студии — лист поддержки поверх этого. */
+  onContact?: () => void;
 };
 
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
 /**
- * Занятие клиента — то же, что в списке «Мои занятия», но целиком и с
- * действиями: отменить запись, согласиться на кофе, поставить оценку.
+ * «Моё занятие» — билет, чек оплаты и всё, что нужно, чтобы дойти.
+ *
+ * Лист собирает части и ничего не решает сам: что клиенту можно (оплатить,
+ * перенести, отменить), решил сервер в `allowed_actions`, а правила окна
+ * отмены лист лишь пересказывает словами из правил студии в каталоге.
  *
  * Отдельно от BookingModal намеренно: там лист решает задачу «записаться» —
- * свободные места, цена, выбор коврика. Здесь всё это уже позади, и на тех же
- * четырёх плитках стоят другие величины: свой коврик и время до начала.
- * Общее у листов — каркас Sheet, а не набор фактов.
+ * свободные места, цена, выбор коврика. Здесь всё это уже позади: время,
+ * место, оплата и дорога.
  *
- * Правила отмены (за сколько часов ещё можно) проверяет сервер и объясняет
- * текстом ошибки — дублировать их здесь значило бы держать два свода правил.
+ * На десктопе лист будущего занятия — консоль: билет и «О занятии» живут
+ * левой колонкой, оплата и дорога — правой. На телефоне и у прошедшего
+ * занятия всё одной колонкой, билет первым.
  */
 export default function MyLessonModal({
   isOpen,
@@ -53,186 +77,147 @@ export default function MyLessonModal({
   title,
   dateLabel,
   countdown,
+  catalog,
   isProcessing = false,
   onCancel,
   onReschedule,
   onCoffeeChange,
+  onPay,
+  paying = false,
+  awaitingPayment = false,
   onCheckPayment,
   checkingPayment = false,
+  onContact,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isDesktop = useIsDesktop();
+  const business = useBusinessTerms(lesson?.booking_mode ?? 'event');
+  const aboutOf = useLessonAbout(catalog);
 
-  const isPending = !isPast && (lesson as UpcomingLessonResponse | null)?.status === 'pending';
+  const cancelled = lesson?.status === 'cancelled';
+  const upcoming = Boolean(lesson) && !isPast && !cancelled;
+  const branches = catalog?.branches ?? [];
+  const branch = branches.find((row) => row.id === lesson?.branch_id) ?? (branches.length === 1 ? branches[0] : undefined);
+  // Адрес студии обычно уже с городом («Vinohradská 42, Praha 2») — город
+  // отдельно только когда адреса нет вовсе.
+  const address = branch ? branch.address || branch.city || '' : '';
+  // На билете — филиал по имени, когда их несколько; один — тогда адрес.
+  const ticketPlace = branch ? (branches.length > 1 ? branch.name : address || branch.name) : undefined;
+  const about = lesson ? aboutOf(lesson) : null;
+  const tz = lesson?.tz_iana || catalog?.studio.tz_iana || undefined;
+  const start = lesson ? new Date(lesson.starts_at ?? lesson.start_time) : null;
 
-  const resource = lesson?.booking_mode === 'resource';
-  // `eventOnly` — признак у самого факта, а не позиция в массиве. Раньше
-  // лишнее отсекалось по ИНДЕКСУ (`index === 3`): любая вставка нового факта
-  // в середину молча показывала бы индивидуальной записи не то поле.
-  // Уровень, инвентарь и номер коврика — свойства групповой сетки: у
-  // индивидуальной услуги уровня нет, а «коврик №1» сообщает лишь то, что
-  // клиент один.
-  const facts = [
-    {
-      eventOnly: true,
-      label: t('bookingModal.level'),
-      value: lesson?.level
-        ? t(`lesson.level.${lesson.level}`, { defaultValue: lesson.level })
-        : '—',
-    },
-    {
-      eventOnly: true,
-      label: t('bookingModal.equipment'),
-      value: lesson?.equipment
-        ? t(`lesson.equipment.${lesson.equipment}`, { defaultValue: lesson.equipment })
-        : '—',
-    },
-    {
-      eventOnly: true,
-      label: t('mylessons.spot'),
-      value: lesson ? `№${lesson.spot_number}` : '—',
-    },
-    isPast
-      ? {
-          eventOnly: false,
-          label: t('mylessons.duration'),
-          value: `${lesson?.duration_min ?? 0} ${t('common.minutes')}`,
-        }
-      : {
-          eventOnly: false,
-          label: t('mylessons.until_start'),
-          value: countdown || t('mylessons.counting_time'),
-        },
-    // У индивидуальной записи вместо коврика и уровня показываем то, что для
-    // неё и есть содержание: кто принимает и сколько это длится.
-    ...(resource
-      ? [
-          { eventOnly: false, label: t('resource.staff'), value: lesson?.teacher ?? '—' },
-          {
-            eventOnly: false,
-            label: t('resource.duration'),
-            value: `${lesson?.duration_min ?? 0} ${t('common.minutes')}`,
-          },
-        ]
-      : []),
-  ].filter(fact => !(resource && fact.eventOnly));
+  const calendar: CalendarEvent | undefined = upcoming && lesson && start
+    ? {
+        uid: `velora-reservation-${lesson.reservation_id}@velora`,
+        title: catalog?.studio.name ? `${title} · ${catalog.studio.name}` : title,
+        start,
+        durationMin: lesson.duration_min,
+        location: address || undefined,
+        details: lesson.teacher,
+      }
+    : undefined;
 
-  const initials = (lesson?.teacher ?? '')
-    .split(' ')
-    .map((part) => part[0])
-    .join('');
+  // Окно отмены — словами правила студии. Решает всё равно сервер: кнопка
+  // «Отменить» есть, только пока он кладёт `cancel` в allowed_actions.
+  let cancelNote: string | undefined;
+  if (upcoming && lesson && start && catalog) {
+    const minutes = catalog.rules.cancellation_deadline_min;
+    if (!lesson.allowed_actions.includes('cancel')) cancelNote = t('lessonSheet.cancel.closed');
+    else if (minutes <= 0) cancelNote = t('lessonSheet.cancel.until_start');
+    else {
+      const deadline = new Date(start.getTime() - minutes * 60_000);
+      const when = deadline.toLocaleString(i18n.language, {
+        weekday: 'short', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz,
+      });
+      cancelNote = t('lessonSheet.cancel.until', { when });
+    }
+  }
+
+  const ticket = lesson && (
+    <LessonTicket
+      lesson={lesson}
+      isPast={isPast}
+      countdown={countdown}
+      staffLabel={business.staff?.singular ? capitalize(business.staff.singular) : t('resource.staff')}
+      photoUrl={about?.trainer?.photo_url}
+      place={ticketPlace}
+    />
+  );
+  const aboutBlock = about && <LessonAboutBlock about={about} />;
+  // Консоль — только у будущего занятия: правую колонку заполняют оплата и
+  // дорога. У прошедшего и отменённого справа остались бы бейдж и сердца
+  // посреди пустого окна — им обычный лист.
+  const wide = isDesktop && upcoming;
 
   return (
     <Sheet
       isOpen={isOpen}
       onClose={onClose}
-      kicker={`${dateLabel} · ${lesson?.time ?? ''}`}
+      kicker={dateLabel}
       title={title}
+      aside={wide ? <div className="flex flex-col gap-4 p-6">{ticket}{aboutBlock}</div> : undefined}
       footer={
         // У прошедшего занятия действий нет: отменять нечего, а оценка стоит
         // в самом листе — кнопкой во всю ширину её делать не за что.
-        !isPast && (onCancel || onReschedule) ? (
-          <div className="flex flex-col gap-2.5">
-            {onReschedule && (
-              <SheetAction onClick={onReschedule} disabled={isProcessing}>
-                {t('mylessons.reschedule')}
-              </SheetAction>
-            )}
-            {onCancel && (
-              <SheetAction tone="danger" onClick={onCancel} disabled={isProcessing}>
-                {isProcessing ? t('bookingModal.processing') : t('bookingModal.cancel_booking')}
-              </SheetAction>
-            )}
-          </div>
+        upcoming && (onCancel || onReschedule) ? (
+          <LessonFooter
+            key={lesson?.reservation_id}
+            onCancel={onCancel}
+            onReschedule={onReschedule}
+            processing={isProcessing}
+            when={`${dateLabel}, ${lesson?.time ?? ''}`}
+          />
         ) : undefined
       }
     >
-      {/* Тренер — лицо занятия, поэтому он идёт первым и с аватаром. */}
-      <div className="flex items-center gap-3 rounded-[20px] bg-background px-4 py-3.5">
-        <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold text-brand-foreground"
-          style={{ background: lesson?.color || 'var(--v-brand)' }}
-        >
-          {initials}
-        </span>
-        <div className="min-w-0">
-          <div className="truncate text-[14px] font-extrabold tracking-[-0.015em] text-foreground">
-            {lesson?.teacher}
-          </div>
-          <div className="mt-0.5 text-[11.5px] font-medium text-muted-foreground">
-            {lesson?.time} · {lesson?.duration_min} {t('common.minutes')}
-          </div>
-        </div>
-      </div>
+      {lesson && (
+        <div className="flex flex-col gap-3">
+          {!wide && ticket}
 
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {facts.map((fact) => (
-          <div key={fact.label} className="rounded-[18px] bg-background px-4 py-3.5">
-            <div className="text-[9.5px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
-              {fact.label}
-            </div>
-            <div className="mt-1.5 text-[14px] font-extrabold tracking-[-0.015em] text-foreground">
-              {fact.value}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {isPending && (
-        <div className="mt-3 rounded-[18px] bg-brand/12 px-4 py-3.5 text-[13px] font-bold text-foreground">
-          {t('bookingModal.awaiting_confirmation')}
-        </div>
-      )}
-
-      {/* Долг за занятие и подарок студии — те же две метки, что на карточке
-          списка. Без них лист занятия был единственным местом, где «Не
-          оплачено» пропадало ровно тогда, когда человек открыл подробности. */}
-      {lesson && !lesson.paid_online && lesson.debt > 0 && (
-        <div className="mt-3 rounded-[18px] bg-danger/12 px-4 py-3.5 text-[13px] font-bold text-danger">
-          {t('mylessons.unpaid', { amount: lesson.debt_str })}
-        </div>
-      )}
-      {lesson && lesson.debt <= 0 && lesson.is_trial && (
-        <div className="mt-3 rounded-[18px] bg-success/14 px-4 py-3.5 text-[13px] font-bold text-foreground">
-          {t('mylessons.trial')}
-        </div>
-      )}
-
-      {/* Кофе — единственное, что клиент может изменить у будущего занятия,
-          кроме самой записи. Полоска та же, что в карточке списка, и состояние
-          у них общее: страница обновляет занятие ответом сервера. */}
-      {!isPast && lesson && lesson.coffee.enabled && onCoffeeChange && (
-        <div className="mt-3 rounded-[18px] bg-background px-4 py-3.5">
-          <CoffeeStrip
-            variant="sheet"
-            lessonId={lesson.id}
-            coffee={lesson.coffee}
-            onChange={onCoffeeChange}
+          <LessonPayment
+            lesson={lesson}
+            isPast={isPast}
+            payable={canPay(lesson) && Boolean(onPay)}
+            paying={paying}
+            onPay={() => onPay?.()}
+            awaiting={awaitingPayment}
+            checking={checkingPayment}
+            onCheck={lesson.status === 'hold' || awaitingPayment ? onCheckPayment : undefined}
           />
-        </div>
-      )}
 
-      {lesson?.paid_online && <PaidBadge detail />}
-      {lesson?.status === 'hold' && onCheckPayment && (
-        <div className="mt-3 rounded-[18px] bg-background p-4">
-          <p className="mb-3 text-[12px] leading-relaxed text-muted-foreground">{t('payment.sync.pending')}</p>
-          <SheetAction disabled={checkingPayment} onClick={onCheckPayment}>
-            {t(checkingPayment ? 'payment.sync.checking' : 'payment.sync.check')}
-          </SheetAction>
-        </div>
-      )}
+          {upcoming && (
+            <LessonLogistics
+              place={address ? { address } : undefined}
+              calendar={calendar}
+              onContact={onContact}
+              cancelNote={cancelNote}
+            />
+          )}
 
-      {/* Впечатление — тот же блок, что в карточке списка, из той же записи
-          хранилища: оценка здесь сразу видна там, и наоборот. В листе сердца
-          крупнее, а текст записки — без обрезки. */}
-      {isPast && lesson && 'review_photos' in lesson && (
-        <div className="mt-4">
-          <ReviewBlock
-            variant="sheet"
-            reservationId={lesson.reservation_id}
-            canRate={lesson.allowed_actions.includes('rate')}
-            teacher={lesson.teacher}
-            color={lesson.color}
-          />
+          {/* Кофе — то, что клиент может изменить у будущего занятия, кроме
+              самой записи. Состояние общее с карточкой списка. */}
+          {upcoming && lesson.coffee.enabled && onCoffeeChange && (
+            <div className="rounded-[22px] bg-background px-4 py-3.5">
+              <CoffeeStrip variant="sheet" lessonId={lesson.id} coffee={lesson.coffee} onChange={onCoffeeChange} />
+            </div>
+          )}
+
+          {/* Впечатление — тот же блок, что в карточке списка, из той же записи
+              хранилища: оценка здесь сразу видна там, и наоборот. */}
+          {isPast && !cancelled && 'review_photos' in lesson && (
+            <div className="mt-1">
+              <ReviewBlock
+                variant="sheet"
+                reservationId={lesson.reservation_id}
+                canRate={lesson.allowed_actions.includes('rate')}
+                teacher={lesson.teacher}
+                color={lesson.color}
+              />
+            </div>
+          )}
+
+          {!wide && aboutBlock}
         </div>
       )}
     </Sheet>

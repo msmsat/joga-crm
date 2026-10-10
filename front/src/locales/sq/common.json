@@ -67,7 +67,8 @@
     "role": "Roli",
     "status": "Statusi",
     "size": "Shuma",
-    "optional": "Opsionale"
+    "optional": "Opsionale",
+    "required": "E detyrueshme"
   },
   "days": {
     "mon": "E hënë",
@@ -152,7 +153,12 @@
       "cert_not_found": "Certifikata nuk u gjet",
       "cert_used": "Certifikata është përdorur tashmë ose është e pavlefshme",
       "cert_expired": "Certifikata ka skaduar",
-      "first_lesson_amount_required": "Vendosni shumën e zbritjes për mësimin e parë"
+      "first_lesson_amount_required": "Vendosni shumën e zbritjes për mësimin e parë",
+      "discount_not_found": "Zbritja nuk u gjet",
+      "discount_invalid": "Kontrolloni fushat e zbritjes",
+      "discount_service_not_found": "Një nga shërbimet e zgjedhura nuk ekziston më",
+      "discount_package_not_found": "Një nga anëtarësimet e zgjedhura nuk ekziston më",
+      "discount_client_not_found": "Një nga klientët e zgjedhur nuk ekziston më"
     },
     "notifications": {
       "critical_locked": "Ky njoftim nuk mund të çaktivizohet",

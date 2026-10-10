@@ -64,8 +64,10 @@ export default function PassCard({ active, loading, packages, canPayOnline, onOp
           <motion.span
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-0 left-0 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-            initial={{ x: '-120%' }}
-            animate={{ x: '420%' }}
+            // Строкой `transform` — её framer отдаёт браузеру; `x` он вёл бы из
+            // JS на каждом кадре (см. HomeHero).
+            initial={{ transform: 'translateX(-120%)' }}
+            animate={{ transform: 'translateX(420%)' }}
             transition={{ duration: 1.3, delay: 0.9, ease: 'easeInOut' }}
           />
         )}

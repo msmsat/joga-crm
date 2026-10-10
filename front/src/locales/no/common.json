@@ -67,7 +67,8 @@
     "role": "Rolle",
     "status": "Status",
     "size": "Beløp",
-    "optional": "Valgfritt"
+    "optional": "Valgfritt",
+    "required": "Påkrevd"
   },
   "days": {
     "mon": "Mandag",
@@ -152,7 +153,12 @@
       "cert_not_found": "Gavekortet ble ikke funnet",
       "cert_used": "Gavekortet er allerede brukt eller er ugyldig",
       "cert_expired": "Gavekortet er utløpt",
-      "first_lesson_amount_required": "Angi rabattbeløpet for første økt"
+      "first_lesson_amount_required": "Angi rabattbeløpet for første økt",
+      "discount_not_found": "Fant ikke rabatten",
+      "discount_invalid": "Sjekk feltene i rabatten",
+      "discount_service_not_found": "En av de valgte tjenestene finnes ikke lenger",
+      "discount_package_not_found": "Et av de valgte medlemskapene finnes ikke lenger",
+      "discount_client_not_found": "En av de valgte kundene finnes ikke lenger"
     },
     "notifications": {
       "critical_locked": "Dette varselet kan ikke slås av",

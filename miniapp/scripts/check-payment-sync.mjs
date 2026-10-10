@@ -6,7 +6,7 @@ import ts from 'typescript';
 
 async function setup() {
   let session = { token: 'client1', name: 'Client' }, bumps = 0;
-  let response = { payments: [], verification_unavailable: false };
+  let response = { payments: [], verification_unavailable: false }, draft = null;
   const values = new Map(), calls = [], window = new EventTarget();
   window.location = { href: 'https://studio.test/s/one' };
   window.history = { replaceState(_state, _title, url) { window.location.href = String(url); } };
@@ -17,6 +17,7 @@ async function setup() {
     client: { apiPost: async (path, body) => { calls.push({ path, body }); return typeof response === 'function' ? response() : response; } },
     session: { getSession: () => session, accountId: token => token, studioOf: () => 1 },
     revision: { bumpLessons() { bumps++; } },
+    bookingCheckout: { readBookingCheckout: () => draft, clearBookingCheckout: () => { draft = null; } },
   };
   const source = ts.transpileModule(await readFile(new URL('../src/lib/paymentSync.ts', import.meta.url), 'utf8'), {
     compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
@@ -33,11 +34,40 @@ async function setup() {
   return { api: module.namespace, calls, window, values,
     respond: value => { response = value; }, switchUser: token => { session = { token, name: token }; },
     bumps: () => bumps,
+    draft: () => draft, rememberDraft: id => { draft = { booking: { reservation_id: id } }; },
   };
 }
 const payment = (status = 'pending', extra = {}) => ({ id: 21, kind: 'booking', status, amount_str: '25 Kč',
   title: 'Hair styling', reservation_id: 41, package_id: null, created_at: new Date().toISOString(), newly_paid: false, ...extra });
 const result = (...payments) => ({ payments, verification_unavailable: false });
+
+test('only verified paid matching booking clears its Stripe return draft', async () => {
+  const s = await setup(); s.rememberDraft(41);
+  s.respond(result(payment())); await s.api.syncCheckouts();
+  assert.equal(s.draft().booking.reservation_id, 41);
+  s.respond(result(payment('paid', { reservation_id: 42 }))); await s.api.syncCheckouts();
+  assert.equal(s.draft().booking.reservation_id, 41);
+  s.respond(result(payment('paid'))); await s.api.syncCheckouts();
+  assert.equal(s.draft(), null);
+});
+
+test('a cancelled Stripe return does not show a payment acceptance overlay', async () => {
+  const s = await setup(); s.window.location.href += '?pay=paycancel&checkout_id=21';
+  s.respond(result(payment())); await s.api.syncCheckouts();
+  assert.equal(s.api.getPaymentSnapshot().awaiting, false);
+  assert.equal(s.api.getPaymentSnapshot().success, null);
+});
+
+test('server-pending debt retains its waiting state when reconciliation starts immediately', async () => {
+  const s = await setup();
+  s.respond(result(payment()));
+  let checking;
+  s.window.addEventListener('velora:checkout-started', () => { checking = s.api.syncCheckouts(); });
+  s.api.awaitCheckout({ checkout_id: 21, reservation_id: 41 });
+  await checking;
+  assert.equal(s.api.getPaymentSnapshot().awaiting, true);
+  assert.equal(s.api.getPaymentSnapshot().success, null);
+});
 
 test('a Stripe return URL and an unpaid session never celebrate or claim payment', async () => {
   const s = await setup(); s.window.location.href += '?pay=paysuccess&checkout_id=21';

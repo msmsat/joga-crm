@@ -184,6 +184,7 @@ class ClientConfirmRequest(ConfirmRequest):
     """Подтверждение из мини-приложения. `payment` — коды, которые бронь будет
     держать до оплаты (services/held_codes); без него — запись как прежде."""
     payment: Optional[ClientConfirmPayment] = None
+    in_telegram: bool = False
 
 
 class ConfirmPayment(PaymentCodes):
@@ -211,6 +212,8 @@ class CrmConfirmRequest(ConfirmRequest):
 class PaymentDiscount(HybridSchema):
     kind: Literal["studio", "offer", "promo", "referral", "first_lesson", "manual"]
     amount: int
+    # Название скидки студии (DiscountCampaign.name); у остальных видов пусто.
+    name: Optional[str] = None
 
 
 class PaymentPreviewRead(HybridSchema):
@@ -469,7 +472,7 @@ class BookingPayRead(HybridSchema):
     unavailable — студия не принимает оплату онлайн либо Stripe не ответил;
     stale — платить нечего: бронь уже оплачена, отменена или занятие началось.
     """
-    outcome: Literal["open", "pending", "unavailable", "stale"]
+    outcome: Literal["open", "pending", "review", "unavailable", "stale"]
     url: Optional[str] = None
     checkout_id: Optional[int] = None
     amount_str: str = ""

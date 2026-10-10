@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Slevy a cashback",
-      "desc": "Osobní nabídky pro klienty",
+      "desc": "Slevy podle termínů, služeb a klientů",
       "statLabel": "aktivních"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "do",
     "deleteLevelTitle": "Smazat tuto úroveň?",
     "deleteLevelMessage": "Klienti na úrovni „{{name}}“ přejdou na sousední úroveň podle své celkové útraty.",
-    "discountType": "Typ slevy",
     "discountTypes": {
       "percentage": "Procentní (%)",
       "fixed": "Pevná ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Procento cashbacku",
     "discountSize": "Výše slevy",
-    "minPurchase": "Minimální částka nákupu",
     "noLimit": "Bez limitu",
-    "conditions": "Podmínky uplatnění",
-    "appliesToAll": "Platí na všechny služby",
-    "stackable": "Sčítat s dalšími slevami",
-    "visibleInCabinet": "Zobrazit klientovi v jeho účtu",
     "certType": "Typ poukazu",
     "certTypes": {
       "named": "Jmenný",
@@ -345,5 +338,232 @@
     "renewed": "Obnoveno",
     "empty": "Zatím žádné prodeje předplatného",
     "emptySub": "Analytika se objeví po prvních prodejích balíčků"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Platí: {{active}}, naplánované: {{scheduled}}",
+      "subtitleEmpty": "Zatím žádná sleva",
+      "active": "platí teď",
+      "scheduled": "naplánované",
+      "used": "krát použito",
+      "create": "Nová sleva",
+      "emptyTitle": "Vytvořte první slevu",
+      "emptyText": "Začněte hotovým nápadem nebo od nuly. Každá sleva má vlastní termín, služby a klienty a uplatní se sama.",
+      "offTitle": "Slevy jsou vypnuté",
+      "offText": "Klienti nedostanou žádnou ze slev níže, dokud je program vypnutý.",
+      "turnOn": "Zapnout"
+    },
+    "timeline": {
+      "title": "Časová osa slev",
+      "today": "Dnes",
+      "more": "A další {{count}}"
+    },
+    "status": {
+      "active": "Platí",
+      "scheduled": "Naplánovaná",
+      "ended": "Skončila",
+      "paused": "Pozastavená"
+    },
+    "card": {
+      "edit": "Upravit slevu {{name}}",
+      "daysLeft_one": "Zbývá {{count}} den",
+      "daysLeft_few": "Zbývají {{count}} dny",
+      "daysLeft_other": "Zbývá {{count}} dní",
+      "startsIn_one": "Začne za {{count}} den",
+      "startsIn_few": "Začne za {{count}} dny",
+      "startsIn_other": "Začne za {{count}} dní",
+      "ended": "Termín skončil",
+      "noEnd": "Bez konce",
+      "used_one": "Použita {{count}}krát",
+      "used_few": "Použita {{count}}krát",
+      "used_other": "Použita {{count}}krát",
+      "notUsed": "Zatím nepoužita"
+    },
+    "editor": {
+      "newTitle": "Nová sleva",
+      "back": "Zpět na slevy",
+      "progress": "Vyplněno povinných: {{filled}} z {{total}}",
+      "name": "Název",
+      "namePlaceholder": "Například Podzimní týden jógy",
+      "value": "Výše slevy",
+      "percent": "Procenta",
+      "amount": "Částka, {{currency}}",
+      "period": "Kdy platí",
+      "scope": "Na co platí",
+      "audience": "Pro koho",
+      "minimum": "Minimální částka nákupu",
+      "minimumPlaceholder": "Bez minima",
+      "minimumHint": "Pod minimální částkou se sleva neuplatní. Když sedí víc slev, klient dostane tu nejvýhodnější.",
+      "active": "Stav",
+      "activeOn": "Zapnutá, uplatní se sama",
+      "activeOff": "Pozastavená: uložená, ale neplatí",
+      "create": "Vytvořit slevu",
+      "save": "Uložit",
+      "delete": "Smazat"
+    },
+    "preview": {
+      "untitled": "Sleva bez názvu",
+      "percentKind": "z ceny",
+      "amountKind": "z každého nákupu",
+      "days_one": "{{count}} den",
+      "days_few": "{{count}} dny",
+      "days_other": "{{count}} dní",
+      "minimum": "Od {{amount}}"
+    },
+    "presets": {
+      "none": "Bez konce",
+      "noneHint": "Dokud ji nepozastavíte",
+      "week": "7 dní",
+      "month": "Do konce měsíce",
+      "days30": "30 dní",
+      "custom": "Vlastní termín",
+      "customHint": "Vyberte v kalendáři",
+      "clear": "Zrušit termín"
+    },
+    "calendar": {
+      "prev": "Předchozí měsíc",
+      "next": "Další měsíc",
+      "pickStart": "Vyberte první den",
+      "pickEnd": "Teď vyberte poslední den",
+      "again": "Vyberte den a začněte znovu"
+    },
+    "scope": {
+      "all": "Na vše",
+      "selected": "Na vybrané",
+      "allHint": "Jakákoli lekce, jednorázová návštěva i předplatné, které si klient koupí.",
+      "services": "Služby",
+      "packages": "Předplatné",
+      "counter": "{{picked}} z {{total}}",
+      "allOf": "Vybrat vše",
+      "none": "Zrušit výběr",
+      "classes_one": "{{count}} lekce",
+      "classes_few": "{{count}} lekce",
+      "classes_other": "{{count}} lekcí",
+      "noServices": "V Katalogu zatím nejsou služby",
+      "noPackages": "V Katalogu zatím není předplatné"
+    },
+    "audience": {
+      "all": "Všem",
+      "allHint": "Každému klientovi studia",
+      "segments": "Skupinám",
+      "segmentsHint": "Nováčkům, oslavencům a dalším",
+      "clients": "Vybraným klientům",
+      "clientsHint": "Jen těm, které vyberete",
+      "people_one": "{{count}} klient",
+      "people_few": "{{count}} klienti",
+      "people_other": "{{count}} klientů",
+      "birthdayWindow_one": "Narozeniny do {{count}} dne od lekce",
+      "birthdayWindow_few": "Narozeniny do {{count}} dnů od lekce",
+      "birthdayWindow_other": "Narozeniny do {{count}} dnů od lekce",
+      "birthdayExact": "Jen přímo v den narozenin",
+      "less": "Méně dní",
+      "more": "Více dní",
+      "pickGroups": "Vyberte jednu nebo více skupin",
+      "reach_one": "Teď odpovídá {{count}} klient z {{total}}",
+      "reach_few": "Teď odpovídají {{count}} klienti z {{total}}",
+      "reach_other": "Teď odpovídá {{count}} klientů z {{total}}",
+      "addClient": "Přidat klienta",
+      "searchClient": "Hledat podle jména nebo telefonu",
+      "noClients": "Zatím nejsou přidaní klienti",
+      "removeClient": "Odebrat {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Nováčci",
+        "hint": "Do studia přišli nedávno"
+      },
+      "birthday": {
+        "title": "Oslavenci",
+        "hint": "Narozeniny blízko data lekce"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Chodí a utrácí nejvíc"
+      },
+      "active": {
+        "title": "Stálí",
+        "hint": "Chodí pravidelně"
+      },
+      "inactive": {
+        "title": "Dlouho nebyli",
+        "hint": "Přestali chodit"
+      },
+      "has_subscription": {
+        "title": "S předplatným",
+        "hint": "Mají platné předplatné"
+      }
+    },
+    "summary": {
+      "everything": "Všechny služby a předplatné",
+      "everyone": "Všichni klienti",
+      "nothingChosen": "Nic nevybráno",
+      "nobodyChosen": "Nikdo nevybrán",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Oslavenci ±{{count}} den",
+      "birthday_few": "Oslavenci ±{{count}} dny",
+      "birthday_other": "Oslavenci ±{{count}} dní",
+      "birthdayExact": "Oslavenci v den narozenin"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "Od {{date}}",
+      "until": "Do {{date}}",
+      "forever": "Bez konce"
+    },
+    "templates": {
+      "title": "Začít nápadem",
+      "birthday": {
+        "name": "Dárek k narozeninám",
+        "hint": "−15 % kolem narozenin"
+      },
+      "newcomers": {
+        "name": "Sleva pro nováčky",
+        "hint": "−10 % pro nové klienty"
+      },
+      "comeback": {
+        "name": "Vraťte se",
+        "hint": "−20 % pro ty, kdo dlouho nebyli, 30 dní"
+      },
+      "passes": {
+        "name": "Výprodej předplatného",
+        "hint": "−10 % na všechna předplatná"
+      },
+      "week": {
+        "name": "Týden slev",
+        "hint": "−15 % na vše po 7 dní"
+      },
+      "blank": {
+        "name": "Od nuly",
+        "hint": "Vše nastavíte sami"
+      }
+    },
+    "rules": {
+      "title": "Pravidla pro všechny slevy",
+      "stackable": "Slevy se sčítají",
+      "stackableOn": "Sleva studia se přičte k promo kódu, osobní slevě a slevě na první lekci",
+      "stackableOff": "Platí jen jedna, pro klienta nejvýhodnější, slevy se nesčítají",
+      "cashback": "Cashback v bodech",
+      "cashbackHint": "Část každé platby se vrátí na kartu klienta jako body",
+      "cashbackExample_one": "Za {{amount}} klient dostane {{count}} bod",
+      "cashbackExample_few": "Za {{amount}} klient dostane {{count}} body",
+      "cashbackExample_other": "Za {{amount}} klient dostane {{count}} bodů"
+    },
+    "errors": {
+      "name": "Pojmenujte slevu",
+      "scope": "Vyberte aspoň jednu službu nebo předplatné",
+      "segments": "Vyberte aspoň jednu skupinu",
+      "clients": "Přidejte aspoň jednoho klienta",
+      "fillRequired": "Vyplňte povinná pole"
+    },
+    "confirmDelete": {
+      "title": "Smazat slevu?",
+      "message": "„{{name}}“ se přestane uplatňovat. Minulé prodeje si cenu ponechají."
+    },
+    "toasts": {
+      "created": "Sleva vytvořena",
+      "saved": "Sleva uložena",
+      "deleted": "Sleva smazána",
+      "programOn": "Slevy jsou zapnuté"
+    }
   }
 }

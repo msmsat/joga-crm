@@ -21,6 +21,11 @@ type Props = {
   /** Долг — тревожная плашка, подарок — спокойная. */
   paymentTone?: 'debt' | 'trial';
   paidOnline?: boolean;
+  /**
+   * Оплатить картой прямо из списка: долг «на месте» или незаконченная оплата.
+   * Есть — вместо плашки долга внизу карточки полоса с суммой и кнопкой.
+   */
+  pay?: { label: string; action: string; busy: boolean; onPay: () => void };
   /** Полоска «кофе после занятия» — рендерится страницей, карточка её не знает. */
   footer?: ReactNode;
   /** Открыть карточку занятия. */
@@ -48,6 +53,7 @@ export default function UpcomingCard({
   paymentLabel,
   paymentTone = 'debt',
   paidOnline = false,
+  pay,
   footer,
   onOpen,
 }: Props) {
@@ -91,7 +97,7 @@ export default function UpcomingCard({
         </span>
 
         {paidOnline && <PaidBadge />}
-        {!paidOnline && paymentLabel && (
+        {!paidOnline && !pay && paymentLabel && (
           <span
             className={[
               'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-extrabold',
@@ -104,6 +110,31 @@ export default function UpcomingCard({
           </span>
         )}
       </div>
+
+      {/* Оплата из списка: сумма и кнопка в одной полосе. Кнопка — оникс, как
+          билет занятия: персик на карточке уже занят отсчётом. Клик гасится —
+          иначе «Оплатить» тянул бы за собой лист занятия. */}
+      {pay && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="mt-4 flex items-center gap-3 rounded-[16px] bg-background py-2 pl-3.5 pr-2"
+        >
+          <span className="min-w-0 flex-1 truncate text-[12.5px] font-bold text-muted-foreground">{pay.label}</span>
+          <motion.button
+            type="button"
+            onClick={pay.onPay}
+            disabled={pay.busy}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-foreground px-3.5 py-2 text-[12px] font-extrabold text-background disabled:opacity-60 dark:bg-white dark:text-[#1A1A1A]"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+              <rect x="2.5" y="5" width="19" height="14" rx="3" />
+              <path d="M2.5 10h19" />
+            </svg>
+            {pay.action}
+          </motion.button>
+        </div>
+      )}
 
       {footer && <div onClick={(e) => e.stopPropagation()}>{footer}</div>}
     </motion.div>

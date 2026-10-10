@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "İndirimler ve cashback",
-      "desc": "Müşteriler için kişisel teklifler",
+      "desc": "Tarihe, hizmete ve müşteriye göre indirimler",
       "statLabel": "aktif"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "bitiş",
     "deleteLevelTitle": "Bu seviye silinsin mi?",
     "deleteLevelMessage": "„{{name}}” seviyesindeki müşteriler toplam harcamalarına göre komşu seviyeye taşınır.",
-    "discountType": "İndirim türü",
     "discountTypes": {
       "percentage": "Yüzde (%)",
       "fixed": "Sabit ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Cashback yüzdesi",
     "discountSize": "İndirim tutarı",
-    "minPurchase": "Minimum alışveriş tutarı",
     "noLimit": "Sınır yok",
-    "conditions": "Uygulama koşulları",
-    "appliesToAll": "Tüm hizmetlere uygula",
-    "stackable": "Diğer indirimlerle birleştir",
-    "visibleInCabinet": "Müşterinin hesabında göster",
     "certType": "Sertifika türü",
     "certTypes": {
       "named": "İsimli",
@@ -345,5 +338,222 @@
     "renewed": "Yenilendi",
     "empty": "Henüz abonelik satışı yok",
     "emptySub": "Analizler ilk paket satışlarından sonra görünür"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Geçerli: {{active}}, planlanan: {{scheduled}}",
+      "subtitleEmpty": "Henüz indirim yok",
+      "active": "şu an geçerli",
+      "scheduled": "planlandı",
+      "used": "kez uygulandı",
+      "create": "Yeni indirim",
+      "emptyTitle": "İlk indiriminizi oluşturun",
+      "emptyText": "Hazır bir fikirle ya da sıfırdan başlayın. Her indirimin kendi tarihleri, hizmetleri ve müşterileri vardır ve kendiliğinden uygulanır.",
+      "offTitle": "İndirimler kapalı",
+      "offText": "Program kapalıyken müşteriler aşağıdaki indirimlerin hiçbirini almaz.",
+      "turnOn": "Aç"
+    },
+    "timeline": {
+      "title": "İndirim zaman çizelgesi",
+      "today": "Bugün",
+      "more": "+{{count}} daha"
+    },
+    "status": {
+      "active": "Geçerli",
+      "scheduled": "Planlandı",
+      "ended": "Sona erdi",
+      "paused": "Duraklatıldı"
+    },
+    "card": {
+      "edit": "{{name}} indirimini düzenle",
+      "daysLeft_one": "{{count}} gün kaldı",
+      "daysLeft_other": "{{count}} gün kaldı",
+      "startsIn_one": "{{count}} gün sonra başlıyor",
+      "startsIn_other": "{{count}} gün sonra başlıyor",
+      "ended": "Süre doldu",
+      "noEnd": "Bitiş tarihi yok",
+      "used_one": "{{count}} kez uygulandı",
+      "used_other": "{{count}} kez uygulandı",
+      "notUsed": "Henüz uygulanmadı"
+    },
+    "editor": {
+      "newTitle": "Yeni indirim",
+      "back": "İndirimlere dön",
+      "progress": "Zorunlu alanlar: {{filled}}/{{total}} dolduruldu",
+      "name": "Ad",
+      "namePlaceholder": "Örneğin Sonbahar yoga haftası",
+      "value": "İndirim miktarı",
+      "percent": "Yüzde",
+      "amount": "Tutar, {{currency}}",
+      "period": "Ne zaman geçerli",
+      "scope": "Neye uygulanır",
+      "audience": "Kime",
+      "minimum": "En düşük alışveriş tutarı",
+      "minimumPlaceholder": "Alt sınır yok",
+      "minimumHint": "Alt sınırın altında indirim uygulanmaz. Birden fazla indirim uyarsa müşteri en avantajlısını alır.",
+      "active": "Durum",
+      "activeOn": "Açık, kendiliğinden uygulanır",
+      "activeOff": "Duraklatıldı: kayıtlı ama uygulanmıyor",
+      "create": "İndirim oluştur",
+      "save": "Kaydet",
+      "delete": "Sil"
+    },
+    "preview": {
+      "untitled": "Adsız indirim",
+      "percentKind": "fiyattan",
+      "amountKind": "her alışverişte",
+      "days_one": "{{count}} gün",
+      "days_other": "{{count}} gün",
+      "minimum": "{{amount}} üzeri"
+    },
+    "presets": {
+      "none": "Bitiş tarihi yok",
+      "noneHint": "Siz duraklatana kadar",
+      "week": "7 gün",
+      "month": "Ay sonuna kadar",
+      "days30": "30 gün",
+      "custom": "Özel tarihler",
+      "customHint": "Takvimden seçin",
+      "clear": "Tarihleri temizle"
+    },
+    "calendar": {
+      "prev": "Önceki ay",
+      "next": "Sonraki ay",
+      "pickStart": "İlk günü seçin",
+      "pickEnd": "Şimdi son günü seçin",
+      "again": "Yeniden başlamak için bir gün seçin"
+    },
+    "scope": {
+      "all": "Her şeye",
+      "selected": "Seçilenlere",
+      "allHint": "Müşterinin satın aldığı her ders, tek seferlik giriş ve üyelik.",
+      "services": "Hizmetler",
+      "packages": "Üyelikler",
+      "counter": "{{picked}}/{{total}}",
+      "allOf": "Tümünü seç",
+      "none": "Temizle",
+      "classes_one": "{{count}} ders",
+      "classes_other": "{{count}} ders",
+      "noServices": "Katalogda henüz hizmet yok",
+      "noPackages": "Katalogda henüz üyelik yok"
+    },
+    "audience": {
+      "all": "Herkese",
+      "allHint": "Stüdyonun her müşterisine",
+      "segments": "Gruplara",
+      "segmentsHint": "Yenilere, doğum günü olanlara ve diğerlerine",
+      "clients": "Belirli müşterilere",
+      "clientsHint": "Yalnızca seçtiklerinize",
+      "people_one": "{{count}} müşteri",
+      "people_other": "{{count}} müşteri",
+      "birthdayWindow_one": "Doğum günü dersten {{count}} gün önce ya da sonra",
+      "birthdayWindow_other": "Doğum günü dersten {{count}} gün önce ya da sonra",
+      "birthdayExact": "Yalnızca doğum gününün kendisinde",
+      "less": "Daha az gün",
+      "more": "Daha çok gün",
+      "pickGroups": "Bir ya da birkaç grup seçin",
+      "reach_one": "Şu an {{total}} müşteriden {{count}} tanesi uyuyor",
+      "reach_other": "Şu an {{total}} müşteriden {{count}} tanesi uyuyor",
+      "addClient": "Müşteri ekle",
+      "searchClient": "Ad veya telefonla ara",
+      "noClients": "Henüz müşteri eklenmedi",
+      "removeClient": "{{name}} kaldır"
+    },
+    "segments": {
+      "new": {
+        "title": "Yeniler",
+        "hint": "Stüdyoya yakın zamanda geldiler"
+      },
+      "birthday": {
+        "title": "Doğum günü olanlar",
+        "hint": "Doğum günü ders tarihine yakın"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "En çok gelen ve harcayanlar"
+      },
+      "active": {
+        "title": "Düzenliler",
+        "hint": "Düzenli olarak geliyorlar"
+      },
+      "inactive": {
+        "title": "Uzun süredir gelmeyenler",
+        "hint": "Gelmeyi bıraktılar"
+      },
+      "has_subscription": {
+        "title": "Üyeliği olanlar",
+        "hint": "Geçerli bir üyelikleri var"
+      }
+    },
+    "summary": {
+      "everything": "Tüm hizmetler ve üyelikler",
+      "everyone": "Tüm müşteriler",
+      "nothingChosen": "Hiçbir şey seçilmedi",
+      "nobodyChosen": "Kimse seçilmedi",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Doğum günleri ±{{count}} gün",
+      "birthday_other": "Doğum günleri ±{{count}} gün",
+      "birthdayExact": "Doğum gününde"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "{{date}} itibarıyla",
+      "until": "{{date}} tarihine kadar",
+      "forever": "Bitiş tarihi yok"
+    },
+    "templates": {
+      "title": "Bir fikirle başlayın",
+      "birthday": {
+        "name": "Doğum günü hediyesi",
+        "hint": "Doğum günü civarında %15 indirim"
+      },
+      "newcomers": {
+        "name": "Hoş geldin indirimi",
+        "hint": "Yenilere %10 indirim"
+      },
+      "comeback": {
+        "name": "Geri dönün",
+        "hint": "Uzun süredir gelmeyenlere %20, 30 gün"
+      },
+      "passes": {
+        "name": "Üyelik kampanyası",
+        "hint": "Tüm üyeliklerde %10 indirim"
+      },
+      "week": {
+        "name": "İndirim haftası",
+        "hint": "7 gün boyunca her şeyde %15 indirim"
+      },
+      "blank": {
+        "name": "Sıfırdan",
+        "hint": "Her şeyi kendiniz ayarlarsınız"
+      }
+    },
+    "rules": {
+      "title": "Tüm indirimler için kurallar",
+      "stackable": "İndirimler toplanır",
+      "stackableOn": "Stüdyo indirimi promosyon koduna, kişisel indirime ve ilk ders indirimine eklenir",
+      "stackableOff": "Yalnızca en avantajlısı geçerli olur, indirimler toplanmaz",
+      "cashback": "Puan olarak cashback",
+      "cashbackHint": "Her ödemenin bir kısmı müşterinin kartına puan olarak döner",
+      "cashbackExample_one": "{{amount}} için müşteri {{count}} puan kazanır",
+      "cashbackExample_other": "{{amount}} için müşteri {{count}} puan kazanır"
+    },
+    "errors": {
+      "name": "İndirime bir ad verin",
+      "scope": "En az bir hizmet veya üyelik seçin",
+      "segments": "En az bir grup seçin",
+      "clients": "En az bir müşteri ekleyin",
+      "fillRequired": "Zorunlu alanları doldurun"
+    },
+    "confirmDelete": {
+      "title": "İndirim silinsin mi?",
+      "message": "“{{name}}” artık uygulanmayacak. Geçmiş satışlar fiyatlarını korur."
+    },
+    "toasts": {
+      "created": "İndirim oluşturuldu",
+      "saved": "İndirim kaydedildi",
+      "deleted": "İndirim silindi",
+      "programOn": "İndirimler açık"
+    }
   }
 }

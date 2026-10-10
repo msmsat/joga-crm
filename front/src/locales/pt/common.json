@@ -67,7 +67,8 @@
     "role": "Perfil de acesso",
     "status": "Estado",
     "size": "Valor",
-    "optional": "Opcional"
+    "optional": "Opcional",
+    "required": "Obrigatório"
   },
   "days": {
     "mon": "Segunda-feira",
@@ -152,7 +153,12 @@
       "cert_not_found": "Vale-oferta não encontrado",
       "cert_used": "O vale-oferta já foi utilizado ou não é válido",
       "cert_expired": "O vale-oferta expirou",
-      "first_lesson_amount_required": "Indique o valor do desconto da primeira aula"
+      "first_lesson_amount_required": "Indique o valor do desconto da primeira aula",
+      "discount_not_found": "Desconto não encontrado",
+      "discount_invalid": "Verifique os campos do desconto",
+      "discount_service_not_found": "Um dos serviços escolhidos já não existe",
+      "discount_package_not_found": "Uma das assinaturas escolhidas já não existe",
+      "discount_client_not_found": "Um dos clientes escolhidos já não existe"
     },
     "notifications": {
       "critical_locked": "Esta notificação não pode ser desativada",

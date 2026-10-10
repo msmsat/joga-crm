@@ -67,7 +67,8 @@
     "role": "Rol",
     "status": "Stare",
     "size": "Sumă",
-    "optional": "Opțional"
+    "optional": "Opțional",
+    "required": "Obligatoriu"
   },
   "days": {
     "mon": "Luni",
@@ -152,7 +153,12 @@
       "cert_not_found": "Voucherul nu a fost găsit",
       "cert_used": "Voucherul a fost deja folosit sau este invalid",
       "cert_expired": "Voucherul a expirat",
-      "first_lesson_amount_required": "Introduceți valoarea reducerii pentru prima ședință"
+      "first_lesson_amount_required": "Introduceți valoarea reducerii pentru prima ședință",
+      "discount_not_found": "Reducerea nu a fost găsită",
+      "discount_invalid": "Verifică câmpurile reducerii",
+      "discount_service_not_found": "Unul dintre serviciile alese nu mai există",
+      "discount_package_not_found": "Unul dintre abonamentele alese nu mai există",
+      "discount_client_not_found": "Unul dintre clienții aleși nu mai există"
     },
     "notifications": {
       "critical_locked": "Această notificare nu poate fi dezactivată",

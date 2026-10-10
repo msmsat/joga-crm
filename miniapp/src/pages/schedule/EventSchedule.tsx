@@ -163,6 +163,7 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
   // Запись и отмена — общие с главной (useLessonBooking): один сценарий, две
   // страницы. Здесь остаётся только то, что у расписания своё, — список дня.
   const booking = useLessonBooking({
+    prepayRequired: catalog?.rules.prepay_required,
     messages: {
       bookError: t('schedule.booking_error'),
       cancelError: t('schedule.cancel_error'),

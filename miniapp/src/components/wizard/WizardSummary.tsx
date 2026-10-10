@@ -51,7 +51,8 @@ export function WizardNotice({ flow }: { flow: BookingWizardFlow }) {
   if (!flow.notice) return null;
   return (
     <div role="status" className="rounded-2xl bg-brand/12 px-4 py-3 text-[13px] font-semibold leading-snug text-foreground">
-      {t(`resource.errors.${flow.notice}`, { defaultValue: t('resource.bookError') })}
+      {flow.notice === 'UNKNOWN' && flow.noticeMessage ? flow.noticeMessage
+        : t(`resource.errors.${flow.notice}`, { defaultValue: flow.noticeMessage || t('resource.bookError') })}
     </div>
   );
 }

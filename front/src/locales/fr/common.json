@@ -67,7 +67,8 @@
     "role": "Rôle",
     "status": "Statut",
     "size": "Montant",
-    "optional": "Facultatif"
+    "optional": "Facultatif",
+    "required": "Obligatoire"
   },
   "days": {
     "mon": "Lundi",
@@ -152,7 +153,12 @@
       "cert_not_found": "Bon cadeau introuvable",
       "cert_used": "Le bon cadeau a déjà été utilisé ou n'est pas valable",
       "cert_expired": "Le bon cadeau a expiré",
-      "first_lesson_amount_required": "Indiquez le montant de la remise sur le premier cours"
+      "first_lesson_amount_required": "Indiquez le montant de la remise sur le premier cours",
+      "discount_not_found": "Remise introuvable",
+      "discount_invalid": "Vérifiez les champs de la remise",
+      "discount_service_not_found": "L’un des services choisis n’existe plus",
+      "discount_package_not_found": "L’un des abonnements choisis n’existe plus",
+      "discount_client_not_found": "L’un des clients choisis n’existe plus"
     },
     "notifications": {
       "critical_locked": "Cette notification ne peut pas être désactivée",

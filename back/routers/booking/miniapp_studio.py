@@ -404,7 +404,8 @@ async def get_studio_catalog(
     final_prices: dict[int, int] = {}
     for package in packages:
         final_prices[package.id] = (
-            (await resolve_price(db, studio_id, viewer.client.id, package.price)).final_price
+            (await resolve_price(db, studio_id, viewer.client.id, package.price,
+                                 package_id=package.id)).final_price
             if viewer.client is not None
             else package.price
         )

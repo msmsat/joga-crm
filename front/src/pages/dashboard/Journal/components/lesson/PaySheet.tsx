@@ -112,7 +112,7 @@ export function PaySheet({ payment, clientId, title, subtitle, deferred, chosen,
               <>
                 <Line label={t('journal:lessonPay.price')} value={money(preview.base_price)} />
                 {preview.discounts.map(d => (
-                  <Line key={d.kind} label={t(`journal:payment.discount.${d.kind}`)} value={`−${money(d.amount)}`} tone="gain" />
+                  <Line key={d.kind} label={d.name || t(`journal:payment.discount.${d.kind}`)} value={`−${money(d.amount)}`} tone="gain" />
                 ))}
                 {preview.manual_outweighed && (
                   <div className="rp-note">{t('journal:payment.promoOutweighed')}</div>

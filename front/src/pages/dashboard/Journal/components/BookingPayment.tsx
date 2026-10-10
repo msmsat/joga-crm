@@ -96,7 +96,7 @@ export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = fal
 
       {others.map(d => (
         <div className="bpay-row" key={d.kind}>
-          <span className="bpay-label">{t(`journal:payment.discount.${d.kind}`)}</span>
+          <span className="bpay-label">{d.name || t(`journal:payment.discount.${d.kind}`)}</span>
           <span className="bpay-value">−{money(d.amount)}</span>
         </div>
       ))}

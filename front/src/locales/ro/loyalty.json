@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Reduceri și cashback",
-      "desc": "Oferte personale pentru clienți",
+      "desc": "Reduceri după date, servicii și clienți",
       "statLabel": "active"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "până la",
     "deleteLevelTitle": "Ștergi acest nivel?",
     "deleteLevelMessage": "Clienții de la nivelul „{{name}}” vor trece la nivelul învecinat în funcție de cheltuielile lor totale.",
-    "discountType": "Tipul reducerii",
     "discountTypes": {
       "percentage": "Procent (%)",
       "fixed": "Fixă ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Procentul cashbackului",
     "discountSize": "Valoarea reducerii",
-    "minPurchase": "Valoarea minimă a cumpărăturii",
     "noLimit": "Fără limită",
-    "conditions": "Condiții de aplicare",
-    "appliesToAll": "Aplică tuturor serviciilor",
-    "stackable": "Combină cu alte reduceri",
-    "visibleInCabinet": "Arată clientului în contul său",
     "certType": "Tipul certificatului",
     "certTypes": {
       "named": "Nominal",
@@ -345,5 +338,232 @@
     "renewed": "Reînnoite",
     "empty": "Nu există încă vânzări de abonamente",
     "emptySub": "Analiza va apărea după primele vânzări de pachete"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Active: {{active}}, programate: {{scheduled}}",
+      "subtitleEmpty": "Încă nicio reducere",
+      "active": "active acum",
+      "scheduled": "programate",
+      "used": "aplicări",
+      "create": "Reducere nouă",
+      "emptyTitle": "Creează prima reducere",
+      "emptyText": "Pornește de la o idee sau de la zero. Fiecare reducere are datele, serviciile și clienții ei și se aplică singură.",
+      "offTitle": "Reducerile sunt oprite",
+      "offText": "Clienții nu primesc niciuna dintre reducerile de mai jos cât timp programul e oprit.",
+      "turnOn": "Pornește"
+    },
+    "timeline": {
+      "title": "Calendarul reducerilor",
+      "today": "Azi",
+      "more": "Încă {{count}}"
+    },
+    "status": {
+      "active": "Activă",
+      "scheduled": "Programată",
+      "ended": "Încheiată",
+      "paused": "În pauză"
+    },
+    "card": {
+      "edit": "Editează reducerea {{name}}",
+      "daysLeft_one": "A mai rămas {{count}} zi",
+      "daysLeft_few": "Au mai rămas {{count}} zile",
+      "daysLeft_other": "Au mai rămas {{count}} de zile",
+      "startsIn_one": "Începe peste {{count}} zi",
+      "startsIn_few": "Începe peste {{count}} zile",
+      "startsIn_other": "Începe peste {{count}} de zile",
+      "ended": "Perioada s-a încheiat",
+      "noEnd": "Fără dată de final",
+      "used_one": "Aplicări: {{count}}",
+      "used_few": "Aplicări: {{count}}",
+      "used_other": "Aplicări: {{count}}",
+      "notUsed": "Încă neaplicată"
+    },
+    "editor": {
+      "newTitle": "Reducere nouă",
+      "back": "Înapoi la reduceri",
+      "progress": "Obligatorii completate: {{filled}} din {{total}}",
+      "name": "Nume",
+      "namePlaceholder": "De exemplu, Săptămâna de yoga de toamnă",
+      "value": "Mărimea reducerii",
+      "percent": "Procent",
+      "amount": "Sumă, {{currency}}",
+      "period": "Când se aplică",
+      "scope": "La ce se aplică",
+      "audience": "Cui",
+      "minimum": "Suma minimă de cumpărare",
+      "minimumPlaceholder": "Fără minim",
+      "minimumHint": "Sub suma minimă reducerea nu se aplică. Dacă se potrivesc mai multe reduceri, clientul o primește pe cea mai avantajoasă.",
+      "active": "Stare",
+      "activeOn": "Pornită, se aplică singură",
+      "activeOff": "În pauză: salvată, dar nu se aplică",
+      "create": "Creează reducerea",
+      "save": "Salvează",
+      "delete": "Șterge"
+    },
+    "preview": {
+      "untitled": "Reducere fără nume",
+      "percentKind": "din preț",
+      "amountKind": "la fiecare cumpărare",
+      "days_one": "{{count}} zi",
+      "days_few": "{{count}} zile",
+      "days_other": "{{count}} de zile",
+      "minimum": "De la {{amount}}"
+    },
+    "presets": {
+      "none": "Fără dată de final",
+      "noneHint": "Până o pui pe pauză",
+      "week": "7 zile",
+      "month": "Până la final de lună",
+      "days30": "30 de zile",
+      "custom": "Date proprii",
+      "customHint": "Alege în calendar",
+      "clear": "Șterge datele"
+    },
+    "calendar": {
+      "prev": "Luna anterioară",
+      "next": "Luna următoare",
+      "pickStart": "Alege prima zi",
+      "pickEnd": "Acum alege ultima zi",
+      "again": "Alege o zi ca să o iei de la capăt"
+    },
+    "scope": {
+      "all": "La tot",
+      "selected": "La cele alese",
+      "allHint": "Orice ședință, vizită unică sau abonament pe care îl cumpără clientul.",
+      "services": "Servicii",
+      "packages": "Abonamente",
+      "counter": "{{picked}} din {{total}}",
+      "allOf": "Alege tot",
+      "none": "Golește",
+      "classes_one": "{{count}} ședință",
+      "classes_few": "{{count}} ședințe",
+      "classes_other": "{{count}} de ședințe",
+      "noServices": "Încă nu sunt servicii în Catalog",
+      "noPackages": "Încă nu sunt abonamente în Catalog"
+    },
+    "audience": {
+      "all": "Tuturor",
+      "allHint": "Fiecărui client al studioului",
+      "segments": "Grupurilor",
+      "segmentsHint": "Noilor veniți, sărbătoriților și altora",
+      "clients": "Anumitor clienți",
+      "clientsHint": "Doar celor pe care îi alegi",
+      "people_one": "{{count}} client",
+      "people_few": "{{count}} clienți",
+      "people_other": "{{count}} de clienți",
+      "birthdayWindow_one": "Ziua de naștere la cel mult {{count}} zi de ședință",
+      "birthdayWindow_few": "Ziua de naștere la cel mult {{count}} zile de ședință",
+      "birthdayWindow_other": "Ziua de naștere la cel mult {{count}} de zile de ședință",
+      "birthdayExact": "Doar chiar de ziua de naștere",
+      "less": "Mai puține zile",
+      "more": "Mai multe zile",
+      "pickGroups": "Alege unul sau mai multe grupuri",
+      "reach_one": "Acum se potrivește {{count}} client din {{total}}",
+      "reach_few": "Acum se potrivesc {{count}} clienți din {{total}}",
+      "reach_other": "Acum se potrivesc {{count}} de clienți din {{total}}",
+      "addClient": "Adaugă client",
+      "searchClient": "Caută după nume sau telefon",
+      "noClients": "Încă nu ai adăugat clienți",
+      "removeClient": "Elimină {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Noi veniți",
+        "hint": "Au venit de curând în studio"
+      },
+      "birthday": {
+        "title": "Sărbătoriți",
+        "hint": "Ziua de naștere aproape de data ședinței"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Vin și cheltuie cel mai mult"
+      },
+      "active": {
+        "title": "Clienți fideli",
+        "hint": "Vin regulat"
+      },
+      "inactive": {
+        "title": "Absenți de mult",
+        "hint": "Nu mai vin de o vreme"
+      },
+      "has_subscription": {
+        "title": "Cu abonament",
+        "hint": "Au un abonament valabil"
+      }
+    },
+    "summary": {
+      "everything": "Toate serviciile și abonamentele",
+      "everyone": "Toți clienții",
+      "nothingChosen": "Nimic ales",
+      "nobodyChosen": "Nimeni ales",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Sărbătoriți ±{{count}} zi",
+      "birthday_few": "Sărbătoriți ±{{count}} zile",
+      "birthday_other": "Sărbătoriți ±{{count}} de zile",
+      "birthdayExact": "De ziua de naștere"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "De la {{date}}",
+      "until": "Până la {{date}}",
+      "forever": "Fără dată de final"
+    },
+    "templates": {
+      "title": "Pornește de la o idee",
+      "birthday": {
+        "name": "Cadou de ziua ta",
+        "hint": "−15% în jurul zilei de naștere"
+      },
+      "newcomers": {
+        "name": "Reducere de bun venit",
+        "hint": "−10% pentru noii veniți"
+      },
+      "comeback": {
+        "name": "Revino la noi",
+        "hint": "−20% pentru absenți, 30 de zile"
+      },
+      "passes": {
+        "name": "Ofertă la abonamente",
+        "hint": "−10% la toate abonamentele"
+      },
+      "week": {
+        "name": "Săptămâna reducerilor",
+        "hint": "−15% la tot, 7 zile"
+      },
+      "blank": {
+        "name": "De la zero",
+        "hint": "Setezi totul singur"
+      }
+    },
+    "rules": {
+      "title": "Reguli pentru toate reducerile",
+      "stackable": "Reducerile se cumulează",
+      "stackableOn": "Reducerea studioului se adaugă la codul promoțional, la reducerea personală și la cea pentru prima ședință",
+      "stackableOff": "Se aplică doar cea mai avantajoasă, reducerile nu se cumulează",
+      "cashback": "Cashback în puncte",
+      "cashbackHint": "O parte din fiecare plată revine pe cardul clientului ca puncte",
+      "cashbackExample_one": "Pentru {{amount}} clientul primește {{count}} punct",
+      "cashbackExample_few": "Pentru {{amount}} clientul primește {{count}} puncte",
+      "cashbackExample_other": "Pentru {{amount}} clientul primește {{count}} de puncte"
+    },
+    "errors": {
+      "name": "Dă un nume reducerii",
+      "scope": "Alege cel puțin un serviciu sau un abonament",
+      "segments": "Alege cel puțin un grup",
+      "clients": "Adaugă cel puțin un client",
+      "fillRequired": "Completează câmpurile obligatorii"
+    },
+    "confirmDelete": {
+      "title": "Ștergi reducerea?",
+      "message": "„{{name}}” nu se va mai aplica. Vânzările anterioare își păstrează prețul."
+    },
+    "toasts": {
+      "created": "Reducere creată",
+      "saved": "Reducere salvată",
+      "deleted": "Reducere ștearsă",
+      "programOn": "Reducerile sunt pornite"
+    }
   }
 }

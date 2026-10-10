@@ -67,7 +67,8 @@
     "role": "Roll",
     "status": "Status",
     "size": "Belopp",
-    "optional": "Valfritt"
+    "optional": "Valfritt",
+    "required": "Obligatoriskt"
   },
   "days": {
     "mon": "Måndag",
@@ -152,7 +153,12 @@
       "cert_not_found": "Presentkortet hittades inte",
       "cert_used": "Presentkortet är redan använt eller ogiltigt",
       "cert_expired": "Presentkortet har gått ut",
-      "first_lesson_amount_required": "Ange rabattbeloppet för första passet"
+      "first_lesson_amount_required": "Ange rabattbeloppet för första passet",
+      "discount_not_found": "Rabatten hittades inte",
+      "discount_invalid": "Kontrollera rabattens fält",
+      "discount_service_not_found": "En av de valda tjänsterna finns inte längre",
+      "discount_package_not_found": "Ett av de valda medlemskapen finns inte längre",
+      "discount_client_not_found": "En av de valda kunderna finns inte längre"
     },
     "notifications": {
       "critical_locked": "Den här aviseringen går inte att stänga av",

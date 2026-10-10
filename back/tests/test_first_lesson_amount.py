@@ -117,7 +117,7 @@ def test_booking_with_cash_takes_the_price_minus_the_amount_and_remembers_it():
 
                 preview = await flp._preview(http, quoted["quote_id"])
                 assert preview["total"] == 700 and preview["first_lesson_amount"] == 300
-                assert preview["discounts"] == [{"kind": "first_lesson", "amount": 300}]
+                assert preview["discounts"] == [{"kind": "first_lesson", "amount": 300, "name": None}]
 
                 created = await http.post("/schedule/bookings", json={
                     "quote_id": quoted["quote_id"], "payment": {"expected_total": 700}})

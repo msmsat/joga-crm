@@ -67,7 +67,8 @@
     "role": "Rolle",
     "status": "Status",
     "size": "Betrag",
-    "optional": "Optional"
+    "optional": "Optional",
+    "required": "Erforderlich"
   },
   "days": {
     "mon": "Montag",
@@ -152,7 +153,12 @@
       "cert_not_found": "Gutschein nicht gefunden",
       "cert_used": "Der Gutschein wurde bereits eingelöst oder ist ungültig",
       "cert_expired": "Der Gutschein ist abgelaufen",
-      "first_lesson_amount_required": "Geben Sie den Rabattbetrag für den ersten Kurs an"
+      "first_lesson_amount_required": "Geben Sie den Rabattbetrag für den ersten Kurs an",
+      "discount_not_found": "Rabatt nicht gefunden",
+      "discount_invalid": "Prüfen Sie die Felder des Rabatts",
+      "discount_service_not_found": "Eine der gewählten Leistungen gibt es nicht mehr",
+      "discount_package_not_found": "Eines der gewählten Abos gibt es nicht mehr",
+      "discount_client_not_found": "Einen der gewählten Kunden gibt es nicht mehr"
     },
     "notifications": {
       "critical_locked": "Diese Benachrichtigung kann nicht deaktiviert werden",

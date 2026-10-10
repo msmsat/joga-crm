@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react';
+import { useState, type CSSProperties, type Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { NavItem } from './navItems';
 import NavGlyph from './NavGlyph';
@@ -8,6 +8,9 @@ type Props = {
   onSelect: (tab: string) => void;
   /** Разделы для этой студии — решает App (см. `visibleNavItems`). */
   items: NavItem[];
+  /** Капсула: на свайпе разделов линза едет за пальцем (lib/pageSlider.ts
+   *  пишет ей `--dock-i` напрямую, минуя рендер). */
+  ref?: Ref<HTMLElement>;
 };
 
 /**
@@ -44,7 +47,7 @@ type Props = {
  *    перерисовывается каждый кадр прокрутки. «Лёгкость» здесь даёт поверхность
  *    с бликом по кромке и парящей тенью, а не полупрозрачность.
  */
-export default function BottomNav({ active, onSelect, items }: Props) {
+export default function BottomNav({ active, onSelect, items, ref }: Props) {
   const { t } = useTranslation();
   const index = items.findIndex((item) => item.id === active);
 
@@ -76,6 +79,7 @@ export default function BottomNav({ active, onSelect, items }: Props) {
        в паре с высотой кнопок (`.dock-cell`). */
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-4 pb-[var(--nav-offset)]">
       <nav
+        ref={ref}
         className="dock"
         style={{ '--dock-n': items.length, '--dock-i': Math.max(index, 0) } as CSSProperties}
       >

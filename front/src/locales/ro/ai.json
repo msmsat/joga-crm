@@ -294,7 +294,9 @@
     "update_service": "Se actualizează serviciul…",
     "update_staff": "Se actualizează membrul echipei…",
     "add_studio_time": "Adaug timp de studio…",
-    "remove_studio_time": "Elimin timpul de studio…"
+    "remove_studio_time": "Elimin timpul de studio…",
+    "create_discount": "Se creează o reducere…",
+    "update_discount": "Se modifică reducerea…"
   },
   "quota": {
     "trialLow": "Au rămas puține solicitări de probă.",

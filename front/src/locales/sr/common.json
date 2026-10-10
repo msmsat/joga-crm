@@ -67,7 +67,8 @@
     "role": "Улога",
     "status": "Статус",
     "size": "Износ",
-    "optional": "Необавезно"
+    "optional": "Необавезно",
+    "required": "Обавезно"
   },
   "days": {
     "mon": "Понедељак",
@@ -152,7 +153,12 @@
       "cert_not_found": "Ваучер није пронађен",
       "cert_used": "Ваучер је већ искоришћен или није важећи",
       "cert_expired": "Ваучер је истекао",
-      "first_lesson_amount_required": "Унесите износ попуста за први термин"
+      "first_lesson_amount_required": "Унесите износ попуста за први термин",
+      "discount_not_found": "Попуст није пронађен",
+      "discount_invalid": "Проверите поља попуста",
+      "discount_service_not_found": "Једна од изабраних услуга више не постоји",
+      "discount_package_not_found": "Једна од изабраних чланарина више не постоји",
+      "discount_client_not_found": "Један од изабраних клијената више не постоји"
     },
     "notifications": {
       "critical_locked": "Ово обавештење се не може искључити",

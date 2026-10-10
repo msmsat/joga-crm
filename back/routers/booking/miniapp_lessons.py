@@ -155,6 +155,7 @@ class MiniappLesson(BaseSchema):
 class MiniappUpcomingLesson(MiniappLesson):
     reservation_id: int
     paid_online: bool = False
+    payment_review: bool = False
     version: int = 1
     starts_at: Optional[datetime] = None
     allowed_actions: list[str] = []
@@ -176,6 +177,7 @@ class MiniappUpcomingLesson(MiniappLesson):
 class MiniappPastLesson(MiniappLesson):
     reservation_id: int
     paid_online: bool = False
+    payment_review: bool = False
     status: str
     version: int = 1
     starts_at: Optional[datetime] = None
@@ -610,6 +612,16 @@ async def my_lessons(
         )
     )).scalars().all())
 
+    review_reservations = set((await db.execute(
+        select(StripeCheckout.payload['reservation_id'].as_integer()).where(
+            StripeCheckout.studio_id == client.studio_id,
+            StripeCheckout.payload['client_id'].as_string() == str(client.id),
+            StripeCheckout.payload['kind'].as_string() == 'lesson_booking',
+            StripeCheckout.payload['reservation_id'].as_integer().in_([r.id for r, _ in rows]),
+            StripeCheckout.status == 'failed',
+        )
+    )).scalars().all())
+
     lessons_by_id = {lesson.id: lesson for _, lesson in rows}
     taken_by_lesson, _ = await _reservations_map(db, list(lessons_by_id))
     hall_colors = await _hall_colors(db, list(lessons_by_id.values()))
@@ -668,19 +680,21 @@ async def my_lessons(
         if (lesson.booking_mode == "resource" and reservation.status in {"active", "pending"}
                 and in_window):
             actions.append("reschedule")
-        if reservation.status == "hold":
+        if (reservation.status == "hold" and left > timedelta(0) and takes_cards
+                and reservation.id not in review_reservations):
             actions.append("pay")
         # «Оплата на месте», а человек передумал и платит картой — до начала:
         # после занятия долг зачисляет система (services/attendance). Правило
         # то же, что у `booking_payment.pay_link`; решает всё равно он.
         elif (reservation.status == "active" and debt > 0 and left > timedelta(0)
-                and takes_cards):
+                and takes_cards and reservation.id not in review_reservations):
             actions.append("pay")
         if reservation.status in {"active", "attended"} and left < timedelta(0):
             actions.append("rate")
         paid_fields = dict(
             reservation_id=reservation.id,
             paid_online=reservation.id in paid_reservations,
+            payment_review=reservation.id in review_reservations,
             version=lesson.version,
             starts_at=when.instant.replace(tzinfo=timezone.utc) if when.instant is not None else None,
             allowed_actions=actions,
@@ -845,7 +859,7 @@ async def create_reservation(
             detail = "Ваш абонемент не подходит для этого занятия — оформите подходящий в профиле"
         else:
             detail = "Для записи нужен действующий абонемент — оформите его в профиле"
-        raise HTTPException(status_code=402, detail=detail)
+        raise HTTPException(status_code=402, detail={"code": "NO_FUNDING", "message": detail})
     reject(result,
            NO_CAPACITY=(400, "Все места заняты"),
            ALREADY_BOOKED=(409, "Вы уже записаны на это занятие"),

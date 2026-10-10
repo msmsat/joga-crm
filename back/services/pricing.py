@@ -1,26 +1,25 @@
 """Единая точка расчёта цены продажи (V5-5, задача 4).
 
-Берёт базовую цену и применяет студийную скидку (StudioDiscountConfig),
-персональный оффер клиента (ClientOffer), промокод, скидку новичка по
-рефералке, скидку первого занятия и ручную скидку администратора — по правилу
-«самая выгодная клиенту, без стека» (если явно не включён stackable на
-студийной скидке). Реальные деньги не
+Берёт базовую цену и применяет скидку студии (самую выгодную из именованных
+скидок DiscountCampaign, положенных этой продаже), персональный оффер клиента
+(ClientOffer), промокод, скидку новичка по рефералке, скидку первого занятия и
+ручную скидку администратора — по правилу «самая выгодная клиенту, без стека»
+(если в программе скидок явно не включён stackable). Реальные деньги не
 двигает: возвращает только итоговую цену: списание/эквайринг — забота
 кассы/мини-приложения (см. CLAUDE.md §2.16).
 """
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from models import ClientOffer, ReferralRecord, StudioDiscountConfig, StudioPromoCode, StudioReferralConfig
+from models import (
+    ClientOffer, DiscountCampaign, ReferralRecord, StudioDiscountConfig, StudioPromoCode, StudioReferralConfig,
+)
+from services.discount_campaigns import best_campaign
 from services.discounts import FirstLessonDiscount, apply_discount
-
-# StudioDiscountConfig использует свой словарь ключей (задача 5), ClientOffer
-# и промокод — 'percent'/'amount'. Приводим к общему виду перед apply_discount.
-_STUDIO_TYPE_MAP = {"percentage": "percent", "fixed": "amount"}
 
 
 class _AsDiscount:
@@ -34,6 +33,9 @@ class _AsDiscount:
 class ResolvedPrice:
     final_price: int
     studio_discount_applied: int = 0
+    # Какая именно скидка студии дала studio_discount_applied — её название
+    # уходит в чек, а продажа прибавляет ей used_count.
+    campaign: Optional[DiscountCampaign] = None
     offer: Optional[ClientOffer] = None
     offer_discount_applied: int = 0
     promo: Optional[StudioPromoCode] = None
@@ -60,6 +62,8 @@ class ResolvedPrice:
         """
         if self.promo is not None:
             self.promo.used_count += 1
+        if self.campaign is not None:
+            self.campaign.used_count += 1
         if self.offer is not None:
             self.offer.is_used = True
             self.offer.used_at = datetime.utcnow()
@@ -79,6 +83,9 @@ async def resolve_price(
     renewal_package_id: Optional[int] = None,
     renewal_at: Optional[datetime] = None,
     renewal_previous_id: Optional[int] = None,
+    service_id: Optional[int] = None,
+    package_id: Optional[int] = None,
+    on: Optional[date] = None,
 ) -> ResolvedPrice:
     """`promo` — уже найденный и провалидированный промокод (find_valid_promo),
     поиск по коду сюда не входит — вызывающий решает, что делать с 404/400.
@@ -93,6 +100,13 @@ async def resolve_price(
     правилам студии (`booking.resolve_funding`), при оплате уже записанного
     занятия — по снимку на брони (`booking_access.trial_discount`). Сам движок не знает, что продаёт
     — занятие или абонемент, — и угадывать это по цене нельзя.
+
+    `service_id` / `package_id` — ЧТО продают: занятие (или разовый визит)
+    этой услуги либо этот абонемент. Скидка студии на выбранные услуги и
+    абонементы без них не применится — неизвестно, к чему её прикладывать.
+    `on` — по какой дате сверять период скидки: день занятия, а не оплаты, —
+    иначе бронь, долг и оплата одного занятия видели бы разную цену.
+    Не названа — сегодня по часам студии.
     """
     from routers.loyalty.offers import find_active_offer  # ponytail: локальный импорт разрывает цикл
     # services.pricing -> routers.loyalty (__init__) -> ... -> routers.clients.subscriptions -> services.pricing
@@ -102,14 +116,12 @@ async def resolve_price(
     cfg = (await db.execute(
         select(StudioDiscountConfig).where(StudioDiscountConfig.studio_id == studio_id)
     )).scalar_one_or_none()
-    if (
-        cfg is not None and cfg.is_enabled
-        and cfg.discount_type in _STUDIO_TYPE_MAP  # cashback не снижает цену — другой механизм
-        and (cfg.min_purchase_amount is None or base_price >= cfg.min_purchase_amount)
-    ):
-        amount = apply_discount(_AsDiscount(_STUDIO_TYPE_MAP[cfg.discount_type], cfg.discount_value), base_price)
-        if amount > 0:
-            candidates.append(("studio", amount, cfg))
+    if cfg is not None and cfg.is_enabled:
+        # Кешбэк цену не снижает — он начисляется баллами после оплаты.
+        best = await best_campaign(db, studio_id, client_id, base_price,
+                                   service_id=service_id, package_id=package_id, on=on)
+        if best is not None:
+            candidates.append(("studio", best[1], best[0]))
 
     offer = await find_active_offer(studio_id, client_id, "renewal", db)
     if offer is not None:
@@ -174,6 +186,7 @@ async def resolve_price(
     for kind, amount, obj in chosen:
         total_discount += amount
         if kind == "studio":
+            result.campaign = obj
             result.studio_discount_applied = amount
         elif kind == "offer":
             result.offer = obj

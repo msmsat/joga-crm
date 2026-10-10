@@ -10,6 +10,9 @@ import CoffeeStrip from '../components/mylessons/CoffeeStrip';
 import PastCard from '../components/mylessons/PastCard';
 import PeriodBar, { type PeriodMode } from '../components/mylessons/PeriodBar';
 import MyLessonModal from '../components/modals/MyLessonModal';
+import SupportModal from '../components/modals/SupportModal';
+import { canPay } from '../components/mylessons/lesson/paymentState';
+import { useLessonPay } from '../hooks/useLessonPay';
 import { ScreenHeader } from '../components/ui/ScreenHeader';
 import { SectionLabel } from '../components/ui/SectionLabel';
 import { ListSkeleton } from '../components/ui/ListSkeleton';
@@ -29,6 +32,17 @@ import { getPaymentSnapshot, subscribePayments, syncCheckouts } from '../lib/pay
 import PaidBadge from '../components/payment/PaidBadge';
 
 type MyLesson = UpcomingLessonResponse | PastLessonResponse;
+
+/** Брони, чья оплата ещё сверяется, — строкой: снимок `useSyncExternalStore`
+ *  обязан быть сравним по значению, иначе каждый вызов давал бы «изменение». */
+const awaitingPaymentsKey = () => {
+  const snapshot = getPaymentSnapshot();
+  if (!snapshot.awaiting) return '';
+  return snapshot.payments
+    .filter((payment) => payment.status === 'pending' && payment.reservation_id != null)
+    .map((payment) => payment.reservation_id)
+    .join(',');
+};
 
 export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog | null }) {
   const { t, i18n } = useTranslation();
@@ -57,15 +71,23 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
   const [isPastLesson, setIsPastLesson] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  // «Оплатить» — из карточки и из листа; один запрос за раз на весь раздел.
+  const lessonPay = useLessonPay();
+  const [supportOpen, setSupportOpen] = useState(false);
 
   const [mode, setMode] = useState<PeriodMode>('month');
   const [anchor, setAnchor] = useState(() => new Date());
   // Раздел остаётся смонтированным при переключении вкладок: о записи, сделанной
   // на главной или в расписании, он узнаёт из общей версии (lib/revision.ts).
   const lessonsVersion = useLessonsVersion();
-  const payments = useSyncExternalStore(subscribePayments, getPaymentSnapshot);
-  const awaitingStripe = (lesson: MyLesson) => lesson.status === 'hold' && payments.awaiting
-    && payments.payments.some(payment => payment.reservation_id === lesson.reservation_id && payment.status === 'pending');
+  // Из сверки оплат разделу нужно одно — какие брони ждут подтверждения
+  // оплаты. Подписка — на эту строку, а не на весь снимок: снимок
+  // публикуется дважды за каждый опрос (флаг `busy` туда и обратно), раз в
+  // 5 с первую минуту, и раздел — собранный заранее и живущий в DOM всегда —
+  // перерисовывался бы целиком на каждый из них.
+  const awaitingKey = useSyncExternalStore(subscribePayments, awaitingPaymentsKey);
+  const awaitingIds = useMemo(() => new Set(awaitingKey ? awaitingKey.split(',').map(Number) : []), [awaitingKey]);
+  const awaitingStripe = (lesson: MyLesson) => !lesson.paid_online && !lesson.payment_review && awaitingIds.has(lesson.reservation_id);
 
   const [countdowns, setCountdowns] = useState<{ [key: number]: string }>({});
 
@@ -121,7 +143,8 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
       const result = await syncCheckouts({ reservation_id: activeLesson.reservation_id });
       bumpLessons();
       if (result?.verification_unavailable) notify(t('payment.sync.unavailable'));
-      else if (!result?.payments.some(payment => payment.status === 'paid')) notify(t('payment.sync.pending'));
+       else if (result?.payments.some(payment => payment.status === 'failed')) notify(t('lessonSheet.pay.review_hint'));
+       else if (!result?.payments.some(payment => payment.status === 'paid')) notify(t('payment.sync.pending'));
     } catch {
       notify(t('payment.sync.unavailable'));
     } finally { setCheckingPayment(false); }
@@ -343,7 +366,7 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
                     index={i}
                     title={translateName(cls.name)}
                     statusLabel={
-                      awaitingStripe(cls) ? t('payment.sync.awaiting') : cls.status === 'pending'
+                       cls.payment_review ? t('lessonSheet.pay.review_title') : awaitingStripe(cls) ? t('payment.sync.awaiting') : cls.status === 'pending'
                         ? t('mylessons.awaiting_confirmation')
                         : cls.status === 'hold' ? t('mylessons.status.hold') : t('mylessons.status.upcoming')
                     }
@@ -352,6 +375,17 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
                     matLabel={cls.booking_mode === 'resource' ? '' : t('mylessons.mat_label', { spot: cls.spot_number })}
                     countdown={countdowns[cls.id] || t('mylessons.counting_time')}
                     paidOnline={cls.paid_online}
+                    // Пока Stripe подтверждает оплату, второй формы не предлагаем.
+                    pay={canPay(cls) && !awaitingStripe(cls) ? {
+                      label: cls.status === 'hold'
+                        ? t('lessonSheet.card.hold')
+                        : t('lessonSheet.card.venue', { amount: cls.debt_str }),
+                      action: lessonPay.payingId === cls.reservation_id
+                        ? t('lessonSheet.pay.opening')
+                        : t(cls.status === 'hold' ? 'lessonSheet.card.resume' : 'lessonSheet.card.pay'),
+                      busy: lessonPay.payingId !== null,
+                      onPay: () => void lessonPay.pay(cls.reservation_id),
+                    } : undefined}
                     {...(cls.debt > 0
                       ? { paymentLabel: t('mylessons.unpaid', { amount: cls.debt_str }), paymentTone: 'debt' as const }
                       : cls.is_trial
@@ -418,11 +452,18 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
         lesson={activeLesson}
         isPast={isPastLesson}
         title={translateName(activeLesson?.name)}
-        dateLabel={activeLesson ? formatDate(activeLesson.start_time) : ''}
+        dateLabel={activeLesson
+          ? new Date(activeLesson.start_time).toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })
+          : ''}
         countdown={activeLesson ? countdowns[activeLesson.id] : undefined}
+        catalog={catalog}
         isProcessing={isProcessing}
+        onPay={activeLesson && canPay(activeLesson) ? () => void lessonPay.pay(activeLesson.reservation_id) : undefined}
+        paying={activeLesson != null && lessonPay.payingId === activeLesson.reservation_id}
+        awaitingPayment={activeLesson != null && awaitingStripe(activeLesson)}
+        onContact={catalog ? () => setSupportOpen(true) : undefined}
         checkingPayment={checkingPayment}
-        onCheckPayment={activeLesson?.status === 'hold' ? checkPayment : undefined}
+         onCheckPayment={activeLesson && (activeLesson.status === 'hold' || awaitingStripe(activeLesson)) ? checkPayment : undefined}
         onCancel={activeLesson?.allowed_actions.includes('cancel') ? cancelBooking : undefined}
         onReschedule={
           activeLesson?.allowed_actions.includes('reschedule') && activeLesson.service_id
@@ -439,6 +480,15 @@ export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog 
         onCoffeeChange={
           activeLesson ? (state) => applyCoffee(activeLesson.id, state) : undefined
         }
+      />
+
+      {/* Контакты студии из листа занятия — поверх него, тем же листом, что в
+          профиле: одно действие выглядит одинаково везде. */}
+      <SupportModal
+        isOpen={supportOpen}
+        onClose={() => setSupportOpen(false)}
+        studio={catalog?.studio ?? null}
+        layer={1}
       />
     </>
   );

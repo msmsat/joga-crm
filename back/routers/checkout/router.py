@@ -145,6 +145,10 @@ async def _quote(
         manual_percent=manual_percent,
         renewal_package_id=package.id if product_type == "subscription" else None,
         renewal_at=quote_at, renewal_previous_id=renewal_previous_id,
+        # Что продают — для скидок студии на выбранные услуги и абонементы.
+        package_id=package.id if product_type == "subscription" else None,
+        service_id=getattr(package, "service_id", None) if product_type != "subscription" else None,
+        on=getattr(package, "on", None),
     )
     discount = base_price - resolved.final_price
 
@@ -383,6 +387,10 @@ class ServiceAsProduct:
     # у "lesson": цену занятия касса пересчитывает при оплате, и без снимка
     # клиент, записанный со скидкой, заплатил бы полную цену.
     first_lesson: Optional[FirstLessonDiscount] = None
+    # День занятия (стенные часы студии) — по нему сверяется период скидки
+    # студии, чтобы бронь, долг и оплата одного занятия видели одну цену.
+    # Только у "lesson"; разовый визит из кассы продаётся сегодня.
+    on: Optional[date] = None
 
 
 async def _get_client_package(
@@ -454,6 +462,7 @@ async def _get_client_package(
             id=lesson.id, name=lesson.name, price=lesson.price,
             per_visit_price=lesson.price, service_id=lesson.service_id,
             first_lesson=trial_discount(reservation) if reservation is not None else None,
+            on=lesson.start_time.date() if lesson.start_time is not None else None,
         )
 
     package = (await db.execute(

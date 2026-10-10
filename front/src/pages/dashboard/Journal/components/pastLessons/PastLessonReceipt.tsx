@@ -50,7 +50,7 @@ export function PastLessonReceipt({ event, repeat, canOffer, onRepeat, onClose }
     if (line.label === 'points') return t('journal:lessonPay.pointsLine', { points: line.points ?? 0 });
     if (line.label === 'deposit') return t('journal:lessonPay.deposit');
     if (line.label === 'certificate') return [t('journal:payment.voucher'), line.promo].filter(Boolean).join(' ');
-    const label = line.promo ? `${t('journal:payment.discount.promo')} ${line.promo}` : t(`journal:payment.discount.${line.label}`);
+    const label = line.promo ? `${t('journal:payment.discount.promo')} ${line.promo}` : line.name || t(`journal:payment.discount.${line.label}`);
     return line.percent != null ? t('journal:lessonCard.discountLine', { label, percent: line.percent }) : label;
   };
 

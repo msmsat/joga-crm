@@ -130,23 +130,21 @@ class DepositStatsRead(BaseSchema):
 
 
 class DiscountConfigRead(BaseSchema):
+    """Программа «Скидки» целиком: тумблер и правила, общие для всех скидок.
+    Сами скидки — /loyalty/discount-campaigns (schemas/loyalty/discounts.py)."""
     is_enabled: bool
-    discount_type: str
-    discount_value: int
-    min_purchase_amount: Optional[int] = None
-    applies_to_all_services: bool
     stackable: bool
     visible_in_cabinet: bool
+    # Процент оплаты, возвращаемый баллами; None — кешбэк выключен.
+    cashback_percent: Optional[int] = None
 
 
 class DiscountConfigUpdate(BaseSchema):
     is_enabled: Optional[bool] = None
-    discount_type: Optional[str] = None
-    discount_value: Optional[int] = None
-    min_purchase_amount: Optional[int] = None
-    applies_to_all_services: Optional[bool] = None
     stackable: Optional[bool] = None
     visible_in_cabinet: Optional[bool] = None
+    # Явный null выключает кешбэк — поэтому exclude_unset, а не «пусто = не трогать».
+    cashback_percent: Optional[int] = Field(default=None, ge=1, le=100)
 
 
 # --- Subscription (packages) program ---

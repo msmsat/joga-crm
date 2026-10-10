@@ -67,7 +67,8 @@
     "role": "Rola",
     "status": "Status",
     "size": "Kwota",
-    "optional": "Opcjonalne"
+    "optional": "Opcjonalne",
+    "required": "Wymagane"
   },
   "days": {
     "mon": "Poniedziałek",
@@ -152,7 +153,12 @@
       "cert_not_found": "Nie znaleziono bonu",
       "cert_used": "Bon został już wykorzystany albo jest nieważny",
       "cert_expired": "Bon stracił ważność",
-      "first_lesson_amount_required": "Podaj kwotę rabatu na pierwsze zajęcia"
+      "first_lesson_amount_required": "Podaj kwotę rabatu na pierwsze zajęcia",
+      "discount_not_found": "Nie znaleziono rabatu",
+      "discount_invalid": "Sprawdź pola rabatu",
+      "discount_service_not_found": "Jednej z wybranych usług już nie ma",
+      "discount_package_not_found": "Jednego z wybranych karnetów już nie ma",
+      "discount_client_not_found": "Jednego z wybranych klientów już nie ma"
     },
     "notifications": {
       "critical_locked": "Tego powiadomienia nie można wyłączyć",

@@ -68,6 +68,11 @@ export type {
 export {
   ModalShell, ModalShell as Dialog, useModalClose,
   ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton,
-  Input, ColorPicker, PhotoUpload, ChipsInput, WorkingHoursEditor,
+  Input, FieldLabel, ColorPicker, PhotoUpload, ChipsInput, WorkingHoursEditor,
 } from './modal';
+export type { FieldLabelProps } from './modal';
+// Панель справа — родня «Ещё» на любом экране (SidePanel.tsx).
+export { SidePanel, SidePanelHead, SidePanelBody, SidePanelFoot } from './SidePanel';
+export { cascade } from './cascade';
+export type { SidePanelProps, SidePanelHeadProps } from './SidePanel';
 export type { WorkingHour } from './modal';

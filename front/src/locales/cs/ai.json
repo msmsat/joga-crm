@@ -288,7 +288,9 @@
     "update_service": "Aktualizuji službu…",
     "update_staff": "Aktualizuji zaměstnance…",
     "add_studio_time": "Přidávám čas studia…",
-    "remove_studio_time": "Odebírám čas studia…"
+    "remove_studio_time": "Odebírám čas studia…",
+    "create_discount": "Vytvářím slevu…",
+    "update_discount": "Měním slevu…"
   },
   "quota": {
     "trialLow": "Zbývá málo zkušebních dotazů.",

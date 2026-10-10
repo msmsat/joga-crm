@@ -134,7 +134,8 @@ export interface BookedClient {
 /** Чем оплачено занятие — снимок кассы в момент оплаты. */
 export interface PaymentBreakdown {
   base_price: number
-  discounts: { kind: ReservationDiscountKind; amount: number }[]
+  // name — название скидки студии («Осенняя неделя»); у остальных видов пусто.
+  discounts: { kind: ReservationDiscountKind; amount: number; name?: string | null }[]
   promo_code: string | null
   bonuses_applied: number
   bonuses_value: number
@@ -218,7 +219,8 @@ export interface ReferralSummary {
 export interface PaymentCheckPreview {
   currency: string
   base_price: number
-  discounts: { kind: ReservationDiscountKind; amount: number }[]
+  // name — название скидки студии («Осенняя неделя»); у остальных видов пусто.
+  discounts: { kind: ReservationDiscountKind; amount: number; name?: string | null }[]
   manual_outweighed: boolean
   /** Бронь пробная — у чека есть выключатель «Первое занятие». */
   first_lesson_offered: boolean

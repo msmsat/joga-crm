@@ -294,7 +294,9 @@
     "update_service": "Ažurira se usluga…",
     "update_staff": "Ažurira se član tima…",
     "add_studio_time": "Dodajem vrijeme studija…",
-    "remove_studio_time": "Uklanjam vrijeme studija…"
+    "remove_studio_time": "Uklanjam vrijeme studija…",
+    "create_discount": "Stvara se popust…",
+    "update_discount": "Mijenja se popust…"
   },
   "quota": {
     "trialLow": "Ostalo je malo probnih zahtjeva.",

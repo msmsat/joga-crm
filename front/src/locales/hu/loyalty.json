@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Kedvezmények és cashback",
-      "desc": "Személyes ajánlatok ügyfeleknek",
+      "desc": "Kedvezmények dátum, szolgáltatás és ügyfél szerint",
       "statLabel": "aktív"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "eddig",
     "deleteLevelTitle": "Törli ezt a szintet?",
     "deleteLevelMessage": "A „{{name}}” szint ügyfelei összes költésük alapján a szomszédos szintre kerülnek.",
-    "discountType": "Kedvezmény típusa",
     "discountTypes": {
       "percentage": "Százalék (%)",
       "fixed": "Fix ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Cashback százalék",
     "discountSize": "Kedvezmény összege",
-    "minPurchase": "Minimális vásárlási összeg",
     "noLimit": "Nincs korlát",
-    "conditions": "Alkalmazási feltételek",
-    "appliesToAll": "Alkalmazás minden szolgáltatásra",
-    "stackable": "Halmozható más kedvezményekkel",
-    "visibleInCabinet": "Megjelenítés az ügyfél fiókjában",
     "certType": "Utalvány típusa",
     "certTypes": {
       "named": "Névre szóló",
@@ -345,5 +338,222 @@
     "renewed": "Megújítva",
     "empty": "Még nincs előfizetésértékesítés",
     "emptySub": "Az elemzés az első csomageladások után jelenik meg"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Aktív: {{active}}, tervezett: {{scheduled}}",
+      "subtitleEmpty": "Még nincs kedvezmény",
+      "active": "most aktív",
+      "scheduled": "tervezett",
+      "used": "alkalommal használva",
+      "create": "Új kedvezmény",
+      "emptyTitle": "Hozza létre első kedvezményét",
+      "emptyText": "Induljon egy ötletből vagy a nulláról. Minden kedvezménynek saját dátumai, szolgáltatásai és ügyfelei vannak, és magától érvényesül.",
+      "offTitle": "A kedvezmények ki vannak kapcsolva",
+      "offText": "Amíg a program ki van kapcsolva, az ügyfelek egyik lenti kedvezményt sem kapják meg.",
+      "turnOn": "Bekapcsolás"
+    },
+    "timeline": {
+      "title": "Kedvezmények idővonala",
+      "today": "Ma",
+      "more": "+{{count}} további"
+    },
+    "status": {
+      "active": "Aktív",
+      "scheduled": "Tervezett",
+      "ended": "Lejárt",
+      "paused": "Szüneteltetve"
+    },
+    "card": {
+      "edit": "{{name}} kedvezmény szerkesztése",
+      "daysLeft_one": "Még {{count}} nap",
+      "daysLeft_other": "Még {{count}} nap",
+      "startsIn_one": "{{count}} nap múlva indul",
+      "startsIn_other": "{{count}} nap múlva indul",
+      "ended": "Az időszak lejárt",
+      "noEnd": "Nincs lejárat",
+      "used_one": "{{count}} alkalommal használva",
+      "used_other": "{{count}} alkalommal használva",
+      "notUsed": "Még nem használták"
+    },
+    "editor": {
+      "newTitle": "Új kedvezmény",
+      "back": "Vissza a kedvezményekhez",
+      "progress": "Kitöltött kötelező mezők: {{filled}}/{{total}}",
+      "name": "Név",
+      "namePlaceholder": "Például Őszi jógahét",
+      "value": "Kedvezmény mértéke",
+      "percent": "Százalék",
+      "amount": "Összeg, {{currency}}",
+      "period": "Mikor érvényes",
+      "scope": "Mire érvényes",
+      "audience": "Kinek",
+      "minimum": "Minimális vásárlási összeg",
+      "minimumPlaceholder": "Nincs minimum",
+      "minimumHint": "A minimum alatt a kedvezmény nem érvényes. Ha több kedvezmény is illik, az ügyfél a legkedvezőbbet kapja.",
+      "active": "Állapot",
+      "activeOn": "Bekapcsolva, magától érvényesül",
+      "activeOff": "Szüneteltetve: mentve, de nem érvényes",
+      "create": "Kedvezmény létrehozása",
+      "save": "Mentés",
+      "delete": "Törlés"
+    },
+    "preview": {
+      "untitled": "Névtelen kedvezmény",
+      "percentKind": "az árból",
+      "amountKind": "minden vásárlásból",
+      "days_one": "{{count}} nap",
+      "days_other": "{{count}} nap",
+      "minimum": "{{amount}} felett"
+    },
+    "presets": {
+      "none": "Nincs lejárat",
+      "noneHint": "Amíg szünetre nem állítja",
+      "week": "7 nap",
+      "month": "Hónap végéig",
+      "days30": "30 nap",
+      "custom": "Saját dátumok",
+      "customHint": "Válasszon a naptárban",
+      "clear": "Dátumok törlése"
+    },
+    "calendar": {
+      "prev": "Előző hónap",
+      "next": "Következő hónap",
+      "pickStart": "Válassza ki az első napot",
+      "pickEnd": "Most válassza ki az utolsó napot",
+      "again": "Válasszon egy napot az újrakezdéshez"
+    },
+    "scope": {
+      "all": "Mindenre",
+      "selected": "Kiválasztottakra",
+      "allHint": "Bármely óra, alkalmi belépő vagy bérlet, amit az ügyfél vásárol.",
+      "services": "Szolgáltatások",
+      "packages": "Bérletek",
+      "counter": "{{picked}}/{{total}}",
+      "allOf": "Összes kijelölése",
+      "none": "Kijelölés törlése",
+      "classes_one": "{{count}} alkalom",
+      "classes_other": "{{count}} alkalom",
+      "noServices": "A Katalógusban még nincs szolgáltatás",
+      "noPackages": "A Katalógusban még nincs bérlet"
+    },
+    "audience": {
+      "all": "Mindenkinek",
+      "allHint": "A stúdió minden ügyfelének",
+      "segments": "Csoportoknak",
+      "segmentsHint": "Újaknak, ünnepelteknek és másoknak",
+      "clients": "Kiválasztott ügyfeleknek",
+      "clientsHint": "Csak azoknak, akiket kiválaszt",
+      "people_one": "{{count}} ügyfél",
+      "people_other": "{{count}} ügyfél",
+      "birthdayWindow_one": "Születésnap az órától számított {{count}} napon belül",
+      "birthdayWindow_other": "Születésnap az órától számított {{count}} napon belül",
+      "birthdayExact": "Csak magán a születésnapon",
+      "less": "Kevesebb nap",
+      "more": "Több nap",
+      "pickGroups": "Válasszon egy vagy több csoportot",
+      "reach_one": "Most {{count}} ügyfél felel meg a(z) {{total}} közül",
+      "reach_other": "Most {{count}} ügyfél felel meg a(z) {{total}} közül",
+      "addClient": "Ügyfél hozzáadása",
+      "searchClient": "Keresés név vagy telefonszám alapján",
+      "noClients": "Még nincs hozzáadott ügyfél",
+      "removeClient": "{{name}} eltávolítása"
+    },
+    "segments": {
+      "new": {
+        "title": "Újak",
+        "hint": "Nemrég érkeztek a stúdióba"
+      },
+      "birthday": {
+        "title": "Ünnepeltek",
+        "hint": "Születésnap közel az óra dátumához"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "A legtöbbet járnak és költenek"
+      },
+      "active": {
+        "title": "Törzsvendégek",
+        "hint": "Rendszeresen járnak"
+      },
+      "inactive": {
+        "title": "Rég nem jártak",
+        "hint": "Abbahagyták a járást"
+      },
+      "has_subscription": {
+        "title": "Bérlettel",
+        "hint": "Érvényes bérletük van"
+      }
+    },
+    "summary": {
+      "everything": "Minden szolgáltatás és bérlet",
+      "everyone": "Minden ügyfél",
+      "nothingChosen": "Nincs kiválasztva semmi",
+      "nobodyChosen": "Nincs kiválasztva senki",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Születésnaposok ±{{count}} nap",
+      "birthday_other": "Születésnaposok ±{{count}} nap",
+      "birthdayExact": "A születésnapon"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "{{date}}-tól",
+      "until": "{{date}}-ig",
+      "forever": "Nincs lejárat"
+    },
+    "templates": {
+      "title": "Induljon egy ötletből",
+      "birthday": {
+        "name": "Születésnapi ajándék",
+        "hint": "−15% a születésnap körül"
+      },
+      "newcomers": {
+        "name": "Üdvözlő kedvezmény",
+        "hint": "−10% az új ügyfeleknek"
+      },
+      "comeback": {
+        "name": "Jöjjön vissza",
+        "hint": "−20% a rég nem járóknak, 30 nap"
+      },
+      "passes": {
+        "name": "Bérletakció",
+        "hint": "−10% minden bérletre"
+      },
+      "week": {
+        "name": "Kedvezményhét",
+        "hint": "−15% mindenre 7 napig"
+      },
+      "blank": {
+        "name": "A nulláról",
+        "hint": "Mindent Ön állít be"
+      }
+    },
+    "rules": {
+      "title": "Szabályok minden kedvezményre",
+      "stackable": "A kedvezmények összeadódnak",
+      "stackableOn": "A stúdió kedvezménye hozzáadódik a promóciós kódhoz, a személyes kedvezményhez és az első óra kedvezményéhez",
+      "stackableOff": "Csak a legkedvezőbb érvényes, a kedvezmények nem adódnak össze",
+      "cashback": "Cashback pontokban",
+      "cashbackHint": "Minden fizetés egy része pontként visszakerül az ügyfél kártyájára",
+      "cashbackExample_one": "{{amount}} után az ügyfél {{count}} pontot kap",
+      "cashbackExample_other": "{{amount}} után az ügyfél {{count}} pontot kap"
+    },
+    "errors": {
+      "name": "Adjon nevet a kedvezménynek",
+      "scope": "Válasszon legalább egy szolgáltatást vagy bérletet",
+      "segments": "Válasszon legalább egy csoportot",
+      "clients": "Adjon hozzá legalább egy ügyfelet",
+      "fillRequired": "Töltse ki a kötelező mezőket"
+    },
+    "confirmDelete": {
+      "title": "Törli a kedvezményt?",
+      "message": "A(z) „{{name}}” már nem érvényesül. A korábbi eladások megtartják az árukat."
+    },
+    "toasts": {
+      "created": "Kedvezmény létrehozva",
+      "saved": "Kedvezmény mentve",
+      "deleted": "Kedvezmény törölve",
+      "programOn": "A kedvezmények bekapcsolva"
+    }
   }
 }

@@ -1276,13 +1276,29 @@ async def _mark_reversed(charge, event_type: str, account_id: str | None) -> Non
         checkout = (await db.execute(
             select(StripeCheckout).where(
                 StripeCheckout.session_id == session_id,
-                StripeCheckout.status == "paid",
+                StripeCheckout.status.in_(("paid", "failed")),
             )
         )).scalar_one_or_none()
         if checkout is None:
-            # Заявка не в paid: возврат по неудавшейся продаже (failed) — там уже
-            # был разбор вручную, второй сигнал ничего не добавит.
+            # No applied or rejected charge remains to resolve.
             logger.info("Stripe: %s по заявке %s не в статусе paid", event_type, session_id)
+            return
+
+        if checkout.status == "failed":
+            # The charge was rejected before any sale was committed. A verified
+            # full refund resolves it without reversing a nonexistent sale or
+            # cancelling the customer's still-unpaid booking. Partial refunds
+            # leave money outstanding and must retain the repeat-payment guard.
+            if status == "refunded" and _is_full_refund(charge):
+                from services.schedule_guard import lock_studio
+                await lock_studio(db, checkout.studio_id)
+                await db.refresh(checkout, with_for_update=True)
+                if checkout.status == "failed":
+                    checkout.status = "refunded"
+                    log_activity(db, checkout.studio_id, "payment",
+                        title=f"Возвращена списанная, но не проведённая оплата: {checkout.amount}",
+                        entity_type="client", entity_id=checkout.payload.get("client_id"))
+                    await db.commit()
             return
 
         reverted = status == "refunded" and _is_full_refund(charge)

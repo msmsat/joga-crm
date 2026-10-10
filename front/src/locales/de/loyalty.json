@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Rabatte & Cashback",
-      "desc": "Persönliche Angebote für Kunden",
+      "desc": "Rabatte nach Zeitraum, Leistungen und Kunden",
       "statLabel": "aktiv"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "bis",
     "deleteLevelTitle": "Diese Stufe löschen?",
     "deleteLevelMessage": "Kunden auf der Stufe „{{name}}“ wechseln je nach Gesamtumsatz auf die benachbarte Stufe.",
-    "discountType": "Rabattart",
     "discountTypes": {
       "percentage": "Prozentual (%)",
       "fixed": "Fest ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Cashback-Prozentsatz",
     "discountSize": "Rabatthöhe",
-    "minPurchase": "Mindesteinkaufswert",
     "noLimit": "Keine Begrenzung",
-    "conditions": "Anwendungsbedingungen",
-    "appliesToAll": "Auf alle Leistungen anwenden",
-    "stackable": "Mit anderen Rabatten kombinierbar",
-    "visibleInCabinet": "Dem Kunden in seinem Konto anzeigen",
     "certType": "Gutscheinart",
     "certTypes": {
       "named": "Personalisiert",
@@ -345,5 +338,222 @@
     "renewed": "Verlängert",
     "empty": "Noch keine Abo-Verkäufe",
     "emptySub": "Die Auswertung erscheint nach den ersten Paketverkäufen"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Aktiv: {{active}}, geplant: {{scheduled}}",
+      "subtitleEmpty": "Noch keine Rabatte",
+      "active": "aktiv",
+      "scheduled": "geplant",
+      "used": "Mal angewendet",
+      "create": "Neuer Rabatt",
+      "emptyTitle": "Legen Sie Ihren ersten Rabatt an",
+      "emptyText": "Starten Sie mit einer Idee oder bei null. Jeder Rabatt hat eigene Daten, Leistungen und Kunden und greift automatisch.",
+      "offTitle": "Rabatte sind ausgeschaltet",
+      "offText": "Kunden erhalten keinen der Rabatte unten, solange das Programm aus ist.",
+      "turnOn": "Einschalten"
+    },
+    "timeline": {
+      "title": "Zeitleiste der Rabatte",
+      "today": "Heute",
+      "more": "+{{count}} weitere"
+    },
+    "status": {
+      "active": "Aktiv",
+      "scheduled": "Geplant",
+      "ended": "Beendet",
+      "paused": "Pausiert"
+    },
+    "card": {
+      "edit": "Rabatt {{name}} bearbeiten",
+      "daysLeft_one": "Noch {{count}} Tag",
+      "daysLeft_other": "Noch {{count}} Tage",
+      "startsIn_one": "Startet in {{count}} Tag",
+      "startsIn_other": "Startet in {{count}} Tagen",
+      "ended": "Zeitraum ist vorbei",
+      "noEnd": "Ohne Enddatum",
+      "used_one": "{{count}}-mal angewendet",
+      "used_other": "{{count}}-mal angewendet",
+      "notUsed": "Noch nicht angewendet"
+    },
+    "editor": {
+      "newTitle": "Neuer Rabatt",
+      "back": "Zurück zu den Rabatten",
+      "progress": "{{filled}} von {{total}} Pflichtfeldern ausgefüllt",
+      "name": "Name",
+      "namePlaceholder": "Zum Beispiel Yoga-Herbstwoche",
+      "value": "Rabatthöhe",
+      "percent": "Prozent",
+      "amount": "Betrag, {{currency}}",
+      "period": "Wann er gilt",
+      "scope": "Wofür er gilt",
+      "audience": "Für wen",
+      "minimum": "Mindestbetrag",
+      "minimumPlaceholder": "Ohne Minimum",
+      "minimumHint": "Unter dem Mindestbetrag greift der Rabatt nicht. Passen mehrere Rabatte, bekommt der Kunde den günstigsten.",
+      "active": "Status",
+      "activeOn": "An, greift automatisch",
+      "activeOff": "Pausiert: gespeichert, aber nicht aktiv",
+      "create": "Rabatt anlegen",
+      "save": "Speichern",
+      "delete": "Löschen"
+    },
+    "preview": {
+      "untitled": "Rabatt ohne Namen",
+      "percentKind": "vom Preis",
+      "amountKind": "pro Kauf",
+      "days_one": "{{count}} Tag",
+      "days_other": "{{count}} Tage",
+      "minimum": "Ab {{amount}}"
+    },
+    "presets": {
+      "none": "Ohne Enddatum",
+      "noneHint": "Bis Sie ihn pausieren",
+      "week": "7 Tage",
+      "month": "Bis Monatsende",
+      "days30": "30 Tage",
+      "custom": "Eigene Daten",
+      "customHint": "Im Kalender wählen",
+      "clear": "Daten entfernen"
+    },
+    "calendar": {
+      "prev": "Vorheriger Monat",
+      "next": "Nächster Monat",
+      "pickStart": "Wählen Sie den ersten Tag",
+      "pickEnd": "Wählen Sie jetzt den letzten Tag",
+      "again": "Wählen Sie einen Tag, um neu zu beginnen"
+    },
+    "scope": {
+      "all": "Auf alles",
+      "selected": "Auf Auswahl",
+      "allHint": "Jede Stunde, jeder Einzelbesuch und jedes Abo, das der Kunde kauft.",
+      "services": "Leistungen",
+      "packages": "Abos",
+      "counter": "{{picked}} von {{total}}",
+      "allOf": "Alle wählen",
+      "none": "Auswahl aufheben",
+      "classes_one": "{{count}} Stunde",
+      "classes_other": "{{count}} Stunden",
+      "noServices": "Im Katalog gibt es noch keine Leistungen",
+      "noPackages": "Im Katalog gibt es noch keine Abos"
+    },
+    "audience": {
+      "all": "Allen",
+      "allHint": "Jedem Kunden des Studios",
+      "segments": "Gruppen",
+      "segmentsHint": "Neukunden, Geburtstagskinder und mehr",
+      "clients": "Einzelnen Kunden",
+      "clientsHint": "Nur den Personen, die Sie wählen",
+      "people_one": "{{count}} Kunde",
+      "people_other": "{{count}} Kunden",
+      "birthdayWindow_one": "Geburtstag bis {{count}} Tag vor oder nach der Stunde",
+      "birthdayWindow_other": "Geburtstag bis {{count}} Tage vor oder nach der Stunde",
+      "birthdayExact": "Nur am Geburtstag selbst",
+      "less": "Weniger Tage",
+      "more": "Mehr Tage",
+      "pickGroups": "Wählen Sie eine oder mehrere Gruppen",
+      "reach_one": "Gerade passt {{count}} von {{total}} Kunden",
+      "reach_other": "Gerade passen {{count}} von {{total}} Kunden",
+      "addClient": "Kunde hinzufügen",
+      "searchClient": "Nach Name oder Telefon suchen",
+      "noClients": "Noch keine Kunden hinzugefügt",
+      "removeClient": "{{name}} entfernen"
+    },
+    "segments": {
+      "new": {
+        "title": "Neukunden",
+        "hint": "Seit Kurzem im Studio"
+      },
+      "birthday": {
+        "title": "Geburtstagskinder",
+        "hint": "Geburtstag nah am Stundentermin"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Kommen und zahlen am meisten"
+      },
+      "active": {
+        "title": "Stammkunden",
+        "hint": "Kommen regelmäßig"
+      },
+      "inactive": {
+        "title": "Länger nicht da",
+        "hint": "Kommen nicht mehr"
+      },
+      "has_subscription": {
+        "title": "Mit Abo",
+        "hint": "Haben ein gültiges Abo"
+      }
+    },
+    "summary": {
+      "everything": "Alle Leistungen und Abos",
+      "everyone": "Alle Kunden",
+      "nothingChosen": "Nichts gewählt",
+      "nobodyChosen": "Niemand gewählt",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Geburtstage ±{{count}} Tag",
+      "birthday_other": "Geburtstage ±{{count}} Tage",
+      "birthdayExact": "Am Geburtstag"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "Ab {{date}}",
+      "until": "Bis {{date}}",
+      "forever": "Ohne Enddatum"
+    },
+    "templates": {
+      "title": "Mit einer Idee starten",
+      "birthday": {
+        "name": "Geburtstagsgeschenk",
+        "hint": "−15 % rund um den Geburtstag"
+      },
+      "newcomers": {
+        "name": "Willkommensrabatt",
+        "hint": "−10 % für Neukunden"
+      },
+      "comeback": {
+        "name": "Komm zurück",
+        "hint": "−20 % für Abwesende, 30 Tage"
+      },
+      "passes": {
+        "name": "Abo-Aktion",
+        "hint": "−10 % auf alle Abos"
+      },
+      "week": {
+        "name": "Rabattwoche",
+        "hint": "−15 % auf alles für 7 Tage"
+      },
+      "blank": {
+        "name": "Bei null",
+        "hint": "Sie stellen alles selbst ein"
+      }
+    },
+    "rules": {
+      "title": "Regeln für alle Rabatte",
+      "stackable": "Rabatte addieren sich",
+      "stackableOn": "Der Studio-Rabatt kommt zu Aktionscode, persönlichem Rabatt und Rabatt auf die erste Stunde hinzu",
+      "stackableOff": "Es gilt nur der günstigste Rabatt, sie addieren sich nicht",
+      "cashback": "Cashback in Punkten",
+      "cashbackHint": "Ein Teil jeder Zahlung geht als Punkte auf die Kundenkarte",
+      "cashbackExample_one": "Für {{amount}} bekommt der Kunde {{count}} Punkt",
+      "cashbackExample_other": "Für {{amount}} bekommt der Kunde {{count}} Punkte"
+    },
+    "errors": {
+      "name": "Geben Sie dem Rabatt einen Namen",
+      "scope": "Wählen Sie mindestens eine Leistung oder ein Abo",
+      "segments": "Wählen Sie mindestens eine Gruppe",
+      "clients": "Fügen Sie mindestens einen Kunden hinzu",
+      "fillRequired": "Füllen Sie die Pflichtfelder aus"
+    },
+    "confirmDelete": {
+      "title": "Rabatt löschen?",
+      "message": "„{{name}}“ wird nicht mehr angewendet. Frühere Verkäufe behalten ihren Preis."
+    },
+    "toasts": {
+      "created": "Rabatt angelegt",
+      "saved": "Rabatt gespeichert",
+      "deleted": "Rabatt gelöscht",
+      "programOn": "Rabatte sind eingeschaltet"
+    }
   }
 }

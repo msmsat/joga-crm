@@ -14,7 +14,7 @@ from sqlalchemy.future import select
 
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import Client, ClientLoyaltyCard, ClientOffer, GiftCertificate, Lesson, LoyaltyLevel, LoyaltyPointTransaction, Operation, ReferralRecord, Reservation, StudioPromoCode
+from models import Client, ClientLoyaltyCard, ClientOffer, DiscountCampaign, GiftCertificate, Lesson, LoyaltyLevel, LoyaltyPointTransaction, Operation, ReferralRecord, Reservation, StudioPromoCode
 from schemas.loyalty import (
     DepositStatsRead, DepositTopClient, LoyaltyCardRead, LoyaltyLevelRead, LoyaltyLevelsUpdate, LoyaltyLevelWrite, LoyaltyStatsRead,
 )
@@ -256,6 +256,18 @@ async def get_stats(
         )
     )).scalar_one()
 
+    # Именованные скидки студии, действующие сегодня (DiscountCampaign): в
+    # счётчике карточки «Скидки» вместе с персональными — обе сейчас работают.
+    active_campaigns = (await db.execute(
+        select(func.count(DiscountCampaign.id))
+        .where(
+            DiscountCampaign.studio_id == ctx.studio_id,
+            DiscountCampaign.is_active.is_(True),
+            (DiscountCampaign.valid_from.is_(None)) | (DiscountCampaign.valid_from <= today),
+            (DiscountCampaign.valid_until.is_(None)) | (DiscountCampaign.valid_until >= today),
+        )
+    )).scalar_one()
+
     # Вернулось клиентов: держатели карты с ≥2 посещённых занятий за последние 90 дней.
     since = datetime.combine(today - timedelta(days=90), datetime.min.time())
     returned_clients = (await db.execute(
@@ -292,7 +304,7 @@ async def get_stats(
         avg_check=revenue // op_count if op_count else 0,
         program_counters={
             "loyalty": members,
-            "discounts": active_offers,
+            "discounts": active_offers + active_campaigns,
             "certificates": certificates_sold,
             "referral": referrals_completed,
             "promocodes": active_promocodes,

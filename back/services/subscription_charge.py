@@ -262,7 +262,7 @@ async def _try_auto_renew(
         log_activity(db, studio_id, "client", title=finished_title, entity_type="client", entity_id=client_id)
         return
 
-    resolved = await resolve_price(db, studio_id, client_id, package.price)
+    resolved = await resolve_price(db, studio_id, client_id, package.price, package_id=package.id)
     card = (await db.execute(
         select(ClientLoyaltyCard).where(ClientLoyaltyCard.client_id == client_id)
     )).scalar_one_or_none()

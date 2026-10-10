@@ -147,6 +147,7 @@ export default function DesktopNav({
               {isActive && (
                 <motion.span
                   layoutId="nav-active-dt"
+                  layoutDependency={active}
                   transition={{ type: 'spring', stiffness: 380, damping: 34 }}
                   className="absolute inset-0 rounded-[16px] bg-card shadow-soft"
                 />
@@ -180,6 +181,7 @@ export default function DesktopNav({
               {isActive && (
                 <motion.span
                   layoutId="nav-active-tick"
+                  layoutDependency={active}
                   transition={{ type: 'spring', stiffness: 380, damping: 34 }}
                   className="absolute right-3.5 h-4 w-1 rounded-full bg-brand"
                 />

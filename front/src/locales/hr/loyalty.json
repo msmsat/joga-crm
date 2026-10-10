@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Popusti i povrat novca",
-      "desc": "Personalizirane ponude za klijente",
+      "desc": "Popusti po datumima, uslugama i klijentima",
       "statLabel": "aktivno"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "do",
     "deleteLevelTitle": "Izbrisati ovu razinu?",
     "deleteLevelMessage": "Klijenti na razini „{{name}}” prijeći će na susjednu razinu prema ukupnoj potrošnji.",
-    "discountType": "Vrsta popusta",
     "discountTypes": {
       "percentage": "Postotak (%)",
       "fixed": "Fiksno ({{currency}})",
       "cashback": "Povrat novca"
     },
-    "cashbackPercent": "Postotak povrata novca",
     "discountSize": "Iznos popusta",
-    "minPurchase": "Minimalni iznos kupnje",
     "noLimit": "Bez ograničenja",
-    "conditions": "Uvjeti primjene",
-    "appliesToAll": "Primijeni na sve usluge",
-    "stackable": "Kombiniraj s drugim popustima",
-    "visibleInCabinet": "Prikaži klijentu u njegovom računu",
     "certType": "Vrsta bona",
     "certTypes": {
       "named": "Personaliziran",
@@ -345,5 +338,232 @@
     "renewed": "Obnovljeno",
     "empty": "Još nema prodaja pretplata",
     "emptySub": "Analitika će se pojaviti nakon prvih prodaja paketa"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Aktivni: {{active}}, zakazani: {{scheduled}}",
+      "subtitleEmpty": "Još nema popusta",
+      "active": "aktivni sada",
+      "scheduled": "zakazani",
+      "used": "primjena",
+      "create": "Novi popust",
+      "emptyTitle": "Stvorite prvi popust",
+      "emptyText": "Počnite od ideje ili od nule. Svaki popust ima svoje datume, usluge i klijente i primjenjuje se sam.",
+      "offTitle": "Popusti su isključeni",
+      "offText": "Klijenti ne dobivaju nijedan popust u nastavku dok je program isključen.",
+      "turnOn": "Uključi"
+    },
+    "timeline": {
+      "title": "Vremenska crta popusta",
+      "today": "Danas",
+      "more": "Još {{count}}"
+    },
+    "status": {
+      "active": "Aktivan",
+      "scheduled": "Zakazan",
+      "ended": "Završen",
+      "paused": "Pauziran"
+    },
+    "card": {
+      "edit": "Uredi popust {{name}}",
+      "daysLeft_one": "Još {{count}} dan",
+      "daysLeft_few": "Još {{count}} dana",
+      "daysLeft_other": "Još {{count}} dana",
+      "startsIn_one": "Počinje za {{count}} dan",
+      "startsIn_few": "Počinje za {{count}} dana",
+      "startsIn_other": "Počinje za {{count}} dana",
+      "ended": "Razdoblje je završilo",
+      "noEnd": "Bez datuma završetka",
+      "used_one": "Primijenjen {{count}} put",
+      "used_few": "Primijenjen {{count}} puta",
+      "used_other": "Primijenjen {{count}} puta",
+      "notUsed": "Još nije primijenjen"
+    },
+    "editor": {
+      "newTitle": "Novi popust",
+      "back": "Natrag na popuste",
+      "progress": "Ispunjeno obaveznih: {{filled}} od {{total}}",
+      "name": "Naziv",
+      "namePlaceholder": "Na primjer, Jesenski tjedan joge",
+      "value": "Iznos popusta",
+      "percent": "Postotak",
+      "amount": "Iznos, {{currency}}",
+      "period": "Kada vrijedi",
+      "scope": "Na što se odnosi",
+      "audience": "Za koga",
+      "minimum": "Najmanji iznos kupnje",
+      "minimumPlaceholder": "Bez minimuma",
+      "minimumHint": "Ispod najmanjeg iznosa popust se ne primjenjuje. Ako odgovara više popusta, klijent dobiva najpovoljniji.",
+      "active": "Stanje",
+      "activeOn": "Uključen, primjenjuje se sam",
+      "activeOff": "Pauziran: spremljen, ali se ne primjenjuje",
+      "create": "Stvori popust",
+      "save": "Spremi",
+      "delete": "Izbriši"
+    },
+    "preview": {
+      "untitled": "Popust bez naziva",
+      "percentKind": "od cijene",
+      "amountKind": "na svaku kupnju",
+      "days_one": "{{count}} dan",
+      "days_few": "{{count}} dana",
+      "days_other": "{{count}} dana",
+      "minimum": "Od {{amount}}"
+    },
+    "presets": {
+      "none": "Bez datuma završetka",
+      "noneHint": "Dok ga ne pauzirate",
+      "week": "7 dana",
+      "month": "Do kraja mjeseca",
+      "days30": "30 dana",
+      "custom": "Vlastiti datumi",
+      "customHint": "Odaberite u kalendaru",
+      "clear": "Ukloni datume"
+    },
+    "calendar": {
+      "prev": "Prethodni mjesec",
+      "next": "Sljedeći mjesec",
+      "pickStart": "Odaberite prvi dan",
+      "pickEnd": "Sada odaberite zadnji dan",
+      "again": "Odaberite dan za novi početak"
+    },
+    "scope": {
+      "all": "Na sve",
+      "selected": "Na odabrano",
+      "allHint": "Svaki termin, jednokratni posjet i članarina koju klijent kupi.",
+      "services": "Usluge",
+      "packages": "Članarine",
+      "counter": "{{picked}} od {{total}}",
+      "allOf": "Odaberi sve",
+      "none": "Poništi",
+      "classes_one": "{{count}} termin",
+      "classes_few": "{{count}} termina",
+      "classes_other": "{{count}} termina",
+      "noServices": "U Katalogu još nema usluga",
+      "noPackages": "U Katalogu još nema članarina"
+    },
+    "audience": {
+      "all": "Svima",
+      "allHint": "Svakom klijentu studija",
+      "segments": "Grupama",
+      "segmentsHint": "Novima, slavljenicima i drugima",
+      "clients": "Određenim klijentima",
+      "clientsHint": "Samo onima koje odaberete",
+      "people_one": "{{count}} klijent",
+      "people_few": "{{count}} klijenta",
+      "people_other": "{{count}} klijenata",
+      "birthdayWindow_one": "Rođendan unutar {{count}} dana od termina",
+      "birthdayWindow_few": "Rođendan unutar {{count}} dana od termina",
+      "birthdayWindow_other": "Rođendan unutar {{count}} dana od termina",
+      "birthdayExact": "Samo na sam rođendan",
+      "less": "Manje dana",
+      "more": "Više dana",
+      "pickGroups": "Odaberite jednu ili više grupa",
+      "reach_one": "Trenutačno odgovara {{count}} klijent od {{total}}",
+      "reach_few": "Trenutačno odgovaraju {{count}} klijenta od {{total}}",
+      "reach_other": "Trenutačno odgovara {{count}} klijenata od {{total}}",
+      "addClient": "Dodaj klijenta",
+      "searchClient": "Traži po imenu ili telefonu",
+      "noClients": "Još nema dodanih klijenata",
+      "removeClient": "Ukloni {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Novi",
+        "hint": "Nedavno su došli u studio"
+      },
+      "birthday": {
+        "title": "Slavljenici",
+        "hint": "Rođendan blizu datuma termina"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Najčešće dolaze i najviše troše"
+      },
+      "active": {
+        "title": "Stalni",
+        "hint": "Dolaze redovito"
+      },
+      "inactive": {
+        "title": "Dugo ih nije bilo",
+        "hint": "Prestali su dolaziti"
+      },
+      "has_subscription": {
+        "title": "S članarinom",
+        "hint": "Imaju važeću članarinu"
+      }
+    },
+    "summary": {
+      "everything": "Sve usluge i članarine",
+      "everyone": "Svi klijenti",
+      "nothingChosen": "Ništa nije odabrano",
+      "nobodyChosen": "Nitko nije odabran",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Slavljenici ±{{count}} dan",
+      "birthday_few": "Slavljenici ±{{count}} dana",
+      "birthday_other": "Slavljenici ±{{count}} dana",
+      "birthdayExact": "Na sam rođendan"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "Od {{date}}",
+      "until": "Do {{date}}",
+      "forever": "Bez datuma završetka"
+    },
+    "templates": {
+      "title": "Počnite od ideje",
+      "birthday": {
+        "name": "Rođendanski poklon",
+        "hint": "−15% oko rođendana"
+      },
+      "newcomers": {
+        "name": "Popust dobrodošlice",
+        "hint": "−10% za nove klijente"
+      },
+      "comeback": {
+        "name": "Vratite se",
+        "hint": "−20% za one koji dugo nisu dolazili, 30 dana"
+      },
+      "passes": {
+        "name": "Akcija članarina",
+        "hint": "−10% na sve članarine"
+      },
+      "week": {
+        "name": "Tjedan popusta",
+        "hint": "−15% na sve 7 dana"
+      },
+      "blank": {
+        "name": "Od nule",
+        "hint": "Sve postavljate sami"
+      }
+    },
+    "rules": {
+      "title": "Pravila za sve popuste",
+      "stackable": "Popusti se zbrajaju",
+      "stackableOn": "Popust studija dodaje se promotivnom kodu, osobnom popustu i popustu na prvi termin",
+      "stackableOff": "Vrijedi samo najpovoljniji, popusti se ne zbrajaju",
+      "cashback": "Povrat u bodovima",
+      "cashbackHint": "Dio svake uplate vraća se na klijentovu karticu kao bodovi",
+      "cashbackExample_one": "Za {{amount}} klijent dobiva {{count}} bod",
+      "cashbackExample_few": "Za {{amount}} klijent dobiva {{count}} boda",
+      "cashbackExample_other": "Za {{amount}} klijent dobiva {{count}} bodova"
+    },
+    "errors": {
+      "name": "Dajte popustu naziv",
+      "scope": "Odaberite barem jednu uslugu ili članarinu",
+      "segments": "Odaberite barem jednu grupu",
+      "clients": "Dodajte barem jednog klijenta",
+      "fillRequired": "Ispunite obavezna polja"
+    },
+    "confirmDelete": {
+      "title": "Izbrisati popust?",
+      "message": "„{{name}}” se više neće primjenjivati. Prošle prodaje zadržavaju svoju cijenu."
+    },
+    "toasts": {
+      "created": "Popust je stvoren",
+      "saved": "Popust je spremljen",
+      "deleted": "Popust je izbrisan",
+      "programOn": "Popusti su uključeni"
+    }
   }
 }

@@ -43,7 +43,7 @@ export function LessonBill({ funding, currency }: { funding: Funding; currency?:
       : own?.price === 0 ? { tone: 'is-paid', text: t('payment.coveredBy.free') } : null;
 
   const lines: { key: string; label: string; value: string; gain?: boolean }[] = parts.discounts.map(d => {
-    const label = d.promoCode ? `${t('payment.discount.promo')} ${d.promoCode}` : t(`payment.discount.${d.kind}`);
+    const label = d.promoCode ? `${t('payment.discount.promo')} ${d.promoCode}` : d.name || t(`payment.discount.${d.kind}`);
     return {
       key: `d-${d.kind}`, gain: true, value: `−${money(d.amount)}`,
       label: d.percent != null ? t('lessonCard.discountLine', { label, percent: d.percent }) : label,

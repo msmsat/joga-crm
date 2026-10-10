@@ -286,7 +286,9 @@
     "update_service": "Updating the service…",
     "update_staff": "Updating the team member…",
     "add_studio_time": "Adding studio time…",
-    "remove_studio_time": "Removing studio time…"
+    "remove_studio_time": "Removing studio time…",
+    "create_discount": "Creating a discount…",
+    "update_discount": "Updating the discount…"
   },
   "quota": {
     "trialLow": "Few trial requests remain.",

@@ -286,7 +286,9 @@
     "update_service": "Правлю услугу…",
     "update_staff": "Правлю сотрудника…",
     "add_studio_time": "Ставлю время студии…",
-    "remove_studio_time": "Убираю время студии…"
+    "remove_studio_time": "Убираю время студии…",
+    "create_discount": "Создаю скидку…",
+    "update_discount": "Меняю скидку…"
   },
   "quota": {
     "trialLow": "Осталось мало пробных запросов.",

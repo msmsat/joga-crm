@@ -24,11 +24,11 @@ from sqlalchemy import event, insert, select
 
 import database
 from database import async_session_maker
-from models import (BranchWorkingHours, Client, ClientEmailOtp, ClientLoyaltyCard,
+from models import (BranchWorkingHours, Client, ClientEmailOtp, ClientLoyaltyCard, ClientPayment,
                     Lesson, OnlineChannel, Reservation, Service, StaffBranchAssignment,
                     StaffWorkingHours, Studio, StudioBookingSettings, StudioBranch,
                     StudioLoyaltyConfig, StudioMember, StudioSubscriptionProgramConfig,
-                    StudioWorkingHours, SubscriptionPackage, User)
+                    StudioWorkingHours, SubscriptionPackage, User, StripeCheckout, Operation)
 from models.base import user_services
 from ratelimit import limiter
 from routers.booking import miniapp_router
@@ -158,6 +158,23 @@ async def fixture_app(monkeypatch):
     assert database.db_key(database.DATABASE_URL) == database.db_key(os.getenv("TEST_DATABASE_URL"))
     assert database.db_key(database.DATABASE_URL) != database.db_key(os.getenv("DATABASE_URL"))
     capture = SmtpCapture()
+    from test_booking_saga import FakeStripe
+    from services import stripe_connect, stripe_env
+    fake_stripe = FakeStripe()
+    # Browser fixture runs may share the isolated DB with earlier regressions.
+    # Stripe IDs are globally unique; retain that property across server runs.
+    fake_stripe.session_prefix = f'cs_journey_{uuid.uuid4().hex}'
+    for name in ('create_hosted_checkout_session', 'fetch_session', 'expire_session'):
+        monkeypatch.setattr(stripe_connect, name, getattr(fake_stripe, name))
+    return_urls = {}
+    async def create_checkout(**kwargs):
+        result = await fake_stripe.create_hosted_checkout_session(**kwargs)
+        return_urls[result[0]] = {name: kwargs[name] for name in ('success_url', 'cancel_url')}
+        return result
+    monkeypatch.setattr(stripe_connect, 'create_hosted_checkout_session', create_checkout)
+    monkeypatch.setenv('CORS_ORIGINS', f"http://127.0.0.1:{os.getenv('MINIAPP_E2E_PREVIEW_PORT', '4174')}")
+    monkeypatch.setattr(stripe_connect, 'configured', lambda: True)
+    monkeypatch.setattr(stripe_env, 'expects_livemode', lambda: False)
     request_scope = ContextVar("journey_request_scope", default=None)
     smtp = await asyncio.start_server(capture.accept, "127.0.0.1", 0)
     smtp_port = smtp.sockets[0].getsockname()[1]
@@ -234,7 +251,7 @@ async def fixture_app(monkeypatch):
                 request_scope.reset(token)
 
     app.add_middleware(ConnectionScope)
-    state = {"ids": None}
+    state = {"ids": None, "stripe": fake_stripe}
 
     @app.get("/__test/health")
     async def health():
@@ -282,6 +299,61 @@ async def fixture_app(monkeypatch):
                      "spot": row.spot_number, "lesson": lesson.id, "service": lesson.service_id,
                      "teacher": lesson.teacher_id, "branch": lesson.branch_id,
                      "time": lesson.start_time.isoformat()} for row, lesson in rows]
+
+    @app.post("/__test/booking-settings")
+    async def booking_settings(body: dict):
+        async with async_session_maker() as db:
+            sid = state['ids']['studio']
+            settings = (await db.execute(select(StudioBookingSettings).where(
+                StudioBookingSettings.studio_id == sid))).scalar_one()
+            settings.prefill_on_booking = body['prepay_required']
+            if 'service_price' in body:
+                service = await db.get(Service, state['ids']['haircut'])
+                service.price = body['service_price']
+            if 'can_pay_online' in body:
+                channel = (await db.execute(select(OnlineChannel).where(
+                    OnlineChannel.studio_id == sid, OnlineChannel.channel_type == 'stripe'))).scalar_one()
+                channel.is_active = body['can_pay_online']
+            await db.commit()
+        return {'ok': True}
+
+    @app.post("/__test/venue-booking")
+    async def venue_booking():
+        from services import booking
+        ids = state['ids']
+        async with async_session_maker() as db:
+            lesson = await db.get(Lesson, ids['lesson'])
+            lesson.price = 500
+            result = await booking.create(db, studio_id=ids['studio'], client_id=ids['client'],
+                lesson_id=ids['lesson'], source='miniapp', allow_payment=True)
+            assert result.status == 'active'
+            await db.commit()
+        return {'reservation_id': result.reservation_id}
+
+    @app.post("/__test/confirm-stripe-payment")
+    async def confirm_stripe_payment(body: dict):
+        async with async_session_maker() as db:
+            checkout = (await db.execute(select(StripeCheckout).where(
+                StripeCheckout.studio_id == state['ids']['studio'],
+                StripeCheckout.payload['reservation_id'].as_integer() == body['reservation_id'],
+            ).order_by(StripeCheckout.id.desc()))).scalars().first()
+            assert checkout is not None
+            fake_stripe.pay(checkout.session_id)
+            return {'checkout_id': checkout.id}
+
+    @app.get("/__test/payment-ledger")
+    async def payment_ledger():
+        async with async_session_maker() as db:
+            payments = (await db.execute(select(ClientPayment).where(
+                ClientPayment.client_id == state['ids']['client']))).scalars().all()
+            income = (await db.execute(select(Operation).where(
+                Operation.studio_id == state['ids']['studio'], Operation.type == 'in'))).scalars().all()
+            return {'payments': [{'id': p.id, 'status': p.status, 'amount': p.amount} for p in payments],
+                    'income': [o.amount for o in income]}
+
+    @app.get('/__test/checkout-urls/{session_id}')
+    async def checkout_urls(session_id: str):
+        return return_urls[session_id]
 
     @app.post("/__test/otp/expire")
     async def expire(body: dict):

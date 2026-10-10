@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Remises et cashback",
-      "desc": "Offres personnalisées pour les clients",
+      "desc": "Remises par dates, services et clients",
       "statLabel": "actifs"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "à",
     "deleteLevelTitle": "Supprimer ce niveau ?",
     "deleteLevelMessage": "Les clients du niveau « {{name}} » passeront au niveau voisin selon leurs dépenses totales.",
-    "discountType": "Type de remise",
     "discountTypes": {
       "percentage": "Pourcentage (%)",
       "fixed": "Fixe ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Pourcentage de cashback",
     "discountSize": "Montant de la remise",
-    "minPurchase": "Montant minimum d'achat",
     "noLimit": "Sans limite",
-    "conditions": "Conditions d'application",
-    "appliesToAll": "Appliquer à tous les services",
-    "stackable": "Cumulable avec d'autres remises",
-    "visibleInCabinet": "Afficher au client dans son compte",
     "certType": "Type de chèque-cadeau",
     "certTypes": {
       "named": "Nominatif",
@@ -345,5 +338,222 @@
     "renewed": "Renouvelés",
     "empty": "Aucune vente d'abonnement pour le moment",
     "emptySub": "L'analyse apparaîtra après les premières ventes de forfaits"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Actives : {{active}}, prévues : {{scheduled}}",
+      "subtitleEmpty": "Aucune remise pour l’instant",
+      "active": "actives",
+      "scheduled": "prévues",
+      "used": "utilisations",
+      "create": "Nouvelle remise",
+      "emptyTitle": "Créez votre première remise",
+      "emptyText": "Partez d’une idée ou de zéro. Chaque remise a ses dates, ses services et ses clients, et s’applique toute seule.",
+      "offTitle": "Les remises sont désactivées",
+      "offText": "Les clients ne reçoivent aucune des remises ci-dessous tant que le programme est désactivé.",
+      "turnOn": "Activer"
+    },
+    "timeline": {
+      "title": "Calendrier des remises",
+      "today": "Aujourd’hui",
+      "more": "+{{count}} autres"
+    },
+    "status": {
+      "active": "Active",
+      "scheduled": "Prévue",
+      "ended": "Terminée",
+      "paused": "En pause"
+    },
+    "card": {
+      "edit": "Modifier la remise {{name}}",
+      "daysLeft_one": "Encore {{count}} jour",
+      "daysLeft_other": "Encore {{count}} jours",
+      "startsIn_one": "Commence dans {{count}} jour",
+      "startsIn_other": "Commence dans {{count}} jours",
+      "ended": "Période terminée",
+      "noEnd": "Sans date de fin",
+      "used_one": "Utilisée {{count}} fois",
+      "used_other": "Utilisée {{count}} fois",
+      "notUsed": "Pas encore utilisée"
+    },
+    "editor": {
+      "newTitle": "Nouvelle remise",
+      "back": "Retour aux remises",
+      "progress": "Champs obligatoires remplis : {{filled}} sur {{total}}",
+      "name": "Nom",
+      "namePlaceholder": "Par exemple, Semaine yoga d’automne",
+      "value": "Montant de la remise",
+      "percent": "Pourcentage",
+      "amount": "Montant, {{currency}}",
+      "period": "Quand elle s’applique",
+      "scope": "Sur quoi",
+      "audience": "Pour qui",
+      "minimum": "Achat minimum",
+      "minimumPlaceholder": "Sans minimum",
+      "minimumHint": "En dessous du minimum, la remise ne s’applique pas. Si plusieurs remises conviennent, le client reçoit la plus avantageuse.",
+      "active": "État",
+      "activeOn": "Activée, s’applique toute seule",
+      "activeOff": "En pause : enregistrée, mais non appliquée",
+      "create": "Créer la remise",
+      "save": "Enregistrer",
+      "delete": "Supprimer"
+    },
+    "preview": {
+      "untitled": "Remise sans nom",
+      "percentKind": "sur le prix",
+      "amountKind": "sur chaque achat",
+      "days_one": "{{count}} jour",
+      "days_other": "{{count}} jours",
+      "minimum": "Dès {{amount}}"
+    },
+    "presets": {
+      "none": "Sans date de fin",
+      "noneHint": "Jusqu’à sa mise en pause",
+      "week": "7 jours",
+      "month": "Jusqu’à la fin du mois",
+      "days30": "30 jours",
+      "custom": "Dates personnalisées",
+      "customHint": "À choisir dans le calendrier",
+      "clear": "Effacer les dates"
+    },
+    "calendar": {
+      "prev": "Mois précédent",
+      "next": "Mois suivant",
+      "pickStart": "Choisissez le premier jour",
+      "pickEnd": "Choisissez maintenant le dernier jour",
+      "again": "Choisissez un jour pour recommencer"
+    },
+    "scope": {
+      "all": "Sur tout",
+      "selected": "Sur la sélection",
+      "allHint": "Tout cours, visite à l’unité ou abonnement acheté par le client.",
+      "services": "Services",
+      "packages": "Abonnements",
+      "counter": "{{picked}} sur {{total}}",
+      "allOf": "Tout sélectionner",
+      "none": "Désélectionner",
+      "classes_one": "{{count}} cours",
+      "classes_other": "{{count}} cours",
+      "noServices": "Aucun service dans le Catalogue pour l’instant",
+      "noPackages": "Aucun abonnement dans le Catalogue pour l’instant"
+    },
+    "audience": {
+      "all": "Tout le monde",
+      "allHint": "Chaque client du studio",
+      "segments": "Groupes",
+      "segmentsHint": "Nouveaux, anniversaires et plus",
+      "clients": "Clients précis",
+      "clientsHint": "Seulement les personnes choisies",
+      "people_one": "{{count}} client",
+      "people_other": "{{count}} clients",
+      "birthdayWindow_one": "Anniversaire à {{count}} jour près du cours",
+      "birthdayWindow_other": "Anniversaire à {{count}} jours près du cours",
+      "birthdayExact": "Seulement le jour de l’anniversaire",
+      "less": "Moins de jours",
+      "more": "Plus de jours",
+      "pickGroups": "Choisissez un ou plusieurs groupes",
+      "reach_one": "{{count}} client sur {{total}} correspond en ce moment",
+      "reach_other": "{{count}} clients sur {{total}} correspondent en ce moment",
+      "addClient": "Ajouter un client",
+      "searchClient": "Chercher par nom ou téléphone",
+      "noClients": "Aucun client ajouté pour l’instant",
+      "removeClient": "Retirer {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Nouveaux",
+        "hint": "Arrivés récemment au studio"
+      },
+      "birthday": {
+        "title": "Anniversaires",
+        "hint": "Anniversaire proche de la date du cours"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Viennent et dépensent le plus"
+      },
+      "active": {
+        "title": "Habitués",
+        "hint": "Viennent régulièrement"
+      },
+      "inactive": {
+        "title": "Absents",
+        "hint": "Ne viennent plus depuis un moment"
+      },
+      "has_subscription": {
+        "title": "Avec abonnement",
+        "hint": "Ont un abonnement valide"
+      }
+    },
+    "summary": {
+      "everything": "Tous les services et abonnements",
+      "everyone": "Tous les clients",
+      "nothingChosen": "Rien de sélectionné",
+      "nobodyChosen": "Personne de sélectionné",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Anniversaires ±{{count}} jour",
+      "birthday_other": "Anniversaires ±{{count}} jours",
+      "birthdayExact": "Le jour de l’anniversaire"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "Dès le {{date}}",
+      "until": "Jusqu’au {{date}}",
+      "forever": "Sans date de fin"
+    },
+    "templates": {
+      "title": "Partir d’une idée",
+      "birthday": {
+        "name": "Cadeau d’anniversaire",
+        "hint": "−15 % autour de l’anniversaire"
+      },
+      "newcomers": {
+        "name": "Remise de bienvenue",
+        "hint": "−10 % pour les nouveaux"
+      },
+      "comeback": {
+        "name": "Revenez nous voir",
+        "hint": "−20 % pour les absents, 30 jours"
+      },
+      "passes": {
+        "name": "Promo abonnements",
+        "hint": "−10 % sur tous les abonnements"
+      },
+      "week": {
+        "name": "Semaine de remises",
+        "hint": "−15 % sur tout pendant 7 jours"
+      },
+      "blank": {
+        "name": "De zéro",
+        "hint": "Vous réglez tout vous-même"
+      }
+    },
+    "rules": {
+      "title": "Règles pour toutes les remises",
+      "stackable": "Les remises se cumulent",
+      "stackableOn": "La remise du studio s’ajoute au code promo, à la remise personnelle et à celle du premier cours",
+      "stackableOff": "Seule la plus avantageuse s’applique, les remises ne se cumulent pas",
+      "cashback": "Cashback en points",
+      "cashbackHint": "Une partie de chaque paiement revient en points sur la carte du client",
+      "cashbackExample_one": "Pour {{amount}}, le client reçoit {{count}} point",
+      "cashbackExample_other": "Pour {{amount}}, le client reçoit {{count}} points"
+    },
+    "errors": {
+      "name": "Donnez un nom à la remise",
+      "scope": "Choisissez au moins un service ou un abonnement",
+      "segments": "Choisissez au moins un groupe",
+      "clients": "Ajoutez au moins un client",
+      "fillRequired": "Remplissez les champs obligatoires"
+    },
+    "confirmDelete": {
+      "title": "Supprimer la remise ?",
+      "message": "« {{name}} » ne s’appliquera plus. Les ventes passées gardent leur prix."
+    },
+    "toasts": {
+      "created": "Remise créée",
+      "saved": "Remise enregistrée",
+      "deleted": "Remise supprimée",
+      "programOn": "Les remises sont activées"
+    }
   }
 }

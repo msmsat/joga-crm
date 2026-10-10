@@ -288,7 +288,9 @@
     "update_service": "Leistung wird aktualisiert…",
     "update_staff": "Teammitglied wird aktualisiert…",
     "add_studio_time": "Trage Studiozeit ein…",
-    "remove_studio_time": "Entferne Studiozeit…"
+    "remove_studio_time": "Entferne Studiozeit…",
+    "create_discount": "Rabatt wird angelegt…",
+    "update_discount": "Rabatt wird geändert…"
   },
   "quota": {
     "trialLow": "Nur noch wenige Testanfragen übrig.",

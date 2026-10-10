@@ -3406,6 +3406,7 @@
    ========================================================================== */
 .mnav,
 .mdrawer-layer,
+.spanel-layer,
 .mnav-kin {
   --nv-bead: linear-gradient(135deg, #FDBC9F 0%, #FCAE91 46%, #F69B85 100%);
   /* Бусина дока собрана из слоёв (dockMotion.ts): свет идёт сверху вниз, а не
@@ -3468,6 +3469,7 @@
 
 :root.dark .mnav,
 :root.dark .mdrawer-layer,
+:root.dark .spanel-layer,
 :root.dark .mnav-kin {
   /* ── Графит и жар (тёмная тема) ── */
   --nv-dock: linear-gradient(180deg, #2C2826 0%, #1D1A19 74%);
@@ -4082,6 +4084,174 @@
 @media (prefers-reduced-motion: reduce) {
   .mnav-inner, .mnav-badge, .mnav-item::before { transition: none; }
 }
+
+/* ── Панель справа (SidePanel.tsx) ─────────────────────────────────────────
+   Родня «Ещё»: тот же материал (--nv-*), та же пружина входа и каскад
+   (drawerMotion.ts), тот же свайп вправо (drawerSwipe.ts) — но для работы, на
+   любом экране. Парит, а не прилипает к краю: со всех сторон воздух, углы
+   скруглены, под ней тёплое затемнение — видно, что это слой над страницей,
+   а не её колонка. Слой — этажом ниже дока (.mnav, 150): на телефоне док
+   остаётся над затемнением, а сама панель встаёт над ним. Окна кита
+   (.v-overlay) и списки Select лежат выше — открываются поверх панели. */
+.spanel-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  pointer-events: none;
+}
+.spanel-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--nv-scrim);
+  opacity: calc(1 - var(--swipe, 0));
+  transition: opacity 0.26s ease;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+.spanel-scrim[data-dragging] { transition: none; }
+.spanel-layer.is-leaving .spanel-scrim { pointer-events: none; }
+
+.spanel {
+  position: absolute;
+  top: calc(var(--topbar-h, 64px) + 12px);
+  right: 16px;
+  bottom: 16px;
+  width: min(calc(100% - 32px), var(--spanel-w, 440px));
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  color: var(--nv-text);
+  background: var(--nv-pane);
+  border-radius: 28px;
+  box-shadow: var(--nv-pane-shadow);
+  transform-origin: 100% 50%;
+  pointer-events: auto;
+  outline: none;
+  /* Вертикальная прокрутка — родная, сдвиг вбок закрывает панель. */
+  touch-action: pan-y pinch-zoom;
+}
+/* Поля кита берут фон карточки — в тёмной теме это поверхность панели. */
+:root.dark .spanel {
+  --bg-card: #2A2624;
+  --card: #2A2624;
+}
+
+.spanel-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px 14px 22px;
+  min-width: 0;
+}
+.spanel-glyph {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: var(--nv-glyph-bg);
+  color: var(--nv-glyph-ink);
+}
+.spanel-titles { flex: 1; min-width: 0; }
+.spanel-title {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  line-height: 1.15;
+  color: var(--nv-title);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.spanel-sub {
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--nv-sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.spanel-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--nv-close-bg);
+  color: var(--nv-close-ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.18s ease, background 0.2s ease;
+}
+.spanel-close:hover { background: var(--nv-press); }
+.spanel-close:active { transform: scale(0.88); }
+.spanel-close:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249, 160, 139, 0.7); }
+
+.spanel-body {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 22px 22px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--ink), 0.14) transparent;
+  /* Уходящее под подвал растворяется, а не режется. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent);
+}
+.spanel-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px 18px;
+}
+.spanel-foot:empty { display: none; }
+
+@media (max-width: 767px) {
+  .spanel {
+    top: calc(var(--topbar-h, 56px) + 10px);
+    left: var(--mnav-side, 12px);
+    right: var(--mnav-side, 12px);
+    bottom: var(--mnav-safe, 90px);
+    width: auto;
+    border-radius: 26px;
+    transform-origin: 100% 100%;
+  }
+  .spanel-head { padding: 16px 12px 12px 16px; gap: 10px; }
+  .spanel-glyph { width: 36px; height: 36px; border-radius: 11px; }
+  .spanel-title { font-size: 17px; }
+  .spanel-body { padding: 2px 14px 18px; }
+  .spanel-foot { padding: 10px 12px 12px; }
+}
+
+/* Пометка поля (FieldLabel в modal/Input.tsx): «Необязательно» — пунктирное
+   кольцо (.v-field-tag выше), «Обязательно» — персиковая точка, а заполненное
+   обязательное становится фисташковым с галочкой: видно, что ещё держит
+   кнопку сохранения. Та же грамматика, что у мастера онбординга (.ob-tag). */
+.v-field-tag.is-required {
+  background: rgba(252, 174, 145, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(236, 128, 98, 0.26);
+  color: #C2764F;
+}
+.v-field-tag.is-required::before {
+  background: #F9A08B;
+  box-shadow: 0 0 0 2.5px rgba(249, 160, 139, 0.22);
+  opacity: 1;
+}
+.v-field-tag.is-done {
+  background: rgba(163, 201, 168, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(110, 160, 118, 0.32);
+  color: #4F8257;
+}
+.v-field-tag.is-done::before { display: none; }
+.v-field-tag-check { display: inline-flex; animation: obTagCheck 0.34s cubic-bezier(0.34, 1.5, 0.64, 1); }
+:root.dark .v-field-tag.is-required { color: #F9A08B; background: rgba(249, 160, 139, 0.12); }
+:root.dark .v-field-tag.is-done { color: #A3C9A8; background: rgba(163, 201, 168, 0.12); }
 
 /* ==========================================================================
    ТЕЛЕФОН: МОДАЛКИ → ШИТЫ СНИЗУ

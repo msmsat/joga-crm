@@ -67,7 +67,8 @@
     "role": "Rooli",
     "status": "Tila",
     "size": "Summa",
-    "optional": "Vapaaehtoinen"
+    "optional": "Vapaaehtoinen",
+    "required": "Pakollinen"
   },
   "days": {
     "mon": "Maanantai",
@@ -152,7 +153,12 @@
       "cert_not_found": "Lahjakorttia ei löytynyt",
       "cert_used": "Lahjakortti on jo käytetty tai se ei kelpaa",
       "cert_expired": "Lahjakortti on vanhentunut",
-      "first_lesson_amount_required": "Anna ensimmäisen tunnin alennuksen summa"
+      "first_lesson_amount_required": "Anna ensimmäisen tunnin alennuksen summa",
+      "discount_not_found": "Alennusta ei löytynyt",
+      "discount_invalid": "Tarkista alennuksen kentät",
+      "discount_service_not_found": "Yhtä valituista palveluista ei enää ole",
+      "discount_package_not_found": "Yhtä valituista jäsenyyksistä ei enää ole",
+      "discount_client_not_found": "Yhtä valituista asiakkaista ei enää ole"
     },
     "notifications": {
       "critical_locked": "Tätä ilmoitusta ei voi ottaa pois käytöstä",

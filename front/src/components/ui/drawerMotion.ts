@@ -35,6 +35,15 @@ const CASCADE = '.mdrawer-head, .mdrawer-gtitle, .mdrawer-tile, .mdrawer-row, .m
 
 type Phase = 'closed' | 'open' | 'leaving';
 
+/**
+ * Чем панель отличается от «Ещё»: класс затемнения-соседа и что въезжает
+ * каскадом. По умолчанию — «Ещё» (MobileMore); SidePanel передаёт свои.
+ */
+export interface DrawerMotionParts {
+  scrim?: string;
+  cascade?: string;
+}
+
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function useDrawerMotion(
@@ -42,6 +51,7 @@ export function useDrawerMotion(
   panelRef: RefObject<HTMLElement | null>,
   phase: Phase,
   onClosed: () => void,
+  { scrim: scrimClass = '.mdrawer-scrim', cascade = CASCADE }: DrawerMotionParts = {},
 ) {
   const closedRef = useRef(onClosed);
   useLayoutEffect(() => { closedRef.current = onClosed; });
@@ -53,7 +63,7 @@ export function useDrawerMotion(
   useLayoutEffect(() => {
     const layer = layerRef.current;
     const panel = panelRef.current;
-    const scrim = layer?.querySelector<HTMLElement>(':scope > .mdrawer-scrim');
+    const scrim = layer?.querySelector<HTMLElement>(`:scope > ${scrimClass}`);
     if (!layer || !panel || !scrim || phase === 'closed') return;
     const reduce = reducedMotion();
 
@@ -70,7 +80,7 @@ export function useDrawerMotion(
         panel.animate([{ transform: from && from !== 'none' ? from : `${OFFSTAGE} scale(0.96)` }, { transform: 'none' }], PANEL_IN),
         scrim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 340, easing: 'ease' }),
       ];
-      layer.querySelectorAll<HTMLElement>(CASCADE).forEach(el => {
+      layer.querySelectorAll<HTMLElement>(cascade).forEach(el => {
         const i = parseFloat(el.style.getPropertyValue('--i')) || 0;
         const delay = el.classList.contains('mdrawer-head') ? 70 : 120 + i * 26;
         el.animate(
@@ -96,5 +106,5 @@ export function useDrawerMotion(
     ];
     leaving.current = out;
     out.onfinish = () => closedRef.current();
-  }, [layerRef, panelRef, phase]);
+  }, [layerRef, panelRef, phase, scrimClass, cascade]);
 }

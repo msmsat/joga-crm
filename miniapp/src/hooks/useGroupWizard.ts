@@ -138,6 +138,7 @@ export function useGroupWizard({ catalog, onNeedAuth, enabled, branch }: Options
   const shownDay = isOpen ? pick.day : startDay;
 
   const booking = useLessonBooking({
+    prepayRequired: catalog?.rules.prepay_required,
     messages: {
       bookError: t('schedule.booking_error'),
       cancelError: t('schedule.cancel_error'),

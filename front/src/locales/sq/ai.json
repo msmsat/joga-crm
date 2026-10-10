@@ -291,7 +291,9 @@
     "update_service": "Po përditësohet shërbimi…",
     "update_staff": "Po përditësohet anëtari i ekipit…",
     "add_studio_time": "Po shtoj kohën e studios…",
-    "remove_studio_time": "Po heq kohën e studios…"
+    "remove_studio_time": "Po heq kohën e studios…",
+    "create_discount": "Po krijohet një zbritje…",
+    "update_discount": "Po ndryshohet zbritja…"
   },
   "quota": {
     "trialLow": "Kanë mbetur pak kërkesa provuese.",

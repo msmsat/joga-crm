@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Discounts & cashback",
-      "desc": "Personal offers for clients",
+      "desc": "Discounts by dates, services and clients",
       "statLabel": "active"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "to",
     "deleteLevelTitle": "Delete this level?",
     "deleteLevelMessage": "Clients on the \"{{name}}\" level will move to the neighboring level based on their total spend.",
-    "discountType": "Discount type",
     "discountTypes": {
       "percentage": "Percentage (%)",
       "fixed": "Fixed ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Cashback percentage",
     "discountSize": "Discount amount",
-    "minPurchase": "Minimum purchase amount",
     "noLimit": "No limit",
-    "conditions": "Application conditions",
-    "appliesToAll": "Apply to all services",
-    "stackable": "Stack with other discounts",
-    "visibleInCabinet": "Show to client in their account",
     "certType": "Certificate type",
     "certTypes": {
       "named": "Named",
@@ -345,5 +338,222 @@
     "renewed": "Renewed",
     "empty": "No subscription sales yet",
     "emptySub": "Analytics will appear after the first package sales"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Active: {{active}}, scheduled: {{scheduled}}",
+      "subtitleEmpty": "No discounts yet",
+      "active": "active now",
+      "scheduled": "scheduled",
+      "used": "times applied",
+      "create": "New discount",
+      "emptyTitle": "Create your first discount",
+      "emptyText": "Start from an idea or from scratch. Each discount has its own dates, services and clients, and applies by itself.",
+      "offTitle": "Discounts are switched off",
+      "offText": "Clients don't get any of the discounts below until you turn the program back on.",
+      "turnOn": "Turn on"
+    },
+    "timeline": {
+      "title": "Discount timeline",
+      "today": "Today",
+      "more": "+{{count}} more"
+    },
+    "status": {
+      "active": "Active",
+      "scheduled": "Scheduled",
+      "ended": "Ended",
+      "paused": "Paused"
+    },
+    "card": {
+      "edit": "Edit discount {{name}}",
+      "daysLeft_one": "{{count}} day left",
+      "daysLeft_other": "{{count}} days left",
+      "startsIn_one": "Starts in {{count}} day",
+      "startsIn_other": "Starts in {{count}} days",
+      "ended": "Period is over",
+      "noEnd": "No end date",
+      "used_one": "Applied {{count}} time",
+      "used_other": "Applied {{count}} times",
+      "notUsed": "Not applied yet"
+    },
+    "editor": {
+      "newTitle": "New discount",
+      "back": "Back to discounts",
+      "progress": "{{filled}} of {{total}} required filled",
+      "name": "Name",
+      "namePlaceholder": "For example, Autumn yoga week",
+      "value": "Discount size",
+      "percent": "Percent",
+      "amount": "Amount, {{currency}}",
+      "period": "When it works",
+      "scope": "What it applies to",
+      "audience": "Who gets it",
+      "minimum": "Minimum purchase",
+      "minimumPlaceholder": "No minimum",
+      "minimumHint": "Below the minimum the discount doesn't apply. When several discounts fit, the client gets the most generous one.",
+      "active": "Status",
+      "activeOn": "On, applies by itself",
+      "activeOff": "Paused, saved but not applied",
+      "create": "Create discount",
+      "save": "Save changes",
+      "delete": "Delete"
+    },
+    "preview": {
+      "untitled": "Untitled discount",
+      "percentKind": "off the price",
+      "amountKind": "off every purchase",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "minimum": "From {{amount}}"
+    },
+    "presets": {
+      "none": "No end date",
+      "noneHint": "Works until you pause it",
+      "week": "7 days",
+      "month": "Until month end",
+      "days30": "30 days",
+      "custom": "Custom dates",
+      "customHint": "Pick them in the calendar",
+      "clear": "Clear dates"
+    },
+    "calendar": {
+      "prev": "Previous month",
+      "next": "Next month",
+      "pickStart": "Choose the first day",
+      "pickEnd": "Now choose the last day",
+      "again": "Choose a day to start over"
+    },
+    "scope": {
+      "all": "Everything",
+      "selected": "Selected",
+      "allHint": "Any class, single visit or pass the client buys.",
+      "services": "Services",
+      "packages": "Passes",
+      "counter": "{{picked}} of {{total}}",
+      "allOf": "Select all",
+      "none": "Clear",
+      "classes_one": "{{count}} class",
+      "classes_other": "{{count}} classes",
+      "noServices": "No services in the Catalog yet",
+      "noPackages": "No passes in the Catalog yet"
+    },
+    "audience": {
+      "all": "Everyone",
+      "allHint": "Every client of the studio",
+      "segments": "Groups",
+      "segmentsHint": "Newcomers, birthdays and more",
+      "clients": "Specific clients",
+      "clientsHint": "Only the people you pick",
+      "people_one": "{{count}} client",
+      "people_other": "{{count}} clients",
+      "birthdayWindow_one": "Birthday within {{count}} day of the class",
+      "birthdayWindow_other": "Birthday within {{count}} days of the class",
+      "birthdayExact": "Only on the birthday itself",
+      "less": "Fewer days",
+      "more": "More days",
+      "pickGroups": "Choose one or more groups",
+      "reach_one": "{{count}} of {{total}} clients fits right now",
+      "reach_other": "{{count}} of {{total}} clients fit right now",
+      "addClient": "Add a client",
+      "searchClient": "Find by name or phone",
+      "noClients": "No clients added yet",
+      "removeClient": "Remove {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Newcomers",
+        "hint": "Joined the studio recently"
+      },
+      "birthday": {
+        "title": "Birthdays",
+        "hint": "Birthday close to the class date"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Visit or spend the most"
+      },
+      "active": {
+        "title": "Regulars",
+        "hint": "Come regularly"
+      },
+      "inactive": {
+        "title": "Lapsed",
+        "hint": "Haven't come in a while"
+      },
+      "has_subscription": {
+        "title": "Pass holders",
+        "hint": "Have a valid pass"
+      }
+    },
+    "summary": {
+      "everything": "All services and passes",
+      "everyone": "All clients",
+      "nothingChosen": "Nothing selected",
+      "nobodyChosen": "Nobody selected",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Birthdays ±{{count}} day",
+      "birthday_other": "Birthdays ±{{count}} days",
+      "birthdayExact": "On the birthday"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "From {{date}}",
+      "until": "Until {{date}}",
+      "forever": "No end date"
+    },
+    "templates": {
+      "title": "Start from an idea",
+      "birthday": {
+        "name": "Birthday treat",
+        "hint": "15% off around the birthday"
+      },
+      "newcomers": {
+        "name": "Welcome discount",
+        "hint": "10% off for newcomers"
+      },
+      "comeback": {
+        "name": "Come back",
+        "hint": "20% off for lapsed clients, 30 days"
+      },
+      "passes": {
+        "name": "Pass sale",
+        "hint": "10% off every pass"
+      },
+      "week": {
+        "name": "Week of offers",
+        "hint": "15% off everything for 7 days"
+      },
+      "blank": {
+        "name": "From scratch",
+        "hint": "Set everything yourself"
+      }
+    },
+    "rules": {
+      "title": "Rules for all discounts",
+      "stackable": "Discounts add up",
+      "stackableOn": "The studio discount adds to promo codes, personal offers and the first class discount",
+      "stackableOff": "Only the most generous discount applies, they don't add up",
+      "cashback": "Cashback in points",
+      "cashbackHint": "Part of every payment returns to the client's card as points",
+      "cashbackExample_one": "For {{amount}} the client gets {{count}} point",
+      "cashbackExample_other": "For {{amount}} the client gets {{count}} points"
+    },
+    "errors": {
+      "name": "Give the discount a name",
+      "scope": "Pick at least one service or pass",
+      "segments": "Pick at least one group",
+      "clients": "Add at least one client",
+      "fillRequired": "Fill in the required fields"
+    },
+    "confirmDelete": {
+      "title": "Delete this discount?",
+      "message": "“{{name}}” will stop applying. Past sales keep their price."
+    },
+    "toasts": {
+      "created": "Discount created",
+      "saved": "Discount saved",
+      "deleted": "Discount deleted",
+      "programOn": "Discounts are on"
+    }
   }
 }

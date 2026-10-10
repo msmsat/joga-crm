@@ -26,7 +26,7 @@ export function FundingChips({ funding, currency }: { funding: Funding; currency
   }
   // Всё, что сняло деньги с цены, — строками, как на чеке.
   for (const d of parts.discounts) {
-    const label = d.promoCode ? `${t('payment.discount.promo')} ${d.promoCode}` : t(`payment.discount.${d.kind}`);
+    const label = d.promoCode ? `${t('payment.discount.promo')} ${d.promoCode}` : d.name || t(`payment.discount.${d.kind}`);
     chips.push({
       key: `d-${d.kind}`, tone: 'is-gain',
       text: d.percent != null

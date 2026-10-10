@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Rabatter og cashback",
-      "desc": "Personlige tilbud til kunder",
+      "desc": "Rabatter etter datoer, tjenester og kunder",
       "statLabel": "aktive"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "til",
     "deleteLevelTitle": "Slette dette nivået?",
     "deleteLevelMessage": "Kunder på nivået «{{name}}» flyttes til nabonivået basert på samlet forbruk.",
-    "discountType": "Rabatttype",
     "discountTypes": {
       "percentage": "Prosent (%)",
       "fixed": "Fast ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Cashback-prosent",
     "discountSize": "Rabattbeløp",
-    "minPurchase": "Minste kjøpsbeløp",
     "noLimit": "Ingen grense",
-    "conditions": "Vilkår for bruk",
-    "appliesToAll": "Bruk på alle tjenester",
-    "stackable": "Kan kombineres med andre rabatter",
-    "visibleInCabinet": "Vis kunden i kontoen deres",
     "certType": "Sertifikattype",
     "certTypes": {
       "named": "Personlig",
@@ -345,5 +338,222 @@
     "renewed": "Fornyet",
     "empty": "Ingen abonnementssalg ennå",
     "emptySub": "Analysen vises etter de første pakkesalgene"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Aktive: {{active}}, planlagte: {{scheduled}}",
+      "subtitleEmpty": "Ingen rabatter ennå",
+      "active": "aktive nå",
+      "scheduled": "planlagte",
+      "used": "ganger brukt",
+      "create": "Ny rabatt",
+      "emptyTitle": "Opprett din første rabatt",
+      "emptyText": "Start med en idé eller fra bunnen. Hver rabatt har egne datoer, tjenester og kunder og gjelder automatisk.",
+      "offTitle": "Rabattene er slått av",
+      "offText": "Kundene får ingen av rabattene nedenfor så lenge programmet er slått av.",
+      "turnOn": "Slå på"
+    },
+    "timeline": {
+      "title": "Rabattidslinje",
+      "today": "I dag",
+      "more": "+{{count}} til"
+    },
+    "status": {
+      "active": "Aktiv",
+      "scheduled": "Planlagt",
+      "ended": "Avsluttet",
+      "paused": "Satt på pause"
+    },
+    "card": {
+      "edit": "Rediger rabatten {{name}}",
+      "daysLeft_one": "{{count}} dag igjen",
+      "daysLeft_other": "{{count}} dager igjen",
+      "startsIn_one": "Starter om {{count}} dag",
+      "startsIn_other": "Starter om {{count}} dager",
+      "ended": "Perioden er over",
+      "noEnd": "Ingen sluttdato",
+      "used_one": "Brukt {{count}} gang",
+      "used_other": "Brukt {{count}} ganger",
+      "notUsed": "Ikke brukt ennå"
+    },
+    "editor": {
+      "newTitle": "Ny rabatt",
+      "back": "Tilbake til rabattene",
+      "progress": "{{filled}} av {{total}} påkrevde fylt ut",
+      "name": "Navn",
+      "namePlaceholder": "For eksempel Høstens yogauke",
+      "value": "Rabattens størrelse",
+      "percent": "Prosent",
+      "amount": "Beløp, {{currency}}",
+      "period": "Når den gjelder",
+      "scope": "Hva den gjelder",
+      "audience": "Hvem som får den",
+      "minimum": "Minste kjøpsbeløp",
+      "minimumPlaceholder": "Ingen minimum",
+      "minimumHint": "Under minstebeløpet gjelder ikke rabatten. Passer flere rabatter, får kunden den beste.",
+      "active": "Status",
+      "activeOn": "På, gjelder automatisk",
+      "activeOff": "På pause: lagret, men gjelder ikke",
+      "create": "Opprett rabatt",
+      "save": "Lagre",
+      "delete": "Slett"
+    },
+    "preview": {
+      "untitled": "Rabatt uten navn",
+      "percentKind": "av prisen",
+      "amountKind": "på hvert kjøp",
+      "days_one": "{{count}} dag",
+      "days_other": "{{count}} dager",
+      "minimum": "Fra {{amount}}"
+    },
+    "presets": {
+      "none": "Ingen sluttdato",
+      "noneHint": "Til du setter den på pause",
+      "week": "7 dager",
+      "month": "Ut måneden",
+      "days30": "30 dager",
+      "custom": "Egne datoer",
+      "customHint": "Velg i kalenderen",
+      "clear": "Fjern datoer"
+    },
+    "calendar": {
+      "prev": "Forrige måned",
+      "next": "Neste måned",
+      "pickStart": "Velg første dag",
+      "pickEnd": "Velg nå siste dag",
+      "again": "Velg en dag for å starte på nytt"
+    },
+    "scope": {
+      "all": "Alt",
+      "selected": "Valgte",
+      "allHint": "Alle timer, enkeltbesøk og medlemskap som kunden kjøper.",
+      "services": "Tjenester",
+      "packages": "Medlemskap",
+      "counter": "{{picked}} av {{total}}",
+      "allOf": "Velg alle",
+      "none": "Fjern valg",
+      "classes_one": "{{count}} time",
+      "classes_other": "{{count}} timer",
+      "noServices": "Ingen tjenester i katalogen ennå",
+      "noPackages": "Ingen medlemskap i katalogen ennå"
+    },
+    "audience": {
+      "all": "Alle",
+      "allHint": "Hver kunde i studioet",
+      "segments": "Grupper",
+      "segmentsHint": "Nye, bursdagsbarn og flere",
+      "clients": "Utvalgte kunder",
+      "clientsHint": "Bare dem du velger",
+      "people_one": "{{count}} kunde",
+      "people_other": "{{count}} kunder",
+      "birthdayWindow_one": "Bursdag innen {{count}} dag fra timen",
+      "birthdayWindow_other": "Bursdag innen {{count}} dager fra timen",
+      "birthdayExact": "Bare på selve bursdagen",
+      "less": "Færre dager",
+      "more": "Flere dager",
+      "pickGroups": "Velg én eller flere grupper",
+      "reach_one": "Akkurat nå passer {{count}} av {{total}} kunder",
+      "reach_other": "Akkurat nå passer {{count}} av {{total}} kunder",
+      "addClient": "Legg til kunde",
+      "searchClient": "Søk på navn eller telefon",
+      "noClients": "Ingen kunder lagt til ennå",
+      "removeClient": "Fjern {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Nye",
+        "hint": "Kom til studioet nylig"
+      },
+      "birthday": {
+        "title": "Bursdagsbarn",
+        "hint": "Bursdag nær datoen for timen"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Kommer og bruker mest"
+      },
+      "active": {
+        "title": "Faste kunder",
+        "hint": "Kommer jevnlig"
+      },
+      "inactive": {
+        "title": "Lenge borte",
+        "hint": "Har sluttet å komme"
+      },
+      "has_subscription": {
+        "title": "Med medlemskap",
+        "hint": "Har et gyldig medlemskap"
+      }
+    },
+    "summary": {
+      "everything": "Alle tjenester og medlemskap",
+      "everyone": "Alle kunder",
+      "nothingChosen": "Ingenting valgt",
+      "nobodyChosen": "Ingen valgt",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Bursdager ±{{count}} dag",
+      "birthday_other": "Bursdager ±{{count}} dager",
+      "birthdayExact": "På bursdagen"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "Fra {{date}}",
+      "until": "Til {{date}}",
+      "forever": "Ingen sluttdato"
+    },
+    "templates": {
+      "title": "Start med en idé",
+      "birthday": {
+        "name": "Bursdagsgave",
+        "hint": "−15 % rundt bursdagen"
+      },
+      "newcomers": {
+        "name": "Velkomstrabatt",
+        "hint": "−10 % for nye kunder"
+      },
+      "comeback": {
+        "name": "Kom tilbake",
+        "hint": "−20 % for dem som har vært borte, 30 dager"
+      },
+      "passes": {
+        "name": "Medlemskapssalg",
+        "hint": "−10 % på alle medlemskap"
+      },
+      "week": {
+        "name": "Rabattuke",
+        "hint": "−15 % på alt i 7 dager"
+      },
+      "blank": {
+        "name": "Fra bunnen",
+        "hint": "Du stiller inn alt selv"
+      }
+    },
+    "rules": {
+      "title": "Regler for alle rabatter",
+      "stackable": "Rabatter legges sammen",
+      "stackableOn": "Studioets rabatt kommer i tillegg til kampanjekode, personlig rabatt og rabatt på første time",
+      "stackableOff": "Bare den beste gjelder, rabattene legges ikke sammen",
+      "cashback": "Cashback i poeng",
+      "cashbackHint": "En del av hver betaling går tilbake til kundens kort som poeng",
+      "cashbackExample_one": "For {{amount}} får kunden {{count}} poeng",
+      "cashbackExample_other": "For {{amount}} får kunden {{count}} poeng"
+    },
+    "errors": {
+      "name": "Gi rabatten et navn",
+      "scope": "Velg minst én tjeneste eller ett medlemskap",
+      "segments": "Velg minst én gruppe",
+      "clients": "Legg til minst én kunde",
+      "fillRequired": "Fyll ut de påkrevde feltene"
+    },
+    "confirmDelete": {
+      "title": "Slette rabatten?",
+      "message": "«{{name}}» slutter å gjelde. Tidligere salg beholder prisen sin."
+    },
+    "toasts": {
+      "created": "Rabatten er opprettet",
+      "saved": "Rabatten er lagret",
+      "deleted": "Rabatten er slettet",
+      "programOn": "Rabattene er slått på"
+    }
   }
 }

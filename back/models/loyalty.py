@@ -147,10 +147,16 @@ class ClientOffer(Base):
 
 
 class StudioDiscountConfig(Base):
-    """discount_type — ключи ('percentage'/'fixed'/'cashback'), отображение
-    через locales (V5-5, задача 5: раньше фронт писал сюда русские строки,
-    сравнение в resolve_price молча не совпадало — CheckConstraint не даст
-    багу повториться)."""
+    """Программа «Скидки»: её общий тумблер и правила, общие для всех скидок.
+
+    Сами скидки — строки `DiscountCampaign` (название, период, на что и кому).
+    Единая скидка студии жила здесь колонками discount_type/discount_value/
+    min_purchase_amount; миграция aabb4b721b81 перенесла включённые в скидки-строки,
+    и цену эти колонки больше не двигают — остаются в БД, как и
+    applies_to_all_services. Кешбэк — своё поле `cashback_percent` (None —
+    выключен): раньше он был третьим «типом» единой скидки и не мог жить рядом
+    с ней.
+    """
     __tablename__ = "studio_discount_configs"
     __table_args__ = (
         CheckConstraint("discount_type IN ('percentage', 'fixed', 'cashback')", name="check_studio_discount_type"),
@@ -165,8 +171,56 @@ class StudioDiscountConfig(Base):
     applies_to_all_services: Mapped[bool] = mapped_column(Boolean, default=True)
     stackable: Mapped[bool] = mapped_column(Boolean, default=False)
     visible_in_cabinet: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Процент оплаты, возвращаемый баллами (register_purchase). None — выключен.
+    cashback_percent: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     studio: Mapped["Studio"] = relationship(back_populates="discount_config")
+
+
+class DiscountCampaign(Base):
+    """Именованная скидка студии: «Осень −20 %», «Именинникам −15 %».
+
+    Три независимых вопроса, и на каждый — своё поле:
+      * КОГДА — `valid_from`…`valid_until`, обе даты включительно, любая может
+        быть пустой. Для занятия дата — день самого занятия (бронь, долг и
+        оплата видят одну цену), для абонемента и разовой продажи — день продажи;
+      * НА ЧТО — `applies_to`: 'all' или 'selected' (тогда `service_ids` —
+        занятия этих услуг, `package_ids` — эти абонементы);
+      * КОМУ — `audience`: 'all', 'segments' (`segments` — категории клиентов,
+        те же, что фильтры страницы Клиентов, плюс именинники с окном
+        `birthday_window_days` дней до и после) или 'clients' (`client_ids`).
+
+    Считает её единый движок цены (services/pricing.resolve_price) как скидку
+    студии: самая выгодная клиенту, без стека, если в программе не включено
+    «Суммировать». Среди самих скидок действует одна — самая выгодная.
+    """
+    __tablename__ = "discount_campaigns"
+    __table_args__ = (
+        CheckConstraint("discount_type IN ('percent', 'amount')", name="check_campaign_discount_type"),
+        CheckConstraint("applies_to IN ('all', 'selected')", name="check_campaign_applies_to"),
+        CheckConstraint("audience IN ('all', 'segments', 'clients')", name="check_campaign_audience"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    name: Mapped[str] = mapped_column(String(80))
+    discount_type: Mapped[str] = mapped_column(String(10), default="percent")
+    value: Mapped[int] = mapped_column(Integer)
+    valid_from: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    valid_until: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    applies_to: Mapped[str] = mapped_column(String(10), default="all")
+    service_ids: Mapped[list] = mapped_column(JSON, default=list)
+    package_ids: Mapped[list] = mapped_column(JSON, default=list)
+    audience: Mapped[str] = mapped_column(String(10), default="all")
+    segments: Mapped[list] = mapped_column(JSON, default=list)
+    client_ids: Mapped[list] = mapped_column(JSON, default=list)
+    birthday_window_days: Mapped[int] = mapped_column(Integer, default=3)
+    min_purchase_amount: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Сколько продаж прошло с этой скидкой — растёт в ResolvedPrice.mark_used,
+    # то есть только на состоявшейся продаже.
+    used_count: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
 
 
 class StudioCertificateConfig(Base):

@@ -34,9 +34,10 @@ export const hybridApi = {
   paymentPreview: (quote_id: string, codes: ClientPaymentCodes) =>
     apiPost<PaymentPreviewRead>(`${base}/booking-quotes/${encodeURIComponent(quote_id)}/payment-preview`, codes),
   /** `payment` — коды, которые бронь будет держать до оплаты, и итог из чека. */
-  confirm: (quote_id: string, payment?: ClientConfirmPayment) =>
-    apiPost<BookingRead>(`${base}/bookings`, payment ? { quote_id, payment } : { quote_id }),
+  confirm: (quote_id: string, payment?: ClientConfirmPayment, in_telegram = false) =>
+    apiPost<BookingRead>(`${base}/bookings`, { quote_id, ...(payment ? { payment } : {}), in_telegram }),
   cancel: (id: number) => apiPost<BookingRead>(`/global/bookings/${id}/cancel`, {}),
+  checkoutReturn: (id: number) => apiPost<BookingRead>(`${base}/bookings/${id}/checkout-return`, {}),
   moveQuote: (id: number, body: ResourceQuoteRequest) => apiPost<QuoteRead>(`${base}/reservations/${id}/reschedule-quotes`, body),
   move: (id: number, quote_id: string, expected_version: number) => apiPost<BookingRead>(`${base}/reservations/${id}/reschedule`, { quote_id, expected_version }),
 };

@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Rabaty i cashback",
-      "desc": "Indywidualne oferty dla klientów",
+      "desc": "Rabaty według dat, usług i klientów",
       "statLabel": "aktywnych"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "do",
     "deleteLevelTitle": "Usunąć ten poziom?",
     "deleteLevelMessage": "Klienci z poziomu „{{name}}” przejdą na sąsiedni poziom zgodnie z łączną kwotą wydatków.",
-    "discountType": "Typ rabatu",
     "discountTypes": {
       "percentage": "Procent (%)",
       "fixed": "Stały ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Procent cashbacku",
     "discountSize": "Wysokość rabatu",
-    "minPurchase": "Minimalna kwota zakupu",
     "noLimit": "Bez limitu",
-    "conditions": "Warunki stosowania",
-    "appliesToAll": "Stosuj do wszystkich usług",
-    "stackable": "Łącz z innymi rabatami",
-    "visibleInCabinet": "Pokaż klientowi na jego koncie",
     "certType": "Typ bonu",
     "certTypes": {
       "named": "Imienny",
@@ -345,5 +338,232 @@
     "renewed": "Odnowione",
     "empty": "Nie ma jeszcze sprzedaży abonamentów",
     "emptySub": "Analityka pojawi się po pierwszej sprzedaży pakietów"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Aktywne: {{active}}, zaplanowane: {{scheduled}}",
+      "subtitleEmpty": "Na razie brak rabatów",
+      "active": "aktywne teraz",
+      "scheduled": "zaplanowane",
+      "used": "razy użyte",
+      "create": "Nowy rabat",
+      "emptyTitle": "Utwórz pierwszy rabat",
+      "emptyText": "Zacznij od gotowego pomysłu albo od zera. Każdy rabat ma własne daty, usługi i klientów i nalicza się sam.",
+      "offTitle": "Rabaty są wyłączone",
+      "offText": "Klienci nie dostają żadnego z poniższych rabatów, dopóki program jest wyłączony.",
+      "turnOn": "Włącz"
+    },
+    "timeline": {
+      "title": "Oś czasu rabatów",
+      "today": "Dziś",
+      "more": "Jeszcze {{count}}"
+    },
+    "status": {
+      "active": "Aktywny",
+      "scheduled": "Zaplanowany",
+      "ended": "Zakończony",
+      "paused": "Wstrzymany"
+    },
+    "card": {
+      "edit": "Edytuj rabat {{name}}",
+      "daysLeft_one": "Został {{count}} dzień",
+      "daysLeft_few": "Zostały {{count}} dni",
+      "daysLeft_many": "Zostało {{count}} dni",
+      "startsIn_one": "Startuje za {{count}} dzień",
+      "startsIn_few": "Startuje za {{count}} dni",
+      "startsIn_many": "Startuje za {{count}} dni",
+      "ended": "Okres minął",
+      "noEnd": "Bez terminu",
+      "used_one": "Użyty {{count}} raz",
+      "used_few": "Użyty {{count}} razy",
+      "used_many": "Użyty {{count}} razy",
+      "notUsed": "Jeszcze nieużyty"
+    },
+    "editor": {
+      "newTitle": "Nowy rabat",
+      "back": "Wróć do rabatów",
+      "progress": "Wypełniono wymaganych: {{filled}} z {{total}}",
+      "name": "Nazwa",
+      "namePlaceholder": "Na przykład Jesienny tydzień jogi",
+      "value": "Wysokość rabatu",
+      "percent": "Procent",
+      "amount": "Kwota, {{currency}}",
+      "period": "Kiedy obowiązuje",
+      "scope": "Na co obowiązuje",
+      "audience": "Dla kogo",
+      "minimum": "Minimalna kwota zakupu",
+      "minimumPlaceholder": "Bez minimum",
+      "minimumHint": "Poniżej minimalnej kwoty rabat nie działa. Gdy pasuje kilka rabatów, klient dostaje najkorzystniejszy.",
+      "active": "Stan",
+      "activeOn": "Włączony, nalicza się sam",
+      "activeOff": "Wstrzymany: zapisany, ale nie działa",
+      "create": "Utwórz rabat",
+      "save": "Zapisz",
+      "delete": "Usuń"
+    },
+    "preview": {
+      "untitled": "Rabat bez nazwy",
+      "percentKind": "od ceny",
+      "amountKind": "od każdego zakupu",
+      "days_one": "{{count}} dzień",
+      "days_few": "{{count}} dni",
+      "days_many": "{{count}} dni",
+      "minimum": "Od {{amount}}"
+    },
+    "presets": {
+      "none": "Bez terminu",
+      "noneHint": "Do czasu wstrzymania",
+      "week": "7 dni",
+      "month": "Do końca miesiąca",
+      "days30": "30 dni",
+      "custom": "Własne daty",
+      "customHint": "Wybierz w kalendarzu",
+      "clear": "Usuń daty"
+    },
+    "calendar": {
+      "prev": "Poprzedni miesiąc",
+      "next": "Następny miesiąc",
+      "pickStart": "Wybierz pierwszy dzień",
+      "pickEnd": "Teraz wybierz ostatni dzień",
+      "again": "Wybierz dzień, aby zacząć od nowa"
+    },
+    "scope": {
+      "all": "Na wszystko",
+      "selected": "Na wybrane",
+      "allHint": "Każde zajęcia, jednorazowe wejście i karnet, które kupuje klient.",
+      "services": "Usługi",
+      "packages": "Karnety",
+      "counter": "{{picked}} z {{total}}",
+      "allOf": "Zaznacz wszystkie",
+      "none": "Odznacz",
+      "classes_one": "{{count}} zajęcia",
+      "classes_few": "{{count}} zajęcia",
+      "classes_many": "{{count}} zajęć",
+      "noServices": "W Katalogu nie ma jeszcze usług",
+      "noPackages": "W Katalogu nie ma jeszcze karnetów"
+    },
+    "audience": {
+      "all": "Wszystkim",
+      "allHint": "Każdemu klientowi studia",
+      "segments": "Grupom",
+      "segmentsHint": "Nowym, solenizantom i innym",
+      "clients": "Wybranym klientom",
+      "clientsHint": "Tylko osobom, które wybierzesz",
+      "people_one": "{{count}} klient",
+      "people_few": "{{count}} klientów",
+      "people_many": "{{count}} klientów",
+      "birthdayWindow_one": "Urodziny w ciągu {{count}} dnia od zajęć",
+      "birthdayWindow_few": "Urodziny w ciągu {{count}} dni od zajęć",
+      "birthdayWindow_many": "Urodziny w ciągu {{count}} dni od zajęć",
+      "birthdayExact": "Tylko w sam dzień urodzin",
+      "less": "Mniej dni",
+      "more": "Więcej dni",
+      "pickGroups": "Wybierz jedną lub kilka grup",
+      "reach_one": "Teraz pasuje {{count}} klient z {{total}}",
+      "reach_few": "Teraz pasuje {{count}} klientów z {{total}}",
+      "reach_many": "Teraz pasuje {{count}} klientów z {{total}}",
+      "addClient": "Dodaj klienta",
+      "searchClient": "Szukaj po imieniu lub telefonie",
+      "noClients": "Nie dodano jeszcze klientów",
+      "removeClient": "Usuń {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Nowi",
+        "hint": "Niedawno dołączyli do studia"
+      },
+      "birthday": {
+        "title": "Solenizanci",
+        "hint": "Urodziny blisko daty zajęć"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Najczęściej chodzą i najwięcej płacą"
+      },
+      "active": {
+        "title": "Stali",
+        "hint": "Chodzą regularnie"
+      },
+      "inactive": {
+        "title": "Dawno nie byli",
+        "hint": "Przestali przychodzić"
+      },
+      "has_subscription": {
+        "title": "Z karnetem",
+        "hint": "Mają ważny karnet"
+      }
+    },
+    "summary": {
+      "everything": "Wszystkie usługi i karnety",
+      "everyone": "Wszyscy klienci",
+      "nothingChosen": "Nic nie wybrano",
+      "nobodyChosen": "Nikogo nie wybrano",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Solenizanci ±{{count}} dzień",
+      "birthday_few": "Solenizanci ±{{count}} dni",
+      "birthday_many": "Solenizanci ±{{count}} dni",
+      "birthdayExact": "Solenizanci w dniu urodzin"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "Od {{date}}",
+      "until": "Do {{date}}",
+      "forever": "Bez terminu"
+    },
+    "templates": {
+      "title": "Zacznij od pomysłu",
+      "birthday": {
+        "name": "Prezent urodzinowy",
+        "hint": "−15% w okolicy urodzin"
+      },
+      "newcomers": {
+        "name": "Rabat powitalny",
+        "hint": "−10% dla nowych klientów"
+      },
+      "comeback": {
+        "name": "Wróć do nas",
+        "hint": "−20% dla dawno niewidzianych, 30 dni"
+      },
+      "passes": {
+        "name": "Wyprzedaż karnetów",
+        "hint": "−10% na wszystkie karnety"
+      },
+      "week": {
+        "name": "Tydzień rabatów",
+        "hint": "−15% na wszystko przez 7 dni"
+      },
+      "blank": {
+        "name": "Od zera",
+        "hint": "Wszystko ustawisz sam"
+      }
+    },
+    "rules": {
+      "title": "Zasady dla wszystkich rabatów",
+      "stackable": "Rabaty się sumują",
+      "stackableOn": "Rabat studia dodaje się do kodu promocyjnego, rabatu osobistego i rabatu na pierwsze zajęcia",
+      "stackableOff": "Działa jeden, najkorzystniejszy dla klienta, rabaty się nie sumują",
+      "cashback": "Cashback w punktach",
+      "cashbackHint": "Część każdej płatności wraca na kartę klienta jako punkty",
+      "cashbackExample_one": "Za {{amount}} klient dostanie {{count}} punkt",
+      "cashbackExample_few": "Za {{amount}} klient dostanie {{count}} punkty",
+      "cashbackExample_many": "Za {{amount}} klient dostanie {{count}} punktów"
+    },
+    "errors": {
+      "name": "Nadaj rabatowi nazwę",
+      "scope": "Wybierz co najmniej jedną usługę lub karnet",
+      "segments": "Wybierz co najmniej jedną grupę",
+      "clients": "Dodaj co najmniej jednego klienta",
+      "fillRequired": "Wypełnij wymagane pola"
+    },
+    "confirmDelete": {
+      "title": "Usunąć rabat?",
+      "message": "„{{name}}” przestanie działać. Wcześniejsze sprzedaże zachowają swoją cenę."
+    },
+    "toasts": {
+      "created": "Rabat utworzony",
+      "saved": "Rabat zapisany",
+      "deleted": "Rabat usunięty",
+      "programOn": "Rabaty są włączone"
+    }
   }
 }

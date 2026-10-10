@@ -41,6 +41,8 @@ export interface DiscountPart {
   percent: number | null;
   /** Промокод — его называют вместе со скидкой. */
   promoCode: string | null;
+  /** Название скидки студии — им строка и подписана. */
+  name?: string | null;
 }
 
 export interface FundingParts {
@@ -73,6 +75,7 @@ export function fundingParts(f: Funding): FundingParts {
         kind: d.kind, amount: d.amount,
         percent: base > 0 ? Math.round(d.amount / base * 100) : null,
         promoCode: d.kind === 'promo' ? p.promo_code : null,
+        name: d.name ?? null,
       })),
       points: p.bonuses_value > 0 ? { points: p.bonuses_applied, amount: p.bonuses_value } : null,
       deposit: p.deposit_applied > 0 ? p.deposit_applied : 0,

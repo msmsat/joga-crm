@@ -4,6 +4,12 @@ from schemas.loyalty.certificates import (
     GiftCertificateCreate,
     GiftCertificateRead,
 )
+from schemas.loyalty.discounts import (
+    DiscountCampaignCreate,
+    DiscountCampaignRead,
+    DiscountCampaignUpdate,
+    DiscountReachRead,
+)
 from schemas.loyalty.offers import (
     ClientOfferCreate,
     ClientOfferRead,
@@ -70,6 +76,10 @@ __all__ = [
     "ClientOfferRead",
     "DiscountConfigRead",
     "DiscountConfigUpdate",
+    "DiscountCampaignCreate",
+    "DiscountCampaignRead",
+    "DiscountCampaignUpdate",
+    "DiscountReachRead",
     "FirstLessonConfigRead",
     "FirstLessonConfigUpdate",
     "GiftCertificateCreate",

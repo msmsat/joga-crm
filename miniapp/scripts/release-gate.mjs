@@ -72,11 +72,12 @@ try {
   // These schedule inputs also determine whether a published lesson or online
   // specialist slot may overlap a staff block or fall outside working hours.
   const scheduleInputs = new Set(['test_working_hours_gate.py', 'test_studio_time.py',
-    'test_schedule_guard.py', 'test_payment_lock_incident.py', 'test_payment_lock_startup.py', 'test_attendance_autopilot.py']);
+    'test_schedule_guard.py', 'test_payment_lock_incident.py', 'test_payment_lock_startup.py', 'test_attendance_autopilot.py', 'test_debt_card_payment.py']);
   const tests = readdirSync(join(backend, 'tests')).filter(name =>
     name.endsWith('.py') && (selection.test(name) || scheduleInputs.has(name))).sort();
   for (const required of ['test_miniapp_journey.py', 'test_miniapp_email_auth.py', 'test_miniapp_checkout.py', 'test_mailer_guard.py',
-    'test_schedule_guard.py', 'test_payment_lock_incident.py', 'test_payment_lock_startup.py', 'test_attendance_autopilot.py']) {
+    'test_schedule_guard.py', 'test_payment_lock_incident.py', 'test_payment_lock_startup.py', 'test_attendance_autopilot.py', 'test_debt_card_payment.py',
+    'test_booking_checkout_return.py']) {
     if (!tests.includes(required)) throw new Error(`Release blocked: required suite ${required} is missing`);
   }
   writeFileSync(join(evidence, 'backend-selection.json'), JSON.stringify(tests, null, 2));

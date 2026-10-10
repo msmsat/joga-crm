@@ -291,7 +291,9 @@
     "update_service": "Uppdaterar tjänsten…",
     "update_staff": "Uppdaterar teammedlemmen…",
     "add_studio_time": "Lägger till studiotid…",
-    "remove_studio_time": "Tar bort studiotid…"
+    "remove_studio_time": "Tar bort studiotid…",
+    "create_discount": "Skapar en rabatt…",
+    "update_discount": "Ändrar rabatten…"
   },
   "quota": {
     "trialLow": "Få provförfrågningar återstår.",

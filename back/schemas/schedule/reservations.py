@@ -34,6 +34,8 @@ class ReservationPaymentOptions(BaseSchema):
 class ReservationPaymentDiscount(BaseSchema):
     kind: Literal["studio", "offer", "promo", "referral", "first_lesson", "manual"]
     amount: int
+    # Название скидки студии (DiscountCampaign.name); у остальных видов пусто.
+    name: Optional[str] = None
 
 
 class ReferralSummary(BaseSchema):

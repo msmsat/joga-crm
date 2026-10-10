@@ -1,6 +1,7 @@
 import { apiPost } from '../api/client';
 import { accountId, getSession, studioOf } from './session';
 import { bumpLessons } from './revision';
+import { clearBookingCheckout, readBookingCheckout } from './bookingCheckout';
 
 export type CheckoutTarget = { checkout_id?: number; reservation_id?: number };
 export type CheckoutPayment = {
@@ -67,6 +68,13 @@ export function rememberCheckout(target: CheckoutTarget) {
   window.dispatchEvent(new Event('velora:checkout-started'));
 }
 
+/** The server already has an in-progress payment; retain its verification UI. */
+export function awaitCheckout(target: CheckoutTarget) {
+  const scope = scopeOf();
+  if (scope) publish({ ...getPaymentSnapshot(), scope, awaiting: true });
+  rememberCheckout(target);
+}
+
 export function getPaymentSnapshot(): Snapshot {
   return snapshot.scope === scopeOf() ? snapshot : EMPTY;
 }
@@ -114,12 +122,16 @@ export async function syncCheckouts(target: CheckoutTarget = {}): Promise<Checko
     return syncCheckouts(target);
   }
   const before = getPaymentSnapshot();
-  const returning = !waitingDismissed.has(scope) && (url.searchParams.get('pay') === 'paysuccess' || returnId > 0 || telegramReturns.has(scope));
+  const returning = !waitingDismissed.has(scope) && url.searchParams.get('pay') !== 'paycancel'
+    && (url.searchParams.get('pay') === 'paysuccess' || returnId > 0 || telegramReturns.has(scope));
   publish({ ...before, scope, busy: true, error: false, awaiting: before.awaiting || returning });
   const request = (async () => {
     try {
       const result = await apiPost<CheckoutSync>('/global/checkout/sync', target);
       if (scope !== scopeOf()) return null;
+      const draft = readBookingCheckout();
+      if (draft && result.payments.some(payment => payment.status === 'paid'
+        && payment.reservation_id === draft.booking.reservation_id)) clearBookingCheckout();
       const previous = new Map(before.payments.map(payment => [payment.id, payment.status]));
       const stored = storage(scope);
       const sorted = [...result.payments].sort((a, b) => b.id - a.id);

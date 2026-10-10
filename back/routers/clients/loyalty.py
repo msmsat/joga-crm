@@ -165,8 +165,8 @@ async def register_purchase(db: AsyncSession, studio_id: int, client_id: int, am
     cfg = (await db.execute(
         select(StudioDiscountConfig).where(StudioDiscountConfig.studio_id == studio_id)
     )).scalar_one_or_none()
-    if cfg is not None and cfg.is_enabled and cfg.discount_type == "cashback":
-        cashback = amount * cfg.discount_value // 100
+    if cfg is not None and cfg.is_enabled and cfg.cashback_percent:
+        cashback = amount * cfg.cashback_percent // 100
         # ponytail: единая ставка кэшбека из StudioDiscountConfig, ставки-per-level — когда появятся в UI
         if cashback > 0:
             await apply_points_change(client_id, studio_id, cashback, "Кэшбек", db)
@@ -207,8 +207,8 @@ async def revert_purchase(db: AsyncSession, studio_id: int, client_id: int, amou
     discount_cfg = (await db.execute(
         select(StudioDiscountConfig).where(StudioDiscountConfig.studio_id == studio_id)
     )).scalar_one_or_none()
-    if discount_cfg is not None and discount_cfg.is_enabled and discount_cfg.discount_type == "cashback":
-        points += amount * discount_cfg.discount_value // 100
+    if discount_cfg is not None and discount_cfg.is_enabled and discount_cfg.cashback_percent:
+        points += amount * discount_cfg.cashback_percent // 100
 
     points = min(points, card.points_balance)
     if points > 0:

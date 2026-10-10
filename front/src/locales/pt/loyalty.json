@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Descontos e cashback",
-      "desc": "Ofertas personalizadas para clientes",
+      "desc": "Descontos por datas, serviços e clientes",
       "statLabel": "ativos"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "até",
     "deleteLevelTitle": "Eliminar este nível?",
     "deleteLevelMessage": "Os clientes do nível «{{name}}» passarão para o nível adjacente conforme o seu total de despesas.",
-    "discountType": "Tipo de desconto",
     "discountTypes": {
       "percentage": "Percentagem (%)",
       "fixed": "Fixo ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Percentagem de cashback",
     "discountSize": "Valor do desconto",
-    "minPurchase": "Valor mínimo de compra",
     "noLimit": "Sem limite",
-    "conditions": "Condições de aplicação",
-    "appliesToAll": "Aplicar a todos os serviços",
-    "stackable": "Acumular com outros descontos",
-    "visibleInCabinet": "Mostrar ao cliente na sua conta",
     "certType": "Tipo de vale",
     "certTypes": {
       "named": "Nominativo",
@@ -345,5 +338,222 @@
     "renewed": "Renovados",
     "empty": "Ainda não há vendas de subscrições",
     "emptySub": "As análises aparecerão após as primeiras vendas de pacotes"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Ativos: {{active}}, agendados: {{scheduled}}",
+      "subtitleEmpty": "Ainda sem descontos",
+      "active": "ativos agora",
+      "scheduled": "agendados",
+      "used": "vezes aplicados",
+      "create": "Novo desconto",
+      "emptyTitle": "Crie o seu primeiro desconto",
+      "emptyText": "Comece com uma ideia ou do zero. Cada desconto tem as suas datas, serviços e clientes, e aplica-se sozinho.",
+      "offTitle": "Os descontos estão desligados",
+      "offText": "Os clientes não recebem nenhum dos descontos abaixo enquanto o programa estiver desligado.",
+      "turnOn": "Ligar"
+    },
+    "timeline": {
+      "title": "Calendário de descontos",
+      "today": "Hoje",
+      "more": "+{{count}} outros"
+    },
+    "status": {
+      "active": "Ativo",
+      "scheduled": "Agendado",
+      "ended": "Terminado",
+      "paused": "Em pausa"
+    },
+    "card": {
+      "edit": "Editar o desconto {{name}}",
+      "daysLeft_one": "Falta {{count}} dia",
+      "daysLeft_other": "Faltam {{count}} dias",
+      "startsIn_one": "Começa daqui a {{count}} dia",
+      "startsIn_other": "Começa daqui a {{count}} dias",
+      "ended": "O período terminou",
+      "noEnd": "Sem data de fim",
+      "used_one": "Aplicado {{count}} vez",
+      "used_other": "Aplicado {{count}} vezes",
+      "notUsed": "Ainda não aplicado"
+    },
+    "editor": {
+      "newTitle": "Novo desconto",
+      "back": "Voltar aos descontos",
+      "progress": "Obrigatórios preenchidos: {{filled}} de {{total}}",
+      "name": "Nome",
+      "namePlaceholder": "Por exemplo, Semana de ioga de outono",
+      "value": "Valor do desconto",
+      "percent": "Percentagem",
+      "amount": "Valor, {{currency}}",
+      "period": "Quando se aplica",
+      "scope": "A que se aplica",
+      "audience": "Para quem",
+      "minimum": "Compra mínima",
+      "minimumPlaceholder": "Sem mínimo",
+      "minimumHint": "Abaixo do mínimo o desconto não se aplica. Se vários descontos servirem, o cliente recebe o mais vantajoso.",
+      "active": "Estado",
+      "activeOn": "Ligado, aplica-se sozinho",
+      "activeOff": "Em pausa: guardado, mas não aplicado",
+      "create": "Criar desconto",
+      "save": "Guardar",
+      "delete": "Eliminar"
+    },
+    "preview": {
+      "untitled": "Desconto sem nome",
+      "percentKind": "do preço",
+      "amountKind": "em cada compra",
+      "days_one": "{{count}} dia",
+      "days_other": "{{count}} dias",
+      "minimum": "A partir de {{amount}}"
+    },
+    "presets": {
+      "none": "Sem data de fim",
+      "noneHint": "Até o colocar em pausa",
+      "week": "7 dias",
+      "month": "Até ao fim do mês",
+      "days30": "30 dias",
+      "custom": "Datas próprias",
+      "customHint": "Escolha no calendário",
+      "clear": "Limpar datas"
+    },
+    "calendar": {
+      "prev": "Mês anterior",
+      "next": "Mês seguinte",
+      "pickStart": "Escolha o primeiro dia",
+      "pickEnd": "Agora escolha o último dia",
+      "again": "Escolha um dia para recomeçar"
+    },
+    "scope": {
+      "all": "Em tudo",
+      "selected": "No escolhido",
+      "allHint": "Qualquer aula, visita avulsa ou assinatura que o cliente compre.",
+      "services": "Serviços",
+      "packages": "Assinaturas",
+      "counter": "{{picked}} de {{total}}",
+      "allOf": "Escolher todos",
+      "none": "Limpar",
+      "classes_one": "{{count}} aula",
+      "classes_other": "{{count}} aulas",
+      "noServices": "Ainda não há serviços no Catálogo",
+      "noPackages": "Ainda não há assinaturas no Catálogo"
+    },
+    "audience": {
+      "all": "A todos",
+      "allHint": "Cada cliente do estúdio",
+      "segments": "A grupos",
+      "segmentsHint": "Novos, aniversariantes e outros",
+      "clients": "A clientes específicos",
+      "clientsHint": "Só a quem escolher",
+      "people_one": "{{count}} cliente",
+      "people_other": "{{count}} clientes",
+      "birthdayWindow_one": "Aniversário a {{count}} dia da aula",
+      "birthdayWindow_other": "Aniversário a {{count}} dias da aula",
+      "birthdayExact": "Só no próprio dia do aniversário",
+      "less": "Menos dias",
+      "more": "Mais dias",
+      "pickGroups": "Escolha um ou mais grupos",
+      "reach_one": "Neste momento encaixa {{count}} cliente de {{total}}",
+      "reach_other": "Neste momento encaixam {{count}} clientes de {{total}}",
+      "addClient": "Adicionar cliente",
+      "searchClient": "Procurar por nome ou telefone",
+      "noClients": "Ainda sem clientes adicionados",
+      "removeClient": "Remover {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Novos",
+        "hint": "Chegaram há pouco ao estúdio"
+      },
+      "birthday": {
+        "title": "Aniversariantes",
+        "hint": "Aniversário perto da data da aula"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Vêm e gastam mais"
+      },
+      "active": {
+        "title": "Habituais",
+        "hint": "Vêm com regularidade"
+      },
+      "inactive": {
+        "title": "Ausentes",
+        "hint": "Há algum tempo que não vêm"
+      },
+      "has_subscription": {
+        "title": "Com assinatura",
+        "hint": "Têm uma assinatura válida"
+      }
+    },
+    "summary": {
+      "everything": "Todos os serviços e assinaturas",
+      "everyone": "Todos os clientes",
+      "nothingChosen": "Nada escolhido",
+      "nobodyChosen": "Ninguém escolhido",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Aniversariantes ±{{count}} dia",
+      "birthday_other": "Aniversariantes ±{{count}} dias",
+      "birthdayExact": "No dia do aniversário"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "A partir de {{date}}",
+      "until": "Até {{date}}",
+      "forever": "Sem data de fim"
+    },
+    "templates": {
+      "title": "Começar com uma ideia",
+      "birthday": {
+        "name": "Presente de aniversário",
+        "hint": "−15% perto do aniversário"
+      },
+      "newcomers": {
+        "name": "Desconto de boas-vindas",
+        "hint": "−10% para os novos"
+      },
+      "comeback": {
+        "name": "Volte a visitar-nos",
+        "hint": "−20% para ausentes, 30 dias"
+      },
+      "passes": {
+        "name": "Promoção de assinaturas",
+        "hint": "−10% em todas as assinaturas"
+      },
+      "week": {
+        "name": "Semana de descontos",
+        "hint": "−15% em tudo durante 7 dias"
+      },
+      "blank": {
+        "name": "Do zero",
+        "hint": "Configura tudo à sua maneira"
+      }
+    },
+    "rules": {
+      "title": "Regras para todos os descontos",
+      "stackable": "Os descontos somam-se",
+      "stackableOn": "O desconto do estúdio soma-se ao código promocional, ao desconto pessoal e ao da primeira aula",
+      "stackableOff": "Só se aplica o mais vantajoso, os descontos não se somam",
+      "cashback": "Cashback em pontos",
+      "cashbackHint": "Parte de cada pagamento volta ao cartão do cliente em pontos",
+      "cashbackExample_one": "Por {{amount}} o cliente recebe {{count}} ponto",
+      "cashbackExample_other": "Por {{amount}} o cliente recebe {{count}} pontos"
+    },
+    "errors": {
+      "name": "Dê um nome ao desconto",
+      "scope": "Escolha pelo menos um serviço ou uma assinatura",
+      "segments": "Escolha pelo menos um grupo",
+      "clients": "Adicione pelo menos um cliente",
+      "fillRequired": "Preencha os campos obrigatórios"
+    },
+    "confirmDelete": {
+      "title": "Eliminar o desconto?",
+      "message": "«{{name}}» deixa de se aplicar. As vendas anteriores mantêm o seu preço."
+    },
+    "toasts": {
+      "created": "Desconto criado",
+      "saved": "Desconto guardado",
+      "deleted": "Desconto eliminado",
+      "programOn": "Os descontos estão ligados"
+    }
   }
 }

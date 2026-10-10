@@ -39,10 +39,26 @@ async def _earn_rates(db: AsyncSession, studio_id: int) -> tuple[int, int | None
     discount = (await db.execute(
         select(StudioDiscountConfig).where(StudioDiscountConfig.studio_id == studio_id)
     )).scalar_one_or_none()
-    cashback = (discount.discount_value
-                if discount is not None and discount.is_enabled and discount.discount_type == "cashback"
+    cashback = (discount.cashback_percent
+                if discount is not None and discount.is_enabled and discount.cashback_percent
                 else None)
     return max(rate or 0, 0), cashback
+
+
+def discount_lines(resolved) -> list[dict]:
+    """Скидки чека строками. У скидки студии — её название («Осень −20 %»):
+    кассир должен видеть, почему цена ниже, а не просто «Скидка студии»."""
+    lines = []
+    for kind, field in _DISCOUNTS:
+        amount = getattr(resolved, field)
+        if not amount:
+            continue
+        line = {"kind": kind, "amount": amount}
+        campaign = getattr(resolved, "campaign", None)
+        if kind == "studio" and campaign is not None:
+            line["name"] = campaign.name
+        lines.append(line)
+    return lines
 
 
 def snapshot(quote, method: str, certificate_code: str | None) -> dict:
@@ -53,8 +69,7 @@ def snapshot(quote, method: str, certificate_code: str | None) -> dict:
     promo = getattr(resolved, "promo", None)
     return {
         "base_price": quote.base_price,
-        "discounts": [{"kind": kind, "amount": getattr(resolved, field)}
-                      for kind, field in _DISCOUNTS if getattr(resolved, field)],
+        "discounts": discount_lines(resolved),
         "promo_code": promo.code if promo is not None else None,
         "bonuses_applied": quote.bonuses_applied,
         "bonuses_value": quote.bonuses_value,
@@ -219,8 +234,7 @@ async def check_lines(db: AsyncSession, studio_id: int, client_id: int, quote, *
     rate, cashback = await _earn_rates(db, studio_id)
     return {
         "base_price": quote.base_price,
-        "discounts": [{"kind": kind, "amount": getattr(resolved, field)}
-                      for kind, field in _DISCOUNTS if getattr(resolved, field)],
+        "discounts": discount_lines(resolved),
         "manual_outweighed": bool(manual_percent) and not resolved.manual_discount_applied,
         "promo_valid": quote.promo_valid if promo_code else None,
         "promo_outweighed": bool(promo_code and quote.promo_valid and resolved.promo is None),

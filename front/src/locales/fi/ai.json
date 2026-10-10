@@ -291,7 +291,9 @@
     "update_service": "Päivitetään palvelua…",
     "update_staff": "Päivitetään tiimin jäsentä…",
     "add_studio_time": "Lisään studioaikaa…",
-    "remove_studio_time": "Poistan studioaikaa…"
+    "remove_studio_time": "Poistan studioaikaa…",
+    "create_discount": "Luodaan alennusta…",
+    "update_discount": "Muutetaan alennusta…"
   },
   "quota": {
     "trialLow": "Kokeilupyyntöjä on jäljellä vähän.",

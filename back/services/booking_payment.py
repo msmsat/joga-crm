@@ -107,6 +107,7 @@ class PayOutcome(str, Enum):
     """Чем кончилась попытка выдать человеку ссылку на оплату."""
     OPEN = "OPEN"                  # форма готова, ссылка есть
     PENDING = "PENDING"            # оплата уже идёт, ответа ждём
+    REVIEW = "REVIEW"              # списание не проведено; повторно не платить
     UNAVAILABLE = "UNAVAILABLE"    # Stripe не подключён либо отказал
     STALE = "STALE"                # бронь уже не держится: платить не за что
 
@@ -802,9 +803,22 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
     if (lesson is None or lesson.status == "cancelled" or studio is None
             or client is None or not client.is_active):
         return Payable(PayOutcome.STALE)
-    if debt is not None and lesson_time.has_started(lesson, studio) is not False:
+    if lesson_time.has_started(lesson, studio) is not False:
         # Началось — или момент неизвестен, и обещать «ещё не началось» нельзя.
         return Payable(PayOutcome.STALE)
+
+    # A failed fulfillment can already have charged the customer. It must be
+    # resolved by the studio before a fresh checkout can charge this booking.
+    rejected = (await db.execute(select(StripeCheckout).where(
+        StripeCheckout.studio_id == studio_id,
+        StripeCheckout.status == 'failed',
+        StripeCheckout.payload['kind'].as_string() == PAYLOAD_KIND,
+        StripeCheckout.payload['reservation_id'].as_integer() == reservation_id,
+        StripeCheckout.payload['client_id'].as_string() == str(client_id),
+    ).order_by(StripeCheckout.id.desc()).limit(1))).scalar_one_or_none()
+    if rejected is not None:
+        return Payable(PayOutcome.REVIEW, checkout_id=rejected.id,
+                       amount=int(rejected.amount), currency=studio.currency or 'RUB')
 
     currency = studio.currency or "RUB"
     # ЦЕНА КЛИЕНТА, ОДНИМ ИСТОЧНИКОМ С ПРЕДЛОЖЕНИЕМ. Прайс занятия здесь не
@@ -824,7 +838,8 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
     else:
         amount = await booking.client_price(
             db, studio_id=studio_id, client_id=client_id, base_price=int(lesson.price or 0),
-            first_lesson=trial_discount(reservation))
+            first_lesson=trial_discount(reservation),
+            service_id=lesson.service_id, on=booking.lesson_day(lesson))
     if amount <= 0:
         return Payable(PayOutcome.STALE)
 

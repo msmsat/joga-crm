@@ -22,7 +22,7 @@ export function PastLessonPrice({ funding, paymentStatus }: {
   if (!view) return null;
   const money = (value: number) => formatMoney(value, currency);
   const discountLine = (d: DiscountPart) => {
-    const label = d.promoCode ? `${t('journal:payment.discount.promo')} ${d.promoCode}` : t(`journal:payment.discount.${d.kind}`);
+    const label = d.promoCode ? `${t('journal:payment.discount.promo')} ${d.promoCode}` : d.name || t(`journal:payment.discount.${d.kind}`);
     return `${d.percent != null ? t('journal:lessonCard.discountLine', { label, percent: d.percent }) : label} · −${money(d.amount)}`;
   };
 

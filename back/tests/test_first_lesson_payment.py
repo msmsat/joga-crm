@@ -34,7 +34,7 @@ from database import async_session_maker, get_db
 from dependencies import StudioContext, get_current_user, get_studio_context, require_role
 from models import (
     ClientOffer, ClientPayment, GiftCertificate, Lesson, Operation, Reservation, Studio,
-    StudioBookingSettings, StudioDiscountConfig, StudioPromoCode, User,
+    StudioBookingSettings, StudioDiscountConfig, StudioPromoCode, User, DiscountCampaign,
 )
 from ratelimit import limiter
 from routers.loyalty.configs import get_first_lesson_config, update_first_lesson_config
@@ -147,8 +147,8 @@ def test_engine_takes_the_best_discount_and_stacks_only_when_allowed():
                 assert best.final_price == 300 and best.first_lesson_discount_applied == 0, best
 
                 # Студия разрешила складывать скидки — складываются все.
-                db.add(StudioDiscountConfig(studio_id=ids["studio"], is_enabled=True, discount_type="fixed",
-                                            discount_value=100, stackable=True))
+                db.add(StudioDiscountConfig(studio_id=ids["studio"], is_enabled=True, stackable=True))
+                db.add(DiscountCampaign(studio_id=ids["studio"], name="Сотня", discount_type="amount", value=100))
                 await db.flush()
                 stacked = await resolve_price(db, ids["studio"], ids["client"], PRICE,
                                               first_lesson=FirstLessonDiscount(percent=10))
@@ -209,7 +209,7 @@ def test_preview_lists_first_lesson_promo_and_voucher():
 
                 plain = await _preview(http, key)
                 assert plain["total"] == 500 and plain["base_price"] == PRICE
-                assert plain["discounts"] == [{"kind": "first_lesson", "amount": 500}]
+                assert plain["discounts"] == [{"kind": "first_lesson", "amount": 500, "name": None}]
                 assert plain["first_lesson_applied"] is True and plain["first_lesson_percent"] == 50
 
                 # Промокод действует, но −20 % проигрывает −50 %: скидки не суммируются.
@@ -246,11 +246,11 @@ def test_manual_discount_competes_with_the_others_and_is_what_gets_paid():
 
                 weak = await _preview(http, key, manual_discount_percent=10)
                 assert weak["total"] == 500
-                assert weak["discounts"] == [{"kind": "first_lesson", "amount": 500}]
+                assert weak["discounts"] == [{"kind": "first_lesson", "amount": 500, "name": None}]
 
                 strong = await _preview(http, key, manual_discount_percent=70)
                 assert strong["total"] == 300
-                assert strong["discounts"] == [{"kind": "manual", "amount": 700}]
+                assert strong["discounts"] == [{"kind": "manual", "amount": 700, "name": None}]
 
                 for wrong in (0, 101):
                     refused = await http.post(f"/schedule/booking-quotes/{key}/payment-preview",

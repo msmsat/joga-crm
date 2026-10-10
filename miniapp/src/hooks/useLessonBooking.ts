@@ -7,8 +7,11 @@ import { spawnPetals } from '../lib/petals';
 import { notify } from '../lib/notify';
 import { getSession } from '../lib/session';
 import { bumpLessons } from '../lib/revision';
+import type { ApiError } from '../api/client';
+import { needsSubscription as subscriptionRequired } from '../lib/bookingFailure';
 
 interface Options {
+  prepayRequired?: boolean;
   /** Свои подписи страницы: у главной и расписания они разные. */
   messages: { bookError: string; cancelError: string; cancelSuccess: string };
   /**
@@ -33,7 +36,7 @@ interface Options {
  *         регистрация обязательна: смотреть и выбирать можно без неё;
  *   428 — нет телефона (запись с оплатой на месте) → PhoneSheet, после
  *         сохранения повторяем ту же бронь: занятие и коврик остались в состоянии;
- *   402 — студия требует абонемент («Предоплата при записи») → лист с текстом
+ *   NO_FUNDING и включённая предоплата → лист с текстом
  *         сервера и кнопкой в покупку. Тост тут был тупиком: человеку сообщали,
  *         что нужен абонемент, и не давали способа его купить.
  *
@@ -42,7 +45,7 @@ interface Options {
  * вообще: бронь с главной меняет и расписание, и «мои занятия», а те со времён
  * постоянно смонтированных разделов сами о ней не узнают.
  */
-export function useLessonBooking({ messages, onNeedAuth, onBooked }: Options) {
+export function useLessonBooking({ messages, onNeedAuth, onBooked, prepayRequired }: Options) {
   const { t } = useTranslation();
   const { tg, vibrateMedium } = useTelegram();
 
@@ -65,6 +68,8 @@ export function useLessonBooking({ messages, onNeedAuth, onBooked }: Options) {
   const retry = useRef<(() => void) | null>(null);
 
   const openModal = (lesson: LessonResponse | null) => {
+    setNeedsPhone(false);
+    setNeedsSubscription(null);
     setSelectedSpot(null);
     setActiveLesson(lesson);
     setIsModalOpen(true);
@@ -120,13 +125,16 @@ export function useLessonBooking({ messages, onNeedAuth, onBooked }: Options) {
         setNeedsPhone(true);
         return;
       }
-      if (status === 402) {
+      if (subscriptionRequired(error as ApiError, prepayRequired)) {
         setNeedsSubscription(
           error instanceof Error ? error.message : t('subscriptionSheet.hint'),
         );
         return;
       }
-      notify(error instanceof Error ? error.message : messages.bookError);
+      const failure = error as ApiError;
+      notify(failure.code
+        ? t(`resource.errors.${failure.code}`, { defaultValue: failure.message || messages.bookError })
+        : failure.message || messages.bookError);
       if (tg) tg.HapticFeedback.notificationOccurred('error');
     }
   };

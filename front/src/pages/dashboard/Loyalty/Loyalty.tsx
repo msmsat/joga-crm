@@ -21,7 +21,7 @@ import { useSearchParams } from 'react-router-dom';
 
 export default function Loyalty() {
   const { t } = useTranslation('loyalty');
-  const { programs, configs, patchConfig, drawer, drawerVisible, mounted, saving, errors, loadError, refetchConfigs, configsLoading, levelsDraft, updateLevel, addLevel, removeLevel, openDrawer, closeDrawer, handleSave, toggleProgram } = useLoyalty();
+  const { programs, configs, patchConfig, drawer, drawerOpen, onDrawerClosed, mounted, saving, errors, loadError, refetchConfigs, configsLoading, levelsDraft, updateLevel, addLevel, removeLevel, openDrawer, closeDrawer, handleSave, toggleProgram } = useLoyalty();
 
   // Живые счётчики карточек программ (задача 6, V5-2; discounts — V5-5 задача 7:
   // реальные активные ClientOffer вместо хардкоженного % скидки) — те же данные,
@@ -68,7 +68,9 @@ export default function Loyalty() {
 
   return (
     <>
-      <div className={`${styles.pageContent}${drawerVisible ? ` ${styles.pageContentPushed}` : ''}`}>
+      {/* Панель настройки — слой над страницей (SidePanel), страницу не
+          отодвигает: под ней затемнение, как у «Ещё» на телефоне. */}
+      <div>
         {loadError && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
@@ -98,7 +100,8 @@ export default function Loyalty() {
       {drawer && (
         <LoyaltyDrawer
           drawer={drawer}
-          drawerVisible={drawerVisible}
+          drawerOpen={drawerOpen}
+          onClosed={onDrawerClosed}
           configs={configs}
           patchConfig={patchConfig}
           saving={saving}

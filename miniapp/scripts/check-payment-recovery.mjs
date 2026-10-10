@@ -47,7 +47,7 @@ async function setup(file, extra = {}, environment = {}) {
     PassDetails: { default: 'pass-details' }, Ring: { default: 'ring' },
     material: { materialsOf: () => new Map() },
     selection: { createSelection: index => ({ get: () => ({ index }) }), useSelection: selection => selection.get() },
-    guilloche: { guilloche() {} }, idle: { whenIdle: () => undefined },
+    guilloche: { guilloche() {} }, idle: { whenIdle: () => undefined, whenIdleSteps: () => undefined },
     useIsDesktop: { useIsDesktop: () => false },
   };
   const source = ts.transpileModule(await readFile(new URL(file, import.meta.url), 'utf8'), {

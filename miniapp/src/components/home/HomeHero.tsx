@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import type { Studio, StudioCatalog } from '../../api/studio';
@@ -26,6 +26,23 @@ type Props = {
 };
 
 const ease = [0.16, 1, 0.3, 1] as const;
+const EASE_CSS = 'cubic-bezier(0.16, 1, 0.3, 1)';
+
+/*
+ * Появление главной — на видеокарте, а не на главном потоке.
+ *
+ * Сдвиг и масштаб здесь заданы строкой `transform`, а не `y`/`scale`: такие
+ * framer считает в JS на каждом кадре, а `transform` (как и прозрачность и
+ * фильтр) отдаёт браузеру через Web Animations. Появление идёт ровно в те
+ * секунды, когда главный поток занят — первая раскладка, сборка листов записи
+ * и разделов в простое, — и JS-анимация на каждой такой задаче замирала.
+ * Цель — явная тождественная (`translateY(0px)`, `scale(1)`), а не `none`:
+ * `none` framer «обнуляет» по начальному значению, и `scale(0.85)` уходил в
+ * `scale(0)`. А по окончании — `none` (`transitionEnd`): любое значение
+ * transform делает узел опорой для `fixed`-потомков и своим слоем наложения,
+ * и список филиалов в этой строке открылся бы не там.
+ */
+const settled = { transform: 'none' } as const;
 
 /** Слово без букв и цифр — разделитель в названии: «·», «|», «—», «&». */
 const isMark = (word: string) => !/[\p{L}\p{N}]/u.test(word);
@@ -71,10 +88,24 @@ export default function HomeHero({ catalog, name, branches: branchStore, onStart
   const starts = catalog && catalog.staff.length < 2 ? SOLO_STARTS : STARTS;
 
   const rise = (delay: number) => (reduce ? {} : {
-    initial: { opacity: 0, y: 18 },
-    animate: { opacity: 1, y: 0 },
+    initial: { opacity: 0, transform: 'translateY(18px)' },
+    animate: { opacity: 1, transform: 'translateY(0px)', transitionEnd: settled },
     transition: { duration: 0.7, delay, ease },
   });
+
+  // Входы в запись появляются Web Animations по свойству `translate`, а не
+  // через framer: у кнопок есть пружина нажатия (`whileTap`), и framer пишет
+  // её в `transform` — строка `transform` для появления её бы отменила.
+  // `translate` складывается с `transform`, а `fill: backwards` держит
+  // начальное состояние только на время задержки и после конца не мешает.
+  const riseIn = useCallback((button: HTMLElement | null) => {
+    if (!button || reduce) return;
+    const animation = button.animate(
+      [{ opacity: 0, translate: '0 22px' }, { opacity: 1, translate: '0 0' }],
+      { duration: 600, delay: Number(button.dataset.riseDelay ?? 0), easing: EASE_CSS, fill: 'backwards' },
+    );
+    return () => animation.cancel();
+  }, [reduce]);
 
   return (
     <section className="home-hero relative flex min-h-[calc(var(--app-h,100dvh)-var(--nav-clearance))] flex-col px-5 pt-[calc(var(--home-top)+env(safe-area-inset-top,0px))] dt:min-h-[calc(100dvh-5rem)] dt:px-0">
@@ -88,8 +119,8 @@ export default function HomeHero({ catalog, name, branches: branchStore, onStart
               key={ring}
               className="absolute rounded-full border border-brand/25"
               style={{ inset: ring * 46 }}
-              initial={reduce ? false : { opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1 - ring * 0.25, scale: 1 }}
+              initial={reduce ? false : { opacity: 0, transform: 'scale(0.85)' }}
+              animate={{ opacity: 1 - ring * 0.25, transform: 'scale(1)', transitionEnd: settled }}
               transition={{ duration: 1.1, delay: 0.1 + ring * 0.12, ease }}
             />
           ))}
@@ -129,8 +160,8 @@ export default function HomeHero({ catalog, name, branches: branchStore, onStart
             <motion.span
               key={`${mark}${word}-${index}`}
               className="mr-[0.22em] inline-block max-w-full [overflow-wrap:anywhere]"
-              initial={reduce ? false : { opacity: 0, y: 24, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={reduce ? false : { opacity: 0, transform: 'translateY(24px)', filter: 'blur(6px)' }}
+              animate={{ opacity: 1, transform: 'translateY(0px)', filter: 'blur(0px)', transitionEnd: { transform: 'none', filter: 'none' } }}
               transition={{ duration: 0.8, delay: 0.14 + index * 0.08, ease }}
             >
               {mark && <span className="font-bold text-brand">{mark}{word ? ' ' : ''}</span>}
@@ -168,9 +199,8 @@ export default function HomeHero({ catalog, name, branches: branchStore, onStart
               key={start}
               type="button"
               onClick={() => onStart(start)}
-              initial={reduce ? false : { opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 + index * 0.08, ease }}
+              ref={riseIn}
+              data-rise-delay={400 + index * 80}
               whileTap={{ scale: 0.975 }}
               whileHover={{ y: -2 }}
               className="home-start group flex items-center gap-[var(--home-card-gap)] rounded-[24px] bg-card p-[var(--home-card-padding)] text-left shadow-soft ring-1 ring-inset ring-border/60 transition-shadow duration-300 dt:flex-col dt:items-start dt:hover:shadow-lift"
@@ -212,7 +242,7 @@ function HeroPlace({ store, branches, reduce }: { store: BranchStore; branches: 
   if (!place) return null;
   return (
     <motion.div
-      {...(reduce ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.7, delay: 0.3, ease } })}
+      {...(reduce ? {} : { initial: { opacity: 0, transform: 'translateY(18px)' }, animate: { opacity: 1, transform: 'translateY(0px)', transitionEnd: settled }, transition: { duration: 0.7, delay: 0.3, ease } })}
       className="mt-[var(--home-title-gap)] flex items-center gap-1.5 text-[13.5px] font-semibold text-muted-foreground"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
@@ -222,8 +252,8 @@ function HeroPlace({ store, branches, reduce }: { store: BranchStore; branches: 
           буквы на месте. */}
       <motion.span
         key={place}
-        initial={reduce ? false : { opacity: 0, y: 4 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={reduce ? false : { opacity: 0, transform: 'translateY(4px)' }}
+        animate={{ opacity: 1, transform: 'translateY(0px)', transitionEnd: settled }}
         transition={{ duration: 0.35, ease }}
         className="truncate"
       >

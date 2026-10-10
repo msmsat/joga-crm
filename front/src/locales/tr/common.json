@@ -67,7 +67,8 @@
     "role": "Rol",
     "status": "Durum",
     "size": "Tutar",
-    "optional": "İsteğe bağlı"
+    "optional": "İsteğe bağlı",
+    "required": "Zorunlu"
   },
   "days": {
     "mon": "Pazartesi",
@@ -152,7 +153,12 @@
       "cert_not_found": "Hediye çeki bulunamadı",
       "cert_used": "Hediye çeki zaten kullanılmış ya da geçersiz",
       "cert_expired": "Hediye çekinin süresi doldu",
-      "first_lesson_amount_required": "İlk ders indirim tutarını girin"
+      "first_lesson_amount_required": "İlk ders indirim tutarını girin",
+      "discount_not_found": "İndirim bulunamadı",
+      "discount_invalid": "İndirim alanlarını kontrol edin",
+      "discount_service_not_found": "Seçilen hizmetlerden biri artık yok",
+      "discount_package_not_found": "Seçilen üyeliklerden biri artık yok",
+      "discount_client_not_found": "Seçilen müşterilerden biri artık yok"
     },
     "notifications": {
       "critical_locked": "Bu bildirim kapatılamaz",

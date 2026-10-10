@@ -37,6 +37,7 @@ export default function ModeSwitch({ value, onChange }: { value: ScheduleView; o
               {active && (
                 <motion.span
                   layoutId="schedule-mode"
+                  layoutDependency={value}
                   transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                   className="absolute inset-0 rounded-full bg-card shadow-soft"
                 />

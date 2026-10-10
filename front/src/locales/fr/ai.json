@@ -291,7 +291,9 @@
     "update_service": "Mise à jour du service…",
     "update_staff": "Mise à jour du membre d’équipe…",
     "add_studio_time": "J’ajoute le temps studio…",
-    "remove_studio_time": "Je retire le temps studio…"
+    "remove_studio_time": "Je retire le temps studio…",
+    "create_discount": "Création de la remise…",
+    "update_discount": "Modification de la remise…"
   },
   "quota": {
     "trialLow": "Il reste peu de requêtes d’essai.",

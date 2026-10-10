@@ -235,7 +235,7 @@ async def sell_subscription(
     if body.promo_code:
         promo = await find_valid_promo(ctx.studio_id, body.promo_code, db, client_id)
     resolved = await resolve_price(db, ctx.studio_id, client_id, package.price, promo,
-        renewal_package_id=package.id)
+        renewal_package_id=package.id, package_id=package.id)
 
     sub = await attach_subscription(
         db, ctx.studio_id, client_id, package, account,

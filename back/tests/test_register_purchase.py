@@ -40,7 +40,7 @@ async def _run():
 
         await db.rollback()
 
-    # ─── Кэшбек: StudioDiscountConfig discount_type='cashback' начисляет баллы ──
+    # ─── Кэшбек: StudioDiscountConfig.cashback_percent начисляет баллы ─────────
     async with async_session_maker() as db:
         s = Studio(name="TEST-REGISTER-PURCHASE-CASHBACK")
         db.add(s); await db.flush()
@@ -49,7 +49,7 @@ async def _run():
         client = Client(studio_id=sid, name="Boris", is_active=True)
         db.add(client); await db.flush()
 
-        cfg = StudioDiscountConfig(studio_id=sid, is_enabled=True, discount_type="cashback", discount_value=5)
+        cfg = StudioDiscountConfig(studio_id=sid, is_enabled=True, cashback_percent=5)
         db.add(cfg); await db.flush()
 
         await L.register_purchase(db, sid, client.id, 1_000)  # 5% -> 50 баллов

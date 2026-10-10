@@ -19,11 +19,14 @@ export function whenIdle(task: () => void, delay: number): () => void {
 
 /** Сколько миллисекунд окна простоя должно остаться, чтобы взяться за следующий шаг. */
 const STEP_HEADROOM_MS = 4;
-/** Без requestIdleCallback окна простоя не узнать — работаем кусками по столько мс. */
+/** Больше этого за одно окно не работаем, даже если браузер дал больше: окно
+ *  простоя бывает до 50 мс, и касание, пришедшее в его начале, ждало бы конца.
+ *  Половина кадра — касание ждёт не дольше неё и одного шага. */
+const IDLE_BUDGET_MS = 8;
+/** Без requestIdleCallback окна простоя не узнать — работаем кусками по столько мс… */
 const FALLBACK_SLICE_MS = 6;
-/** Пауза между кусками — кадр-другой отрисовке. С requestIdleCallback это срок,
- *  после которого следующий шаг идёт и без простоя. */
-const STEP_GAP_MS = 32;
+/** …с паузой в кадр-другой между ними. */
+const FALLBACK_GAP_MS = 32;
 
 /**
  * Длинную подготовку — мелкими шагами в окнах простоя.
@@ -31,9 +34,13 @@ const STEP_GAP_MS = 32;
  * Одним куском она была бы длинной задачей: тап, пришедшийся на неё, ждал бы
  * её конца, а анимации на главном потоке теряли бы кадры. Здесь за окно
  * выполняется столько шагов, сколько в него влезает, и тап ждёт не дольше
- * одного шага. Хотя бы один шаг — всегда: под постоянной нагрузкой окно
- * может не наступить вовсе (тогда срабатывает `timeout`), и очередь иначе не
- * сдвинулась бы никогда. Возвращает отмену.
+ * одного шага.
+ *
+ * Срок (`delay`, как у `whenIdle`) есть только у первого окна — чтобы работа
+ * вообще началась. Дальше — лишь настоящий простой: со сроком шаг под
+ * нагрузкой выполнялся бы принудительно, посреди тапа и его анимации.
+ * Замерено при CPU ×4: прогрев шрифта так дотягивался до переключения
+ * вкладок и добавлял по раскладке в каждый их кадр. Возвращает отмену.
  */
 export function whenIdleSteps(steps: Array<() => void>, delay: number): () => void {
   const idle = (window as { requestIdleCallback?: Window['requestIdleCallback'] }).requestIdleCallback;
@@ -41,26 +48,33 @@ export function whenIdleSteps(steps: Array<() => void>, delay: number): () => vo
   let cancel = () => {};
 
   const runIdle = (deadline: IdleDeadline) => {
-    do steps[next++]();
-    while (next < steps.length && deadline.timeRemaining() > STEP_HEADROOM_MS);
-    if (next < steps.length) schedule(STEP_GAP_MS);
+    // Окно наступило по сроку — один шаг всё равно, иначе очередь могла бы
+    // не тронуться вовсе. Дальше — сколько влезает в остаток окна.
+    const until = performance.now() + IDLE_BUDGET_MS;
+    if (deadline.didTimeout) steps[next++]();
+    while (next < steps.length && deadline.timeRemaining() > STEP_HEADROOM_MS && performance.now() < until) steps[next++]();
+    if (next < steps.length) {
+      const id = idle!(runIdle);
+      cancel = () => window.cancelIdleCallback(id);
+    }
   };
   const runSlice = () => {
     const until = performance.now() + FALLBACK_SLICE_MS;
     do steps[next++]();
     while (next < steps.length && performance.now() < until);
-    if (next < steps.length) schedule(STEP_GAP_MS);
-  };
-  const schedule = (wait: number) => {
-    if (idle) {
-      const id = idle(runIdle, { timeout: wait * 2 });
-      cancel = () => window.cancelIdleCallback(id);
-    } else {
-      const id = globalThis.setTimeout(runSlice, wait);
+    if (next < steps.length) {
+      const id = globalThis.setTimeout(runSlice, FALLBACK_GAP_MS);
       cancel = () => globalThis.clearTimeout(id);
     }
   };
 
-  if (steps.length) schedule(delay);
+  if (!steps.length) return () => {};
+  if (idle) {
+    const id = idle(runIdle, { timeout: delay * 2 });
+    cancel = () => window.cancelIdleCallback(id);
+  } else {
+    const id = globalThis.setTimeout(runSlice, delay);
+    cancel = () => globalThis.clearTimeout(id);
+  }
   return () => cancel();
 }

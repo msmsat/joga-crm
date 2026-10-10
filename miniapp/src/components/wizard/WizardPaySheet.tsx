@@ -21,6 +21,12 @@ type Props = {
   /** «Предоплата при записи»: на месте без абонемента не записывают. */
   venueAllowed: boolean;
   saving: boolean;
+  blocked?: boolean;
+  recoveryMessage?: string | null;
+  onRecover?: () => void;
+  onRetryQuote?: () => void;
+  notice?: ReactNode;
+  initialPayment?: ClientConfirmPayment | null;
   onPay: (method: PayMethod, payment: ClientConfirmPayment | null) => void;
 };
 
@@ -72,21 +78,22 @@ function MethodTile({ active, disabled, icon, title, hint, onClick }: {
  * признанный недействительным, или чужой ваучер не должны превратить запись в
  * отказ — чек и так показал, что они не применились.
  */
-export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, studio, canPayOnline, venueAllowed, saving, onPay }: Props) {
+export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, studio, canPayOnline, venueAllowed, saving,
+  blocked = false, recoveryMessage, onRecover, onRetryQuote, notice, initialPayment, onPay }: Props) {
   const { t, i18n } = useTranslation();
   // Онлайн — сразу, если студия его принимает: заплатил и записан, без долга
   // у стойки. «На месте» остаётся выбором человека, а не умолчанием.
   const [method, setMethod] = useState<PayMethod>(canPayOnline || !venueAllowed ? 'card' : 'venue');
-  const [promo, setPromo] = useState('');
-  const [certificate, setCertificate] = useState('');
-  const [useBonuses, setUseBonuses] = useState(false);
-  const [useDeposit, setUseDeposit] = useState(false);
+  const [promo, setPromo] = useState(initialPayment?.promo_code ?? '');
+  const [certificate, setCertificate] = useState(initialPayment?.certificate_code ?? '');
+  const [useBonuses, setUseBonuses] = useState(initialPayment?.use_bonuses ?? false);
+  const [useDeposit, setUseDeposit] = useState(initialPayment?.use_deposit ?? false);
   const [attempt, setAttempt] = useState(0);
   const previewKey = JSON.stringify([quoteId, promo, certificate, useBonuses, useDeposit, attempt]);
   const [preview, setPreview] = useState<{ key: string; data: PaymentPreviewRead | null; error: boolean } | null>(null);
 
   useEffect(() => {
-    if (!isOpen || !quoteId) return;
+    if (!isOpen || !quoteId || blocked) return;
     let disposed = false;
     const timer = setTimeout(() => {
       hybridApi.paymentPreview(quoteId, {
@@ -97,11 +104,11 @@ export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, stu
         .catch(() => { if (!disposed) setPreview({ key: previewKey, data: null, error: true }); });
     }, 300);
     return () => { disposed = true; clearTimeout(timer); setPreview(null); };
-  }, [isOpen, quoteId, promo, certificate, useBonuses, useDeposit, previewKey]);
+  }, [isOpen, quoteId, promo, certificate, useBonuses, useDeposit, previewKey, blocked]);
 
   const current = isOpen && preview?.key === previewKey ? preview : null;
   const check = current?.data ?? null;
-  const calculating = isOpen && Boolean(quoteId) && current === null;
+  const calculating = isOpen && !blocked && Boolean(quoteId) && current === null;
   const calculationError = current?.error ?? false;
   const nothingToPay = check !== null && check.total === 0;
   // Платить нечего — остаётся «на месте» (записать без денег); иначе выбор
@@ -112,7 +119,7 @@ export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, stu
   const certificateRejected = certificate.trim().length > 0 && check !== null && check.certificate_error !== null;
 
   const pay = () => {
-    if (saving || calculating || !check || !quoteId || calculationError) return;
+    if (saving || blocked || calculating || !check || !quoteId || calculationError) return;
     const payment: ClientConfirmPayment | null = check ? {
       promo_code: promo.trim() && check.promo_valid ? promo.trim() : null,
       certificate_code: check.certificate_applied > 0 ? certificate.trim() : null,
@@ -149,11 +156,16 @@ export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, stu
       title={t('pay.title')}
       subtitle={subtitle}
       footer={
-        <SheetAction onClick={pay} disabled={saving || calculating || !quoteId || !check || calculationError}>
-          {saving ? t('resource.confirming') : calculating ? t('paymentModal.calculating') : label}
+        <SheetAction onClick={blocked ? onRecover : !quoteId ? onRetryQuote : pay}
+          disabled={saving || (!blocked && Boolean(quoteId) && (calculating || !check || calculationError))}>
+          {saving ? t(blocked ? 'pay.returnChecking' : 'resource.confirming')
+            : blocked ? t('pay.checkStatus') : !quoteId ? t('booking.retry')
+            : calculating ? t('paymentModal.calculating') : label}
         </SheetAction>
       }
     >
+      {recoveryMessage && <p role="status" className="mb-5 rounded-2xl bg-brand/12 px-4 py-4 text-[14px] font-semibold leading-relaxed text-foreground">{recoveryMessage}</p>}
+      {notice && <div className="mb-4">{notice}</div>}
       {studio && (
         <div className="mb-5 flex items-center gap-3">
           {studio.logo_url && <img src={studio.logo_url} alt="" className="h-11 w-11 rounded-[14px] object-contain ring-1 ring-border" />}
@@ -163,7 +175,7 @@ export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, stu
       <div className="flex gap-2.5">
         <MethodTile
           active={!online}
-          disabled={saving || (!venueAllowed && !nothingToPay)}
+          disabled={saving || blocked || (!venueAllowed && !nothingToPay)}
           icon={<><rect x="2.5" y="6" width="19" height="12" rx="2.5" /><circle cx="12" cy="12" r="2.6" /><path d="M6 9.5v5M18 9.5v5" /></>}
           title={t('pay.venue')}
           hint={venueAllowed || nothingToPay ? t('pay.venueHint') : t('pay.prepayOnly')}
@@ -171,7 +183,7 @@ export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, stu
         />
         <MethodTile
           active={online}
-          disabled={saving || !canPayOnline || nothingToPay}
+          disabled={saving || blocked || !canPayOnline || nothingToPay}
           icon={<><rect x="2.5" y="5" width="19" height="14" rx="2.5" /><path d="M2.5 10h19M6.5 15h4" /></>}
           title={t('pay.online')}
           hint={!canPayOnline ? t('pay.onlineUnavailable') : nothingToPay ? t('pay.nothingOnline') : t('pay.onlineHint')}
@@ -186,7 +198,7 @@ export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, stu
         <div>
           <input
             type="text" value={promo} onChange={(e) => setPromo(e.target.value.toUpperCase())}
-            placeholder={t('paymentModal.promo_placeholder')} disabled={saving}
+            placeholder={t('paymentModal.promo_placeholder')} disabled={saving || blocked}
             aria-label={t('paymentModal.promo_placeholder')} aria-invalid={promoRejected}
             autoCapitalize="characters" autoComplete="off" spellCheck={false} className={inputClass}
           />
@@ -196,7 +208,7 @@ export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, stu
         <div>
           <input
             type="text" value={certificate} onChange={(e) => setCertificate(e.target.value.toUpperCase())}
-            placeholder={t('pay.voucherPlaceholder')} disabled={saving}
+            placeholder={t('pay.voucherPlaceholder')} disabled={saving || blocked}
             aria-label={t('pay.voucherPlaceholder')} aria-invalid={certificateRejected}
             autoCapitalize="characters" autoComplete="off" spellCheck={false} className={inputClass}
           />
@@ -206,14 +218,14 @@ export default function WizardPaySheet({ isOpen, onClose, quoteId, subtitle, stu
           <SettingRow
             icon={<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9z" />}
             label={t('pay.useBonuses', { value: fmt(check.bonuses_available * check.point_value) })}
-            toggle checked={useBonuses} onClick={() => !saving && setUseBonuses(!useBonuses)}
+            toggle checked={useBonuses} onClick={() => !saving && !blocked && setUseBonuses(!useBonuses)}
           />
         )}
         {check !== null && check.deposit_available > 0 && (
           <SettingRow
             icon={<path d="M3 7h18v10H3zM3 11h18" />}
             label={t('pay.useDeposit', { value: fmt(check.deposit_available) })}
-            toggle checked={useDeposit} onClick={() => !saving && setUseDeposit(!useDeposit)}
+            toggle checked={useDeposit} onClick={() => !saving && !blocked && setUseDeposit(!useDeposit)}
           />
         )}
       </div>

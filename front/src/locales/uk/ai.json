@@ -288,7 +288,9 @@
     "update_service": "Оновлюю послугу…",
     "update_staff": "Оновлюю співробітника…",
     "add_studio_time": "Ставлю час студії…",
-    "remove_studio_time": "Прибираю час студії…"
+    "remove_studio_time": "Прибираю час студії…",
+    "create_discount": "Створюю знижку…",
+    "update_discount": "Змінюю знижку…"
   },
   "quota": {
     "trialLow": "Залишилося мало пробних запитів.",

@@ -100,6 +100,8 @@ _PROXIES = {
     "get_loyalty_programs": ai_tools._r_loyalty_config,
     "issue_certificate": ai_tools._r_create_certificate,
     "create_promo": ai_tools._r_create_promocode,
+    "create_discount": ai_tools._r_create_discount_campaign,
+    "update_discount": ai_tools._r_update_discount_campaign,
     "get_segments": ai_tools._r_list_segments,
     "get_notification_matrix": get_notification_matrix,
     "toggle_notification_event": upsert_event_toggle,

@@ -20,6 +20,8 @@ export interface InputProps {
   autoFocus?: boolean;           // поле, которое раскрыли кнопкой: печатать сразу, без второго клика
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']; // 'numeric' — цифровая клавиатура телефона без type="number"
   optional?: string;             // метка «Необязательно» рядом с подписью — видно, что поле можно пропустить
+  required?: string;             // метка «Обязательно» — персиковая точка; с `done` — фисташковая с галочкой
+  done?: boolean;                // обязательное поле уже заполнено так, что форму можно сохранить
 }
 
 const labelStyle: React.CSSProperties = {
@@ -27,10 +29,47 @@ const labelStyle: React.CSSProperties = {
   color: 'var(--text3)', letterSpacing: '0.6px', textTransform: 'uppercase', marginBottom: '7px',
 };
 
+const CHECK = (
+  <svg width="8" height="8" viewBox="0 0 10 8" fill="none" aria-hidden="true">
+    <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+export interface FieldLabelProps {
+  label: string;
+  /** Поле, к которому относится подпись. Нет — подпись группы (плитки, календарь): тогда `id` для aria-labelledby. */
+  htmlFor?: string;
+  id?: string;
+  optional?: string;
+  required?: string;
+  done?: boolean;
+}
+
+/**
+ * Подпись поля с пометкой «Обязательно» / «Необязательно» — та же, что у Input,
+ * для полей, которые не Input: сегменты, плитки, календарь, списки выбора.
+ * Заполненное обязательное поле (`done`) перекрашивается в фисташковый и
+ * получает галочку — видно, что именно ещё держит кнопку сохранения.
+ */
+export function FieldLabel({ label, htmlFor, id, optional, required, done }: FieldLabelProps) {
+  const Tag = htmlFor ? 'label' : 'span';
+  const tag = required ?? optional;
+  if (!tag) return <Tag id={id} htmlFor={htmlFor} style={labelStyle}>{label}</Tag>;
+  return (
+    <div className="v-field-head">
+      <Tag id={id} htmlFor={htmlFor} style={{ ...labelStyle, marginBottom: 0 }}>{label}</Tag>
+      <span className={`v-field-tag${required ? ' is-required' : ''}${required && done ? ' is-done' : ''}`}>
+        {required && done && <span className="v-field-tag-check">{CHECK}</span>}
+        {tag}
+      </span>
+    </div>
+  );
+}
+
 // Поле ввода кита: label + glow-фокус (эталон FocusInput) + состояние ошибки.
 // Класс v-input — кегль 16px на телефоне (App.css): мельче iOS приближает
 // страницу при фокусе, в Safari и во встроенных браузерах Instagram/Telegram.
-export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon, rows, suffix, onEnter, autoFocus, inputMode, optional }: InputProps) {
+export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon, rows, suffix, onEnter, autoFocus, inputMode, optional, required, done }: InputProps) {
   const fieldId = useId();
   const [focused, setFocused] = useState(false);
   const borderColor = error ? '#D88C9A' : focused ? '#FCAE91' : 'rgba(var(--ink),0.09)';
@@ -60,12 +99,7 @@ export function Input({ label, value, onChange, onBlur, placeholder, type = 'tex
 
   return (
     <div>
-      {label && (optional ? (
-        <div className="v-field-head">
-          <label htmlFor={fieldId} style={{ ...labelStyle, marginBottom: 0 }}>{label}</label>
-          <span className="v-field-tag">{optional}</span>
-        </div>
-      ) : <label htmlFor={fieldId} style={labelStyle}>{label}</label>)}
+      {label && <FieldLabel label={label} htmlFor={fieldId} optional={optional} required={required} done={done} />}
       <div style={{ position: 'relative' }}>
         {icon && (
           <span style={{

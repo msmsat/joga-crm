@@ -291,7 +291,9 @@
     "update_service": "Ενημέρωση υπηρεσίας…",
     "update_staff": "Ενημέρωση μέλους ομάδας…",
     "add_studio_time": "Προσθέτω χρόνο στούντιο…",
-    "remove_studio_time": "Αφαιρώ χρόνο στούντιο…"
+    "remove_studio_time": "Αφαιρώ χρόνο στούντιο…",
+    "create_discount": "Δημιουργία έκπτωσης…",
+    "update_discount": "Αλλαγή έκπτωσης…"
   },
   "quota": {
     "trialLow": "Απομένουν λίγα δοκιμαστικά αιτήματα.",

@@ -29,6 +29,7 @@
 import asyncio
 import os
 import time as _time
+import uuid
 import warnings
 from datetime import datetime, time, timedelta, timezone
 
@@ -41,7 +42,7 @@ from database import async_session_maker
 from models import (
     ActionProposal, BookingChannelConfig, ChannelThread, Client, CustomerIdentity,
     Hall, Lesson, OnlineChannel, OutboundMessage, Reservation, Service, StripeCheckout,
-    Studio, StudioBookingSettings, StudioBranch, StudioDiscountConfig,
+    Studio, StudioBookingSettings, StudioBranch, StudioDiscountConfig, DiscountCampaign,
     StudioFeatureFlag, StudioMember, ThreadOption, User,
 )
 from services import (
@@ -73,6 +74,7 @@ class Session:
         self.client_reference_id = client_reference_id
         self.status = status
         self.payment_status = payment_status
+        self.mode = 'payment'
         self.livemode = livemode
         self.metadata = {}
 
@@ -86,6 +88,7 @@ class FakeStripe:
     """Сеть Stripe как сценарий: что вернуть, где упасть, что уже создано."""
 
     def __init__(self):
+        self.session_prefix = f'cs_saga_{uuid.uuid4().hex}'
         self.sessions: dict[str, Session] = {}
         self.by_key: dict[str, str] = {}      # ключ идемпотентности -> сессия
         self.creates = 0
@@ -110,7 +113,7 @@ class FakeStripe:
             # Тот же ключ — тот же объект: Stripe возвращает сохранённый ответ.
             row = self.sessions[self.by_key[idempotency_key]]
             return row.id, row.url
-        row = Session(f"cs_saga_{len(self.sessions) + 1}", account=account_id,
+        row = Session(f"{self.session_prefix}_{len(self.sessions) + 1}", account=account_id,
                       amount_total=amount_minor, currency=currency.lower(),
                       client_reference_id=client_reference_id)
         self.sessions[row.id] = row
@@ -265,6 +268,7 @@ async def _cleanup(ids) -> None:
             delete(StudioMember).where(StudioMember.studio_id == sid),
             delete(Client).where(Client.studio_id == sid),
             delete(StudioDiscountConfig).where(StudioDiscountConfig.studio_id == sid),
+            delete(DiscountCampaign).where(DiscountCampaign.studio_id == sid),
             delete(StudioFeatureFlag).where(StudioFeatureFlag.studio_id == sid),
             delete(BookingChannelConfig).where(BookingChannelConfig.studio_id == sid),
             delete(OnlineChannel).where(OnlineChannel.studio_id == sid),
@@ -785,8 +789,8 @@ async def _discount_reaches_stripe(ids, who):
     прайс из занятия он взять физически может.
     """
     async with async_session_maker() as db:
-        db.add(StudioDiscountConfig(studio_id=ids["studio"], is_enabled=True,
-                                    discount_type="percentage", discount_value=20))
+        db.add(StudioDiscountConfig(studio_id=ids["studio"], is_enabled=True))
+        db.add(DiscountCampaign(studio_id=ids["studio"], name="Всем", discount_type="percent", value=20))
         await db.commit()
     try:
         fake = FakeStripe()
@@ -818,6 +822,8 @@ async def _discount_reaches_stripe(ids, who):
         async with async_session_maker() as db:
             await db.execute(delete(StudioDiscountConfig).where(
                 StudioDiscountConfig.studio_id == ids["studio"]))
+            await db.execute(delete(DiscountCampaign).where(
+                DiscountCampaign.studio_id == ids["studio"]))
             await db.commit()
 
 

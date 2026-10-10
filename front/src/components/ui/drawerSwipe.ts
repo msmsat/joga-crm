@@ -11,10 +11,18 @@ import { useRef, type MouseEvent, type PointerEvent } from 'react';
  * On dismissal the panel keeps where the finger left it in `--swipe-x`: the exit
  * animation starts from there instead of jumping back to zero first.
  */
-const scrimOf = (panel: HTMLElement) =>
-  panel.parentElement?.querySelector<HTMLElement>(':scope > .mdrawer-scrim') ?? null;
+const scrimOf = (panel: HTMLElement, scrim: string) =>
+  panel.parentElement?.querySelector<HTMLElement>(`:scope > ${scrim}`) ?? null;
 
-export function useDrawerSwipe(close: () => void) {
+// Fields and marked areas keep their own horizontal gestures (selecting text,
+// moving a caret): a sideways drag there must not throw the panel away.
+const OWN_GESTURE = 'input, textarea, select, [contenteditable="true"], [data-no-swipe]';
+
+/**
+ * `scrim` — the class of the panel's scrim sibling: `.mdrawer-scrim` for the
+ * phone "More" panel, `.spanel-scrim` for SidePanel.
+ */
+export function useDrawerSwipe(close: () => void, scrim = '.mdrawer-scrim') {
   const gesture = useRef<{
     id: number; x: number; y: number; axis: 'x' | 'y' | null;
     dx: number; vx: number; t: number;
@@ -22,10 +30,10 @@ export function useDrawerSwipe(close: () => void) {
   const suppressClick = useRef(false);
 
   const release = (panel: HTMLElement, keepProgress: boolean) => {
-    const scrim = scrimOf(panel);
-    if (scrim) {
-      delete scrim.dataset.dragging;
-      if (!keepProgress) scrim.style.removeProperty('--swipe');
+    const dim = scrimOf(panel, scrim);
+    if (dim) {
+      delete dim.dataset.dragging;
+      if (!keepProgress) dim.style.removeProperty('--swipe');
     }
     gesture.current = null;
   };
@@ -41,6 +49,7 @@ export function useDrawerSwipe(close: () => void) {
       suppressClick.current = false;
       if (!event.isPrimary) { reset(event.currentTarget); return; }
       if (event.pointerType === 'mouse') return;
+      if ((event.target as Element).closest?.(OWN_GESTURE)) return;
       event.currentTarget.style.removeProperty('--swipe-x');
       gesture.current = {
         id: event.pointerId, x: event.clientX, y: event.clientY, axis: null,
@@ -74,10 +83,10 @@ export function useDrawerSwipe(close: () => void) {
       const progress = Math.min(1, Math.max(0, dx / panel.offsetWidth));
       panel.style.transition = 'none';
       panel.style.transform = `translateX(${x}px)`;
-      const scrim = scrimOf(panel);
-      if (scrim) {
-        scrim.dataset.dragging = '';
-        scrim.style.setProperty('--swipe', String(progress));
+      const dim = scrimOf(panel, scrim);
+      if (dim) {
+        dim.dataset.dragging = '';
+        dim.style.setProperty('--swipe', String(progress));
       }
     },
     onPointerUp: (event: PointerEvent<HTMLElement>) => {

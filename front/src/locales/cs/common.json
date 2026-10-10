@@ -67,7 +67,8 @@
     "role": "Role",
     "status": "Stav",
     "size": "Částka",
-    "optional": "Nepovinné"
+    "optional": "Nepovinné",
+    "required": "Povinné"
   },
   "days": {
     "mon": "Pondělí",
@@ -152,7 +153,12 @@
       "cert_not_found": "Poukaz nenalezen",
       "cert_used": "Poukaz už byl uplatněn nebo je neplatný",
       "cert_expired": "Platnost poukazu vypršela",
-      "first_lesson_amount_required": "Zadejte výši slevy na první lekci"
+      "first_lesson_amount_required": "Zadejte výši slevy na první lekci",
+      "discount_not_found": "Sleva nenalezena",
+      "discount_invalid": "Zkontrolujte pole slevy",
+      "discount_service_not_found": "Jedna z vybraných služeb už neexistuje",
+      "discount_package_not_found": "Jedno z vybraných předplatných už neexistuje",
+      "discount_client_not_found": "Jeden z vybraných klientů už neexistuje"
     },
     "notifications": {
       "critical_locked": "Toto oznámení nelze vypnout",

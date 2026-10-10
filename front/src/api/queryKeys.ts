@@ -66,6 +66,11 @@ export const queryKeys = {
   loyaltyLevels: ['loyalty', 'levels'] as const,
   loyaltyCards: ['loyalty', 'cards'] as const,
   loyaltyPromoCodes: ['loyalty', 'promocodes'] as const,
+  loyaltyDiscountCampaigns: ['loyalty', 'discount-campaigns'] as const,
+  // Охват групп в редакторе скидки: под префиксом кампаний, чтобы правка
+  // скидки и новые клиенты перечитывали и его.
+  loyaltyDiscountReach: (segments: string, birthdayDays: number) =>
+    ['loyalty', 'discount-campaigns', 'reach', segments, birthdayDays] as const,
   loyaltyDepositStats: ['loyalty', 'deposit-stats'] as const,
   loyaltyCertificates: ['loyalty', 'certificates'] as const,
   loyaltyScenarios: ['loyalty', 'scenarios'] as const,

@@ -99,6 +99,11 @@ assert.equal(success.state().timers, 0);
 const failed = client(async () => ({ ok: false, status: 503, json: async () => ({ detail: 'Mail unavailable' }) }));
 await assert.rejects(failed.api.apiPost('/global/auth/email/request'), (error) => error.status === 503 && error.message === 'Mail unavailable');
 assert.equal(failed.state().timers, 0);
+const suspended = client(async () => ({ ok: false, status: 402,
+  json: async () => ({ detail: { code: 'billing.suspended', message: 'Studio payments are unavailable' } }),
+}));
+await assert.rejects(suspended.api.apiPost('/global/bookings/quote'), error =>
+  error.status === 402 && error.code === 'billing.suspended' && error.message === 'Studio payments are unavailable');
 const expired = client(async () => ({ ok: false, status: 401, json: async () => ({ detail: 'Expired' }) }), { token: 'expired' });
 await assert.rejects(expired.api.apiGet('/global/me'), (error) => error.status === 401);
 assert.equal(expired.state().cleared, 1);

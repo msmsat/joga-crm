@@ -199,6 +199,72 @@
       "edit_short": "Bearbeiten"
     }
   },
+  "lessonSheet": {
+    "ticket": {
+      "now": "Läuft gerade",
+      "mat": "Matte"
+    },
+    "pay": {
+      "label": "Zahlung",
+      "pending": "Die Zahlung läuft bereits — wir warten auf die Bestätigung von Stripe. Wenn Sie bezahlt haben, aktualisiert sich der Status von selbst.",
+      "stale": "Nichts zu bezahlen: Die Buchung ist bereits bezahlt, storniert oder der Kurs hat begonnen.",
+      "unavailable": "Die Online-Zahlung hat gerade nicht geklappt. Versuchen Sie es erneut oder zahlen Sie im Studio.",
+      "opening": "Zahlung wird geöffnet…",
+      "secure": "Sichere Zahlung über Stripe",
+      "hold_title": "Zahlung nicht abgeschlossen",
+      "hold_hint": "Ihr Platz bleibt reserviert, solange Sie bezahlen. Ohne Abschluss wird die Buchung freigegeben.",
+      "resume": "Zahlung fortsetzen",
+      "already_paid": "Schon bezahlt? Status prüfen",
+      "venue_title": "Zahlung im Studio",
+      "venue_unpaid": "Nicht bezahlt",
+      "venue_after_approval": "Zahlung nach Bestätigung durch das Studio",
+      "venue_hint": "An der Rezeption vor dem Kurs",
+      "venue_desk": "Bitte an der Rezeption vor dem Kurs bezahlen",
+      "switch_hint": "Umentschieden? Zahlen Sie jetzt mit Karte — im Studio ist dann nichts mehr offen.",
+      "by_card": "Mit Karte zahlen",
+      "subscription": "Über Abo",
+      "subscription_hint": "Der Kurs wurde von Ihrem Abo abgebucht",
+      "trial_hint": "Ihr erster Kurs im Studio",
+      "free": "Kostenloser Kurs",
+      "paid": "Bezahlt",
+      "paid_hint": "Das Studio hat Ihre Zahlung erhalten",
+      "review_title": "Zahlung muss geprüft werden",
+      "review_hint": "Das Studio konnte diese Zahlung in seinem System nicht abschließen. Bitte zahlen Sie nicht erneut: Kontaktieren Sie das Studio zur Prüfung der Abbuchung oder Erstattung."
+    },
+    "place": {
+      "route": "Route planen"
+    },
+    "calendar": {
+      "add": "Zum Kalender hinzufügen",
+      "google": "Öffnet Google Kalender",
+      "hint": "Google, Apple oder Outlook",
+      "google_short": "Google Kalender",
+      "apple": "Apple oder Outlook"
+    },
+    "contact": {
+      "title": "Studio kontaktieren",
+      "hint": "Telefon, E-Mail oder Website"
+    },
+    "cancel": {
+      "closed": "Online-Stornierung ist nicht mehr möglich. Wenn sich Ihre Pläne geändert haben, schreiben Sie dem Studio.",
+      "until_start": "Sie können bis zum Kursbeginn stornieren.",
+      "until": "Sie können bis {{when}} stornieren.",
+      "question": "Buchung für {{when}} stornieren?",
+      "keep": "Behalten",
+      "confirm": "Ja, stornieren"
+    },
+    "about": {
+      "title": "Über den Kurs",
+      "more": "Weiterlesen",
+      "less": "Weniger anzeigen"
+    },
+    "card": {
+      "hold": "Zahlung nicht abgeschlossen",
+      "venue": "Im Studio zu zahlen: {{amount}}",
+      "resume": "Fortsetzen",
+      "pay": "Bezahlen"
+    }
+  },
   "schedule": {
     "title": "Stundenplan",
     "today": "Heute",
@@ -564,7 +630,11 @@
       "UNKNOWN": "Die Buchung konnte nicht erstellt werden. Bitte erneut versuchen.",
       "AMOUNT_CHANGED": "Der Betrag hat sich geändert — prüfen Sie den Beleg und bestätigen Sie erneut.",
       "NOTHING_TO_PAY": "Online gibt es nichts zu zahlen — buchen Sie mit Zahlung vor Ort.",
-      "PHONE_REQUIRED": "Geben Sie Ihre Telefonnummer an, um zu buchen."
+      "PHONE_REQUIRED": "Geben Sie Ihre Telefonnummer an, um zu buchen.",
+      "NO_FUNDING": "Die Zahlungsbedingungen haben sich geändert. Laden Sie die Seite neu oder kontaktieren Sie das Studio.",
+      "billing": {
+        "suspended": "Onlinebuchungen sind in diesem Studio vorübergehend nicht verfügbar. Bitte kontaktieren Sie das Studio."
+      }
     }
   },
   "units": {
@@ -726,7 +796,11 @@
       "first_lesson": "Erste Stunde",
       "manual": "Rabatt"
     },
-    "prepayOnly": "Das Studio bittet um Vorauszahlung"
+    "prepayOnly": "Das Studio bittet um Vorauszahlung",
+    "returnChecking": "Zahlungsstatus wird geprüft…",
+    "returnPending": "Stripe verarbeitet Ihre Zahlung noch. Nach der Bestätigung wird die Buchung automatisch aktualisiert. Bitte zahlen Sie nicht erneut.",
+    "returnError": "Diese Zahlung konnte noch nicht sicher geschlossen werden. Prüfen Sie ihren Status, bevor Sie eine andere Zahlungsart wählen.",
+    "checkStatus": "Zahlung prüfen"
   },
   "pass": {
     "kicker": "Abo",

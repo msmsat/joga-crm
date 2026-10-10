@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Alennukset ja cashback",
-      "desc": "Henkilökohtaisia tarjouksia asiakkaille",
+      "desc": "Alennukset päivien, palvelujen ja asiakkaiden mukaan",
       "statLabel": "aktiivista"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "asti",
     "deleteLevelTitle": "Poistetaanko tämä taso?",
     "deleteLevelMessage": "Tason ”{{name}}” asiakkaat siirtyvät viereiselle tasolle kokonaiskulutuksensa perusteella.",
-    "discountType": "Alennuksen tyyppi",
     "discountTypes": {
       "percentage": "Prosentti (%)",
       "fixed": "Kiinteä ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Cashback-prosentti",
     "discountSize": "Alennuksen määrä",
-    "minPurchase": "Ostoksen vähimmäissumma",
     "noLimit": "Ei rajaa",
-    "conditions": "Soveltamisehdot",
-    "appliesToAll": "Käytä kaikissa palveluissa",
-    "stackable": "Yhdistä muihin alennuksiin",
-    "visibleInCabinet": "Näytä asiakkaalle hänen tilillään",
     "certType": "Sertifikaatin tyyppi",
     "certTypes": {
       "named": "Nimellinen",
@@ -345,5 +338,222 @@
     "renewed": "Uusittu",
     "empty": "Jäsenyysmyyntiä ei ole vielä",
     "emptySub": "Analytiikka näkyy ensimmäisten pakettimyyntien jälkeen"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Voimassa: {{active}}, tulossa: {{scheduled}}",
+      "subtitleEmpty": "Ei vielä alennuksia",
+      "active": "voimassa nyt",
+      "scheduled": "tulossa",
+      "used": "kertaa käytetty",
+      "create": "Uusi alennus",
+      "emptyTitle": "Luo ensimmäinen alennuksesi",
+      "emptyText": "Aloita valmiista ideasta tai tyhjästä. Jokaisella alennuksella on omat päivät, palvelut ja asiakkaat, ja se toimii itsestään.",
+      "offTitle": "Alennukset ovat pois päältä",
+      "offText": "Asiakkaat eivät saa mitään alla olevista alennuksista, kun ohjelma on pois päältä.",
+      "turnOn": "Ota käyttöön"
+    },
+    "timeline": {
+      "title": "Alennusten aikajana",
+      "today": "Tänään",
+      "more": "+{{count}} lisää"
+    },
+    "status": {
+      "active": "Voimassa",
+      "scheduled": "Tulossa",
+      "ended": "Päättynyt",
+      "paused": "Tauolla"
+    },
+    "card": {
+      "edit": "Muokkaa alennusta {{name}}",
+      "daysLeft_one": "{{count}} päivä jäljellä",
+      "daysLeft_other": "{{count}} päivää jäljellä",
+      "startsIn_one": "Alkaa {{count}} päivän päästä",
+      "startsIn_other": "Alkaa {{count}} päivän päästä",
+      "ended": "Jakso on päättynyt",
+      "noEnd": "Ei päättymispäivää",
+      "used_one": "Käytetty {{count}} kerran",
+      "used_other": "Käytetty {{count}} kertaa",
+      "notUsed": "Ei vielä käytetty"
+    },
+    "editor": {
+      "newTitle": "Uusi alennus",
+      "back": "Takaisin alennuksiin",
+      "progress": "Pakollisia täytetty: {{filled}}/{{total}}",
+      "name": "Nimi",
+      "namePlaceholder": "Esimerkiksi Syksyn joogaviikko",
+      "value": "Alennuksen suuruus",
+      "percent": "Prosentti",
+      "amount": "Summa, {{currency}}",
+      "period": "Milloin voimassa",
+      "scope": "Mihin se koskee",
+      "audience": "Kenelle",
+      "minimum": "Ostoksen vähimmäissumma",
+      "minimumPlaceholder": "Ei vähimmäissummaa",
+      "minimumHint": "Vähimmäissumman alittuessa alennus ei koske ostosta. Jos useampi alennus sopii, asiakas saa edullisimman.",
+      "active": "Tila",
+      "activeOn": "Päällä, toimii itsestään",
+      "activeOff": "Tauolla: tallennettu mutta ei käytössä",
+      "create": "Luo alennus",
+      "save": "Tallenna",
+      "delete": "Poista"
+    },
+    "preview": {
+      "untitled": "Nimetön alennus",
+      "percentKind": "hinnasta",
+      "amountKind": "jokaisesta ostosta",
+      "days_one": "{{count}} päivä",
+      "days_other": "{{count}} päivää",
+      "minimum": "Alkaen {{amount}}"
+    },
+    "presets": {
+      "none": "Ei päättymispäivää",
+      "noneHint": "Kunnes asetat sen tauolle",
+      "week": "7 päivää",
+      "month": "Kuun loppuun",
+      "days30": "30 päivää",
+      "custom": "Omat päivät",
+      "customHint": "Valitse kalenterista",
+      "clear": "Poista päivät"
+    },
+    "calendar": {
+      "prev": "Edellinen kuukausi",
+      "next": "Seuraava kuukausi",
+      "pickStart": "Valitse ensimmäinen päivä",
+      "pickEnd": "Valitse nyt viimeinen päivä",
+      "again": "Valitse päivä aloittaaksesi alusta"
+    },
+    "scope": {
+      "all": "Kaikkeen",
+      "selected": "Valittuihin",
+      "allHint": "Kaikki tunnit, kertakäynnit ja jäsenyydet, jotka asiakas ostaa.",
+      "services": "Palvelut",
+      "packages": "Jäsenyydet",
+      "counter": "{{picked}}/{{total}}",
+      "allOf": "Valitse kaikki",
+      "none": "Tyhjennä",
+      "classes_one": "{{count}} tunti",
+      "classes_other": "{{count}} tuntia",
+      "noServices": "Katalogissa ei vielä ole palveluja",
+      "noPackages": "Katalogissa ei vielä ole jäsenyyksiä"
+    },
+    "audience": {
+      "all": "Kaikille",
+      "allHint": "Jokaiselle studion asiakkaalle",
+      "segments": "Ryhmille",
+      "segmentsHint": "Uusille, syntymäpäiväsankareille ja muille",
+      "clients": "Valituille asiakkaille",
+      "clientsHint": "Vain valitsemillesi",
+      "people_one": "{{count}} asiakas",
+      "people_other": "{{count}} asiakasta",
+      "birthdayWindow_one": "Syntymäpäivä {{count}} päivän sisällä tunnista",
+      "birthdayWindow_other": "Syntymäpäivä {{count}} päivän sisällä tunnista",
+      "birthdayExact": "Vain itse syntymäpäivänä",
+      "less": "Vähemmän päiviä",
+      "more": "Enemmän päiviä",
+      "pickGroups": "Valitse yksi tai useampi ryhmä",
+      "reach_one": "Nyt sopii {{count}}/{{total}} asiakkaasta",
+      "reach_other": "Nyt sopii {{count}}/{{total}} asiakkaasta",
+      "addClient": "Lisää asiakas",
+      "searchClient": "Hae nimellä tai puhelinnumerolla",
+      "noClients": "Asiakkaita ei ole vielä lisätty",
+      "removeClient": "Poista {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Uudet",
+        "hint": "Tulivat studioon äskettäin"
+      },
+      "birthday": {
+        "title": "Syntymäpäiväsankarit",
+        "hint": "Syntymäpäivä lähellä tunnin päivää"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Käyvät ja kuluttavat eniten"
+      },
+      "active": {
+        "title": "Vakioasiakkaat",
+        "hint": "Käyvät säännöllisesti"
+      },
+      "inactive": {
+        "title": "Pitkään poissa",
+        "hint": "Ovat lakanneet käymästä"
+      },
+      "has_subscription": {
+        "title": "Jäsenyyden haltijat",
+        "hint": "Heillä on voimassa oleva jäsenyys"
+      }
+    },
+    "summary": {
+      "everything": "Kaikki palvelut ja jäsenyydet",
+      "everyone": "Kaikki asiakkaat",
+      "nothingChosen": "Mitään ei ole valittu",
+      "nobodyChosen": "Ketään ei ole valittu",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Syntymäpäivät ±{{count}} päivä",
+      "birthday_other": "Syntymäpäivät ±{{count}} päivää",
+      "birthdayExact": "Syntymäpäivänä"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "Alkaen {{date}}",
+      "until": "{{date}} asti",
+      "forever": "Ei päättymispäivää"
+    },
+    "templates": {
+      "title": "Aloita ideasta",
+      "birthday": {
+        "name": "Syntymäpäivälahja",
+        "hint": "−15 % syntymäpäivän tienoilla"
+      },
+      "newcomers": {
+        "name": "Tervetuloalennus",
+        "hint": "−10 % uusille asiakkaille"
+      },
+      "comeback": {
+        "name": "Tule takaisin",
+        "hint": "−20 % pitkään poissa olleille, 30 päivää"
+      },
+      "passes": {
+        "name": "Jäsenyysale",
+        "hint": "−10 % kaikista jäsenyyksistä"
+      },
+      "week": {
+        "name": "Alennusviikko",
+        "hint": "−15 % kaikesta 7 päivän ajan"
+      },
+      "blank": {
+        "name": "Tyhjästä",
+        "hint": "Määrität kaiken itse"
+      }
+    },
+    "rules": {
+      "title": "Säännöt kaikille alennuksille",
+      "stackable": "Alennukset lasketaan yhteen",
+      "stackableOn": "Studion alennus lisätään kampanjakoodiin, henkilökohtaiseen alennukseen ja ensimmäisen tunnin alennukseen",
+      "stackableOff": "Vain edullisin on voimassa, alennuksia ei lasketa yhteen",
+      "cashback": "Cashback pisteinä",
+      "cashbackHint": "Osa jokaisesta maksusta palaa asiakkaan kortille pisteinä",
+      "cashbackExample_one": "Summasta {{amount}} asiakas saa {{count}} pisteen",
+      "cashbackExample_other": "Summasta {{amount}} asiakas saa {{count}} pistettä"
+    },
+    "errors": {
+      "name": "Anna alennukselle nimi",
+      "scope": "Valitse vähintään yksi palvelu tai jäsenyys",
+      "segments": "Valitse vähintään yksi ryhmä",
+      "clients": "Lisää vähintään yksi asiakas",
+      "fillRequired": "Täytä pakolliset kentät"
+    },
+    "confirmDelete": {
+      "title": "Poistetaanko alennus?",
+      "message": "”{{name}}” lakkaa olemasta voimassa. Aiemmat myynnit säilyttävät hintansa."
+    },
+    "toasts": {
+      "created": "Alennus luotu",
+      "saved": "Alennus tallennettu",
+      "deleted": "Alennus poistettu",
+      "programOn": "Alennukset ovat käytössä"
+    }
   }
 }

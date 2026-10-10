@@ -16,7 +16,7 @@ def quote_response(row):
                 terms=row.terms, next_action=action, reservation_id=row.reservation_id)
 
 
-async def after_commit(db, actor, result, background=None):
+async def after_commit(db, actor, result, background=None, *, return_to=None):
     """Единственное место, где новые команды выходят в сеть, — и только ПОСЛЕ
     commit: замок студии к этому моменту уже отпущен (§6.2)."""
     await db.commit()
@@ -28,7 +28,7 @@ async def after_commit(db, actor, result, background=None):
         background.add_task(_gcal_push_task, actor.studio_id, result["lesson_id"])
     if result["status"] == "hold":
         payable = await booking_payment.pay_link(db, studio_id=actor.studio_id,
-            reservation_id=result["reservation_id"], client_id=actor.client_id, channel="web")
+            reservation_id=result["reservation_id"], client_id=actor.client_id, channel="web", return_to=return_to)
         result["payment_url"] = payable.url
     return result
 

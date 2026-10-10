@@ -85,7 +85,7 @@ export function PaidSheet({ booked, payment, lessonLabel, currency, mutations, o
               <Line key={d.kind} tone="gain" value={`−${money(d.amount)}`}
                     label={d.kind === 'promo' && payment.promo_code
                       ? `${t('journal:payment.discount.promo')} ${payment.promo_code}`
-                      : t(`journal:payment.discount.${d.kind}`)} />
+                      : d.name || t(`journal:payment.discount.${d.kind}`)} />
             ))}
             {payment.certificate_applied > 0 && (
               <Line label={t('journal:payment.voucher')} value={`−${money(payment.certificate_applied)}`} tone="gain" />

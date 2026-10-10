@@ -199,6 +199,72 @@
       "edit_short": "Upravit"
     }
   },
+  "lessonSheet": {
+    "ticket": {
+      "now": "Právě probíhá",
+      "mat": "Podložka"
+    },
+    "pay": {
+      "label": "Platba",
+      "pending": "Platba už probíhá — čekáme na potvrzení od Stripe. Pokud jste zaplatili, stav se aktualizuje sám.",
+      "stale": "Není co platit: rezervace je zaplacená, zrušená nebo lekce už začala.",
+      "unavailable": "Online platba teď neprošla. Zkuste to znovu nebo zaplaťte ve studiu.",
+      "opening": "Otevíráme platbu…",
+      "secure": "Bezpečná platba přes Stripe",
+      "hold_title": "Platba není dokončená",
+      "hold_hint": "Místo vám držíme, dokud platíte. Když platbu nedokončíte, rezervace se uvolní.",
+      "resume": "Pokračovat v platbě",
+      "already_paid": "Už jste zaplatili? Ověřit",
+      "venue_title": "Platba ve studiu",
+      "venue_unpaid": "Nezaplaceno",
+      "venue_after_approval": "Platba až po potvrzení studiem",
+      "venue_hint": "Na recepci před lekcí",
+      "venue_desk": "Zaplaťte na recepci před lekcí",
+      "switch_hint": "Rozmysleli jste se? Zaplaťte kartou hned — ve studiu už platit nebudete.",
+      "by_card": "Zaplatit kartou",
+      "subscription": "Z permanentky",
+      "subscription_hint": "Lekce byla odečtena z vaší permanentky",
+      "trial_hint": "Vaše první lekce ve studiu",
+      "free": "Lekce zdarma",
+      "paid": "Zaplaceno",
+      "paid_hint": "Studio platbu přijalo",
+      "review_title": "Platbu je třeba ověřit",
+      "review_hint": "Platbu se nepodařilo dokončit v systému studia. Neplaťte znovu: kontaktujte studio kvůli ověření platby nebo vrácení peněz."
+    },
+    "place": {
+      "route": "Naplánovat trasu"
+    },
+    "calendar": {
+      "add": "Přidat do kalendáře",
+      "google": "Otevře se Kalendář Google",
+      "hint": "Google, Apple nebo Outlook",
+      "google_short": "Kalendář Google",
+      "apple": "Apple nebo Outlook"
+    },
+    "contact": {
+      "title": "Kontaktovat studio",
+      "hint": "Telefon, e-mail nebo web"
+    },
+    "cancel": {
+      "closed": "Online už rezervaci zrušit nelze. Pokud se vám změnily plány, napište studiu.",
+      "until_start": "Rezervaci můžete zrušit až do začátku lekce.",
+      "until": "Rezervaci můžete zrušit do {{when}}.",
+      "question": "Zrušit rezervaci na {{when}}?",
+      "keep": "Ponechat",
+      "confirm": "Ano, zrušit"
+    },
+    "about": {
+      "title": "O lekci",
+      "more": "Číst dál",
+      "less": "Sbalit"
+    },
+    "card": {
+      "hold": "Platba není dokončená",
+      "venue": "K úhradě ve studiu: {{amount}}",
+      "resume": "Pokračovat",
+      "pay": "Zaplatit"
+    }
+  },
   "schedule": {
     "title": "Rozvrh",
     "today": "Dnes",
@@ -564,7 +630,11 @@
       "UNKNOWN": "Rezervaci se nepodařilo vytvořit. Zkuste to znovu.",
       "AMOUNT_CHANGED": "Částka se změnila — zkontrolujte účet a potvrďte znovu.",
       "NOTHING_TO_PAY": "Online není co platit — rezervujte s platbou na místě.",
-      "PHONE_REQUIRED": "Pro rezervaci zadejte telefon."
+      "PHONE_REQUIRED": "Pro rezervaci zadejte telefon.",
+      "NO_FUNDING": "Platební podmínky se změnily. Obnovte stránku nebo kontaktujte studio.",
+      "billing": {
+        "suspended": "Online rezervace v tomto studiu jsou dočasně nedostupné. Kontaktujte studio."
+      }
     }
   },
   "units": {
@@ -726,7 +796,11 @@
       "first_lesson": "První lekce",
       "manual": "Sleva"
     },
-    "prepayOnly": "Studio žádá platbu předem"
+    "prepayOnly": "Studio žádá platbu předem",
+    "returnChecking": "Ověřujeme stav platby…",
+    "returnPending": "Stripe stále zpracovává platbu. Po potvrzení se rezervace automaticky aktualizuje. Neplaťte znovu.",
+    "returnError": "Platbu zatím nelze bezpečně uzavřít. Před výběrem jiného způsobu platby ověřte její stav.",
+    "checkStatus": "Ověřit platbu"
   },
   "pass": {
     "kicker": "Předplatné",

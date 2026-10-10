@@ -69,7 +69,7 @@ async def _source(db, actor, reservation_id, *, now):
     return reservation, lesson, originals[-1]
 
 
-async def _repriced(db, actor, funding, base_price, first_lesson=None):
+async def _repriced(db, actor, funding, base_price, first_lesson=None, *, service_id=None, on=None):
     """Сумма клиента за запись у нового мастера — тем же правилом, что при записи.
 
     Скидки клиента те же (`booking.client_price` — единственный ответ на
@@ -82,7 +82,7 @@ async def _repriced(db, actor, funding, base_price, first_lesson=None):
         return funding
     owed = 0 if base_price <= 0 else await booking.client_price(
         db, studio_id=actor.studio_id, client_id=actor.client_id, base_price=base_price,
-        first_lesson=first_lesson)
+        first_lesson=first_lesson, service_id=service_id, on=on)
     kind = booking.FundingKind.PAY if owed > 0 else booking.FundingKind.FREE
     return replace(funding, kind=kind, price=owed)
 
@@ -130,7 +130,9 @@ async def _calculate(db, actor, reservation_id, request, *, now, hall_id=None, d
         price, funding = lesson.price, terms.funding
     elif staff:
         price = quoted.base_price
-        funding = await _repriced(db, actor, terms.funding, price, trial_discount(reservation))
+        # Скидка студии сверяется с услугой и НОВЫМ днём записи.
+        funding = await _repriced(db, actor, terms.funding, price, trial_discount(reservation),
+                                  service_id=lesson.service_id, on=quoted.local_start.date())
     elif quoted.base_price != lesson.price:
         quotes.reject("TERMS_CHANGED")
     else:

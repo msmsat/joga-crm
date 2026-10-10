@@ -5,6 +5,7 @@ import type { ApiError } from '../api/client';
 import type { AvailabilitySlot, BookingRead, QuoteRead, TerminologyProfile } from '../api/hybrid.types';
 import type { StudioCatalog } from '../api/studio';
 import { getSession } from '../lib/session';
+import { needsSubscription as subscriptionRequired } from '../lib/bookingFailure';
 import { bumpLessons } from '../lib/revision';
 import { spawnPetals } from '../lib/petals';
 import { rememberCheckout } from '../lib/paymentSync';
@@ -66,7 +67,7 @@ export type OpenPreset = { teacherId?: number | null; teacherName?: string | nul
 
 /** Сообщение в листе: код отказа сервера или своё пояснение. Не `alert` —
  *  модальный диалог поверх листа закрывал бы именно то, что надо исправить. */
-export type ResourceNotice = { code: string; tone: 'error' | 'info' };
+export type ResourceNotice = { code: string; tone: 'error' | 'info'; message?: string };
 
 type Options = {
   /** Гость дошёл до quote: поднимаем существующий вход и повторяем шаг. */
@@ -164,6 +165,8 @@ export function useResourceBooking({ onNeedAuth, catalog }: Options = {}) {
     setQuote(null);
     setBooking(null);
     setNotice(null);
+    setNeedsPhone(false);
+    setNeedsSubscription(null);
     setStep('select_time');
     lastSlot.current = null;
     vibrateMedium();
@@ -179,11 +182,11 @@ export function useResourceBooking({ onNeedAuth, catalog }: Options = {}) {
       setNeedsPhone(true);
       return;
     }
-    if (error.status === 402) {
-      setNeedsSubscription(error.code ? t('subscriptionSheet.hint') : error.message);
+    if (subscriptionRequired(error, catalog?.rules.prepay_required)) {
+      setNeedsSubscription(t('subscriptionSheet.hint'));
       return;
     }
-    setNotice({ code: error.code ?? 'UNKNOWN', tone: 'error' });
+    setNotice({ code: error.code ?? 'UNKNOWN', tone: 'error', message: error.message });
     if (tg) tg.HapticFeedback.notificationOccurred('error');
   }
 

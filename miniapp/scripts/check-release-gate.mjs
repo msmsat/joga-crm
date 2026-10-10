@@ -9,7 +9,8 @@ import vm from 'node:vm';
 const source = fs.readFileSync(new URL('./release-gate.mjs', import.meta.url), 'utf8');
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'velora-release-check-'));
 const requiredSuites = ['test_miniapp_journey.py', 'test_miniapp_email_auth.py', 'test_miniapp_checkout.py', 'test_mailer_guard.py',
-  'test_payment_lock_incident.py', 'test_payment_lock_startup.py', 'test_schedule_guard.py', 'test_attendance_autopilot.py'];
+  'test_payment_lock_incident.py', 'test_payment_lock_startup.py', 'test_schedule_guard.py', 'test_attendance_autopilot.py',
+  'test_debt_card_payment.py', 'test_booking_checkout_return.py'];
 
 async function exercise(name, pytestResult, omittedSuite) {
   const repository = path.join(root, name);
@@ -105,6 +106,8 @@ try {
   await exercise('success', { status: 0 });
   await exercise('missing-payment-regression', { status: 0 }, 'test_payment_lock_incident.py');
   await exercise('missing-startup-regression', { status: 0 }, 'test_payment_lock_startup.py');
+  await exercise('missing-debt-payment-regression', { status: 0 }, 'test_debt_card_payment.py');
+  await exercise('missing-checkout-return-regression', { status: 0 }, 'test_booking_checkout_return.py');
   console.log('Release gate diagnostics checks passed (failure, signal, success, missing required regressions).');
 } finally {
   fs.rmSync(root, { recursive: true, force: true });

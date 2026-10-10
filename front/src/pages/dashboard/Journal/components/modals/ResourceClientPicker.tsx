@@ -18,7 +18,9 @@ export function ResourceClientPicker({
   value, onChange, disabled = false, labelClass = 'vk-label', label, placeholder, onClear, clearLabel, history = false,
   canRepeat, onRepeat,
 }: {
-  value: number | null; onChange: (id: number) => void; disabled?: boolean;
+  /** Второй аргумент — имя выбранного: списку клиентов (скидка в Лояльности)
+   *  нужно показать его чипом без второго запроса. */
+  value: number | null; onChange: (id: number, label?: string) => void; disabled?: boolean;
   /** Клавиатурное окно журнала подписывает поля своим классом (kp-section-title). */
   labelClass?: string;
   /** Подпись и текст пустого поля; по умолчанию — клиент записи. */
@@ -73,8 +75,9 @@ export function ResourceClientPicker({
         emptyText={query.isFetching || search.trim() !== debounced
           ? t('common:loading') : t('journal:resourceBooking.noClients')}
         onChange={id => {
-          setSelected(options.find(option => option.value === id) ?? null);
-          onChange(Number(id));
+          const option = options.find(item => item.value === id) ?? null;
+          setSelected(option);
+          onChange(Number(id), option?.label);
         }} />
       {history && value != null && (
         <PastLessonsButton clientId={value} disabled={disabled} canRepeat={canRepeat} onRepeat={onRepeat} />
@@ -85,7 +88,7 @@ export function ResourceClientPicker({
     <div onMouseDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()}>
       <NewClientModal isOpen={creating} onClose={() => setCreating(false)} onSuccess={(form, id) => {
         setSelected({ value: String(id), label: form.name.trim(), hint: form.phone || form.email.trim() || undefined });
-        onChange(id);
+        onChange(id, form.name.trim());
       }} />
     </div>
     {query.error && <div role="alert">{errorMessage(query.error, t)}

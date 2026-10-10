@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { ConfigProgramKey, ProgramKey, DrawerConfig } from '../types';
@@ -84,8 +84,11 @@ export function useLoyalty() {
   });
   const [levelsDraft, setLevelsDraft] = useState<LoyaltyLevel[] | null>(null);
 
+  // Какая программа в панели и показана ли она. Панель (SidePanel) уезжает
+  // анимацией и только потом сообщает, что закрылась (onDrawerClosed) —
+  // тогда содержимое снимается.
   const [drawer, setDrawer] = useState<DrawerConfig | null>(null);
-  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Флаг «первый кадр отрисован» — по нему полоски уровней разъезжаются с 0%.
@@ -104,21 +107,10 @@ export function useLoyalty() {
     first_lesson: configs.first_lesson?.is_enabled ?? false,
   };
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      // Поверх панели открыто окно кита («Новый клиент» у промокода): Escape
-      // закрывает его, а не заодно и панель с недозаполненной формой.
-      if (e.key === 'Escape' && !document.querySelector('.v-overlay')) {
-        setDrawerVisible(false);
-        setTimeout(() => setDrawer(null), 300);
-      }
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, []);
-
+  // Esc закрывает панель сама (SidePanel) — и не трогает её, пока поверх
+  // открыто окно кита («Новый клиент» у промокода).
   const openDrawer = (key: ProgramKey, title: string) => {
-    if (drawer?.key === key && drawerVisible) {
+    if (drawer?.key === key && drawerOpen) {
       closeDrawer();
       return;
     }
@@ -126,13 +118,11 @@ export function useLoyalty() {
     setErrors({});
     setLevelsDraft(key === 'loyalty' ? serverLevels.map(lvl => ({ ...lvl })) : null);
     setDrawer({ key, title });
-    requestAnimationFrame(() => setDrawerVisible(true));
+    setDrawerOpen(true);
   };
 
-  const closeDrawer = () => {
-    setDrawerVisible(false);
-    setTimeout(() => setDrawer(null), 300);
-  };
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+  const onDrawerClosed = useCallback(() => setDrawer(null), []);
 
   // Пороги непрерывны by design: правится только «от» каждого уровня, «до» —
   // всегда «от» следующего; первый уровень всегда «от» 0. Дыры/перекрытия
@@ -259,7 +249,7 @@ export function useLoyalty() {
   };
 
   return {
-    programs, configs, patchConfig, drawer, drawerVisible, mounted,
+    programs, configs, patchConfig, drawer, drawerOpen, onDrawerClosed, mounted,
     saving: saveMut.isPending, errors, loadError, refetchConfigs, configsLoading,
     levelsDraft, updateLevel, addLevel, removeLevel,
     openDrawer, closeDrawer, handleSave, toggleProgram,

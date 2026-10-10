@@ -67,7 +67,8 @@
     "role": "Role",
     "status": "Status",
     "size": "Amount",
-    "optional": "Optional"
+    "optional": "Optional",
+    "required": "Required"
   },
   "days": {
     "mon": "Monday",
@@ -152,7 +153,12 @@
       "cert_not_found": "Certificate not found",
       "cert_used": "Certificate has already been redeemed or is invalid",
       "cert_expired": "Certificate has expired",
-      "first_lesson_amount_required": "Enter the first class discount amount"
+      "first_lesson_amount_required": "Enter the first class discount amount",
+      "discount_not_found": "Discount not found",
+      "discount_invalid": "Check the discount fields",
+      "discount_service_not_found": "One of the selected services no longer exists",
+      "discount_package_not_found": "One of the selected passes no longer exists",
+      "discount_client_not_found": "One of the selected clients no longer exists"
     },
     "notifications": {
       "critical_locked": "This notification cannot be turned off",

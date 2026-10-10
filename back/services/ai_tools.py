@@ -79,6 +79,11 @@ from routers.finances.operations import (
 from routers.finances.salary import list_salaries as _r_list_salaries
 from routers.loyalty.cards import get_stats as _r_loyalty_stats
 from routers.loyalty.certificates import create_certificate as _r_create_certificate
+from routers.loyalty.discounts import (
+    create_discount_campaign as _r_create_discount_campaign,
+    list_discount_campaigns as _r_list_discount_campaigns,
+    update_discount_campaign as _r_update_discount_campaign,
+)
 from routers.loyalty.configs import (
     get_certificate_config as _r_certificate_config,
     get_discount_config as _r_discount_config,
@@ -90,6 +95,7 @@ from routers.loyalty.offers import create_offer as _r_create_offer
 from routers.loyalty.packages import (
     create_package as _r_create_package,
     delete_package as _r_delete_package,
+    list_packages as _r_list_packages,
     get_subscription_config as _r_subscription_config,
 )
 from routers.loyalty.promocodes import create_promocode as _r_create_promocode
@@ -150,6 +156,7 @@ from schemas.finances.accounts import AccountCreate
 from schemas.finances.operations import CounterpartyCreate, OperationCreate
 from schemas.loyalty.certificates import GiftCertificateCreate
 from schemas.loyalty.offers import ClientOfferCreate
+from schemas.loyalty.discounts import DiscountCampaignCreate, DiscountCampaignUpdate
 from schemas.loyalty.promocodes import PromoCodeCreate
 from schemas.loyalty.loyalty import (
     BonusCreate,
@@ -1170,6 +1177,47 @@ class CreatePromoArgs(BaseModel):
     usage_limit: Optional[int] = None
     # Промокод лично для одного клиента: другой его применить не сможет.
     client_id: Optional[int] = None
+
+
+_DISCOUNT_SEGMENT = Literal["new", "vip", "active", "inactive", "has_subscription", "birthday"]
+
+
+class CreateDiscountArgs(BaseModel):
+    name: str = Field(..., max_length=80)
+    value: int = Field(..., ge=1)
+    discount_type: Literal["percent", "amount"] = "percent"
+    # Период «с … по …», обе даты включительно; пусто — без границы.
+    valid_from: Optional[date] = None
+    valid_until: Optional[date] = None
+    # На что: на всё или на выбранные услуги и абонементы (id из Каталога).
+    applies_to: Literal["all", "selected"] = "all"
+    service_ids: list[int] = []
+    package_ids: list[int] = []
+    # Кому: всем, группам (segments) или отдельным клиентам (client_ids).
+    audience: Literal["all", "segments", "clients"] = "all"
+    segments: list[_DISCOUNT_SEGMENT] = []
+    client_ids: list[int] = []
+    birthday_window_days: int = Field(3, ge=0, le=30)
+    min_purchase_amount: Optional[int] = Field(default=None, ge=1)
+
+
+class UpdateDiscountArgs(BaseModel):
+    campaign_id: int
+    name: Optional[str] = Field(default=None, max_length=80)
+    value: Optional[int] = Field(default=None, ge=1)
+    discount_type: Optional[Literal["percent", "amount"]] = None
+    valid_from: Optional[date] = None
+    valid_until: Optional[date] = None
+    applies_to: Optional[Literal["all", "selected"]] = None
+    service_ids: Optional[list[int]] = None
+    package_ids: Optional[list[int]] = None
+    audience: Optional[Literal["all", "segments", "clients"]] = None
+    segments: Optional[list[_DISCOUNT_SEGMENT]] = None
+    client_ids: Optional[list[int]] = None
+    birthday_window_days: Optional[int] = Field(default=None, ge=0, le=30)
+    min_purchase_amount: Optional[int] = Field(default=None, ge=1)
+    # False — поставить скидку на паузу, True — включить обратно.
+    is_active: Optional[bool] = None
 
 
 class NotificationToggleArgs(BaseModel):
@@ -3418,10 +3466,17 @@ async def get_loyalty_programs(ctx: StudioContext, db: AsyncSession, args: NoArg
     (баллы и курс обмена), скидки, подарочные сертификаты, реферальная
     программа, скидка на первое занятие (процент; 100 — бесплатно; настраивается
     в Лояльности, тумблер есть и в Онлайн-записи). Абонементы — отдельно, их
-    отдаёт get_catalog_settings."""
+    отдаёт get_catalog_settings.
+
+    discounts — программа скидок целиком (включена ли, суммируются ли скидки,
+    кешбэк баллами); discount_campaigns — все скидки студии списком: название,
+    размер, период, на что (услуги и абонементы по id) и кому (группы или
+    клиенты), status: active — действует сегодня, scheduled — ещё не началась,
+    ended — кончилась, paused — на паузе."""
     return {
         "cards": _dump(await _r_loyalty_config(ctx=ctx, db=db)),
         "discounts": _dump(await _r_discount_config(ctx=ctx, db=db)),
+        "discount_campaigns": _dump(await _r_list_discount_campaigns(ctx=ctx, db=db)),
         "certificates": _dump(await _r_certificate_config(ctx=ctx, db=db)),
         "referral": _dump(await _r_referral_config(ctx=ctx, db=db)),
         "first_lesson": _dump(await _r_first_lesson_config(ctx=ctx, db=db)),
@@ -3471,6 +3526,48 @@ async def create_promo(ctx: StudioContext, db: AsyncSession, args: CreatePromoAr
         ctx=ctx, db=db,
     )
     return _dump(promo)
+
+
+@tool(
+    mutating=True, roles=("owner",),
+    summary="Создать скидку «{name}» на {value} ({discount_type}), с {valid_from}, по {valid_until}, "
+            "группам: {segments}, клиентам: {client_ids}, услуги: {service_ids}, абонементы: {package_ids}",
+    endpoint="POST /loyalty/discount-campaigns",
+    effect="Скидка сама применится в кассе, мини-приложении и при записи всем, кому положена; программа скидок включится.",
+)
+async def create_discount(ctx: StudioContext, db: AsyncSession, args: CreateDiscountArgs) -> dict:
+    """Создать скидку студии с названием: процент или сумма, период действия
+    (valid_from…valid_until включительно, пусто — без границы), на что — на всё
+    или на выбранные услуги (их занятия) и абонементы (id из get_catalog_settings
+    и списка услуг), кому — всем, группам клиентов (new — новички, vip,
+    active — ходят, inactive — давно не были, has_subscription — с абонементом,
+    birthday — именинники с окном birthday_window_days дней до и после) или
+    отдельным клиентам (client_ids из find_clients). Скидка применяется сама,
+    без кода — в отличие от промокода (create_promo). Из нескольких подходящих
+    скидок действует одна, самая выгодная клиенту."""
+    campaign = await _r_create_discount_campaign(
+        body=DiscountCampaignCreate(**args.model_dump()), ctx=ctx, db=db,
+    )
+    return _dump(campaign)
+
+
+@tool(
+    mutating=True, roles=("owner",),
+    summary="Изменить скидку {campaign_id}: название {name}, размер {value}, с {valid_from}, по {valid_until}, "
+            "{is_active}",
+    endpoint="PATCH /loyalty/discount-campaigns/{campaign_id}",
+    effect="Новые условия скидки начнут действовать сразу; прошедших продаж правка не касается.",
+)
+async def update_discount(ctx: StudioContext, db: AsyncSession, args: UpdateDiscountArgs) -> dict:
+    """Изменить скидку студии по id (из get_loyalty_programs → discount_campaigns):
+    название, размер, период, на что и кому. is_active=false ставит скидку на
+    паузу, true — включает обратно. Передавай только то, что меняется."""
+    patch = args.model_dump(exclude_unset=True)
+    campaign_id = patch.pop("campaign_id")
+    campaign = await _r_update_discount_campaign(
+        campaign_id=campaign_id, body=DiscountCampaignUpdate(**patch), ctx=ctx, db=db,
+    )
+    return _dump(campaign)
 
 
 @tool(roles=("owner",))
@@ -3838,6 +3935,12 @@ class _SafeArgs(dict):
 _WEEKDAYS = ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
 
 
+_SEGMENT_WORDS = {
+    "new": "новички", "vip": "VIP", "active": "постоянные", "inactive": "давно не были",
+    "has_subscription": "с абонементом", "birthday": "именинники",
+}
+
+
 def _render(key: str, value):
     """Расписание и дни недели — словами, а не выпиской JSON.
 
@@ -3854,6 +3957,12 @@ def _render(key: str, value):
         # «— True» в карточке отметки дня человек читает как мусор, а перепутать
         # тут значит поставить выходной вместо рабочего дня.
         return "рабочий день" if value else "выходной"
+    if key == "is_active":
+        return "включить" if value else "поставить на паузу"
+    if key == "discount_type":
+        return {"percent": "%", "amount": "суммой"}.get(value, value)
+    if key == "segments" and isinstance(value, list) and value:
+        return ", ".join(_SEGMENT_WORDS.get(v, v) for v in value)
     if key == "rate_type":
         return {"hourly": "за час", "percent": "% с выручки", "fixed": "за занятие"}.get(value, value)
     if key != "schedule" or not isinstance(value, list) or not value:
@@ -4044,6 +4153,25 @@ async def _resolve_branch(branch_id: int, ctx: StudioContext, db: AsyncSession) 
                        [f"{r.get('name')} (#{r['id']})" for r in rows], [r["id"] for r in rows])
 
 
+async def _resolve_package(package_id: int, ctx: StudioContext, db: AsyncSession) -> str | None:
+    rows = _dump(await _r_list_packages(ctx=ctx, db=db))
+    for row in rows:
+        if row.get("id") == package_id:
+            return row.get("name")
+    raise _NotInStudio("Абонемента", package_id,
+                       [f"{r.get('name')} (#{r['id']})" for r in rows], [r["id"] for r in rows])
+
+
+async def _resolve_discount(campaign_id: int, ctx: StudioContext, db: AsyncSession) -> str | None:
+    # «Изменить скидку #3» подтверждают не глядя — в карточке должно стоять имя.
+    rows = _dump(await _r_list_discount_campaigns(ctx=ctx, db=db))
+    for row in rows:
+        if row.get("id") == campaign_id:
+            return f"«{row.get('name')}»"
+    raise _NotInStudio("Скидки", campaign_id,
+                       [f"{r.get('name')} (#{r['id']})" for r in rows], [r["id"] for r in rows])
+
+
 # Аргумент-идентификатор -> как превратить его в имя. Ключ совпадает с именем
 # поля в схемах инструментов, поэтому новый инструмент с client_id получает
 # разрешение бесплатно.
@@ -4055,6 +4183,7 @@ _RESOLVERS = {
     "service_id": ("услугу", _resolve_service),
     "hall_id": ("зал", _resolve_hall),
     "branch_id": ("филиал", _resolve_branch),
+    "campaign_id": ("скидку", _resolve_discount),
 }
 
 # Поля, где id не один, а списком. Отдельной картой, а не правилом «*_ids —
@@ -4065,6 +4194,8 @@ _LIST_RESOLVERS = {
     "alternate_with": ("услугу", _resolve_service),
     "service_ids": ("услугу", _resolve_service),
     "bundle_service_ids": ("услугу", _resolve_service),
+    "package_ids": ("абонемент", _resolve_package),
+    "client_ids": ("клиента", _resolve_client),
 }
 
 

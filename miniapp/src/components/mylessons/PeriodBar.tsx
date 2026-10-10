@@ -64,6 +64,9 @@ export default function PeriodBar({ mode, onModeChange, anchor, onShift }: Props
             {mode === value && (
               <motion.span
                 layoutId="period-pill"
+                // Без него framer мерил бы всё приложение на каждую перерисовку
+                // раздела (таймер, пришедший список): см. SettingRow.
+                layoutDependency={mode}
                 transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                 className="absolute inset-0 rounded-full bg-card shadow-soft"
               />

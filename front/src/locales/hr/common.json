@@ -67,7 +67,8 @@
     "role": "Uloga",
     "status": "Status",
     "size": "Iznos",
-    "optional": "Neobavezno"
+    "optional": "Neobavezno",
+    "required": "Obavezno"
   },
   "days": {
     "mon": "Ponedjeljak",
@@ -152,7 +153,12 @@
       "cert_not_found": "Poklon-bon nije pronađen",
       "cert_used": "Poklon-bon je već iskorišten ili nije važeći",
       "cert_expired": "Poklon-bon je istekao",
-      "first_lesson_amount_required": "Unesite iznos popusta za prvi termin"
+      "first_lesson_amount_required": "Unesite iznos popusta za prvi termin",
+      "discount_not_found": "Popust nije pronađen",
+      "discount_invalid": "Provjerite polja popusta",
+      "discount_service_not_found": "Jedna od odabranih usluga više ne postoji",
+      "discount_package_not_found": "Jedna od odabranih članarina više ne postoji",
+      "discount_client_not_found": "Jedan od odabranih klijenata više ne postoji"
     },
     "notifications": {
       "critical_locked": "Ova se obavijest ne može isključiti",

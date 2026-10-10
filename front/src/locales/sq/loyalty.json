@@ -14,7 +14,7 @@
     },
     "discounts": {
       "title": "Zbritje dhe cashback",
-      "desc": "Oferta personale për klientët",
+      "desc": "Zbritje sipas datave, shërbimeve dhe klientëve",
       "statLabel": "aktive"
     },
     "certificates": {
@@ -77,20 +77,13 @@
     "levelTo": "deri",
     "deleteLevelTitle": "Ta fshish këtë nivel?",
     "deleteLevelMessage": "Klientët në nivelin „{{name}}” do të kalojnë në nivelin fqinj sipas shpenzimeve të tyre totale.",
-    "discountType": "Lloji i zbritjes",
     "discountTypes": {
       "percentage": "Përqindje (%)",
       "fixed": "Fikse ({{currency}})",
       "cashback": "Cashback"
     },
-    "cashbackPercent": "Përqindja e cashback-ut",
     "discountSize": "Vlera e zbritjes",
-    "minPurchase": "Shuma minimale e blerjes",
     "noLimit": "Pa kufi",
-    "conditions": "Kushtet e zbatimit",
-    "appliesToAll": "Zbatoje për të gjitha shërbimet",
-    "stackable": "Kombinoje me zbritje të tjera",
-    "visibleInCabinet": "Shfaqe klientit në llogarinë e tij",
     "certType": "Lloji i certifikatës",
     "certTypes": {
       "named": "Me emër",
@@ -345,5 +338,222 @@
     "renewed": "Rinovuar",
     "empty": "Nuk ka ende shitje abonimesh",
     "emptySub": "Analitika do të shfaqet pas shitjeve të para të paketave"
+  },
+  "discounts": {
+    "list": {
+      "subtitle": "Aktive: {{active}}, të planifikuara: {{scheduled}}",
+      "subtitleEmpty": "Ende pa zbritje",
+      "active": "aktive tani",
+      "scheduled": "të planifikuara",
+      "used": "herë të zbatuara",
+      "create": "Zbritje e re",
+      "emptyTitle": "Krijoni zbritjen tuaj të parë",
+      "emptyText": "Nisni nga një ide ose nga zero. Çdo zbritje ka datat, shërbimet dhe klientët e saj dhe zbatohet vetë.",
+      "offTitle": "Zbritjet janë të fikura",
+      "offText": "Klientët nuk marrin asnjë nga zbritjet më poshtë për sa kohë programi është i fikur.",
+      "turnOn": "Ndize"
+    },
+    "timeline": {
+      "title": "Afati kohor i zbritjeve",
+      "today": "Sot",
+      "more": "+{{count}} të tjera"
+    },
+    "status": {
+      "active": "Aktive",
+      "scheduled": "E planifikuar",
+      "ended": "E përfunduar",
+      "paused": "Në pauzë"
+    },
+    "card": {
+      "edit": "Ndrysho zbritjen {{name}}",
+      "daysLeft_one": "Edhe {{count}} ditë",
+      "daysLeft_other": "Edhe {{count}} ditë",
+      "startsIn_one": "Nis pas {{count}} dite",
+      "startsIn_other": "Nis pas {{count}} ditësh",
+      "ended": "Periudha përfundoi",
+      "noEnd": "Pa datë mbarimi",
+      "used_one": "Zbatuar {{count}} herë",
+      "used_other": "Zbatuar {{count}} herë",
+      "notUsed": "Ende e pazbatuar"
+    },
+    "editor": {
+      "newTitle": "Zbritje e re",
+      "back": "Kthehu te zbritjet",
+      "progress": "Të detyrueshme të plotësuara: {{filled}} nga {{total}}",
+      "name": "Emri",
+      "namePlaceholder": "Për shembull, Java e jogës së vjeshtës",
+      "value": "Masa e zbritjes",
+      "percent": "Përqindje",
+      "amount": "Shuma, {{currency}}",
+      "period": "Kur vlen",
+      "scope": "Për çfarë vlen",
+      "audience": "Për kë",
+      "minimum": "Shuma minimale e blerjes",
+      "minimumPlaceholder": "Pa minimum",
+      "minimumHint": "Nën shumën minimale zbritja nuk zbatohet. Nëse përshtaten disa zbritje, klienti merr më të leverdishmen.",
+      "active": "Gjendja",
+      "activeOn": "E ndezur, zbatohet vetë",
+      "activeOff": "Në pauzë: e ruajtur, por nuk zbatohet",
+      "create": "Krijo zbritjen",
+      "save": "Ruaj",
+      "delete": "Fshi"
+    },
+    "preview": {
+      "untitled": "Zbritje pa emër",
+      "percentKind": "nga çmimi",
+      "amountKind": "në çdo blerje",
+      "days_one": "{{count}} ditë",
+      "days_other": "{{count}} ditë",
+      "minimum": "Nga {{amount}}"
+    },
+    "presets": {
+      "none": "Pa datë mbarimi",
+      "noneHint": "Derisa ta vendosni në pauzë",
+      "week": "7 ditë",
+      "month": "Deri në fund të muajit",
+      "days30": "30 ditë",
+      "custom": "Data të veta",
+      "customHint": "Zgjidhni në kalendar",
+      "clear": "Pastro datat"
+    },
+    "calendar": {
+      "prev": "Muaji i mëparshëm",
+      "next": "Muaji tjetër",
+      "pickStart": "Zgjidhni ditën e parë",
+      "pickEnd": "Tani zgjidhni ditën e fundit",
+      "again": "Zgjidhni një ditë për të nisur nga e para"
+    },
+    "scope": {
+      "all": "Për gjithçka",
+      "selected": "Për të zgjedhurat",
+      "allHint": "Çdo seancë, vizitë e vetme ose anëtarësim që blen klienti.",
+      "services": "Shërbimet",
+      "packages": "Anëtarësimet",
+      "counter": "{{picked}} nga {{total}}",
+      "allOf": "Zgjidh të gjitha",
+      "none": "Pastro",
+      "classes_one": "{{count}} seancë",
+      "classes_other": "{{count}} seanca",
+      "noServices": "Ende nuk ka shërbime në Katalog",
+      "noPackages": "Ende nuk ka anëtarësime në Katalog"
+    },
+    "audience": {
+      "all": "Të gjithëve",
+      "allHint": "Çdo klienti të studios",
+      "segments": "Grupeve",
+      "segmentsHint": "Të rinjve, festuesve dhe të tjerëve",
+      "clients": "Klientëve të caktuar",
+      "clientsHint": "Vetëm atyre që zgjidhni",
+      "people_one": "{{count}} klient",
+      "people_other": "{{count}} klientë",
+      "birthdayWindow_one": "Ditëlindja brenda {{count}} dite nga seanca",
+      "birthdayWindow_other": "Ditëlindja brenda {{count}} ditëve nga seanca",
+      "birthdayExact": "Vetëm në vetë ditëlindjen",
+      "less": "Më pak ditë",
+      "more": "Më shumë ditë",
+      "pickGroups": "Zgjidhni një ose disa grupe",
+      "reach_one": "Tani përshtatet {{count}} klient nga {{total}}",
+      "reach_other": "Tani përshtaten {{count}} klientë nga {{total}}",
+      "addClient": "Shto klient",
+      "searchClient": "Kërko sipas emrit ose telefonit",
+      "noClients": "Ende nuk janë shtuar klientë",
+      "removeClient": "Hiq {{name}}"
+    },
+    "segments": {
+      "new": {
+        "title": "Të rinj",
+        "hint": "Erdhën së fundi në studio"
+      },
+      "birthday": {
+        "title": "Festues",
+        "hint": "Ditëlindja afër datës së seancës"
+      },
+      "vip": {
+        "title": "VIP",
+        "hint": "Vijnë dhe shpenzojnë më shumë"
+      },
+      "active": {
+        "title": "Të rregullt",
+        "hint": "Vijnë rregullisht"
+      },
+      "inactive": {
+        "title": "Kanë kohë pa ardhur",
+        "hint": "Kanë ndalur së ardhuri"
+      },
+      "has_subscription": {
+        "title": "Me anëtarësim",
+        "hint": "Kanë anëtarësim të vlefshëm"
+      }
+    },
+    "summary": {
+      "everything": "Të gjitha shërbimet dhe anëtarësimet",
+      "everyone": "Të gjithë klientët",
+      "nothingChosen": "Asgjë e zgjedhur",
+      "nobodyChosen": "Askush i zgjedhur",
+      "andMore": "{{names}} +{{count}}",
+      "birthday_one": "Festues ±{{count}} ditë",
+      "birthday_other": "Festues ±{{count}} ditë",
+      "birthdayExact": "Në ditëlindje"
+    },
+    "period": {
+      "range": "{{from}} – {{until}}",
+      "from": "Nga {{date}}",
+      "until": "Deri më {{date}}",
+      "forever": "Pa datë mbarimi"
+    },
+    "templates": {
+      "title": "Nisni nga një ide",
+      "birthday": {
+        "name": "Dhuratë ditëlindjeje",
+        "hint": "−15% rreth ditëlindjes"
+      },
+      "newcomers": {
+        "name": "Zbritje mirëseardhjeje",
+        "hint": "−10% për të rinjtë"
+      },
+      "comeback": {
+        "name": "Kthehuni",
+        "hint": "−20% për ata që kanë kohë pa ardhur, 30 ditë"
+      },
+      "passes": {
+        "name": "Ofertë anëtarësimesh",
+        "hint": "−10% për të gjitha anëtarësimet"
+      },
+      "week": {
+        "name": "Java e zbritjeve",
+        "hint": "−15% për gjithçka për 7 ditë"
+      },
+      "blank": {
+        "name": "Nga zero",
+        "hint": "I rregulloni të gjitha vetë"
+      }
+    },
+    "rules": {
+      "title": "Rregulla për të gjitha zbritjet",
+      "stackable": "Zbritjet mblidhen",
+      "stackableOn": "Zbritja e studios shtohet te kodi promocional, zbritja personale dhe zbritja për seancën e parë",
+      "stackableOff": "Vlen vetëm më e leverdishmja, zbritjet nuk mblidhen",
+      "cashback": "Cashback në pikë",
+      "cashbackHint": "Një pjesë e çdo pagese kthehet në kartën e klientit si pikë",
+      "cashbackExample_one": "Për {{amount}} klienti merr {{count}} pikë",
+      "cashbackExample_other": "Për {{amount}} klienti merr {{count}} pikë"
+    },
+    "errors": {
+      "name": "Jepini zbritjes një emër",
+      "scope": "Zgjidhni të paktën një shërbim ose anëtarësim",
+      "segments": "Zgjidhni të paktën një grup",
+      "clients": "Shtoni të paktën një klient",
+      "fillRequired": "Plotësoni fushat e detyrueshme"
+    },
+    "confirmDelete": {
+      "title": "Të fshihet zbritja?",
+      "message": "„{{name}}” nuk do të zbatohet më. Shitjet e kaluara ruajnë çmimin e tyre."
+    },
+    "toasts": {
+      "created": "Zbritja u krijua",
+      "saved": "Zbritja u ruajt",
+      "deleted": "Zbritja u fshi",
+      "programOn": "Zbritjet janë ndezur"
+    }
   }
 }

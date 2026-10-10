@@ -10,6 +10,8 @@ interface SupportModalProps {
   onClose: () => void;
   /** Студия, чей это кабинет: связываться клиент будет с ней, а не с Velora. */
   studio: StudioInfo | null;
+  /** Поверх другого листа (контакты из листа занятия). */
+  layer?: number;
 }
 
 type Channel = {
@@ -41,7 +43,7 @@ const prettyHost = (website: string) =>
  * одного — честное пустое состояние. Пустая строка «Телефон: —» бесполезна
  * ровно так же, как прежняя заглушка.
  */
-export default function SupportModal({ isOpen, onClose, studio }: SupportModalProps) {
+export default function SupportModal({ isOpen, onClose, studio, layer }: SupportModalProps) {
   const { t } = useTranslation();
   const { tg, vibrateLight } = useTelegram();
 
@@ -102,6 +104,7 @@ export default function SupportModal({ isOpen, onClose, studio }: SupportModalPr
     <Sheet
       isOpen={isOpen}
       onClose={onClose}
+      layer={layer}
       kicker={t('supportModal.tag')}
       title={t('supportModal.title')}
       subtitle={studio?.name ? t('supportModal.sub', { studio: studio.name }) : undefined}

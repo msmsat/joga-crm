@@ -67,7 +67,8 @@
     "role": "Rol",
     "status": "Estado",
     "size": "Importe",
-    "optional": "Opcional"
+    "optional": "Opcional",
+    "required": "Obligatorio"
   },
   "days": {
     "mon": "Lunes",
@@ -152,7 +153,12 @@
       "cert_not_found": "Vale regalo no encontrado",
       "cert_used": "El vale regalo ya se ha canjeado o no es válido",
       "cert_expired": "El vale regalo ha caducado",
-      "first_lesson_amount_required": "Indica el importe del descuento de la primera clase"
+      "first_lesson_amount_required": "Indica el importe del descuento de la primera clase",
+      "discount_not_found": "Descuento no encontrado",
+      "discount_invalid": "Revisa los campos del descuento",
+      "discount_service_not_found": "Uno de los servicios elegidos ya no existe",
+      "discount_package_not_found": "Una de las membresías elegidas ya no existe",
+      "discount_client_not_found": "Uno de los clientes elegidos ya no existe"
     },
     "notifications": {
       "critical_locked": "Esta notificación no se puede desactivar",

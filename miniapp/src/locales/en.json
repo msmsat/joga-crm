@@ -199,6 +199,72 @@
       "edit_short": "Edit"
     }
   },
+  "lessonSheet": {
+    "ticket": {
+      "now": "Happening now",
+      "mat": "Mat"
+    },
+    "pay": {
+      "label": "Payment",
+      "pending": "Your payment is already in progress — we're waiting for Stripe to confirm it. If you've paid, the status will update on its own.",
+      "stale": "Nothing to pay: the booking is already paid, cancelled, or the class has started.",
+      "unavailable": "Online payment didn't go through right now. Try again or pay at the studio.",
+      "opening": "Opening payment…",
+      "secure": "Secure payment via Stripe",
+      "hold_title": "Payment not finished",
+      "hold_hint": "Your spot is held while you pay. If you don't finish, the booking is released.",
+      "resume": "Continue payment",
+      "already_paid": "Already paid? Check status",
+      "venue_title": "Pay at the studio",
+      "venue_unpaid": "Unpaid",
+      "venue_after_approval": "Payment after the studio confirms",
+      "venue_hint": "At the front desk before class",
+      "venue_desk": "Pay at the front desk before class",
+      "switch_hint": "Changed your mind? Pay by card now — you won't need to pay at the studio.",
+      "by_card": "Pay by card",
+      "subscription": "With your pass",
+      "subscription_hint": "This class was deducted from your pass",
+      "trial_hint": "Your first class at the studio",
+      "free": "Free class",
+      "paid": "Paid",
+      "paid_hint": "The studio has received your payment",
+      "review_title": "Payment needs review",
+      "review_hint": "The studio could not complete this payment in its system. Please do not pay again: contact the studio to check the charge or refund."
+    },
+    "place": {
+      "route": "Get directions"
+    },
+    "calendar": {
+      "add": "Add to calendar",
+      "google": "Opens Google Calendar",
+      "hint": "Google, Apple or Outlook",
+      "google_short": "Google Calendar",
+      "apple": "Apple or Outlook"
+    },
+    "contact": {
+      "title": "Contact the studio",
+      "hint": "Phone, email or website"
+    },
+    "cancel": {
+      "closed": "Online cancellation is closed. If your plans changed, message the studio.",
+      "until_start": "You can cancel any time before the class starts.",
+      "until": "You can cancel until {{when}}.",
+      "question": "Cancel your booking for {{when}}?",
+      "keep": "Keep it",
+      "confirm": "Yes, cancel"
+    },
+    "about": {
+      "title": "About the class",
+      "more": "Read more",
+      "less": "Show less"
+    },
+    "card": {
+      "hold": "Payment not finished",
+      "venue": "Due at the studio: {{amount}}",
+      "resume": "Continue",
+      "pay": "Pay"
+    }
+  },
   "schedule": {
     "title": "Schedule",
     "today": "Today",
@@ -564,7 +630,11 @@
       "UNKNOWN": "Could not create the booking. Please try again.",
       "AMOUNT_CHANGED": "The amount has changed — check the receipt and confirm again.",
       "NOTHING_TO_PAY": "Nothing to pay online — book and pay at the studio.",
-      "PHONE_REQUIRED": "Add your phone number to book."
+      "PHONE_REQUIRED": "Add your phone number to book.",
+      "NO_FUNDING": "The payment terms have changed. Refresh the page or contact the studio.",
+      "billing": {
+        "suspended": "Online booking is temporarily unavailable at this studio. Please contact the studio."
+      }
     }
   },
   "units": {
@@ -726,7 +796,11 @@
       "first_lesson": "First class",
       "manual": "Discount"
     },
-    "prepayOnly": "The studio asks to pay in advance"
+    "prepayOnly": "The studio asks to pay in advance",
+    "returnChecking": "Checking payment status…",
+    "returnPending": "Stripe is still processing your payment. We will update the booking once it is confirmed. Please do not pay again.",
+    "returnError": "We could not safely close this payment yet. Check its status before choosing another payment method.",
+    "checkStatus": "Check payment status"
   },
   "pass": {
     "kicker": "Membership",

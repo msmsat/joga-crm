@@ -291,7 +291,9 @@
     "update_service": "Actualizando el servicio…",
     "update_staff": "Actualizando al miembro del equipo…",
     "add_studio_time": "Añadiendo tiempo de estudio…",
-    "remove_studio_time": "Quitando tiempo de estudio…"
+    "remove_studio_time": "Quitando tiempo de estudio…",
+    "create_discount": "Creando un descuento…",
+    "update_discount": "Cambiando el descuento…"
   },
   "quota": {
     "trialLow": "Quedan pocas solicitudes de prueba.",

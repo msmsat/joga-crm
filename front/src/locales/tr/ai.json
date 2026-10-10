@@ -291,7 +291,9 @@
     "update_service": "Hizmet güncelleniyor…",
     "update_staff": "Ekip üyesi güncelleniyor…",
     "add_studio_time": "Stüdyo zamanı ekleniyor…",
-    "remove_studio_time": "Stüdyo zamanı kaldırılıyor…"
+    "remove_studio_time": "Stüdyo zamanı kaldırılıyor…",
+    "create_discount": "İndirim oluşturuluyor…",
+    "update_discount": "İndirim değiştiriliyor…"
   },
   "quota": {
     "trialLow": "Az sayıda deneme isteği kaldı.",

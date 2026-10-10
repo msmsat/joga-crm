@@ -60,7 +60,7 @@ async def _run():
         client = Client(studio_id=sid, name="Boris", is_active=True)
         db.add(client); await db.flush()
 
-        cfg = StudioDiscountConfig(studio_id=sid, is_enabled=True, discount_type="cashback", discount_value=5)
+        cfg = StudioDiscountConfig(studio_id=sid, is_enabled=True, cashback_percent=5)
         db.add(cfg); await db.flush()
 
         body = OperationCreate(

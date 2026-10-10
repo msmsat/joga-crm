@@ -11,7 +11,7 @@ from datetime import date, timedelta
 warnings.filterwarnings("ignore")
 
 from database import async_session_maker
-from models import Client, ClientOffer, Studio, StudioDiscountConfig, StudioPromoCode
+from models import Client, ClientOffer, DiscountCampaign, Studio, StudioDiscountConfig, StudioPromoCode
 from services.pricing import resolve_price
 
 
@@ -32,11 +32,11 @@ async def _run():
         assert resolved.final_price == 1000
         assert resolved.offer is None and resolved.promo is None
 
-        # студийная скидка 10% (percentage -> percent) + активный оффер 20% —
-        # без stackable берём самую выгодную (оффер)
-        cfg = StudioDiscountConfig(studio_id=sid, is_enabled=True, discount_type="percentage",
-                                   discount_value=10, stackable=False)
+        # скидка студии 10% (DiscountCampaign «на всё и всем») + активный
+        # оффер 20% — без stackable берём самую выгодную (оффер)
+        cfg = StudioDiscountConfig(studio_id=sid, is_enabled=True, stackable=False)
         db.add(cfg)
+        db.add(DiscountCampaign(studio_id=sid, name="Всем", discount_type="percent", value=10))
         offer = ClientOffer(studio_id=sid, client_id=c_offer.id, discount_type="percent", value=20,
                             reason="manual", scope="renewal", valid_until=date.today() + timedelta(days=5))
         db.add(offer)
@@ -47,9 +47,19 @@ async def _run():
         assert resolved.offer is not None and resolved.offer.id == offer.id
         assert resolved.studio_discount_applied == 0  # не применена — не самая выгодная
 
-        # cashback не снижает цену (переключаем ту же конфигурацию: studio_id уникален)
-        cfg.discount_type = "cashback"
-        cfg.discount_value = 15
+        # скидка студии — тому, у кого нет оффера
+        resolved = await resolve_price(db, sid, c_none.id, 1000, None)
+        assert resolved.final_price == 900 and resolved.studio_discount_applied == 100
+        assert resolved.campaign is not None and resolved.campaign.name == "Всем"
+
+        # программа выключена — скидки студии нет; кешбэк цену не снижает вовсе
+        cfg.is_enabled = False
+        await db.flush()
+        resolved = await resolve_price(db, sid, c_none.id, 1000, None)
+        assert resolved.final_price == 1000
+        cfg.is_enabled = True
+        cfg.cashback_percent = 15
+        await db.execute(DiscountCampaign.__table__.delete().where(DiscountCampaign.studio_id == sid))
         await db.flush()
         resolved = await resolve_price(db, sid, c_none.id, 1000, None)
         assert resolved.final_price == 1000
@@ -64,11 +74,11 @@ async def _run():
         c = Client(studio_id=sid2, name="Stacker", is_active=True)
         db.add(c); await db.flush()
 
-        cfg = StudioDiscountConfig(studio_id=sid2, is_enabled=True, discount_type="fixed",
-                                   discount_value=100, stackable=True)
+        cfg = StudioDiscountConfig(studio_id=sid2, is_enabled=True, stackable=True)
+        campaign = DiscountCampaign(studio_id=sid2, name="Сотня", discount_type="amount", value=100)
         offer = ClientOffer(studio_id=sid2, client_id=c.id, discount_type="amount", value=50,
                             reason="manual", scope="renewal")
-        db.add_all([cfg, offer])
+        db.add_all([cfg, campaign, offer])
         await db.flush()
 
         resolved = await resolve_price(db, sid2, c.id, 1000, None)
@@ -85,9 +95,11 @@ async def _run():
         sid3 = s3.id
         c = Client(studio_id=sid3, name="Cheap", is_active=True)
         db.add(c); await db.flush()
-        cfg = StudioDiscountConfig(studio_id=sid3, is_enabled=True, discount_type="percentage",
-                                   discount_value=10, min_purchase_amount=500)
-        db.add(cfg); await db.flush()
+        cfg = StudioDiscountConfig(studio_id=sid3, is_enabled=True)
+        db.add(cfg)
+        db.add(DiscountCampaign(studio_id=sid3, name="От 500", discount_type="percent", value=10,
+                                min_purchase_amount=500))
+        await db.flush()
 
         resolved = await resolve_price(db, sid3, c.id, 300, None)
         assert resolved.final_price == 300  # ниже порога — не применилась

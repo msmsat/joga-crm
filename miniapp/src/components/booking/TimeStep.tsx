@@ -86,7 +86,8 @@ export default function TimeStep({ flow, onOtherMaster }: { flow: Flow; onOtherM
           animate={{ opacity: 1, y: 0 }}
           className="mb-4 rounded-2xl bg-danger/12 px-4 py-3 text-[13px] font-semibold leading-snug text-foreground"
         >
-          {t(`resource.errors.${flow.notice.code}`, { defaultValue: t('resource.bookError') })}
+          {flow.notice.code === 'UNKNOWN' && flow.notice.message ? flow.notice.message
+            : t(`resource.errors.${flow.notice.code}`, { defaultValue: flow.notice.message || t('resource.bookError') })}
         </motion.div>
       )}
 

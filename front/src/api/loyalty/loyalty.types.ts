@@ -5,14 +5,51 @@ export interface LoyaltyConfig {
   expiry_period: string
 }
 
+// Программа «Скидки» целиком: тумблер и правила, общие для всех скидок
+// (суммирование, кешбэк баллами). Сами скидки — DiscountCampaign ниже.
 export interface DiscountConfig {
   is_enabled: boolean
-  discount_type: string
-  discount_value: number
-  min_purchase_amount: number | null
-  applies_to_all_services: boolean
   stackable: boolean
   visible_in_cabinet: boolean
+  // Процент оплаты, возвращаемый баллами; null — кешбэк выключен.
+  cashback_percent: number | null
+}
+
+export type DiscountSegment = 'new' | 'vip' | 'active' | 'inactive' | 'has_subscription' | 'birthday'
+export type DiscountStatus = 'active' | 'scheduled' | 'ended' | 'paused'
+
+// Именованная скидка студии (back/models/loyalty.py DiscountCampaign): когда
+// (период), на что (всё или выбранные услуги и абонементы) и кому (всем,
+// группам клиентов или отдельным клиентам).
+export interface DiscountCampaign {
+  id: number
+  name: string
+  discount_type: 'percent' | 'amount'
+  value: number
+  valid_from: string | null
+  valid_until: string | null
+  applies_to: 'all' | 'selected'
+  service_ids: number[]
+  package_ids: number[]
+  audience: 'all' | 'segments' | 'clients'
+  segments: DiscountSegment[]
+  client_ids: number[]
+  clients: { id: number; name: string }[]
+  birthday_window_days: number
+  min_purchase_amount: number | null
+  is_active: boolean
+  used_count: number
+  created_at: string
+  status: DiscountStatus
+}
+
+export type DiscountCampaignPayload = Omit<DiscountCampaign, 'id' | 'clients' | 'used_count' | 'created_at' | 'status'>
+
+// Охват групп: всего клиентов в базе, в выбранных группах вместе и в каждой.
+export interface DiscountReach {
+  clients: number
+  total: number
+  segments: Record<DiscountSegment, number>
 }
 
 export interface CertificateConfig {

@@ -33,14 +33,8 @@ export function validateConfig(
     if (c?.denominations?.some(d => d <= 0)) errors.denominations = t('validation.positive');
   }
 
-  if (key === 'discounts') {
-    const c = configs.discounts;
-    // 'fixed' — сумма в валюте, не проценты: верхняя граница 100 не применима.
-    const isFixed = c?.discount_type === 'fixed';
-    if (!c || c.discount_value < 0 || (!isFixed && c.discount_value > 100)) {
-      errors.discount_value = isFixed ? t('validation.minZero') : t('validation.range0to100');
-    }
-  }
+  // Скидки сюда не приходят: каждая скидка и общие правила программы
+  // сохраняются сразу из своей панели (components/drawer/discounts/).
 
   if (key === 'referral') {
     const c = configs.referral;

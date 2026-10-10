@@ -69,7 +69,9 @@ async function performRequest<T>(path: string, options: ApiOptions): Promise<T> 
     const message =
       typeof errorData?.detail === 'string'
         ? errorData.detail
-        : i18n.t('common.request_error', { status: response.status });
+        : typeof errorData?.detail?.message === 'string'
+          ? errorData.detail.message
+          : i18n.t('common.request_error', { status: response.status });
 
     if (response.status === 401 && session) {
       // Токен просрочен/невалиден — сессия мертва, дальше жить с ней нельзя.

@@ -123,7 +123,7 @@ export default function WizardRail({ flow, catalog, preview }: Props) {
               className="group relative flex w-full items-center gap-3 rounded-[18px] px-3 py-3 text-left disabled:cursor-default"
             >
               {active ? (
-                <motion.span layoutId="wizard-rail" transition={spring} className="absolute inset-0 rounded-[18px] bg-card shadow-soft" />
+                <motion.span layoutId="wizard-rail" layoutDependency={flow.step} transition={spring} className="absolute inset-0 rounded-[18px] bg-card shadow-soft" />
               ) : (
                 <span className="absolute inset-0 rounded-[18px] transition-colors duration-200 group-enabled:group-hover:bg-card/70" />
               )}
@@ -170,7 +170,7 @@ export default function WizardRail({ flow, catalog, preview }: Props) {
           className="group relative flex w-full items-center gap-3 rounded-[18px] px-3 py-3 text-left disabled:cursor-default"
         >
           {flow.step === 'summary' && !flow.booking ? (
-            <motion.span layoutId="wizard-rail" transition={spring} className="absolute inset-0 rounded-[18px] bg-card shadow-soft" />
+            <motion.span layoutId="wizard-rail" layoutDependency={flow.step} transition={spring} className="absolute inset-0 rounded-[18px] bg-card shadow-soft" />
           ) : (
             <span className="absolute inset-0 rounded-[18px] transition-colors duration-200 group-enabled:group-hover:bg-card/70" />
           )}

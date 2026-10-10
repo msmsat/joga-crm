@@ -1,5 +1,6 @@
 import BusinessTermsProvider from './components/BusinessTermsProvider';
 import { useState, useEffect, useMemo, useRef, useCallback, memo, startTransition } from 'react';
+import { flushSync } from 'react-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import HomePage from './pages/home';
@@ -26,6 +27,8 @@ import { whenIdle } from './lib/idle';
 import PaymentSuccess from './components/payment/PaymentSuccess';
 import PaymentWaiting from './components/payment/PaymentWaiting';
 import { usePaymentReconciliation } from './hooks/usePaymentReconciliation';
+import { useWarmHiddenPanes } from './hooks/useWarmHiddenPanes';
+import { usePageSlide } from './hooks/usePageSlide';
 import { dismissPaymentSuccess } from './lib/paymentSync';
 import './App.css';
 
@@ -261,6 +264,9 @@ export default function App() {
   // заранее раздел открывается как повторный: показать готовое. Только с
   // сессией — гостю кабинет закрыт (`authGate`), и скрытый профиль запомнил
   // бы гостевой 401.
+  // Спрятанный раздел при этом держится уложенным (useWarmHiddenPanes), так
+  // что и первый его показ — одна отрисовка, а не раскладка страницы в кадре
+  // тапа.
   const prebuilt = useRef(false);
   useEffect(() => {
     if (!user || isLoading) return;
@@ -278,9 +284,15 @@ export default function App() {
       cancelIdle();
     };
   }, [user, isLoading, loyalty, visited]);
+  const column = useRef<HTMLDivElement>(null);
+  useWarmHiddenPanes(column, `${isLoading}|${isAddingAccount}|${activeTab}|${visited.join(',')}|${Boolean(user)}`);
+
+  const haptic = useCallback(() => {
+    if (tg) tg.HapticFeedback.impactOccurred('light');
+  }, [tg]);
 
   const switchTab = useCallback((tab: string) => {
-    if (tg) tg.HapticFeedback.impactOccurred('light');
+    haptic();
     setActiveTab(tab);
     // Новый раздел иначе открывался бы на той же высоте, где бросили прошлый.
     // Прокручиваемое — разное: на десктопе документ, на телефоне оболочка
@@ -288,7 +300,36 @@ export default function App() {
     // ветвление по ширине окна здесь было бы дороже.
     window.scrollTo({ top: 0 });
     scroller.current?.scrollTo({ top: 0 });
-  }, [tg]);
+  }, [haptic]);
+
+  // Гость остаётся на витрине, даже если ссылка вела в кабинет (`?tab=my`):
+  // намерение живёт в activeTab и откроется само, как только появится токен.
+  const screenTab = user || GUEST_TABS.includes(activeTab) ? activeTab : DEFAULT_TAB;
+  const navItems = visibleNavItems(Boolean(loyalty?.enabled));
+
+  // Телефон: разделы — лента. Свайп тянет её за пальцем, тап по капсуле
+  // прокатывает до нужного раздела (hooks/usePageSlide.ts). Гостю листать
+  // нечего — ему открыта одна главная.
+  const dock = useRef<HTMLElement>(null);
+  const mountTab = useCallback((tab: string) => {
+    flushSync(() => setVisited((tabs) => (tabs.includes(tab) ? tabs : [...tabs, tab])));
+  }, []);
+  const { target: slideTarget, go: slideTo } = usePageSlide({
+    column,
+    scroller,
+    dock,
+    order: navItems.map((item) => item.id),
+    active: screenTab,
+    enabled: !isDesktop && Boolean(user),
+    mount: mountTab,
+    onSelect: haptic,
+    onCommit: setActiveTab,
+  });
+
+  /** Тап по меню и переход с главной — лентой, где она есть, иначе мгновенно. */
+  const selectTab = useCallback((tab: string) => {
+    if (!slideTo(tab)) switchTab(tab);
+  }, [slideTo, switchTab]);
 
   /**
    * «Использовать сертификат» из Клуба: переносит клиента в покупку абонемента
@@ -416,10 +457,6 @@ export default function App() {
   // у разделов кабинета. Отдельного флага под это нет — это следствие текущего
   // состояния, а не решение, принятое где-то раньше и способное с ним разойтись.
   const authGate = !user && (pendingBooking !== null || !GUEST_TABS.includes(activeTab));
-  const navItems = visibleNavItems(Boolean(loyalty?.enabled));
-  // Гость остаётся на витрине, даже если ссылка вела в кабинет (`?tab=my`):
-  // намерение живёт в activeTab и откроется само, как только появится токен.
-  const screenTab = user || GUEST_TABS.includes(activeTab) ? activeTab : DEFAULT_TAB;
 
   // Правка состояния прямо в рендере — тот самый случай, для которого React её
   // и допускает: новый раздел обязан попасть в разметку в этом же кадре, а не
@@ -431,7 +468,7 @@ export default function App() {
       <Home
         user={user}
         catalog={catalog}
-        onNavigate={switchTab}
+        onNavigate={selectTab}
         onBuySubscription={goBuySubscription}
         onCatalogRefresh={loadCatalog}
         onNeedAuth={requireAuth}
@@ -497,15 +534,21 @@ export default function App() {
           />
         )}
 
-        <div className="min-w-0 flex-1">
-          {/* Переключение вкладки — мгновенное: показать один раздел, спрятать
-              другой. Здесь стоял кроссфейд с mode="wait" — старый экран уходил
-              0.16с, и только потом начинал появляться новый, а вместе с ним
-              заново монтировалось всё его содержимое. В сумме тап по меню
+        {/* `relative` — точка отсчёта для спрятанных разделов (`.tab-pane`,
+            index.css): они лежат поверх колонки, а не под активным.
+            `page-track` — лента телефона: свайп по горизонтали её, по
+            вертикали — прокрутки (index.css). */}
+        <div ref={column} className="page-track relative min-w-0 flex-1">
+          {/* Переключение вкладки — показать один раздел, спрятать другой, без
+              пересборки. Здесь стоял кроссфейд с mode="wait" — старый экран
+              уходил 0.16с, и только потом начинал появляться новый, а вместе с
+              ним заново монтировалось всё его содержимое. В сумме тап по меню
               занимал около секунды видимого движения, и это читалось как
               подтормаживание, а не как переход. Открытые разделы теперь просто
               остаются в DOM (`visited`), а вместе с ними остаются на местах уже
-              загруженные списки.
+              загруженные списки. На телефоне разделы ещё и едут лентой
+              (usePageSlide): это движение готовых страниц на видеокарте, а не
+              их сборка, — и раздел становится текущим, когда уже доехал.
 
               Одна колонка сверху вниз. На десктопе у неё есть потолок ширины и
               она стоит по центру: карточка в 1600px — это строка текста,
@@ -514,12 +557,17 @@ export default function App() {
               помнить каждый экран. Величина — `--nav-clearance` (index.css):
               высота капсулы, её подъём и безопасная зона снизу. */}
           {/* Закрытые экраны монтируем только после входа: скрытый профиль
-              тоже выполняет эффекты и иначе запоминает гостевой 401. */}
+              тоже выполняет эффекты и иначе запоминает гостевой 401.
+              Спрятанный раздел — `data-inactive`, а не `hidden`: тот даёт
+              `display: none`, и браузер выбрасывает стили и раскладку
+              раздела, а на каждый показ считает их заново (см. `.tab-pane`). */}
           {visited.filter((tab) => user || GUEST_TABS.includes(tab)).map((tab) => (
             <div
               key={tab}
-              hidden={tab !== screenTab}
-              className="mx-auto w-full pb-[var(--nav-clearance)] dt:max-w-[980px] dt:px-8 dt:pb-20"
+              data-tab={tab}
+              data-inactive={tab !== screenTab || undefined}
+              aria-hidden={tab !== screenTab || undefined}
+              className="tab-pane mx-auto w-full pb-[var(--nav-clearance)] dt:max-w-[980px] dt:px-8 dt:pb-20"
             >
               {screens[tab]}
             </div>
@@ -530,7 +578,9 @@ export default function App() {
 
       {/* Снаружи `.app-scroll` намеренно: внутри прокрутки капсула уехала бы
           вверх вместе с содержимым, а на раме она стоит неподвижно. */}
-      {!isDesktop && <BottomNav active={screenTab} onSelect={switchTab} items={navItems} />}
+      {/* Линза — на разделе, к которому лента уже едет (`slideTarget`), а не
+          на том, что ещё на экране: меню и страница движутся вместе. */}
+      {!isDesktop && <BottomNav ref={dock} active={slideTarget ?? screenTab} onSelect={selectTab} items={navItems} />}
 
       {payments.success && user && (
         <PaymentSuccess

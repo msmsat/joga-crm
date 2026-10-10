@@ -67,7 +67,8 @@
     "role": "Szerepkör",
     "status": "Állapot",
     "size": "Összeg",
-    "optional": "Nem kötelező"
+    "optional": "Nem kötelező",
+    "required": "Kötelező"
   },
   "days": {
     "mon": "Hétfő",
@@ -152,7 +153,12 @@
       "cert_not_found": "Az utalvány nem található",
       "cert_used": "Az utalványt már beváltották, vagy érvénytelen",
       "cert_expired": "Az utalvány lejárt",
-      "first_lesson_amount_required": "Adja meg az első óra kedvezményének összegét"
+      "first_lesson_amount_required": "Adja meg az első óra kedvezményének összegét",
+      "discount_not_found": "A kedvezmény nem található",
+      "discount_invalid": "Ellenőrizze a kedvezmény mezőit",
+      "discount_service_not_found": "Az egyik kiválasztott szolgáltatás már nem létezik",
+      "discount_package_not_found": "Az egyik kiválasztott bérlet már nem létezik",
+      "discount_client_not_found": "Az egyik kiválasztott ügyfél már nem létezik"
     },
     "notifications": {
       "critical_locked": "Ezt az értesítést nem lehet kikapcsolni",

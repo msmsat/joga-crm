@@ -139,3 +139,38 @@ def test_changed_price_or_expired_quote_never_creates_booking(change):
         finally:
             await cleanup(ids)
     asyncio.run(run())
+
+
+def test_subscription_is_optional_by_default_and_only_explicit_setting_requires_it():
+    from services.booking_rules import load_rules, save_settings
+
+    async def run():
+        ids = await seed(price=450)
+        try:
+            async with async_session_maker() as db:
+                await db.execute(delete(StudioBookingSettings).where(StudioBookingSettings.studio_id == ids['studio']))
+                (await db.get(Client, ids['client'])).phone = '+420777000123'
+                await db.commit()
+                assert (await load_rules(db, ids['studio'])).prefill_on_booking is False
+            await quote(ids)
+            async with async_session_maker() as db:
+                await save_settings(db, ids['studio'], {'min_booking_advance_min': 0})
+                assert (await load_rules(db, ids['studio'])).prefill_on_booking is False
+            await quote(ids)
+            async with async_session_maker() as db:
+                await save_settings(db, ids['studio'], {'prefill_on_booking': True})
+            with pytest.raises(HTTPException) as error:
+                await quote(ids)
+            assert error.value.status_code == 402 and error.value.detail['code'] == 'NO_FUNDING'
+            # A card payment itself funds the booking even with prepayment enabled.
+            await quote(ids, payment_method='card')
+            async with async_session_maker() as db:
+                await save_settings(db, ids['studio'], {'prefill_on_booking': False})
+            result = await confirm(ids, await quote(ids))
+            assert result['status'] == 'active'
+            async with async_session_maker() as db:
+                reservation = await db.get(Reservation, result['reservation_id'])
+                assert reservation.subscription_id is None and reservation.debt_payment_id is not None
+        finally:
+            await cleanup(ids)
+    asyncio.run(run())

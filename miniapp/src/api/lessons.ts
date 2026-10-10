@@ -91,6 +91,23 @@ interface LessonPayment {
   debt_str: string;
   /** Confirmed online payment; zero debt alone is not proof of payment. */
   paid_online?: boolean;
+  /** Money may have been charged; the studio must resolve this before retrying. */
+  payment_review?: boolean;
+  /** Занятие списано с абонемента. */
+  by_subscription?: boolean;
+}
+
+/**
+ * Ответ «Оплатить» по своей брони (POST /global/bookings/{id}/pay).
+ * open — форма Stripe готова; pending — оплата уже идёт, ждём подтверждения;
+ * unavailable — студия не принимает карты либо Stripe не ответил;
+ * stale — платить нечего (оплачено, отменено, занятие началось).
+ */
+export interface BookingPayResult {
+  outcome: 'open' | 'pending' | 'review' | 'unavailable' | 'stale';
+  url: string | null;
+  checkout_id: number | null;
+  amount_str: string;
 }
 
 // Схема для будущих занятий (наследует всё + добавляет номер коврика)
@@ -180,3 +197,12 @@ export const joinCoffee = (lessonId: number): Promise<CoffeeState> =>
 
 export const leaveCoffee = (lessonId: number): Promise<CoffeeState> =>
   apiDelete(`/global/reservations/${lessonId}/coffee`);
+
+/**
+ * Форма оплаты своей брони картой: незаконченная оплата при записи (`hold`)
+ * или долг «оплата на месте», который клиент решил закрыть сейчас.
+ * `in_telegram` — куда Stripe вернёт человека; адрес собирает сервер.
+ * Ендпоінт: POST /global/bookings/{reservation_id}/pay
+ */
+export const payBooking = (reservationId: number, inTelegram: boolean): Promise<BookingPayResult> =>
+  apiPost(`/global/bookings/${reservationId}/pay`, { in_telegram: inTelegram });

@@ -90,6 +90,8 @@ for (const start of ['Time', 'Service', 'Specialist'] as const) {
     await expect(page.getByRole('button', { name: /^Haircut/ })).toBeVisible();
     await page.getByRole('button', { name: /^Haircut/ }).click();
     await sheet(page).getByRole('button', { name: 'Cancel booking', exact: true }).click();
+    await expect.poll(async () => (await bookings(request))[0].status).toBe('active');
+    await sheet(page).getByRole('button', { name: 'Yes, cancel', exact: true }).click();
     await expect.poll(async () => (await bookings(request))[0].status).toBe('cancelled');
   });
 }
@@ -114,6 +116,75 @@ test('guest selected booking survives email registration and confirms once', asy
     branch: studio.central, time: `${studio.day}T10:00:00` });
 });
 
+test('HTTP 402 for studio billing shows its cause without requesting a subscription', async ({ page, request, studio }) => {
+  await apiSignIn(page, request, studio);
+  await openBooking(page, 'Time');
+  await chooseResource(page, studio, 'Time');
+  await page.route('**/global/bookings?*', route => route.fulfill({ status: 402,
+    contentType: 'application/json', body: JSON.stringify({ detail: { code: 'billing.suspended', message: 'Studio temporarily unavailable' } }),
+  }));
+  await sheet(page).getByRole('button', { name: 'Book', exact: true }).click();
+  await expect(sheet(page).getByText('Online booking is temporarily unavailable at this studio. Please contact the studio.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Membership required', exact: true })).toHaveCount(0);
+  expect(await bookings(request)).toHaveLength(0);
+});
+
+test('a subscription is required only after the explicit studio setting is enabled', async ({ page, request, studio }) => {
+  const changed = await request.post(`${apiURL}/__test/booking-settings`, {
+    data: { prepay_required: true, can_pay_online: false, service_price: 450 },
+  });
+  expect(changed.ok()).toBeTruthy();
+  await apiSignIn(page, request, studio);
+  await openBooking(page, 'Time');
+  // The normal helper expects a successful quote. Select the same fields here,
+  // then assert the real API refusal and the resulting subscription sheet.
+  await chooseStep(page, 'Time');
+  await sheet(page).locator(`[data-day="${studio.day}"]`).click();
+  await sheet(page).getByRole('button', { name: '10:00', exact: true }).click();
+  await chooseStep(page, 'Service');
+  await sheet(page).getByRole('button', { name: /^Haircut/ }).click();
+  await chooseStep(page, 'Specialist');
+  await sheet(page).getByRole('button', { name: /\bAnna\b/ }).click();
+  await chooseStep(page, 'Summary');
+  await sheet(page).getByRole('button', { name: 'Central', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Membership required', exact: true })).toBeVisible();
+  expect(await bookings(request)).toHaveLength(0);
+});
+
+test('an existing unpaid lesson opens Stripe and returns paid once in the UI and ledger', async ({ page, request, studio }) => {
+  await apiSignIn(page, request, studio);
+  const booked = await request.post(`${apiURL}/__test/venue-booking`);
+  expect(booked.ok()).toBeTruthy();
+  const { reservation_id } = await booked.json();
+  await page.goto(`/s/${studio.code}?tab=my`);
+  const before = await (await request.get(`${apiURL}/__test/payment-ledger`)).json();
+  expect(before.payments).toHaveLength(1);
+  expect(before.payments[0].status).toBe('pending');
+  await page.route('https://checkout.stripe.com/**', route => route.fulfill({
+    contentType: 'text/html', body: '<h1>Isolated Stripe form</h1>',
+  }));
+  await page.getByRole('button', { name: 'Pay', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Isolated Stripe form' })).toBeVisible();
+  const confirmed = await request.post(`${apiURL}/__test/confirm-stripe-payment`, { data: { reservation_id } });
+  expect(confirmed.ok()).toBeTruthy();
+  const { checkout_id } = await confirmed.json();
+  await page.goto(`/s/${studio.code}?tab=my&pay=paysuccess&checkout_id=${checkout_id}`);
+  await expect(page.getByRole('heading', { name: 'Payment complete', exact: true })).toBeVisible();
+  await expect(page.getByText('Paid online', { exact: true }).first()).toBeVisible();
+  const after = await (await request.get(`${apiURL}/__test/payment-ledger`)).json();
+  expect(after.payments).toEqual([{ id: before.payments[0].id, status: 'success', amount: 500 }]);
+  expect(after.income).toEqual([500]);
+  // A repeated return must not record the same income again.
+  await page.reload();
+  await expect(page.getByText('Paid online', { exact: true }).first()).toBeVisible();
+  expect((await (await request.get(`${apiURL}/__test/payment-ledger`)).json()).income).toEqual([500]);
+  await page.getByRole('button', { name: /^Yoga/ }).click();
+  await expect(sheet(page).getByText('Paid online', { exact: true })).toBeVisible();
+  if (process.env.MINIAPP_REVIEW_SCREENSHOT_DIR) {
+    await page.screenshot({ path: `${process.env.MINIAPP_REVIEW_SCREENSHOT_DIR}/${test.info().project.name}-paid.png` });
+  }
+});
+
 test('booking failure shows error, saves nothing and retry confirms exactly once', async ({ page, request, studio }) => {
   await apiSignIn(page, request, studio);
   await openBooking(page, 'Service');
@@ -126,7 +197,7 @@ test('booking failure shows error, saves nothing and retry confirms exactly once
     } else await route.fallback();
   });
   await sheet(page).getByRole('button', { name: 'Book', exact: true }).click();
-  await expect(sheet(page).getByRole('status')).toContainText('Could not create the booking');
+  await expect(sheet(page).getByRole('status')).toContainText('Booking unavailable');
   expect(await bookings(request)).toHaveLength(0);
   await sheet(page).getByRole('button', { name: 'Book', exact: true }).click();
   await expect(sheet(page).getByRole('heading', { name: 'Done', exact: true })).toBeVisible();

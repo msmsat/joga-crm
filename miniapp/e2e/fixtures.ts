@@ -106,7 +106,7 @@ export async function chooseStep(page: Page, label: string) {
   await sheet(page).locator('nav').getByRole('button', { name: new RegExp(`^${label}`, 'i') }).click();
 }
 
-export async function chooseResource(page: Page, studio: Studio, start: 'Time' | 'Service' | 'Specialist') {
+export async function chooseResource(page: Page, studio: Studio, start: 'Time' | 'Service' | 'Specialist', confirmLabel = 'Book') {
   const actions = {
     Time: async () => {
       await chooseStep(page, 'Time');
@@ -126,7 +126,7 @@ export async function chooseResource(page: Page, studio: Studio, start: 'Time' |
   for (const item of order) await actions[item]();
   await chooseStep(page, 'Summary');
   await sheet(page).getByRole('button', { name: 'Central', exact: true }).click();
-  await expect(sheet(page).getByRole('button', { name: 'Book', exact: true })).toBeEnabled();
+  await expect(sheet(page).getByRole('button', { name: confirmLabel, exact: true })).toBeEnabled();
 }
 
 export async function bookings(request: APIRequestContext) {
